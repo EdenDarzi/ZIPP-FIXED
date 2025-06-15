@@ -94,12 +94,16 @@ export function DeliveryCompleteView({ order }: DeliveryCompleteViewProps) {
       <CardFooter className="flex flex-col sm:flex-row gap-3 border-t pt-4">
         <Button variant="outline" asChild className="flex-1">
           <Link href={`/restaurants/${order.restaurantId}`}>
-            <RotateCcw className="mr-2 h-4 w-4" /> Reorder from {order.restaurantName}
+            <span className="flex items-center justify-center w-full">
+              <RotateCcw className="mr-2 h-4 w-4" /> Reorder from {order.restaurantName}
+            </span>
           </Link>
         </Button>
         <Button asChild className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground">
           <Link href="/restaurants">
-            <CheckCircle className="mr-2 h-4 w-4" /> Order Again
+            <span className="flex items-center justify-center w-full">
+              <CheckCircle className="mr-2 h-4 w-4" /> Order Again
+            </span>
           </Link>
         </Button>
       </CardFooter>

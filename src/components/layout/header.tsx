@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, Camera } from 'lucide-react'; // Added Camera
+import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, Camera, Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,11 @@ import { Badge } from '@/components/ui/badge';
 const Header = () => {
   const { cart } = useCart();
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  // Placeholder for language toggle logic
+  const handleLanguageToggle = () => {
+    alert("Language toggle clicked. Full i18n setup required for functionality.");
+  };
 
   return (
     <header className="bg-card border-b border-border shadow-sm sticky top-0 z-50">
@@ -19,56 +24,78 @@ const Header = () => {
         </Link>
         <nav className="flex items-center space-x-1 sm:space-x-2">
           <Button variant="ghost" asChild size="sm">
-            <Link href="/" className="flex items-center">
-              <Home className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Home</span>
+            <Link href="/">
+              <span className="flex items-center">
+                <Home className="h-4 w-4 sm:mr-2" /> {/* Adjusted margin for RTL */}
+                <span className="hidden sm:inline">בית</span>
+              </span>
             </Link>
           </Button>
           <Button variant="ghost" asChild size="sm">
-            <Link href="/restaurants" className="flex items-center">
-              <Utensils className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Restaurants</span>
+            <Link href="/restaurants">
+              <span className="flex items-center">
+                <Utensils className="h-4 w-4 sm:mr-2" /> {/* Adjusted margin for RTL */}
+                <span className="hidden sm:inline">מסעדות</span>
+              </span>
             </Link>
           </Button>
           <Button variant="ghost" asChild size="sm">
-            <Link href="/recommendations" className="flex items-center">
-              <Brain className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">AI Recs</span>
+            <Link href="/recommendations">
+              <span className="flex items-center">
+                <Brain className="h-4 w-4 sm:mr-2" /> {/* Adjusted margin for RTL */}
+                <span className="hidden sm:inline">המלצות AI</span>
+              </span>
             </Link>
           </Button>
           <Button variant="ghost" asChild size="sm">
-            <Link href="/visual-search" className="flex items-center">
-              <Camera className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Visual Search</span>
+            <Link href="/visual-search">
+              <span className="flex items-center">
+                <Camera className="h-4 w-4 sm:mr-2" /> {/* Adjusted margin for RTL */}
+                <span className="hidden sm:inline">חיפוש חזותי</span>
+              </span>
             </Link>
           </Button>
           <Button variant="ghost" asChild size="sm">
-            <Link href="/courier/open-bids" className="flex items-center">
-              <Truck className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Courier</span>
+            <Link href="/courier/open-bids">
+              <span className="flex items-center">
+                <Truck className="h-4 w-4 sm:mr-2" /> {/* Adjusted margin for RTL */}
+                <span className="hidden sm:inline">שליחים</span>
+              </span>
             </Link>
           </Button>
            <Button variant="ghost" asChild size="sm">
-            <Link href="/restaurant-admin" className="flex items-center">
-              <ChefHat className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Restaurant Admin</span>
+            <Link href="/restaurant-admin">
+              <span className="flex items-center">
+                <ChefHat className="h-4 w-4 sm:mr-2" /> {/* Adjusted margin for RTL */}
+                <span className="hidden sm:inline">ניהול מסעדה</span>
+              </span>
             </Link>
           </Button>
           <Button variant="ghost" asChild size="icon" className="relative">
             <Link href="/cart" aria-label="Cart">
-              <ShoppingCart className="h-5 w-5" />
-              {itemCount > 0 && (
-                <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-xs">
-                  {itemCount}
-                </Badge>
-              )}
+              <span className="relative flex items-center justify-center w-full h-full">
+                <ShoppingCart className="h-5 w-5" />
+                {itemCount > 0 && (
+                  <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-xs"> {/* Adjusted for RTL */}
+                    {itemCount}
+                  </Badge>
+                )}
+              </span>
             </Link>
           </Button>
           <Button variant="outline" size="sm" asChild>
-            <Link href="/auth/login" className="flex items-center">
-              <UserCircle className="h-4 w-4 mr-0 sm:mr-2" />
-              <span className="hidden sm:inline">Login</span>
+            <Link href="/auth/login">
+              <span className="flex items-center">
+                <UserCircle className="h-4 w-4 mr-0 sm:mr-2" /> {/* Adjusted margin for RTL */}
+                <span className="hidden sm:inline">כניסה</span>
+              </span>
             </Link>
+          </Button>
+          <Button variant="ghost" size="sm" onClick={handleLanguageToggle} className="flex items-center" aria-label="Toggle language">
+            <span className="flex items-center">
+                <Languages className="h-4 w-4 sm:mr-1" /> {/* Adjusted margin for RTL */}
+                <span className="hidden sm:inline">EN</span>
+            </span>
           </Button>
         </nav>
       </div>

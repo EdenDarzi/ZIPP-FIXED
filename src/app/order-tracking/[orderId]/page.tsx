@@ -167,7 +167,7 @@ export default function OrderTrackingPage() {
           {error || "We couldn't find the order you're looking for. It might have been an issue with a mock order ID or it hasn't been created yet."}
         </p>
         <Button asChild>
-          <Link href="/">Go to Homepage</Link>
+          <Link href="/"><span>Go to Homepage</span></Link>
         </Button>
       </div>
     );

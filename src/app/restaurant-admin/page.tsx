@@ -27,7 +27,7 @@ export default function RestaurantAdminDashboard() {
         <h1 className="text-3xl font-bold font-headline text-primary">Restaurant Dashboard</h1>
         <Button asChild>
           <Link href="/restaurants/restaurant1" target="_blank"> {/* Assuming restaurant1 is the admin's restaurant */}
-            View Live Storefront
+            <span>View Live Storefront</span>
           </Link>
         </Button>
       </div>
@@ -86,11 +86,12 @@ export default function RestaurantAdminDashboard() {
           {quickLinks.map((link) => (
             <Button key={link.href} variant="outline" asChild className="justify-start text-left h-auto py-3">
               <Link href={link.href}>
-                <link.icon className="mr-3 h-5 w-5 text-primary" />
-                <div>
-                  <p className="font-semibold">{link.label}</p>
-                  {/* <p className="text-xs text-muted-foreground">Description for {link.label}</p> */}
-                </div>
+                <span className="flex items-center w-full">
+                  <link.icon className="mr-3 h-5 w-5 text-primary flex-shrink-0" />
+                  <div className="flex-grow">
+                    <p className="font-semibold">{link.label}</p>
+                  </div>
+                </span>
               </Link>
             </Button>
           ))}

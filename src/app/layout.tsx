@@ -10,14 +10,14 @@ import { cn } from '@/lib/utils';
 import AiChatAssistant from '@/components/layout/ai-chat-assistant'; // Added
 
 const ptSans = PT_Sans({
-  subsets: ['latin'],
+  subsets: ['latin', 'cyrillic'], // Added cyrillic for PT Sans, Hebrew is generally well supported
   weight: ['400', '700'],
   variable: '--font-pt-sans',
 });
 
 export const metadata: Metadata = {
-  title: 'SwiftServe - Your Smart Delivery App',
-  description: 'Order delivery from restaurants, shops, and cafes with SwiftServe.',
+  title: 'SwiftServe - אפליקציית המשלוחים החכמה שלך', // Placeholder
+  description: 'הזמינו משלוח ממסעדות, חנויות ובתי קפה עם SwiftServe.', // Placeholder
 };
 
 export default function RootLayout({
@@ -26,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="he" dir="rtl" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -46,7 +47,9 @@ export default function ItemCard({ item, restaurantId }: ItemCardProps) {
       <CardFooter className="flex flex-col sm:flex-row gap-2">
         <Button variant="outline" asChild className="w-full sm:w-auto flex-1">
           <Link href={`/restaurants/${restaurantId}/items/${item.id}`}>
-            <Eye className="mr-2 h-4 w-4" /> View
+            <span className="flex items-center justify-center w-full">
+              <Eye className="mr-2 h-4 w-4" /> View
+            </span>
           </Link>
         </Button>
         <Button onClick={handleAddToCart} className="w-full sm:w-auto flex-1 bg-accent hover:bg-accent/90 text-accent-foreground">

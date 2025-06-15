@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,9 +20,9 @@ import { UserPlus, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 
 const formSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
-  email: z.string().email({ message: 'Invalid email address.' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
+  name: z.string().min(2, { message: 'שם חייב להכיל לפחות 2 תווים.' }),
+  email: z.string().email({ message: 'כתובת אימייל לא תקינה.' }),
+  password: z.string().min(6, { message: 'סיסמה חייבת להכיל לפחות 6 תווים.' }),
 });
 
 export default function RegisterForm() {
@@ -39,13 +40,12 @@ export default function RegisterForm() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Mock registration logic
     console.log(values);
     toast({
-      title: 'Registration Successful',
-      description: 'Your account has been created. Please log in.',
+      title: 'הרשמה מוצלחת',
+      description: 'החשבון שלך נוצר. אנא התחבר.',
     });
-    router.push('/auth/login'); // Redirect to login page after mock registration
+    router.push('/auth/login'); 
   }
 
   return (
@@ -56,9 +56,9 @@ export default function RegisterForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Full Name</FormLabel>
+              <FormLabel>שם מלא</FormLabel>
               <FormControl>
-                <Input placeholder="John Doe" {...field} />
+                <Input placeholder="ישראל ישראלי" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -69,7 +69,7 @@ export default function RegisterForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>אימייל</FormLabel>
               <FormControl>
                 <Input placeholder="your@email.com" {...field} />
               </FormControl>
@@ -82,7 +82,7 @@ export default function RegisterForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>סיסמה</FormLabel>
               <FormControl>
                 <div className="relative">
                   <Input 
@@ -94,9 +94,9 @@ export default function RegisterForm() {
                     type="button" 
                     variant="ghost" 
                     size="icon" 
-                    className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                    className="absolute left-1 top-1/2 -translate-y-1/2 h-7 w-7" /* Adjusted for RTL */
                     onClick={() => setShowPassword(!showPassword)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
@@ -107,7 +107,7 @@ export default function RegisterForm() {
           )}
         />
         <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-          <UserPlus className="mr-2 h-4 w-4" /> Sign Up
+          <UserPlus className="ml-2 h-4 w-4" /> הירשם {/* Adjusted for RTL */}
         </Button>
       </form>
     </Form>

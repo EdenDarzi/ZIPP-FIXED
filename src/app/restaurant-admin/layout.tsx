@@ -49,7 +49,9 @@ export default function RestaurantAdminLayout({ children }: { children: ReactNod
         <div className="mt-auto p-4 border-t">
             <Button variant="outline" className="w-full justify-start" asChild>
               <Link href="/">
-                <LogOut className="mr-2 h-4 w-4" /> Exit Admin
+                <span className="flex items-center">
+                  <LogOut className="mr-2 h-4 w-4" /> Exit Admin
+                </span>
               </Link>
             </Button>
         </div>

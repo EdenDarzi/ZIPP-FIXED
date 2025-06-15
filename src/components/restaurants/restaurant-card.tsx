@@ -4,7 +4,7 @@ import Link from 'next/link';
 import type { Restaurant, RestaurantTag } from '@/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Star, Clock, Tag as CuisineIcon, MapPin, Zap, Award, Flame, ShoppingBag, CircleHelp } from 'lucide-react';
+import { Star, Clock, Tag as CuisineIcon, MapPin, Zap, Award, Flame, ShoppingBag, CircleHelp, ArrowLeft } from 'lucide-react'; // ArrowRight becomes ArrowLeft
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
@@ -16,7 +16,7 @@ const tagIconMap: Record<RestaurantTag, React.ElementType> = {
   'Recommended': Award,
   'Hot Now': Flame,
   'Fast Delivery': Clock,
-  'New': ShoppingBag, // Using ShoppingBag as a generic "New" icon
+  'New': ShoppingBag, 
   'Popular': Star,
   'Delivery Arena': Zap,
 };
@@ -44,12 +44,12 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
             className="group-hover:scale-110 transition-transform duration-500 ease-in-out"
             data-ai-hint={restaurant.dataAiHint || "restaurant exterior food"} 
           />
-           <div className="absolute top-2 right-2 flex flex-col items-end gap-1">
+           <div className="absolute top-2 left-2 flex flex-col items-start gap-1"> {/* Changed to left-2 and items-start for RTL */}
             {restaurant.tags?.slice(0, 2).map(tag => {
                 const Icon = tagIconMap[tag] || CircleHelp;
                 return (
                     <Badge key={tag} variant="secondary" className={cn("py-1 px-2 text-xs", tagColorMap[tag])}>
-                        <Icon className="h-3 w-3 mr-1" /> {tag}
+                        <Icon className="h-3 w-3 ml-1" /> {tag} {/* Adjusted margin for RTL */}
                     </Badge>
                 );
             })}
@@ -62,26 +62,30 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
       </Link>
       <CardContent className="flex-grow space-y-2 text-sm pt-0 pb-3">
         <div className="flex items-center text-muted-foreground">
-          <CuisineIcon className="h-4 w-4 mr-2 text-accent" />
+          <CuisineIcon className="h-4 w-4 ml-2 text-accent" /> {/* Adjusted margin for RTL */}
           <span>{restaurant.cuisineType}</span>
         </div>
         <div className="flex items-center text-muted-foreground">
-          <Star className="h-4 w-4 mr-2 text-yellow-500 fill-yellow-500" />
+          <Star className="h-4 w-4 ml-2 text-yellow-500 fill-yellow-500" /> {/* Adjusted margin for RTL */}
           <span>{restaurant.rating.toFixed(1)}</span>
-           <span className="ml-1 text-xs">({Math.floor(Math.random() * 150 + 50)} reviews)</span>
+           <span className="mr-1 text-xs">({Math.floor(Math.random() * 150 + 50)} ביקורות)</span> {/* Adjusted margin for RTL and translated */}
         </div>
         <div className="flex items-center text-muted-foreground">
-          <Clock className="h-4 w-4 mr-2 text-blue-500" />
+          <Clock className="h-4 w-4 ml-2 text-blue-500" /> {/* Adjusted margin for RTL */}
           <span>{restaurant.deliveryTimeEstimate}</span>
         </div>
          <div className="flex items-center text-muted-foreground">
-          <MapPin className="h-4 w-4 mr-2 text-green-500" />
+          <MapPin className="h-4 w-4 ml-2 text-green-500" /> {/* Adjusted margin for RTL */}
           <span className="truncate">{restaurant.location}</span>
         </div>
       </CardContent>
       <CardFooter className="p-4 border-t mt-auto">
         <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-transform duration-300 group-hover:scale-105">
-          <Link href={`/restaurants/${restaurant.id}`}>View Menu</Link>
+          <Link href={`/restaurants/${restaurant.id}`}>
+            <span className="flex items-center justify-center w-full">
+              <ArrowLeft className="h-4 w-4 mr-2" />הצג תפריט {/* Adjusted for RTL */}
+            </span>
+          </Link>
         </Button>
       </CardFooter>
     </Card>
