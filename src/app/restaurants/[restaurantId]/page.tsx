@@ -1,13 +1,15 @@
 
+'use client'; // Make it a client component to use useToast
+
 import { getRestaurantById } from '@/lib/mock-data';
 import type { Restaurant, MenuItem } from '@/types';
 import ItemCard from '@/components/items/item-card';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { Star, Clock, MapPin, Utensils, Share2 } from 'lucide-react'; // Added Share2
+import { Star, Clock, MapPin, Utensils, Share2, Award } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button'; // Added Button
-import { useToast } from '@/hooks/use-toast'; // Added useToast
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 interface RestaurantPageParams {
   params: {
@@ -15,14 +17,9 @@ interface RestaurantPageParams {
   };
 }
 
-// Needs to be a client component to use useToast
-// This can be refactored by moving the share button to its own client component if server rendering for the rest of the page is critical
-// For simplicity in this step, making the whole page client-side.
-// Consider usePathname for actual URL if needed for sharing.
 export default function RestaurantPage({ params }: RestaurantPageParams) {
-  'use client'; // Make it a client component
   const restaurant: Restaurant | undefined = getRestaurantById(params.restaurantId);
-  const { toast } = useToast(); // Initialize toast
+  const { toast } = useToast();
 
   if (!restaurant) {
     notFound();
@@ -34,12 +31,12 @@ export default function RestaurantPage({ params }: RestaurantPageParams) {
   }, {} as Record<string, MenuItem[]>);
 
   const handleShareRestaurant = () => {
-    // In a real app, use navigator.share or generate social media links
-    // const shareUrl = window.location.href;
     toast({
       title: "שיתוף מסעדה (דמו)",
-      description: `הקישור למסעדת "${restaurant.name}" הועתק ללוח.`,
+      description: `שיתפת את מסעדת "${restaurant.name}"! +10 כוכבים התווספו לחשבונך (דמו).`,
+      action: <Award className="h-5 w-5 text-yellow-400"/>
     });
+    // Actual sharing logic would go here
   };
 
 

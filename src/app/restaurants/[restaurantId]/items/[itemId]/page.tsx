@@ -7,12 +7,12 @@ import Image from 'next/image';
 import { notFound, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
-import { Minus, Plus, ShoppingCart, ArrowLeft, Star, Share2 } from 'lucide-react'; // Added Share2
+import { Minus, Plus, ShoppingCart, ArrowLeft, Star, Share2, Award } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { useToast } from '@/hooks/use-toast'; // Added useToast
+import { useToast } from '@/hooks/use-toast';
 
 interface ItemPageParams {
   params: {
@@ -26,7 +26,7 @@ export default function ItemPage({ params }: ItemPageParams) {
   const { addToCart } = useCart();
   const router = useRouter();
   const [quantity, setQuantity] = useState(1);
-  const { toast } = useToast(); // Initialize toast
+  const { toast } = useToast();
 
   if (!item) {
     notFound();
@@ -40,11 +40,12 @@ export default function ItemPage({ params }: ItemPageParams) {
   const decrementQuantity = () => setQuantity(q => Math.max(1, q - 1));
 
   const handleShareItem = () => {
-    // const shareUrl = window.location.href;
     toast({
       title: "שיתוף פריט (דמו)",
-      description: `הקישור לפריט "${item.name}" הועתק ללוח.`,
+      description: `שיתפת את "${item.name}"! +5 כוכבים התווספו לחשבונך (דמו).`,
+      action: <Award className="h-5 w-5 text-yellow-400"/>
     });
+    // Actual sharing logic would go here
   };
 
   return (

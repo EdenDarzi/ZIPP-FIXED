@@ -1,9 +1,9 @@
 
 'use server';
 /**
- * @fileOverview An AI flow for identifying a dish from an image and providing suggestions.
+ * @fileOverview An AI flow for identifying a dish from an image, with a focus on social media trends, and providing suggestions.
  *
- * - identifyDishFromImage - A function that identifies a dish and suggests similar items.
+ * - identifyDishFromImage - A function that identifies a dish/trend and suggests similar items or business opportunities.
  * - IdentifyDishInput - The input type for the identifyDishFromImage function.
  * - IdentifyDishOutput - The return type for the identifyDishFromImage function.
  */
@@ -15,15 +15,15 @@ const IdentifyDishInputSchema = z.object({
   imageDataUri: z
     .string()
     .describe(
-      "A photo of a food item, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+      "A photo of a food item, potentially a culinary trend from social media, as a data URI. Format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
-  userQuery: z.string().optional().describe('Optional user query related to the image, e.g., "Is this spicy?" or "Find vegan options like this".'),
+  userQuery: z.string().optional().describe('Optional user query related to the image, e.g., "Is this spicy?" or "Where can I find this trend?".'),
 });
 export type IdentifyDishInput = z.infer<typeof IdentifyDishInputSchema>;
 
 const IdentifyDishOutputSchema = z.object({
-  identifiedDishName: z.string().describe("The name of the dish identified in the image. If unsure, state 'Food item detected' or similar."),
-  suggestedText: z.string().describe("A short text paragraph suggesting similar items or cuisines available on SwiftServe based on the identified dish, or responding to the user query in context of the image."),
+  identifiedDishName: z.string().describe("The name of the dish/trend identified in the image. If unsure, state 'Food item detected' or similar."),
+  suggestedText: z.string().describe("A helpful response. If it's a trend, comment on it. Suggest similar items/cuisines on SwiftServe, or note how businesses could offer it."),
 });
 export type IdentifyDishOutput = z.infer<typeof IdentifyDishOutputSchema>;
 
@@ -35,27 +35,29 @@ const identifyDishPrompt = ai.definePrompt({
   name: 'identifyDishPrompt',
   input: { schema: IdentifyDishInputSchema },
   output: { schema: IdentifyDishOutputSchema },
-  prompt: `You are an AI assistant for SwiftServe, a food delivery app.
-A user has uploaded an image of a food item, possibly from a social media trend.
-Image: {{media url=imageDataUri}}
+  prompt: `You are the SwiftServe AI TrendScanner, an expert in identifying food dishes and culinary trends from images, especially those popular on social media like TikTok or Instagram.
 
-{{#if userQuery}}User's query related to the image: "{{{userQuery}}}"{{/if}}
+A user has uploaded an image: {{media url=imageDataUri}}
+{{#if userQuery}}User's query about the image: "{{{userQuery}}}"{{/if}}
 
-1.  First, try to identify the main food item or dish in the image. Be as specific as possible (e.g., "Korean Cheese Corn Dog", "Cronut with Matcha Glaze"). If you are not sure, say "Food item detected" or "Interesting dish detected".
-2.  Then, provide a helpful and engaging response.
-    *   If there was a user query, answer it in relation to the image.
-    *   If no query, briefly describe what you see or comment on its trendiness if applicable (e.g., "This looks like the viral [Dish Name] everyone is talking about!").
-3.  Suggest 1-2 similar dishes or types of cuisine that might be available on SwiftServe. You can invent plausible dish names or restaurant types that would fit the identified item and mention that users can search for them on the app. Keep this part brief, appealing, and actionable.
-    *   Example: "You might find similar cheesy corn dogs at 'Seoul Food Express' on SwiftServe, or try searching for 'Crispy Fried Mozzarella Sticks' for a different cheesy delight!"
-    *   Example: "That trendy looking [Dish Name] is all the rage! For a similar vibe on SwiftServe, check out 'Fusion Bites Cafe' or search for 'gourmet dessert waffles'."
+Your task:
+1.  **Identify the Dish/Trend:**
+    *   Try to specifically name the food item or culinary trend (e.g., "Korean Cheese Corn Dog," "Cloud Bread," "Ramen Sandwich," "Pistachio Matcha Latte").
+    *   If you're unsure, state "Food item detected" or "Interesting dish detected."
+2.  **Provide Insightful Suggestions & Commentary:**
+    *   **If a trend is identified:** Briefly comment on its popularity or origin if known (e.g., "This looks like the viral [Dish Name] from TikTok!").
+    *   **Answer User Query:** If the user provided a query, address it in context of the image.
+    *   **Suggest Similar Items on SwiftServe:** Recommend 1-2 similar dishes, cuisines, or flavor profiles that users can search for on the SwiftServe app. Invent plausible dish names or restaurant types if needed. (e.g., "You might find similar spicy ramen challenges at 'Fire Noodle House' on SwiftServe," or "For a pistachio-flavored drink, try searching for 'Pistachio Cream Lattes' at our specialty cafes.")
+    *   **Business Opportunity (If applicable):** If it's a very new or niche trend, you can add a playful note like, "Hey SwiftServe businesses, see this? Maybe it's your next hit menu item!" or "This trend is hot! Businesses on SwiftServe could offer their own unique take on it."
+    *   Keep the overall tone engaging, helpful, and slightly enthusiastic.
 
-Example Output (if no user query, identified trendy item):
-identifiedDishName: "Korean Cheese Corn Dog"
-suggestedText: "Wow, that's the famous Korean Cheese Corn Dog! It's super popular right now. On SwiftServe, you could look for 'Cheesy Sausage Sticks' at 'Street Food Mania' or explore our 'Korean Fusion' category for more exciting bites!"
+Example Output (Identified TikTok Trend, no user query):
+identifiedDishName: "Spicy Honey Butter Chicken Wings"
+suggestedText: "Wow, these look like the super trendy Spicy Honey Butter Chicken Wings taking over TikTok! For a similar fiery and sweet kick on SwiftServe, try searching for 'Korean Fried Chicken with Honey Glaze' at 'Seoul Food Express' or explore our 'Wings World' category. SwiftServe restaurants, are you seeing this heat? 🔥 Could be a great special!"
 
-Example Output (with user query "is this healthy?"):
-identifiedDishName: "Avocado Toast with Poached Egg"
-suggestedText: "This appears to be Avocado Toast with Poached Egg. It's generally a nutritious choice, packed with healthy fats and protein! If you're looking for other healthy options on SwiftServe, try searching for 'Quinoa Salad with Grilled Chicken' or browse restaurants under our 'Healthy Eats' tag."
+Example Output (General dish, user query "Is this healthy?"):
+identifiedDishName: "Quinoa Salad with Roasted Vegetables"
+suggestedText: "This appears to be a Quinoa Salad with Roasted Vegetables. It's generally a healthy and balanced choice! On SwiftServe, you can find many healthy salad options by searching for 'grain bowls' or 'roasted veggie salads' under our 'Healthy Eats' tag."
 
 Output format should be JSON. Be creative and helpful!
 `,
@@ -68,15 +70,13 @@ const identifyDishFlow = ai.defineFlow(
     outputSchema: IdentifyDishOutputSchema,
   },
   async (input) => {
-    // The default model in ai/genkit.ts (gemini-2.0-flash) supports multimodal input.
     const { output } = await identifyDishPrompt(input);
     if (!output) {
       return {
         identifiedDishName: "לא הצלחתי לנתח את התמונה",
-        suggestedText: "מצטערים, לא הצלחתי לעבד את התמונה כרגע. אנא נסה/י תמונה אחרת או חפש/י ידנית."
+        suggestedText: "מצטערים, לא הצלחתי לעבד את התמונה כרגע. אנא נסה/י תמונה אחרת או חפש/י ידנית. ייתכן שתכונה זו עדיין בפיתוח עבור סוגי תמונות מסוימים."
       }
     }
     return output;
   }
 );
-

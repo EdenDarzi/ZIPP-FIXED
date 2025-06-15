@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, Camera, Languages, Send, HeartPulse } from 'lucide-react'; // Added Camera
+import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, Camera, Languages, Send, HeartPulse, TrendingUp, Award } from 'lucide-react'; // Added TrendingUp, Award
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
 import { Badge } from '@/components/ui/badge';
@@ -11,7 +11,6 @@ const Header = () => {
   const { cart } = useCart();
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  // Placeholder for language toggle logic
   const handleLanguageToggle = () => {
     alert("Language toggle clicked. Full i18n setup required for functionality.");
   };
@@ -33,7 +32,7 @@ const Header = () => {
             <Link href="/send-package"><span className="flex items-center"><Send className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">שלח חבילה</span></span></Link>
           </Button>
            <Button variant="ghost" asChild size="sm">
-            <Link href="/visual-search"><span className="flex items-center"><Camera className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">חיפוש חזותי</span></span></Link>
+            <Link href="/visual-search"><span className="flex items-center"><TrendingUp className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">TrendScanner</span></span></Link>
           </Button>
           <Button variant="ghost" asChild size="sm">
             <Link href="/nutritional-advisor"><span className="flex items-center"><HeartPulse className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">יועץ תזונה</span></span></Link>
@@ -47,6 +46,13 @@ const Header = () => {
            <Button variant="ghost" asChild size="sm">
             <Link href="/restaurant-admin"><span className="flex items-center"><ChefHat className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">ניהול עסק</span></span></Link>
           </Button>
+          
+          {/* Placeholder for Stars - can be enhanced later */}
+          {/* <Button variant="ghost" size="sm" className="hidden sm:flex items-center" title="My Stars (SocialDrop Rewards - Demo)">
+            <Award className="h-4 w-4 text-yellow-500 sm:mr-1" />
+            <span className="hidden lg:inline text-xs">125</span> 
+          </Button> */}
+
           <Button variant="ghost" asChild size="icon" className="relative">
             <Link href="/cart" aria-label="Cart"><span className="relative flex items-center justify-center w-full h-full">
               <ShoppingCart className="h-5 w-5" />

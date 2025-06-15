@@ -8,11 +8,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { identifyDishFromImage, IdentifyDishInput, IdentifyDishOutput } from '@/ai/flows/identify-dish-flow';
-import { Camera, ImageUp, Loader2, Sparkles, Utensils, Share2 } from 'lucide-react'; // Added Share2
+import { Camera, ImageUp, Loader2, Sparkles, Utensils, Share2, TrendingUp } from 'lucide-react';
 import Image from 'next/image';
 import { Label } from '@/components/ui/label';
 
-export default function VisualSearchPage() {
+export default function AiTrendScannerPage() {
   const { toast } = useToast();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageDataUri, setImageDataUri] = useState<string | null>(null);
@@ -34,9 +34,9 @@ export default function VisualSearchPage() {
       const reader = new FileReader();
       reader.onloadend = () => {
         const dataUri = reader.result as string;
-        setImagePreview(dataUri); // For display
-        setImageDataUri(dataUri); // For sending to AI
-        setAiResponse(null); // Clear previous response
+        setImagePreview(dataUri);
+        setImageDataUri(dataUri);
+        setAiResponse(null);
       };
       reader.readAsDataURL(file);
     }
@@ -44,7 +44,7 @@ export default function VisualSearchPage() {
 
   const handleSubmit = async () => {
     if (!imageDataUri) {
-      toast({ title: 'לא נבחרה תמונה', description: 'אנא העלה/י תמונה לחיפוש.', variant: 'destructive' });
+      toast({ title: 'לא נבחרה תמונה', description: 'אנא העלה/י תמונה לזיהוי הטרנד.', variant: 'destructive' });
       return;
     }
     setIsLoading(true);
@@ -54,10 +54,10 @@ export default function VisualSearchPage() {
       const result = await identifyDishFromImage(input);
       setAiResponse(result);
     } catch (error) {
-      console.error('Error identifying dish:', error);
+      console.error('Error identifying dish trend:', error);
       toast({
-        title: 'שגיאה',
-        description: 'לא ניתן היה לקבל הצעות לתמונה. אנא נסה/י שוב.',
+        title: 'שגיאה בניתוח הטרנד',
+        description: 'לא ניתן היה לנתח את התמונה. אנא נסה/י שוב.',
         variant: 'destructive',
       });
     } finally {
@@ -67,11 +67,9 @@ export default function VisualSearchPage() {
 
   const handleShareResults = () => {
     if (!aiResponse) return;
-    // const shareText = `Look what I found with SwiftServe Visual Search! Identified: ${aiResponse.identifiedDishName}. Suggestions: ${aiResponse.suggestedText}`;
-    // const shareUrl = window.location.href; // Or a specific link to the results if available
     toast({
-      title: "שיתוף תוצאות (דמו)",
-      description: "תוצאות החיפוש החזותי שותפו!",
+      title: "שיתוף ממצאי טרנד (דמו)",
+      description: `זיהוי: ${aiResponse.identifiedDishName}. הצעה: ${aiResponse.suggestedText.substring(0,50)}...`,
     });
   };
 
@@ -79,36 +77,36 @@ export default function VisualSearchPage() {
     <div className="max-w-2xl mx-auto py-8 space-y-8">
       <Card className="shadow-xl">
         <CardHeader className="text-center">
-          <Camera className="h-12 w-12 text-primary mx-auto mb-3" />
-          <CardTitle className="text-3xl font-headline text-primary">חיפוש מנות חזותי</CardTitle>
+          <TrendingUp className="h-12 w-12 text-primary mx-auto mb-3" />
+          <CardTitle className="text-3xl font-headline text-primary">AI TrendScanner - מנוע הטרנדים</CardTitle>
           <CardDescription>
-            יש לך תמונה של משהו טעים? העלה/י אותה, וה-AI שלנו ינסה לזהות ולהציע פריטים דומים ב-SwiftServe!
+            ראית טרנד קולינרי בטיקטוק או באינסטגרם? העלה/י תמונה, וה-AI שלנו ינסה לזהות אותו, להציע איפה למצוא משהו דומה, או אפילו לתת רעיונות לעסקים!
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div>
-            <Label htmlFor="imageUpload" className="mb-2 block text-sm font-medium text-foreground">העלה/י תמונת אוכל</Label>
+            <Label htmlFor="imageUpload" className="mb-2 block text-sm font-medium text-foreground">העלה/י תמונת טרנד אוכל</Label>
             <Input
               id="imageUpload"
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className="file:ml-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20" // Adjusted for RTL
+              className="file:ml-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
             />
              <p className="text-xs text-muted-foreground mt-1">גודל קובץ מקסימלי: 4MB.</p>
           </div>
 
           {imagePreview && (
             <div className="mt-4 border rounded-lg overflow-hidden shadow-inner">
-              <Image src={imagePreview} alt="תצוגה מקדימה של תמונת אוכל שהועלתה" width={500} height={300} objectFit="contain" className="mx-auto max-h-[300px]" data-ai-hint="food image preview"/>
+              <Image src={imagePreview} alt="תצוגה מקדימה של תמונת טרנד" width={500} height={300} objectFit="contain" className="mx-auto max-h-[300px]" data-ai-hint="food trend image preview"/>
             </div>
           )}
 
           <div>
-            <Label htmlFor="userQuery" className="mb-2 block text-sm font-medium text-foreground">אופציונלי: מה את/ה מחפש/ת?</Label>
+            <Label htmlFor="userQuery" className="mb-2 block text-sm font-medium text-foreground">הערות או שאלות לגבי הטרנד (אופציונלי)</Label>
             <Textarea
               id="userQuery"
-              placeholder="לדוגמה: 'האם זה חריף?', 'מצא אפשרויות טבעוניות כמו זו', 'איזה מטבח זה?'"
+              placeholder="לדוגמה: 'מאיזה מטבח זה?', 'יש לזה גרסה טבעונית?', 'האם זה פופולרי בישראל?'"
               value={userQuery}
               onChange={(e) => setUserQuery(e.target.value)}
               className="min-h-[80px]"
@@ -118,11 +116,11 @@ export default function VisualSearchPage() {
           <Button onClick={handleSubmit} disabled={isLoading || !imageDataUri} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg">
             {isLoading ? (
               <>
-                <Loader2 className="ml-2 h-5 w-5 animate-spin" /> מנתח תמונה...
+                <Loader2 className="ml-2 h-5 w-5 animate-spin" /> סורק טרנדים...
               </>
             ) : (
               <>
-                <Sparkles className="ml-2 h-5 w-5" /> קבל הצעות AI
+                <Sparkles className="ml-2 h-5 w-5" /> זהה טרנד והצע לי
               </>
             )}
           </Button>
@@ -130,21 +128,21 @@ export default function VisualSearchPage() {
       </Card>
 
       {aiResponse && (
-        <Card className="shadow-lg animate-fadeIn bg-muted/30">
+        <Card className="shadow-lg animate-fadeInUp bg-muted/30">
           <CardHeader className="flex flex-row justify-between items-center">
             <CardTitle className="flex items-center text-xl text-primary font-headline">
-              <Utensils className="ml-2 h-6 w-6" /> תוצאת ניתוח AI
+              <Utensils className="ml-2 h-6 w-6" /> ממצאי TrendScanner:
             </CardTitle>
              <Button variant="outline" size="icon" onClick={handleShareResults}>
                 <Share2 className="h-5 w-5" />
-                <span className="sr-only">שתף תוצאות</span>
+                <span className="sr-only">שתף ממצאים</span>
               </Button>
           </CardHeader>
           <CardContent className="space-y-3">
             <h3 className="text-lg font-semibold">{aiResponse.identifiedDishName}</h3>
             <p className="text-foreground/90 whitespace-pre-wrap">{aiResponse.suggestedText}</p>
             <p className="text-xs text-muted-foreground pt-2">
-                טיפ: תוכל/י להשתמש בשם המנה שזוהתה או במילות מפתח מההצעות בשורת החיפוש הראשית כדי למצוא פריטים ב-SwiftServe.
+                טיפ: השתמש/י בשם המנה או במילות מפתח מההצעה כדי לחפש ב-SwiftServe. עסקים מקומיים - אולי זה הלהיט הבא שלכם?
             </p>
           </CardContent>
         </Card>
