@@ -38,13 +38,13 @@ const Header = () => {
             <Link href="/restaurants"><span className="flex items-center"><Utensils className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">עסקים</span></span></Link>
           </Button>
           <Button variant="ghost" asChild size="sm" className="hidden lg:inline-flex">
-            <Link href="/food-radar"><span className="flex items-center"><MapIcon className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">Food Radar</span></span></Link>
+            <Link href="/food-radar"><span className="flex items-center"><MapIcon className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">רדאר אוכל</span></span></Link>
           </Button>
           <Button variant="ghost" asChild size="sm" className="hidden lg:inline-flex">
             <Link href="/send-package"><span className="flex items-center"><Send className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">שלח חבילה</span></span></Link>
           </Button>
            <Button variant="ghost" asChild size="sm">
-            <Link href="/visual-search"><span className="flex items-center"><TrendingUp className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">TrendScanner</span></span></Link>
+            <Link href="/visual-search"><span className="flex items-center"><TrendingUp className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">סורק טרנדים</span></span></Link>
           </Button>
           <Button variant="ghost" asChild size="sm" className="hidden lg:inline-flex">
             <Link href="/nutritional-advisor"><span className="flex items-center"><HeartPulse className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">יועץ תזונה</span></span></Link>
@@ -65,9 +65,9 @@ const Header = () => {
             <Link href="/restaurant-admin"><span className="flex items-center"><ChefHat className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">ניהול עסק</span></span></Link>
           </Button>
           
-          <Button variant="ghost" size="sm" onClick={handleTravelModeToggle} className="hidden lg:inline-flex items-center" title="Travel Mode (Beta)">
+          <Button variant="ghost" size="sm" onClick={handleTravelModeToggle} className="hidden lg:inline-flex items-center" title="TravelMode (בטא)">
             <Briefcase className="h-4 w-4 text-blue-500 sm:mr-1" />
-            <span className="hidden lg:inline text-xs">Travel</span> 
+            <span className="hidden lg:inline text-xs">TravelMode</span> 
           </Button>
 
           <Button variant="ghost" asChild size="icon" className="relative">
