@@ -232,4 +232,14 @@ export interface P2POrder {
   orderTimeline?: { status: P2POrderStatus, timestamp: string, notes?: string }[];
 }
 
-    
+// Nutritional Advisor Types
+export type NutritionalGoal = 'TONING' | 'WEIGHT_LOSS' | 'ENERGY_BOOST' | 'GENERAL_HEALTHY';
+
+export interface DishRecommendation {
+  dishName: string;
+  restaurantName: string; // Fictional or type like "Healthy Eats Cafe"
+  description: string; // Short description of the dish
+  estimatedCalories?: number;
+  estimatedProteinGrams?: number;
+  reasoning: string; // Why this dish fits the goal/preferences
+}

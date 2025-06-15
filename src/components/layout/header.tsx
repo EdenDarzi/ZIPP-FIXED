@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, Camera, Languages, Send } from 'lucide-react'; // Added Send
+import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, Camera, Languages, Send, HeartPulse } from 'lucide-react'; // Added Send, HeartPulse
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
 import { Badge } from '@/components/ui/badge';
@@ -52,6 +52,14 @@ const Header = () => {
               <span className="flex items-center">
                 <Camera className="h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">חיפוש חזותי</span>
+              </span>
+            </Link>
+          </Button>
+          <Button variant="ghost" asChild size="sm">
+            <Link href="/nutritional-advisor">
+              <span className="flex items-center">
+                <HeartPulse className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">יועץ תזונה</span>
               </span>
             </Link>
           </Button>
@@ -112,5 +120,3 @@ const Header = () => {
 };
 
 export default Header;
-
-    
