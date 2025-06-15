@@ -102,7 +102,7 @@ export default function MenuManagementPage() {
     },
   });
 
-  const livePickSaleForm = useForm<LivePickSaleFormValues>({ // Renamed form
+  const livePickSaleForm = useForm<LivePickSaleFormValues>({
     resolver: zodResolver(livePickSaleFormSchema),
     defaultValues: {
         livePickSaleEnabled: false, livePickSaleStartTime: "20:00", livePickSaleBagCount: 5, livePickSaleBagPrice: 15,
@@ -180,7 +180,7 @@ export default function MenuManagementPage() {
     itemForm.reset(); 
   }
 
-  function onLivePickSaleSubmit(values: LivePickSaleFormValues) { // Renamed function
+  function onLivePickSaleSubmit(values: LivePickSaleFormValues) {
     console.log("LivePick Sale Settings Updated (Demo):", values);
     toast({ title: "הגדרות LivePick Sale עודכנו (דמו)", description: `LivePick Sale ${values.livePickSaleEnabled ? 'מופעל' : 'כבוי'}.` });
   }
@@ -448,11 +448,11 @@ export default function MenuManagementPage() {
             <CardDescription>הגדר את שקיות ההפתעה המוזלות לסוף היום עבור העסק שלך. מתאים גם למבצעי Flash Sales!</CardDescription>
         </CardHeader>
         <CardContent>
-            <Form {...livePickSaleForm}> {/* Renamed form */}
-                <form onSubmit={livePickSaleForm.handleSubmit(onLivePickSaleSubmit)} className="space-y-6"> {/* Renamed submit handler */}
+            <Form {...livePickSaleForm}>
+                <form onSubmit={livePickSaleForm.handleSubmit(onLivePickSaleSubmit)} className="space-y-6">
                     <FormField
                         control={livePickSaleForm.control}
-                        name="livePickSaleEnabled" // Renamed field
+                        name="livePickSaleEnabled"
                         render={({ field }) => (
                             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm">
                                 <div className="space-y-0.5">
@@ -463,11 +463,11 @@ export default function MenuManagementPage() {
                             </FormItem>
                         )}
                     />
-                    {livePickSaleForm.watch('livePickSaleEnabled') && ( // Renamed watched field
+                    {livePickSaleForm.watch('livePickSaleEnabled') && (
                         <div className="space-y-4 p-4 border-t animate-fadeIn">
                             <FormField
                                 control={livePickSaleForm.control}
-                                name="livePickSaleStartTime" // Renamed field
+                                name="livePickSaleStartTime"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>שעת התחלת המבצע</FormLabel>
@@ -480,7 +480,7 @@ export default function MenuManagementPage() {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <FormField
                                     control={livePickSaleForm.control}
-                                    name="livePickSaleBagCount" // Renamed field
+                                    name="livePickSaleBagCount"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>כמות שקיות הפתעה / פריטים במבצע</FormLabel>
@@ -491,7 +491,7 @@ export default function MenuManagementPage() {
                                 />
                                 <FormField
                                     control={livePickSaleForm.control}
-                                    name="livePickSaleBagPrice" // Renamed field
+                                    name="livePickSaleBagPrice"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>מחיר לשקית הפתעה / פריט במבצע (₪)</FormLabel>
@@ -501,7 +501,7 @@ export default function MenuManagementPage() {
                                     )}
                                 />
                             </div>
-                             {livePickSaleForm.formState.errors.livePickSaleEnabled && ( // Renamed error field
+                             {livePickSaleForm.formState.errors.livePickSaleEnabled && (
                                 <p className="text-sm font-medium text-destructive">{livePickSaleForm.formState.errors.livePickSaleEnabled.message}</p>
                             )}
                         </div>
@@ -552,3 +552,4 @@ function AddonOptionsArray({ groupIndex, control }: { groupIndex: number, contro
     </div>
   );
 }
+

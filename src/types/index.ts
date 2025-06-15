@@ -6,14 +6,14 @@ export interface MenuItemOption {
 }
 
 export interface MenuItemAddonChoice {
-  id: string;
+  id?: string; // Optional for new items, generated on save
   name: string;
   price: number; 
   selectedByDefault?: boolean;
 }
 
 export interface MenuItemAddonGroup {
-  id: string;
+  id?: string; // Optional for new items, generated on save
   title: string; 
   type: 'radio' | 'checkbox'; 
   minSelection?: number; 
@@ -267,7 +267,7 @@ export interface WeeklyMenu {
   summaryNotes?: string; 
 }
 
-export interface LivePickSaleItem { // Renamed from SwiftSaleItem
+export interface LivePickSaleItem {
     id: string;
     restaurantId: string;
     restaurantName: string; 
@@ -299,3 +299,4 @@ export interface SecondHandItem {
   contactMethod?: 'whatsapp' | 'phone' | 'app-chat'; // Mock for now
   contactDetails?: string; // Phone number or WhatsApp link
 }
+
