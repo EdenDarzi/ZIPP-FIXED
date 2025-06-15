@@ -93,8 +93,8 @@ export default function RestaurantSettingsPage() {
 
   const handleUploadClick = (fieldName: 'logoUrl' | 'coverImageUrl') => {
     toast({
-        title: 'העלאת קובץ (ממתין לפיתוח)',
-        description: `העלאת קבצים עבור ${fieldName} תתאפשר בקרוב. בינתיים, אנא השתמש בכתובת URL ישירה לתמונה.`,
+        title: 'העלאת קובץ (דמו)',
+        description: `העלאת קבצים עבור ${fieldName === 'logoUrl' ? 'לוגו' : 'תמונת נושא'} תתאפשר בקרוב. בינתיים, אנא השתמש בכתובת URL ישירה לתמונה.`,
         variant: 'default',
     });
   };
@@ -178,7 +178,7 @@ export default function RestaurantSettingsPage() {
                     <FormControl>
                         <div className="flex items-center gap-2">
                            <Input placeholder="https://example.com/logo.png" {...field} />
-                           <Button type="button" variant="outline" onClick={() => handleUploadClick('logoUrl')}><UploadCloud className="mr-2 h-4 w-4" /> העלה</Button>
+                           <Button type="button" variant="outline" onClick={() => handleUploadClick('logoUrl')}><UploadCloud className="mr-2 h-4 w-4" /> העלאה</Button>
                         </div>
                     </FormControl>
                     <FormDescription>כתובת URL ישירה לתמונת הלוגו שלך (למשל PNG, JPG, SVG).</FormDescription>
@@ -196,7 +196,7 @@ export default function RestaurantSettingsPage() {
                     <FormControl>
                          <div className="flex items-center gap-2">
                             <Input placeholder="https://example.com/cover.png" {...field} />
-                            <Button type="button" variant="outline" onClick={() => handleUploadClick('coverImageUrl')}><UploadCloud className="mr-2 h-4 w-4" /> העלה</Button>
+                            <Button type="button" variant="outline" onClick={() => handleUploadClick('coverImageUrl')}><UploadCloud className="mr-2 h-4 w-4" /> העלאה</Button>
                         </div>
                     </FormControl>
                     <FormDescription>כתובת URL לתמונת באנר גדולה לעמוד החנות שלך (מומלץ 1200x300px).</FormDescription>

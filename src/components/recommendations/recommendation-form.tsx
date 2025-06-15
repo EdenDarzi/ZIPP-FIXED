@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -22,9 +23,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lightbulb, Loader2 } from 'lucide-react';
 
 const formSchema = z.object({
-  userId: z.string().min(1, { message: 'User ID is required.' }),
-  orderHistory: z.string().optional().describe('Comma-separated list of item names or IDs'),
-  userPreferences: z.string().min(10, { message: 'Preferences must be at least 10 characters.' }),
+  userId: z.string().min(1, { message: 'שדה מזהה משתמש הוא חובה.' }),
+  orderHistory: z.string().optional().describe('רשימת פריטים מופרדת בפסיקים'),
+  userPreferences: z.string().min(10, { message: 'העדפות חייבות להכיל לפחות 10 תווים.' }),
 });
 
 export default function RecommendationForm() {
@@ -35,8 +36,8 @@ export default function RecommendationForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      userId: 'mockUser123', // Default mock user ID
-      orderHistory: 'Margherita Pizza, Classic Burger', // Default mock history
+      userId: 'mockUser123', // מזהה משתמש דמו
+      orderHistory: 'פיצה מרגריטה, המבורגר קלאסי', // היסטוריית הזמנות דמו
       userPreferences: '',
     },
   });
@@ -54,16 +55,16 @@ export default function RecommendationForm() {
       setRecommendations(result.recommendedItems);
       if (result.recommendedItems.length === 0) {
         toast({
-            title: 'No specific recommendations found',
-            description: "We couldn't find specific recommendations based on your input. Try broadening your preferences!",
+            title: 'לא נמצאו המלצות ספציפיות',
+            description: "לא הצלחנו למצוא המלצות ספציפיות על סמך הקלט שלך. נסה להרחיב את העדפותיך!",
             variant: "default"
         });
       }
     } catch (error) {
       console.error('Error getting recommendations:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to get recommendations. Please try again.',
+        title: 'שגיאה',
+        description: 'נכשל בקבלת המלצות. אנא נסה שוב.',
         variant: 'destructive',
       });
     } finally {
@@ -80,9 +81,9 @@ export default function RecommendationForm() {
             name="userId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>User ID</FormLabel>
+                <FormLabel>מזהה משתמש</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your User ID" {...field} />
+                  <Input placeholder="הזן מזהה משתמש" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -93,12 +94,12 @@ export default function RecommendationForm() {
             name="orderHistory"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Order History (comma-separated)</FormLabel>
+                <FormLabel>היסטוריית הזמנות (מופרד בפסיקים)</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g., Pizza, Burger, Salad" {...field} />
+                  <Input placeholder="לדוגמה: פיצה, המבורגר, סלט" {...field} />
                 </FormControl>
                 <FormDescription>
-                  List items you&apos;ve ordered before.
+                  רשום פריטים שהזמנת בעבר.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -109,10 +110,10 @@ export default function RecommendationForm() {
             name="userPreferences"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Your Preferences</FormLabel>
+                <FormLabel>העדפות שלך</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="e.g., I like spicy food, Italian cuisine, and healthy options."
+                    placeholder="לדוגמה: אני אוהב/ת אוכל חריף, מטבח איטלקי, ואפשרויות בריאות."
                     className="min-h-[100px]"
                     {...field}
                   />
@@ -125,11 +126,11 @@ export default function RecommendationForm() {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Getting Recommendations...
+                מקבל המלצות...
               </>
             ) : (
               <>
-                <Lightbulb className="mr-2 h-4 w-4" /> Get Recommendations
+                <Lightbulb className="mr-2 h-4 w-4" /> קבל המלצות
               </>
             )}
           </Button>
@@ -139,7 +140,7 @@ export default function RecommendationForm() {
       {recommendations.length > 0 && (
         <Card className="mt-8 bg-accent/10">
           <CardHeader>
-            <CardTitle className="text-xl font-headline text-primary">Our Suggestions For You</CardTitle>
+            <CardTitle className="text-xl font-headline text-primary">ההצעות שלנו עבורך</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2 list-disc list-inside">

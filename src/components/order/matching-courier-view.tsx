@@ -35,8 +35,8 @@ export function MatchingCourierView({ order }: MatchingCourierViewProps) {
 
   const handleUpgrade = () => {
     toast({
-      title: "Upgrade Request Sent (Mock)",
-      description: "We'll prioritize finding you a faster courier for an additional fee.",
+      title: "בקשת שדרוג נשלחה (דמו)",
+      description: "אנו ניתן עדיפות למציאת שליח מהיר יותר עבורך, בתוספת תשלום.",
     });
     // In a real app, this would trigger a backend action
   };
@@ -48,29 +48,29 @@ export function MatchingCourierView({ order }: MatchingCourierViewProps) {
           {/* Placeholder for animation: couriers on a nice map */}
           <Zap className="h-16 w-16 text-primary animate-pulse" />
         </div>
-        <CardTitle className="text-3xl font-headline text-primary">Finding Your Courier!</CardTitle>
+        <CardTitle className="text-3xl font-headline text-primary">מאתרים לך שליח!</CardTitle>
         <CardDescription className="text-lg">
-          Couriers are competing for your order from {order.restaurantName}. This might take a moment.
+          שליחים מתחרים כעת על ההזמנה שלך מ{order.restaurantName}. התהליך עשוי לקחת רגע.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6 text-center">
         <Progress value={progress} className="w-full h-3" />
-        <p className="text-sm text-muted-foreground">Searching for the best match...</p>
+        <p className="text-sm text-muted-foreground">מחפשים את ההתאמה הטובה ביותר...</p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left p-4 border rounded-lg bg-muted/30">
           <div className="flex items-center">
             <Users className="h-6 w-6 mr-3 text-primary" />
             <div>
-              <p className="font-semibold">{offers} Offers Submitted</p>
-              <p className="text-xs text-muted-foreground">Couriers are bidding now!</p>
+              <p className="font-semibold">{offers} הצעות הוגשו</p>
+              <p className="text-xs text-muted-foreground">שליחים מגישים הצעות כעת!</p>
             </div>
           </div>
           {topOffer && (
             <div className="flex items-center">
               <Zap className="h-6 w-6 mr-3 text-accent" />
               <div>
-                <p className="font-semibold">Top Offer: ~₪{topOffer.price}, {topOffer.eta} min</p>
-                <p className="text-xs text-muted-foreground">Best current bid (estimated).</p>
+                <p className="font-semibold">הצעה מובילה: ~₪{topOffer.price}, {topOffer.eta} דקות</p>
+                <p className="text-xs text-muted-foreground">ההצעה הטובה ביותר כרגע (משוער).</p>
               </div>
             </div>
           )}
@@ -79,21 +79,21 @@ export function MatchingCourierView({ order }: MatchingCourierViewProps) {
         {order.deliveryPreference === 'arena' && (
           <Card className="bg-primary/5 border-primary/20 p-4 text-left">
             <CardHeader className="p-0 pb-2">
-                <CardTitle className="text-lg text-primary flex items-center"><HelpCircle className="h-5 w-5 mr-2"/> Delivery Arena Tip</CardTitle>
+                <CardTitle className="text-lg text-primary flex items-center"><HelpCircle className="h-5 w-5 mr-2"/> טיפ לזירת המשלוחים</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
                 <p className="text-sm text-primary/80 mb-3">
-                    Want to speed things up? You can upgrade to a prioritized faster delivery.
+                    רוצה לזרז את התהליך? ניתן לשדרג למשלוח מהיר יותר בעדיפות.
                 </p>
                 <Button onClick={handleUpgrade} variant="outline" className="w-full sm:w-auto border-primary text-primary hover:bg-primary/10">
-                    Upgrade to Faster Delivery (e.g., +₪4)
+                    שדרג למשלוח מהיר יותר (לדוגמה: +₪4)
                 </Button>
             </CardContent>
           </Card>
         )}
 
         <p className="text-xs text-muted-foreground pt-4">
-          Your order ID: {order.id}. We appreciate your patience!
+          מזהה ההזמנה שלך: {order.id}. אנו מעריכים את סבלנותך!
         </p>
       </CardContent>
     </Card>

@@ -16,6 +16,20 @@ import { ArrowLeft, AlertTriangle, Info, Clock } from 'lucide-react'; // Added C
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
+const getOrderStatusHebrew = (status: OrderStatus): string => {
+    const map: Record<OrderStatus, string> = {
+        PENDING_PAYMENT: 'ממתין לתשלום',
+        SCHEDULED: 'מתוכנן',
+        MATCHING_COURIER: 'מחפש שליח',
+        COURIER_ASSIGNED: 'שליח שובץ',
+        PREPARING_AT_RESTAURANT: 'בהכנה במסעדה',
+        AWAITING_PICKUP: 'ממתין לאיסוף',
+        OUT_FOR_DELIVERY: 'בדרך ללקוח',
+        DELIVERED: 'נמסר',
+        CANCELLED: 'בוטל'
+    };
+    return map[status] || status.replace(/_/g, ' ').toLowerCase();
+}
 
 // Mock courier for CourierAssignedView - choose one from mock data
 const getAssignedCourierDetails = (courierId: string): Order['assignedCourier'] => {
@@ -285,7 +299,7 @@ export default function OrderTrackingPage() {
                     <li key={index} className="flex items-start space-x-3 rtl:space-x-reverse">
                         <Info className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                         <div>
-                            <p className="font-medium capitalize">{event.status.replace(/_/g, ' ').toLowerCase()}</p>
+                            <p className="font-medium capitalize">{getOrderStatusHebrew(event.status)}</p>
                             <p className="text-xs text-muted-foreground">{new Date(event.timestamp).toLocaleString('he-IL')}</p>
                             {event.notes && <p className="text-sm text-muted-foreground italic">{event.notes}</p>}
                         </div>

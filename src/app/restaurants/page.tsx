@@ -20,7 +20,7 @@ export default function RestaurantsPage() {
   const [ratingFilter, setRatingFilter] = useState('all');
   const [distanceFilter, setDistanceFilter] = useState('all');
 
-  const cuisineTypes = ['All', ...Array.from(new Set(restaurants.map(r => r.cuisineType)))];
+  const cuisineTypes = ['הכל', ...Array.from(new Set(restaurants.map(r => r.cuisineType)))];
 
   // Basic client-side filtering example (can be expanded or moved to server)
   const filteredRestaurants = restaurants.filter(restaurant => {
@@ -34,8 +34,8 @@ export default function RestaurantsPage() {
 
   const handleMoreFiltersClick = () => {
     toast({
-        title: "More Filters Coming Soon!",
-        description: "Advanced filtering options will be available in a future update.",
+        title: "פילטרים נוספים בקרוב!",
+        description: "אפשרויות סינון מתקדמות יתווספו בעדכון עתידי.",
     });
   };
 
@@ -43,15 +43,15 @@ export default function RestaurantsPage() {
   return (
     <div className="space-y-8">
       <header className="space-y-4">
-        <h1 className="text-4xl font-bold font-headline text-primary">Explore Restaurants</h1>
+        <h1 className="text-4xl font-bold font-headline text-primary">גלה מסעדות ועסקים</h1>
         <p className="text-lg text-muted-foreground">
-          Discover a variety of cuisines and find your next favorite meal.
+          מצא מגוון רחב של מטבחים ושירותים ומצא את הארוחה או השירות הבא האהוב עליך.
         </p>
         <div className="relative max-w-xl">
            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
            <Input
             type="search"
-            placeholder="Search restaurants or cuisines..."
+            placeholder="חפש מסעדות, עסקים או מטבחים..."
             className="pl-10 pr-4 py-3 text-base shadow-sm focus:ring-primary focus:border-primary"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -63,50 +63,50 @@ export default function RestaurantsPage() {
       <div className="p-4 bg-muted/50 rounded-lg shadow-sm">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
             <div className="space-y-1">
-                <label htmlFor="cuisineFilter" className="text-sm font-medium text-muted-foreground">Cuisine</label>
+                <label htmlFor="cuisineFilter" className="text-sm font-medium text-muted-foreground">סוג מטבח/עסק</label>
                  <Select value={cuisineFilter} onValueChange={setCuisineFilter}>
                     <SelectTrigger id="cuisineFilter" className="w-full bg-background shadow-sm">
-                        <SelectValue placeholder="All Cuisines" />
+                        <SelectValue placeholder="כל הסוגים" />
                     </SelectTrigger>
                     <SelectContent>
                         {cuisineTypes.map(cuisine => (
-                            <SelectItem key={cuisine} value={cuisine.toLowerCase() === 'all' ? 'all' : cuisine}>{cuisine}</SelectItem>
+                            <SelectItem key={cuisine} value={cuisine.toLowerCase() === 'הכל' ? 'all' : cuisine}>{cuisine}</SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
             </div>
              <div className="space-y-1">
-                <label htmlFor="ratingFilter" className="text-sm font-medium text-muted-foreground">Min. Rating</label>
+                <label htmlFor="ratingFilter" className="text-sm font-medium text-muted-foreground">דירוג מינימלי</label>
                  <Select value={ratingFilter} onValueChange={setRatingFilter}>
                     <SelectTrigger id="ratingFilter" className="w-full bg-background shadow-sm">
                         <Star className="inline h-4 w-4 mr-1 text-yellow-400 fill-yellow-400" />
-                        <SelectValue placeholder="Any Rating" />
+                        <SelectValue placeholder="כל דירוג" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">Any Rating</SelectItem>
-                        <SelectItem value="4.5">4.5+ Stars</SelectItem>
-                        <SelectItem value="4">4.0+ Stars</SelectItem>
-                        <SelectItem value="3.5">3.5+ Stars</SelectItem>
+                        <SelectItem value="all">כל דירוג</SelectItem>
+                        <SelectItem value="4.5">4.5+ כוכבים</SelectItem>
+                        <SelectItem value="4">4.0+ כוכבים</SelectItem>
+                        <SelectItem value="3.5">3.5+ כוכבים</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
              <div className="space-y-1">
-                <label htmlFor="distanceFilter" className="text-sm font-medium text-muted-foreground">Distance</label>
+                <label htmlFor="distanceFilter" className="text-sm font-medium text-muted-foreground">מרחק</label>
                  <Select value={distanceFilter} onValueChange={setDistanceFilter}>
                     <SelectTrigger id="distanceFilter" className="w-full bg-background shadow-sm">
                          <MapPinIcon className="inline h-4 w-4 mr-1 text-primary" />
-                        <SelectValue placeholder="Any Distance" />
+                        <SelectValue placeholder="כל מרחק (בקרוב)" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">Any Distance (soon)</SelectItem>
-                        <SelectItem value="1km">&lt; 1 km (soon)</SelectItem>
-                        <SelectItem value="3km">&lt; 3 km (soon)</SelectItem>
-                        <SelectItem value="5km">&lt; 5 km (soon)</SelectItem>
+                        <SelectItem value="all">כל מרחק (בקרוב)</SelectItem>
+                        <SelectItem value="1km" disabled>&lt; 1 ק"מ (בקרוב)</SelectItem>
+                        <SelectItem value="3km" disabled>&lt; 3 ק"מ (בקרוב)</SelectItem>
+                        <SelectItem value="5km" disabled>&lt; 5 ק"מ (בקרוב)</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
             <Button variant="outline" className="w-full bg-background shadow-sm" onClick={handleMoreFiltersClick}>
-                <Filter className="mr-2 h-4 w-4" /> More Filters
+                <Filter className="mr-2 h-4 w-4" /> עוד פילטרים
             </Button>
         </div>
       </div>
@@ -120,12 +120,10 @@ export default function RestaurantsPage() {
       ) : (
         <div className="text-center py-12">
           <Search className="h-16 w-16 mx-auto text-muted-foreground mb-4"/>
-          <p className="text-xl text-muted-foreground">No restaurants match your current search or filters.</p>
-          <p className="text-sm text-muted-foreground mt-1">Try adjusting your search terms or filters.</p>
+          <p className="text-xl text-muted-foreground">לא נמצאו מסעדות או עסקים התואמים לחיפוש או לפילטרים שלך.</p>
+          <p className="text-sm text-muted-foreground mt-1">נסה לשנות את מונחי החיפוש או הפילטרים.</p>
         </div>
       )}
     </div>
   );
 }
-
-    

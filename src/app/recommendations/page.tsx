@@ -1,3 +1,4 @@
+
 import RecommendationForm from '@/components/recommendations/recommendation-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Brain } from 'lucide-react';
@@ -8,9 +9,9 @@ export default function RecommendationsPage() {
       <Card className="shadow-xl">
         <CardHeader className="text-center">
           <Brain className="h-12 w-12 text-primary mx-auto mb-3" />
-          <CardTitle className="text-3xl font-headline text-primary">AI Item Recommendations</CardTitle>
+          <CardTitle className="text-3xl font-headline text-primary">המלצות AI חכמות</CardTitle>
           <CardDescription>
-            Get personalized item suggestions based on your preferences and order history.
+            קבל הצעות מותאמות אישית לפריטים ושירותים על בסיס ההעדפות והיסטוריית ההזמנות שלך.
           </CardDescription>
         </CardHeader>
         <CardContent>

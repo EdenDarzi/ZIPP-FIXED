@@ -42,18 +42,18 @@ export default function ItemCard({ item, restaurantId }: ItemCardProps) {
         </CardHeader>
       </Link>
       <CardContent className="flex-grow pt-0">
-        <p className="text-lg font-semibold text-primary">${item.price.toFixed(2)}</p>
+        <p className="text-lg font-semibold text-primary">₪{item.price.toFixed(2)}</p>
       </CardContent>
       <CardFooter className="flex flex-col sm:flex-row gap-2">
         <Button variant="outline" asChild className="w-full sm:w-auto flex-1">
           <Link href={`/restaurants/${restaurantId}/items/${item.id}`}>
             <span className="flex items-center justify-center w-full">
-              <Eye className="mr-2 h-4 w-4" /> View
+              <Eye className="mr-2 h-4 w-4" /> הצג
             </span>
           </Link>
         </Button>
         <Button onClick={handleAddToCart} className="w-full sm:w-auto flex-1 bg-accent hover:bg-accent/90 text-accent-foreground">
-          <PlusCircle className="mr-2 h-4 w-4" /> Add
+          <PlusCircle className="mr-2 h-4 w-4" /> הוסף
         </Button>
       </CardFooter>
     </Card>
