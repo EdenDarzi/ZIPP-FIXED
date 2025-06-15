@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, Camera, Languages, Send, HeartPulse, TrendingUp, Award, MapIcon, Briefcase, Gem, Users } from 'lucide-react'; 
+import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, TrendingUp, Languages, Send, HeartPulse, MapIcon, Briefcase, Gem, Users } from 'lucide-react'; 
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
 import { Badge } from '@/components/ui/badge';
@@ -28,7 +28,7 @@ const Header = () => {
     <header className="bg-card border-b border-border shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <Link href="/" className="text-2xl font-bold text-primary font-headline">
-          SwiftServe
+          LivePick
         </Link>
         <nav className="flex items-center space-x-1 sm:space-x-2 flex-wrap justify-end">
           <Button variant="ghost" asChild size="sm" className="hidden md:inline-flex">

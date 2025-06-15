@@ -12,7 +12,7 @@ const mockRecentOrders = [
   { id: '2', itemName: 'סושי קומבינציה', restaurantName: 'סושי בר', timeAgo: 'לפני 2 דקות', locationHint: 'שדרות רוטשילד', type: 'order', dataAiHint: 'sushi combination map' },
   { id: '3', event: "🔥 'סנדוויץ׳ ראמן לוהט' נצפה בטיקטוק עכשיו באזור המרכז!", user: 'FoodieTrendz', timeAgo: 'לפני 3 דקות', type: 'trend_share', dataAiHint: 'ramen sandwich trend' },
   { id: '4', itemName: 'המבורגר גורמה', restaurantName: 'בורגר קינג', timeAgo: 'לפני 5 דקות', locationHint: 'מרכז העיר', type: 'order', dataAiHint: 'burger gourmet map' },
-  { id: '5', event: "📈 'מאצ׳ה לאטה עם פיסטוק' זוכה לפופולריות! 5 משתמשים חיפשו בדקות האחרונות.", user: 'SwiftServe AI', timeAgo: 'לפני 6 דקות', type: 'trend_search', dataAiHint: 'matcha latte pistachio' },
+  { id: '5', event: "📈 'מאצ׳ה לאטה עם פיסטוק' זוכה לפופולריות! 5 משתמשים חיפשו בדקות האחרונות.", user: 'LivePick AI', timeAgo: 'לפני 6 דקות', type: 'trend_search', dataAiHint: 'matcha latte pistachio' },
   { id: '6', itemName: 'סלט קיסר גדול', restaurantName: 'בית קפה השכונתי', timeAgo: 'לפני 8 דקות', locationHint: 'פארק הירקון', type: 'order', dataAiHint: 'salad caesar map' },
 ];
 

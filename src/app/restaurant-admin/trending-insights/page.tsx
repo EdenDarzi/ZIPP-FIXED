@@ -18,7 +18,7 @@ const mockTrendingInsights: IdentifyDishOutput[] = [
     trendSource: "TikTok & Instagram",
     generalSuggestion: "משתמשים אוהבים את משיכת הגבינה הדרמטית! פריטים דומים ניתן למצוא בחיפוש 'נקניקיות גורמה' או 'חטיפי גבינה מטוגנים'.",
     businessOpportunity: {
-      suggestedItemName: "הקורנדוג הגבינתי האולטימטיבי של SwiftServe",
+      suggestedItemName: "הקורנדוג הגבינתי האולטימטיבי של LivePick",
       suggestedPriceRange: "₪28-₪35",
       suggestedDescription: "קורנדוג פריך מצופה פנקו עם ליבת מוצרלה נמסה, מושלם למשיכת גבינה מספקת. מוגש עם רוטב לבחירה.",
       suggestedTags: ["חדש", "להיט טיקטוק", "גבינתי", "אוכל רחוב"],
@@ -54,7 +54,7 @@ const mockTrendingInsights: IdentifyDishOutput[] = [
   {
     identifiedDishName: "טוסט אבוקדו (ארטיזנלי)",
     isTrend: false, 
-    generalSuggestion: "מועדף תמידי. SwiftServe מציעה בתי קפה רבים עם אפשרויות טוסט אבוקדו מעולות. משתמשים יכולים לסנן לפי 'ארוחת בוקר' או 'בית קפה'.",
+    generalSuggestion: "מועדף תמידי. LivePick מציעה בתי קפה רבים עם אפשרויות טוסט אבוקדו מעולות. משתמשים יכולים לסנן לפי 'ארוחת בוקר' או 'בית קפה'.",
   }
 ];
 

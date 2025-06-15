@@ -113,7 +113,7 @@ export default function RestaurantSettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle>מידע על העסק</CardTitle>
-              <CardDescription>פרטים בסיסיים על העסק שלך. SwiftServe AI יכול לסייע בהצעת פרטים התחלתיים (בקרוב!).</CardDescription>
+              <CardDescription>פרטים בסיסיים על העסק שלך. LivePick AI יכול לסייע בהצעת פרטים התחלתיים (בקרוב!).</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <FormField
@@ -157,7 +157,7 @@ export default function RestaurantSettingsPage() {
               />
                <div className="text-xs text-muted-foreground p-2 bg-blue-50 border border-blue-200 rounded-md flex items-start">
                 <Info className="h-4 w-4 mr-2 mt-0.5 text-blue-600 flex-shrink-0" />
-                <span>עבור עסקים חדשים, במיוחד עסקים קטנים (מאפיות, פרחים, חנויות פופ-אפ), SwiftServe AI יכול לעזור לבנות תפריט/קטלוג ראשוני, עיצוב בסיסי והצעות מחיר - תוך דקות (בקרוב!).</span>
+                <span>עבור עסקים חדשים, במיוחד עסקים קטנים (מאפיות, פרחים, חנויות פופ-אפ), LivePick AI יכול לעזור לבנות תפריט/קטלוג ראשוני, עיצוב בסיסי והצעות מחיר - תוך דקות (בקרוב!).</span>
               </div>
             </CardContent>
           </Card>

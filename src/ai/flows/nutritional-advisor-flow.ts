@@ -44,7 +44,7 @@ const nutritionalAdvisorPrompt = ai.definePrompt({
   name: 'nutritionalAdvisorPrompt',
   input: { schema: NutritionalAdvisorInputSchema },
   output: { schema: NutritionalAdvisorOutputSchema },
-  prompt: `You are an AI Nutritional Advisor for SwiftServe, a food delivery app.
+  prompt: `You are an AI Nutritional Advisor for LivePick, a food delivery app.
 Your goal is to help users achieve their nutritional objectives by recommending suitable dishes.
 User ID: {{{userId}}}
 Nutritional Goal: {{{goal}}}
@@ -102,4 +102,3 @@ const nutritionalAdvisorFlow = ai.defineFlow(
     return output;
   }
 );
-

@@ -10,7 +10,7 @@ export default function RegisterPage() {
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-headline text-primary">צור חשבון</CardTitle>
-          <CardDescription>הצטרף ל-SwiftServe והתחל להזמין עוד היום!</CardDescription>
+          <CardDescription>הצטרף ל-LivePick והתחל להזמין עוד היום!</CardDescription>
         </CardHeader>
         <CardContent>
           <RegisterForm />

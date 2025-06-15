@@ -96,7 +96,7 @@ export default function NutritionalAdvisorPage() {
       const result = await getNutritionalAdvice(input);
       setAdvisorResponse(result);
       if (!result.recommendations || result.recommendations.length === 0) {
-         toast({ title: "לא נמצאו המלצות ספציפיות", description: "נסה לשנות את ההעדפות או המטרה שלך."});
+         toast({ title: "לא נמצאו המלצות ספציфиות", description: "נסה לשנות את ההעדפות או המטרה שלך."});
       }
     } catch (error) {
       console.error('Error getting nutritional advice:', error);
@@ -170,7 +170,7 @@ export default function NutritionalAdvisorPage() {
           <HeartPulse className="h-12 w-12 text-primary mx-auto mb-3" />
           <CardTitle className="text-3xl font-headline text-primary">יועץ התזונה והתפריטים החכם שלך</CardTitle>
           <PageCardDescription>
-            קבל המלצות מותאמות אישית למנות, תכנן תפריט שבועי ואפילו הגדר סל קבוע שיעזרו לך להשיג את מטרות התזונה שלך!
+            קבל המלצות מותאמות אישית למנות, תכנן תפריט שבועי ואפילו הגדר סל קבוע שיעזרו לך להשיג את מטרות התזונה שלך עם LivePick!
           </PageCardDescription>
         </CardHeader>
         <CardContent>

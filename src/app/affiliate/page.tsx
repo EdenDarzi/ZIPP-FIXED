@@ -30,14 +30,14 @@ export default function AffiliateProgramPage() {
       <Card className="shadow-xl bg-gradient-to-br from-green-500 via-teal-500 to-blue-500 text-white">
         <CardHeader className="text-center items-center pt-8">
           <Users className="h-16 w-16 mb-4" />
-          <CardTitle className="text-4xl font-headline">תוכנית השותפים של SwiftServe</CardTitle>
+          <CardTitle className="text-4xl font-headline">תוכנית השותפים של LivePick</CardTitle>
           <CardDescription className="text-xl text-green-100 mt-2">
-            הפכו לממליצים, שתפו את האהבה שלכם ל-SwiftServe, והרוויחו פרסים!
+            הפכו לממליצים, שתפו את האהבה שלכם ל-LivePick, והרוויחו פרסים!
           </CardDescription>
         </CardHeader>
         <CardContent className="text-center px-6 py-8">
           <p className="text-lg mb-8 text-green-50">
-            אוהבים את SwiftServe? למה לא להרוויח מזה? תוכנית השותפים שלנו מאפשרת לכם להמליץ על עסקים ומוצרים,
+            אוהבים את LivePick? למה לא להרוויח מזה? תוכנית השותפים שלנו מאפשרת לכם להמליץ על עסקים ומוצרים,
             ולקבל תגמול על כל לקוח חדש או הזמנה שמגיעה דרככם.
           </p>
         </CardContent>
@@ -67,7 +67,7 @@ export default function AffiliateProgramPage() {
           <CardTitle className="text-2xl font-semibold text-accent">איך זה עובד?</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-muted-foreground">
-            <p>1. <Share2 className="inline h-5 w-5 text-primary"/> <strong>שתפו:</strong> שתפו קישורים למוצרים, עסקים או את SwiftServe עצמה.</p>
+            <p>1. <Share2 className="inline h-5 w-5 text-primary"/> <strong>שתפו:</strong> שתפו קישורים למוצרים, עסקים או את LivePick עצמה.</p>
             <p>2. <Users className="inline h-5 w-5 text-green-500"/> <strong>הפנו:</strong> חברים, עוקבים או כל אחד אחר שמחפש פתרון משלוחים מעולה.</p>
             <p>3. <DollarSign className="inline h-5 w-5 text-accent"/> <strong>הרוויחו:</strong> קבלו עמלות, נקודות או פרסים על כל הצלחה!</p>
         </CardContent>

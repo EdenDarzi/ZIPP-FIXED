@@ -37,31 +37,31 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const storedCart = localStorage.getItem('swiftServeCart');
+    const storedCart = localStorage.getItem('livePickCart');
     if (storedCart) {
       setCart(JSON.parse(storedCart));
     }
-    const storedPreference = localStorage.getItem('swiftServeDeliveryPreference') as DeliveryPreference | null;
+    const storedPreference = localStorage.getItem('livePickDeliveryPreference') as DeliveryPreference | null;
     if (storedPreference) {
       setDeliveryPreferenceState(storedPreference);
     }
-    const storedScheduledTime = localStorage.getItem('swiftServeScheduledTime');
+    const storedScheduledTime = localStorage.getItem('livePickScheduledTime');
     if (storedScheduledTime) {
       setScheduledDeliveryTimeState(storedScheduledTime);
     }
   }, []);
 
   useEffect(() => {
-    if (cart.length > 0 || localStorage.getItem('swiftServeCart')) {
-      localStorage.setItem('swiftServeCart', JSON.stringify(cart));
+    if (cart.length > 0 || localStorage.getItem('livePickCart')) {
+      localStorage.setItem('livePickCart', JSON.stringify(cart));
     } else if (cart.length === 0) {
-      localStorage.removeItem('swiftServeCart');
+      localStorage.removeItem('livePickCart');
     }
-    localStorage.setItem('swiftServeDeliveryPreference', deliveryPreference);
+    localStorage.setItem('livePickDeliveryPreference', deliveryPreference);
     if (scheduledDeliveryTime) {
-      localStorage.setItem('swiftServeScheduledTime', scheduledDeliveryTime);
+      localStorage.setItem('livePickScheduledTime', scheduledDeliveryTime);
     } else {
-      localStorage.removeItem('swiftServeScheduledTime');
+      localStorage.removeItem('livePickScheduledTime');
     }
   }, [cart, deliveryPreference, scheduledDeliveryTime]);
 
@@ -114,8 +114,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const clearCart = () => {
     setCart([]);
     setScheduledDeliveryTimeState(null); // Also clear scheduled time when cart is cleared
-    localStorage.removeItem('swiftServeCart');
-    localStorage.removeItem('swiftServeScheduledTime');
+    localStorage.removeItem('livePickCart');
+    localStorage.removeItem('livePickScheduledTime');
     toast({
       title: "הסל נוקה",
       description: "הסל שלך רוקן.",

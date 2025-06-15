@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Utensils, ShoppingCart, Brain, ArrowLeft, MapPin, Search, Sparkles, Heart, History, Award, Flame, Gift, Gem, UsersIcon, MapIcon as FoodRadarIcon, ShoppingBag as SwiftSaleIcon, TrendingUp as LiveTrendIcon, MessageCircle, ExternalLink, Info, ShoppingBasket, Gamepad2, Library, ListChecks } from "lucide-react"; // Added Gamepad2, Library, ListChecks
+import { Utensils, ShoppingCart, Brain, ArrowLeft, MapPin, Search, Sparkles, Heart, History, Award, Flame, Gift, Gem, UsersIcon, MapIcon as FoodRadarIcon, ShoppingBag as LivePickSaleIcon, TrendingUp as LiveTrendIcon, MessageCircle, ExternalLink, Info, ShoppingBasket, Gamepad2, Library, ListChecks } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import RestaurantCard from "@/components/restaurants/restaurant-card";
@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import { getCulinarySuggestion, CulinaryAssistantInput } from "@/ai/flows/culinary-assistant-flow"; 
 import SurpriseFeatureCard from "@/components/surprise/surprise-feature-card";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast"; // Added useToast
+import { useToast } from "@/hooks/use-toast";
 
 export default function HomePage() {
   const allRestaurants: Restaurant[] = mockRestaurants;
@@ -24,12 +24,12 @@ export default function HomePage() {
 
   const [culinarySuggestion, setCulinarySuggestion] = useState<string | null>(null);
   const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(true);
-  const [showSwiftSaleBanner, setShowSwiftSaleBanner] = useState(false); 
-  const { toast } = useToast(); // Added toast
+  const [showLivePickSaleBanner, setShowLivePickSaleBanner] = useState(false); 
+  const { toast } = useToast();
 
   const handleSpinWheelClick = () => {
     toast({
-        title: "גלגל ההפתעות של SwiftServe! 🎡",
+        title: "גלגל ההפתעות של LivePick! 🎡",
         description: "זכית בהנחה של 10% על ההזמנה הבאה! (קוד: SPINWIN10 - משחק יתווסף בקרוב).",
         duration: 5000,
     });
@@ -53,7 +53,7 @@ export default function HomePage() {
 
     const currentHour = new Date().getHours();
     if (currentHour >= 19 && currentHour <= 23) { 
-        setShowSwiftSaleBanner(true);
+        setShowLivePickSaleBanner(true);
     }
 
   }, []);
@@ -63,7 +63,7 @@ export default function HomePage() {
       <section className="text-center py-16 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl shadow-xl overflow-hidden">
         <div className="animate-fadeInUp">
           <h1 className="text-5xl md:text-6xl font-bold font-headline text-primary mb-6" style={{textShadow: '2px 2px 4px hsl(var(--foreground) / 0.1)'}}>
-            ברוכים הבאים ל-SwiftServe
+            ברוכים הבאים ל-LivePick
           </h1>
           <p className="text-xl text-foreground/80 max-w-2xl mx-auto mb-10">
             הפתרון האחד שלכם למשלוח מהיר ואמין מהעסקים המקומיים האהובים עליכם, עם טוויסט חכם וקהילתי!
@@ -100,14 +100,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      {showSwiftSaleBanner && (
+      {showLivePickSaleBanner && (
         <section className="animate-fadeInUp animation-delay-500">
             <Card className="bg-red-500 text-white shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
-                <Link href="/swiftsale">
+                <Link href="/livepick-sale">
                     <CardContent className="p-6 flex items-center justify-center text-center">
-                        <SwiftSaleIcon className="h-10 w-10 mr-4 animate-bounce" />
+                        <LivePickSaleIcon className="h-10 w-10 mr-4 animate-bounce" />
                         <div>
-                            <CardTitle className="text-2xl font-headline">🔥 SwiftSale פעיל!</CardTitle>
+                            <CardTitle className="text-2xl font-headline">🔥 מבצעי LivePick פעילים!</CardTitle>
                             <CardDescription className="text-red-100">שקיות הפתעה מסוף היום זמינות עכשיו במחירים מיוחדים! לחץ לפרטים.</CardDescription>
                         </div>
                     </CardContent>
@@ -150,7 +150,7 @@ export default function HomePage() {
         <Link href="/vip" passHref>
            <Card className="hover:shadow-lg hover:border-primary/50 transition-all cursor-pointer h-full flex flex-col items-center justify-center text-center p-4">
             <Gem className="h-10 w-10 text-purple-500 mb-2" />
-            <CardTitle className="text-lg font-semibold">SwiftServe VIP</CardTitle>
+            <CardTitle className="text-lg font-semibold">LivePick VIP</CardTitle>
             <CardDescription className="text-xs">הטבות פרימיום בלעדיות</CardDescription>
           </Card>
         </Link>
@@ -172,7 +172,7 @@ export default function HomePage() {
             <CardDescription className="text-orange-700/80">מבצעים בלעדיים בשיתוף עם מותגים מובילים, בהשראת הטרנדים החמים ביותר!</CardDescription>
           </CardHeader>
           <CardContent className="text-center text-orange-700/90">
-            <p>"קבל 15% הנחה על קולקציית הקיץ של 'FashionForward' בהשראת טרנד ה-Y2K שזוהה לאחרונה!" (בקרוב)</p>
+            <p>"קבל 15% הנחה על קולקציית הקיץ של 'FashionForward' בהשראת טרנד ה-Y2K שזוהה לאחרונה ב-LivePick!" (בקרוב)</p>
             <Button variant="link" size="sm" className="text-orange-600 hover:text-orange-700 p-0 h-auto mt-1" onClick={() => toast({title: "בקרוב!", description: "שיתופי פעולה עם מותגים יתווספו כאן."})}>
                 צפה בכל שיתופי הפעולה <ExternalLink className="h-3 w-3 mr-1"/>
             </Button>
@@ -184,7 +184,7 @@ export default function HomePage() {
           <Card className="bg-teal-500/10 border-teal-500/30">
             <CardHeader className="items-center text-center">
               <Gamepad2 className="h-10 w-10 text-teal-600 mb-2" />
-              <CardTitle className="text-xl font-headline text-teal-700">🎡 גלגל ההפתעות של SwiftServe!</CardTitle>
+              <CardTitle className="text-xl font-headline text-teal-700">🎡 גלגל ההפתעות של LivePick!</CardTitle>
               <CardDescription className="text-teal-600/80">מרגיש בר מזל? סובב את הגלגל וזכה בהנחות, קינוחים, משלוחים חינם ועוד הפתעות!</CardDescription>
             </CardHeader>
             <CardContent className="text-center">
@@ -332,7 +332,7 @@ export default function HomePage() {
         />
         <div className="absolute inset-0 bg-gradient-to-l from-black/60 via-black/30 to-transparent flex items-center">
           <h3 className="text-3xl md:text-5xl font-bold text-white font-headline p-8 md:p-12 max-w-lg leading-tight">
-            מהיר, טרי, במשלוח. <br/> חוו את <span className="text-accent">זירת השליחים</span> החכמה.
+            מהיר, טרי, במשלוח. <br/> חוו את <span className="text-accent">זירת השליחים</span> החכמה של LivePick.
           </h3>
         </div>
       </section>

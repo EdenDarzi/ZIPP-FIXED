@@ -67,22 +67,22 @@ const menuItemFormSchema = z.object({
 
 type MenuItemFormValues = z.infer<typeof menuItemFormSchema>;
 
-const swiftSaleFormSchema = z.object({
-    swiftSaleEnabled: z.boolean().default(false),
-    swiftSaleStartTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "פורמט זמן לא תקין (HH:MM)").optional(),
-    swiftSaleBagCount: z.preprocess(val => Number(val), z.number().int().min(0, "מספר שקיות חייב להיות חיובי או אפס").optional()),
-    swiftSaleBagPrice: z.preprocess(val => Number(val), z.number().positive("מחיר שקית חייב להיות חיובי").optional()),
+const livePickSaleFormSchema = z.object({
+    livePickSaleEnabled: z.boolean().default(false),
+    livePickSaleStartTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "פורמט זמן לא תקין (HH:MM)").optional(),
+    livePickSaleBagCount: z.preprocess(val => Number(val), z.number().int().min(0, "מספר שקיות חייב להיות חיובי או אפס").optional()),
+    livePickSaleBagPrice: z.preprocess(val => Number(val), z.number().positive("מחיר שקית חייב להיות חיובי").optional()),
 }).refine(data => {
-    if (data.swiftSaleEnabled) {
-        return !!data.swiftSaleStartTime && data.swiftSaleBagCount !== undefined && data.swiftSaleBagPrice !== undefined;
+    if (data.livePickSaleEnabled) {
+        return !!data.livePickSaleStartTime && data.livePickSaleBagCount !== undefined && data.livePickSaleBagPrice !== undefined;
     }
     return true;
 }, {
-    message: "אם SwiftSale מופעל, יש למלא שעת התחלה, כמות שקיות ומחיר.",
-    path: ['swiftSaleEnabled'],
+    message: "אם LivePick Sale מופעל, יש למלא שעת התחלה, כמות שקיות ומחיר.",
+    path: ['livePickSaleEnabled'],
 });
 
-type SwiftSaleFormValues = z.infer<typeof swiftSaleFormSchema>;
+type LivePickSaleFormValues = z.infer<typeof livePickSaleFormSchema>;
 
 const managedRestaurantId = 'restaurant1'; 
 const initialRestaurant = mockRestaurants.find(r => r.id === managedRestaurantId);
@@ -102,10 +102,10 @@ export default function MenuManagementPage() {
     },
   });
 
-  const swiftSaleForm = useForm<SwiftSaleFormValues>({
-    resolver: zodResolver(swiftSaleFormSchema),
+  const livePickSaleForm = useForm<LivePickSaleFormValues>({ // Renamed form
+    resolver: zodResolver(livePickSaleFormSchema),
     defaultValues: {
-        swiftSaleEnabled: false, swiftSaleStartTime: "20:00", swiftSaleBagCount: 5, swiftSaleBagPrice: 15,
+        livePickSaleEnabled: false, livePickSaleStartTime: "20:00", livePickSaleBagCount: 5, livePickSaleBagPrice: 15,
     }
   });
 
@@ -180,9 +180,9 @@ export default function MenuManagementPage() {
     itemForm.reset(); 
   }
 
-  function onSwiftSaleSubmit(values: SwiftSaleFormValues) {
-    console.log("SwiftSale Settings Updated (Demo):", values);
-    toast({ title: "הגדרות SwiftSale עודכנו (דמו)", description: `SwiftSale ${values.swiftSaleEnabled ? 'מופעל' : 'כבוי'}.` });
+  function onLivePickSaleSubmit(values: LivePickSaleFormValues) { // Renamed function
+    console.log("LivePick Sale Settings Updated (Demo):", values);
+    toast({ title: "הגדרות LivePick Sale עודכנו (דמו)", description: `LivePick Sale ${values.livePickSaleEnabled ? 'מופעל' : 'כבוי'}.` });
   }
 
   if (!restaurant) {
@@ -443,31 +443,31 @@ export default function MenuManagementPage() {
       <Card>
         <CardHeader>
             <CardTitle className="text-xl font-headline flex items-center">
-                <ShoppingBag className="mr-2 h-5 w-5 text-red-500" /> ניהול SwiftSale - שקיות סוף יום
+                <ShoppingBag className="mr-2 h-5 w-5 text-red-500" /> ניהול LivePick Sale - שקיות סוף יום
             </CardTitle>
             <CardDescription>הגדר את שקיות ההפתעה המוזלות לסוף היום עבור העסק שלך. מתאים גם למבצעי Flash Sales!</CardDescription>
         </CardHeader>
         <CardContent>
-            <Form {...swiftSaleForm}>
-                <form onSubmit={swiftSaleForm.handleSubmit(onSwiftSaleSubmit)} className="space-y-6">
+            <Form {...livePickSaleForm}> {/* Renamed form */}
+                <form onSubmit={livePickSaleForm.handleSubmit(onLivePickSaleSubmit)} className="space-y-6"> {/* Renamed submit handler */}
                     <FormField
-                        control={swiftSaleForm.control}
-                        name="swiftSaleEnabled"
+                        control={livePickSaleForm.control}
+                        name="livePickSaleEnabled" // Renamed field
                         render={({ field }) => (
                             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm">
                                 <div className="space-y-0.5">
-                                    <FormLabel className="text-base">הפעל SwiftSale / Flash Sale עבור העסק שלך</FormLabel>
+                                    <FormLabel className="text-base">הפעל LivePick Sale / Flash Sale עבור העסק שלך</FormLabel>
                                     <FormDescription>מאפשר למכור שקיות הפתעה מוזלות או פריטים במבצע בזק.</FormDescription>
                                 </div>
                                 <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                             </FormItem>
                         )}
                     />
-                    {swiftSaleForm.watch('swiftSaleEnabled') && (
+                    {livePickSaleForm.watch('livePickSaleEnabled') && ( // Renamed watched field
                         <div className="space-y-4 p-4 border-t animate-fadeIn">
                             <FormField
-                                control={swiftSaleForm.control}
-                                name="swiftSaleStartTime"
+                                control={livePickSaleForm.control}
+                                name="livePickSaleStartTime" // Renamed field
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>שעת התחלת המבצע</FormLabel>
@@ -479,8 +479,8 @@ export default function MenuManagementPage() {
                             />
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <FormField
-                                    control={swiftSaleForm.control}
-                                    name="swiftSaleBagCount"
+                                    control={livePickSaleForm.control}
+                                    name="livePickSaleBagCount" // Renamed field
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>כמות שקיות הפתעה / פריטים במבצע</FormLabel>
@@ -490,8 +490,8 @@ export default function MenuManagementPage() {
                                     )}
                                 />
                                 <FormField
-                                    control={swiftSaleForm.control}
-                                    name="swiftSaleBagPrice"
+                                    control={livePickSaleForm.control}
+                                    name="livePickSaleBagPrice" // Renamed field
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>מחיר לשקית הפתעה / פריט במבצע (₪)</FormLabel>
@@ -501,13 +501,13 @@ export default function MenuManagementPage() {
                                     )}
                                 />
                             </div>
-                             {swiftSaleForm.formState.errors.swiftSaleEnabled && (
-                                <p className="text-sm font-medium text-destructive">{swiftSaleForm.formState.errors.swiftSaleEnabled.message}</p>
+                             {livePickSaleForm.formState.errors.livePickSaleEnabled && ( // Renamed error field
+                                <p className="text-sm font-medium text-destructive">{livePickSaleForm.formState.errors.livePickSaleEnabled.message}</p>
                             )}
                         </div>
                     )}
-                     <Button type="submit" className="w-full sm:w-auto" disabled={swiftSaleForm.formState.isSubmitting}>
-                        {swiftSaleForm.formState.isSubmitting ? "שומר הגדרות SwiftSale..." : "שמור הגדרות SwiftSale"}
+                     <Button type="submit" className="w-full sm:w-auto" disabled={livePickSaleForm.formState.isSubmitting}>
+                        {livePickSaleForm.formState.isSubmitting ? "שומר הגדרות LivePick Sale..." : "שמור הגדרות LivePick Sale"}
                     </Button>
                 </form>
             </Form>
@@ -515,7 +515,7 @@ export default function MenuManagementPage() {
          <CardFooter className="p-4 border-t">
              <p className="text-xs text-muted-foreground flex items-center">
                 <Info className="h-4 w-4 mr-2 text-blue-500 flex-shrink-0"/>
-                <span>סטטיסטיקות SwiftSale (כמה נמכרו / נותרו) יוצגו כאן (בקרוב). זכור לעדכן כמויות בתום המבצע.</span>
+                <span>סטטיסטיקות LivePick Sale (כמה נמכרו / נותרו) יוצגו כאן (בקרוב). זכור לעדכן כמויות בתום המבצע.</span>
             </p>
          </CardFooter>
       </Card>

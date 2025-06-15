@@ -10,7 +10,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-headline text-primary">ברוכים השבים!</CardTitle>
-          <CardDescription>התחבר כדי להמשיך ל-SwiftServe.</CardDescription>
+          <CardDescription>התחבר כדי להמשיך ל-LivePick.</CardDescription>
         </CardHeader>
         <CardContent>
           <LoginForm />

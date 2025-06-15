@@ -46,7 +46,7 @@ const weeklyMenuPlannerPrompt = ai.definePrompt({
   name: 'weeklyMenuPlannerPrompt',
   input: { schema: WeeklyMenuInputSchema },
   output: { schema: WeeklyMenuOutputSchema },
-  prompt: `You are an AI Weekly Meal Planner for SwiftServe.
+  prompt: `You are an AI Weekly Meal Planner for LivePick.
 Your task is to create a structured meal plan for a user based on their calorie target, number of days, and preferences.
 
 User ID: {{{userId}}}

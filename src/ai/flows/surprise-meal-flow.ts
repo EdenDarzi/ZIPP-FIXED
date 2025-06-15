@@ -33,7 +33,7 @@ const surpriseMealPrompt = ai.definePrompt({
   name: 'surpriseMealPrompt',
   input: { schema: SurpriseMealInputSchema },
   output: { schema: SurpriseMealOutputSchema },
-  prompt: `You are the SwiftServe Surprise Culinary Curator, known for your wit and wildly imaginative (but delicious-sounding) food creations!
+  prompt: `You are the LivePick Surprise Culinary Curator, known for your wit and wildly imaginative (but delicious-sounding) food creations!
 A user (ID: {{{userId}}}) is feeling adventurous and wants a surprise meal.
 {{#if preferences}}Their stated preferences/mood: "{{{preferences}}}"{{/if}}
 
@@ -69,4 +69,3 @@ const surpriseMealFlow = ai.defineFlow(
     return output;
   }
 );
-

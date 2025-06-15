@@ -30,14 +30,14 @@ export default function VipProgramPage() {
       <Card className="shadow-xl bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 text-white">
         <CardHeader className="text-center items-center pt-8">
           <Gem className="h-16 w-16 mb-4 animate-bounce" />
-          <CardTitle className="text-4xl font-headline">ברוכים הבאים ל-SwiftServe VIP</CardTitle>
+          <CardTitle className="text-4xl font-headline">ברוכים הבאים ל-LivePick VIP</CardTitle>
           <CardDescription className="text-xl text-purple-100 mt-2">
             חווית המשלוחים האולטימטיבית, רק בשבילכם.
           </CardDescription>
         </CardHeader>
         <CardContent className="text-center px-6 py-8">
           <p className="text-lg mb-8 text-purple-50">
-            שדרגו את חווית ה-SwiftServe שלכם עם מועדון ה-VIP שלנו! קבלו גישה להטבות בלעדיות, שירות פרימיום והפתעות שיגרמו לכם להרגיש כמו מלכים.
+            שדרגו את חווית ה-LivePick שלכם עם מועדון ה-VIP שלנו! קבלו גישה להטבות בלעדיות, שירות פרימיום והפתעות שיגרמו לכם להרגיש כמו מלכים.
           </p>
         </CardContent>
       </Card>

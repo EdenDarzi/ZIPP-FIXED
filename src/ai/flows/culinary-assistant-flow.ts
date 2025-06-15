@@ -35,7 +35,7 @@ const culinaryAssistantPrompt = ai.definePrompt({
   output: {
     schema: CulinaryAssistantOutputSchema,
   },
-  prompt: `You are a friendly and insightful Culinary Assistant for SwiftServe.
+  prompt: `You are a friendly and insightful Culinary Assistant for LivePick.
 User ID: {{{userId}}}
 {{#if currentDay}}Today is {{{currentDay}}}.{{/if}}
 

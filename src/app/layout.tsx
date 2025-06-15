@@ -16,8 +16,8 @@ const ptSans = PT_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'SwiftServe - פלטפורמת המשלוחים החכמה שלך',
-  description: 'הזמינו משלוח ממסעדות, חנויות ובתי קפה עם SwiftServe. גלו טרנדים, שתפו וזכו בפרסים!',
+  title: 'LivePick - פלטפורמת המשלוחים החכמה שלך',
+  description: 'הזמינו משלוח ממסעדות, חנויות ובתי קפה עם LivePick. גלו טרנדים, שתפו וזכו בפרסים!',
 };
 
 export default function RootLayout({

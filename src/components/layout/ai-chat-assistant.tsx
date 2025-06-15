@@ -79,7 +79,7 @@ export default function AiChatAssistant() {
         <SheetContent className="w-full sm:max-w-md flex flex-col p-0">
           <SheetHeader className="p-6 pb-2 border-b">
             <SheetTitle className="flex items-center text-primary">
-              <Bot className="h-6 w-6 mr-2" /> AI Ordering Assistant
+              <Bot className="h-6 w-6 mr-2" /> LivePick AI Ordering Assistant
             </SheetTitle>
             <SheetDescription>
               Ask me anything about food, orders, or find what you crave!

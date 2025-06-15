@@ -2,17 +2,17 @@
 'use client'; 
 
 import RestaurantCard from '@/components/restaurants/restaurant-card';
-import { mockRestaurants, mockSwiftSaleItems } from '@/lib/mock-data'; // Added mockSwiftSaleItems
-import type { Restaurant, SwiftSaleItem } from '@/types'; // Added SwiftSaleItem
+import { mockRestaurants, mockSwiftSaleItems } from '@/lib/mock-data';
+import type { Restaurant, SwiftSaleItem } from '@/types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Filter, Star, Clock, MapPinIcon, ShoppingBag } from 'lucide-react';
-import { useState, useEffect } from 'react'; // Added useEffect
+import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import Link from 'next/link'; // Added Link
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'; // Added Card components
-import Image from 'next/image'; // Added Image
+import Link from 'next/link';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import Image from 'next/image';
 
 export default function RestaurantsPage() {
   const restaurants: Restaurant[] = mockRestaurants;
@@ -21,13 +21,12 @@ export default function RestaurantsPage() {
   const [cuisineFilter, setCuisineFilter] = useState('all');
   const [ratingFilter, setRatingFilter] = useState('all');
   const [distanceFilter, setDistanceFilter] = useState('all');
-  const [activeSwiftSaleItems, setActiveSwiftSaleItems] = useState<SwiftSaleItem[]>([]);
+  const [activeLivePickSaleItems, setActiveLivePickSaleItems] = useState<SwiftSaleItem[]>([]); // Renamed
 
   useEffect(() => {
-    // Simulate fetching active SwiftSale items (e.g., based on time of day)
     const currentHour = new Date().getHours();
-    if (currentHour >= 19 && currentHour <= 23) { // Example: SwiftSale active from 7 PM to 11 PM
-        setActiveSwiftSaleItems(mockSwiftSaleItems.filter(item => item.isActive));
+    if (currentHour >= 19 && currentHour <= 23) { 
+        setActiveLivePickSaleItems(mockSwiftSaleItems.filter(item => item.isActive)); // Assuming mockSwiftSaleItems is still appropriate or should be renamed too
     }
   }, []);
 
@@ -69,18 +68,18 @@ export default function RestaurantsPage() {
         </div>
       </header>
 
-      {activeSwiftSaleItems.length > 0 && (
+      {activeLivePickSaleItems.length > 0 && (
         <section className="animate-fadeInUp">
             <Card className="bg-red-500 text-white shadow-lg hover:shadow-xl transition-shadow">
                 <CardHeader>
                     <CardTitle className="text-2xl font-headline flex items-center">
-                        <ShoppingBag className="h-7 w-7 mr-3 animate-bounce" /> 🔥 SwiftSale פעיל כעת!
+                        <ShoppingBag className="h-7 w-7 mr-3 animate-bounce" /> 🔥 מבצעי LivePick פעילים כעת!
                     </CardTitle>
                     <CardDescription className="text-red-100">שקיות הפתעה מסוף היום במחירים מיוחדים! מהרו לפני שייגמר.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        {activeSwiftSaleItems.slice(0,3).map(item => ( // Show first 3 for brevity
+                        {activeLivePickSaleItems.slice(0,3).map(item => ( 
                             <Card key={item.id} className="bg-white text-card-foreground">
                                 <CardHeader className="p-3 pb-1">
                                      <div className="relative h-24 w-full rounded-t-md overflow-hidden mb-2">
@@ -94,16 +93,16 @@ export default function RestaurantsPage() {
                                 </CardContent>
                                 <CardFooter className="p-2 pt-0">
                                      <Button size="sm" className="w-full" asChild>
-                                        <Link href={`/swiftsale#${item.id}`}>הוסף לעגלה</Link>
+                                        <Link href={`/livepick-sale#${item.id}`}>הוסף לעגלה</Link>
                                     </Button>
                                 </CardFooter>
                             </Card>
                         ))}
                     </div>
-                    {activeSwiftSaleItems.length > 3 && (
+                    {activeLivePickSaleItems.length > 3 && (
                         <div className="text-center mt-4">
                             <Button variant="link" asChild className="text-white hover:text-red-200">
-                                <Link href="/swiftsale">הצג את כל שקיות ה-SwiftSale...</Link>
+                                <Link href="/livepick-sale">הצג את כל מבצעי LivePick...</Link>
                             </Button>
                         </div>
                     )}
