@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreditCard, Lock, ShoppingBag, AlertTriangle, Zap, Sparkles, DollarSign } from "lucide-react";
+import { CreditCard, Lock, ShoppingBag, AlertTriangle, Zap, Sparkles, DollarSign, Clock } from "lucide-react"; // Added Clock
 import Link from "next/link";
 import { useCart } from "@/context/cart-context";
 import Image from "next/image";
@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 
 export default function CheckoutPage() {
-  const { cart, itemCount, totalPrice, deliveryPreference, deliveryFee, discountAmount, finalPriceWithDelivery, smartCouponApplied, clearCart } = useCart();
+  const { cart, itemCount, totalPrice, deliveryPreference, deliveryFee, discountAmount, finalPriceWithDelivery, smartCouponApplied, clearCart, scheduledDeliveryTime } = useCart();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -34,11 +34,15 @@ export default function CheckoutPage() {
   const handleMockPayment = () => {
     toast({
       title: "התשלום עבר בהצלחה (דמו)",
-      description: "ההזמנה שלך בעיבוד!",
+      description: scheduledDeliveryTime 
+        ? `ההזמנה שלך מתוכננת ל: ${scheduledDeliveryTime} ובעיבוד!` 
+        : "ההזמנה שלך בעיבוד!",
     });
 
-    const mockOrderId = `mockOrder_${Date.now()}`; 
+    const mockOrderId = `mockOrder_${Date.now()}_${scheduledDeliveryTime ? 'scheduled' : 'asap'}`; 
     
+    // In a real app, clearCart() might happen after successful payment confirmation from backend
+    // clearCart(); // Keep cart for now if user navigates back before actual order submission
     router.push(`/order-tracking/${mockOrderId}`);
   };
 
@@ -85,6 +89,12 @@ export default function CheckoutPage() {
                     <span>-{discountAmount.toFixed(2)}₪</span>
                   </div>
                 )}
+                {scheduledDeliveryTime && (
+                  <div className="flex justify-between text-sm text-blue-600">
+                    <span className="font-medium flex items-center"><Clock className="h-4 w-4 ml-1"/>מתוכנן ל:</span>
+                    <span className="font-medium">{scheduledDeliveryTime}</span>
+                  </div>
+                )}
                 <div className="flex justify-between font-bold text-lg text-primary pt-1">
                   <span>סה"כ</span>
                   <span>{finalPriceWithDelivery.toFixed(2)}₪</span>
@@ -104,14 +114,21 @@ export default function CheckoutPage() {
               <p className="text-sm text-muted-foreground">עבד את התשלום שלך באופן מאובטח.</p>
             </div>
           </div>
+          
+          {scheduledDeliveryTime && (
+            <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md text-sm text-yellow-700 flex items-start">
+                <Clock className="h-5 w-5 ml-2 mt-0.5 text-yellow-600 flex-shrink-0" /> {/* Adjusted margin for RTL */}
+                <span>ההזמנה שלך מתוכננת ל: <strong>{scheduledDeliveryTime}</strong>. היא תעובד לקראת מועד זה.</span>
+            </div>
+          )}
 
-          {deliveryPreference === 'arena' && (
+          {deliveryPreference === 'arena' && !scheduledDeliveryTime && (
              <div className="p-3 bg-blue-50 border border-blue-200 rounded-md text-sm text-blue-700 flex items-start">
                 <Zap className="h-5 w-5 ml-2 mt-0.5 text-blue-600 flex-shrink-0" /> {/* Adjusted margin for RTL */}
                 <span>בחרת בזירת המשלוחים! לאחר התשלום, נמצא עבורך את השליח הטוב ביותר. זה עשוי לקחת רגע.</span>
             </div>
           )}
-          {deliveryPreference === 'smartSaver' && (
+          {deliveryPreference === 'smartSaver' && !scheduledDeliveryTime && (
              <div className="p-3 bg-green-50 border border-green-200 rounded-md text-sm text-green-700 flex items-start">
                 <DollarSign className="h-5 w-5 ml-2 mt-0.5 text-green-600 flex-shrink-0" /> {/* Adjusted margin for RTL */}
                 <span>חסכוני חכם: ההזמנה שלך תימסר עם הנחה, וייתכן שתיקח קצת יותר זמן.</span>

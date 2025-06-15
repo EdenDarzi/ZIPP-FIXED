@@ -5,13 +5,15 @@ import { useCart } from '@/context/cart-context';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, Zap, CheckCircle, ShieldQuestion, Sparkles, DollarSign } from 'lucide-react'; // ArrowRight becomes ArrowLeft
+import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, Zap, CheckCircle, ShieldQuestion, Sparkles, DollarSign, Clock } from 'lucide-react'; // Added Clock
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import type { DeliveryPreference } from '@/types';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input'; // Added Input
+import { useState } from 'react'; // Added useState
 
 export default function CartPage() {
   const {
@@ -27,7 +29,22 @@ export default function CartPage() {
     discountAmount,
     finalPriceWithDelivery,
     smartCouponApplied,
+    scheduledDeliveryTime, // Added
+    setScheduledDeliveryTime, // Added
   } = useCart();
+
+  const [manualScheduledTime, setManualScheduledTime] = useState(scheduledDeliveryTime || '');
+
+  const handleSetManualScheduledTime = () => {
+    if (manualScheduledTime.trim()) {
+      setScheduledDeliveryTime(manualScheduledTime.trim());
+    }
+  };
+
+  const handleClearScheduledTime = () => {
+    setScheduledDeliveryTime(null);
+    setManualScheduledTime('');
+  };
 
   if (itemCount === 0) {
     return (
@@ -136,6 +153,42 @@ export default function CartPage() {
             </CardContent>
           </Card>
 
+          {/* Scheduled Delivery Section */}
+          <Card className="shadow-md">
+            <CardHeader>
+              <CardTitle className="text-xl font-headline text-primary flex items-center">
+                <Clock className="h-5 w-5 ml-2" /> תכנן משלוח (אופציונלי)
+              </CardTitle>
+              <CardDescription>קבע תאריך ושעה עתידיים למשלוח שלך.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {!scheduledDeliveryTime ? (
+                <>
+                  <Label htmlFor="scheduledTimeInput">הזן תאריך ושעה (למשל, "מחר 18:00", "25.12 13:30")</Label>
+                  <Input
+                    id="scheduledTimeInput"
+                    type="text"
+                    placeholder="הזן זמן מבוקש..."
+                    value={manualScheduledTime}
+                    onChange={(e) => setManualScheduledTime(e.target.value)}
+                    className="w-full"
+                  />
+                  <Button onClick={handleSetManualScheduledTime} disabled={!manualScheduledTime.trim()} className="w-full sm:w-auto">
+                    קבע זמן
+                  </Button>
+                </>
+              ) : (
+                <div className="p-3 bg-green-50 border border-green-200 rounded-md">
+                  <p className="font-semibold text-green-700">המשלוח שלך מתוכנן ל: {scheduledDeliveryTime}</p>
+                  <Button onClick={handleClearScheduledTime} variant="link" className="p-0 h-auto text-sm text-destructive">
+                    נקה זמן מתוכנן
+                  </Button>
+                </div>
+              )}
+               <p className="text-xs text-muted-foreground">שימו לב: זמינות המשלוח המתוכנן תלויה בשעות הפעילות של המסעדה והשליחים.</p>
+            </CardContent>
+          </Card>
+
         </div>
 
         <div className="lg:col-span-1">
@@ -152,6 +205,12 @@ export default function CartPage() {
                 <span className="text-muted-foreground">זמן הכנה משוער</span>
                 <span className="font-medium">~{estimatedPreparationTime} דק'</span>
               </div>
+              {scheduledDeliveryTime && (
+                <div className="flex justify-between text-sm text-blue-600">
+                    <span className="font-medium flex items-center"><Clock className="h-4 w-4 ml-1"/>מתוכנן ל:</span>
+                    <span className="font-medium">{scheduledDeliveryTime}</span>
+                </div>
+              )}
               <div className="flex justify-between">
                 <span className="text-muted-foreground">דמי משלוח</span>
                 <span className={`font-medium ${deliveryFee > 0 ? 'text-primary' : 'text-green-600'}`}>

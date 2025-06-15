@@ -128,6 +128,7 @@ export type DeliveryPreference = 'arena' | 'fastest' | 'smartSaver';
 
 export type OrderStatus =
   | 'PENDING_PAYMENT'
+  | 'SCHEDULED' // New status for orders scheduled for the future
   | 'MATCHING_COURIER' // Actively in the courier arena/bidding process
   | 'COURIER_ASSIGNED' // A courier has accepted/won the bid
   | 'PREPARING_AT_RESTAURANT' // Courier assigned, restaurant is preparing
@@ -151,6 +152,8 @@ export interface Order {
   restaurantName: string;
   estimatedDeliveryTime?: string; // e.g. "10-15 minutes" (after courier assigned)
   actualDeliveryTime?: string; // When it was actually delivered
+  scheduledDeliveryTime?: string; // User-friendly string like "Tomorrow, 6 PM - 6:30 PM"
+  scheduledDeliveryTimestamp?: string; // ISO string for the actual scheduled time
   assignedCourier?: { // This structure is used once a courier is confirmed
     id: string;
     name: string;

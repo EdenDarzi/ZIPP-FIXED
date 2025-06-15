@@ -19,6 +19,8 @@ interface CartContextType {
   discountAmount: number;
   finalPriceWithDelivery: number;
   smartCouponApplied: boolean;
+  scheduledDeliveryTime: string | null;
+  setScheduledDeliveryTime: (time: string | null) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -31,6 +33,7 @@ const SMART_COUPON_DISCOUNT_PERCENTAGE = 0.05; // 5%
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [deliveryPreference, setDeliveryPreferenceState] = useState<DeliveryPreference>('arena');
+  const [scheduledDeliveryTime, setScheduledDeliveryTimeState] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -42,14 +45,25 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     if (storedPreference) {
       setDeliveryPreferenceState(storedPreference);
     }
+    const storedScheduledTime = localStorage.getItem('swiftServeScheduledTime');
+    if (storedScheduledTime) {
+      setScheduledDeliveryTimeState(storedScheduledTime);
+    }
   }, []);
 
   useEffect(() => {
     if (cart.length > 0 || localStorage.getItem('swiftServeCart')) {
       localStorage.setItem('swiftServeCart', JSON.stringify(cart));
+    } else if (cart.length === 0) {
+      localStorage.removeItem('swiftServeCart');
     }
     localStorage.setItem('swiftServeDeliveryPreference', deliveryPreference);
-  }, [cart, deliveryPreference]);
+    if (scheduledDeliveryTime) {
+      localStorage.setItem('swiftServeScheduledTime', scheduledDeliveryTime);
+    } else {
+      localStorage.removeItem('swiftServeScheduledTime');
+    }
+  }, [cart, deliveryPreference, scheduledDeliveryTime]);
 
   const addToCart = (item: MenuItem, quantity: number = 1) => {
     setCart(prevCart => {
@@ -71,8 +85,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       }];
     });
     toast({
-      title: "Item added to cart",
-      description: `${item.name} has been added to your cart.`,
+      title: "פריט נוסף לעגלה",
+      description: `${item.name} התווסף לסל שלך.`,
       variant: "default",
     });
   };
@@ -80,8 +94,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const removeFromCart = (itemId: string) => {
     setCart(prevCart => prevCart.filter(item => item.menuItemId !== itemId));
     toast({
-      title: "Item removed",
-      description: "Item has been removed from your cart.",
+      title: "פריט הוסר",
+      description: "הפריט הוסר מהסל שלך.",
     });
   };
 
@@ -99,15 +113,26 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const clearCart = () => {
     setCart([]);
+    setScheduledDeliveryTimeState(null); // Also clear scheduled time when cart is cleared
     localStorage.removeItem('swiftServeCart');
+    localStorage.removeItem('swiftServeScheduledTime');
     toast({
-      title: "Cart cleared",
-      description: "Your cart has been emptied.",
+      title: "הסל נוקה",
+      description: "הסל שלך רוקן.",
     });
   };
 
   const setDeliveryPreference = (preference: DeliveryPreference) => {
     setDeliveryPreferenceState(preference);
+  };
+
+  const setScheduledDeliveryTime = (time: string | null) => {
+    setScheduledDeliveryTimeState(time);
+     if (time) {
+      toast({ title: "משלוח תוכנן", description: `המשלוח שלך תוכנן ל: ${time}` });
+    } else {
+      toast({ title: "תכנון משלוח בוטל" });
+    }
   };
 
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -120,11 +145,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     deliveryFee = FASTEST_DELIVERY_FEE;
   } else if (deliveryPreference === 'smartSaver') {
     currentDiscount += SMART_SAVER_DISCOUNT;
-    // Smart saver implies no additional delivery fee other than potential base fees (not implemented here)
   }
-  // Arena has no specific fee or discount by default from this logic
 
-  const smartCouponApplied = totalPrice >= SMART_COUPON_THRESHOLD;
+  const smartCouponApplied = totalPrice >= SMART_COUPON_THRESHOLD && deliveryPreference !== 'smartSaver';
   if (smartCouponApplied) {
     currentDiscount += totalPrice * SMART_COUPON_DISCOUNT_PERCENTAGE;
   }
@@ -145,7 +168,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       deliveryFee,
       discountAmount: currentDiscount,
       finalPriceWithDelivery,
-      smartCouponApplied
+      smartCouponApplied,
+      scheduledDeliveryTime,
+      setScheduledDeliveryTime,
     }}>
       {children}
     </CartContext.Provider>

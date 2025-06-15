@@ -248,10 +248,9 @@ export const getOrderForBiddingById = (orderId: string): OrderDetailsForBidding 
 
 export const mockBidsForOrder: (orderId: string) => CourierBid[] = (orderId) => {
   const now = Date.now();
-  const allCouriers = [...mockCourierProfiles]; // Create a mutable copy
+  const allCouriers = [...mockCourierProfiles]; 
   const selectedCouriers: CourierProfile[] = [];
   
-  // Select up to 3 random couriers (excluding a potential current bidder if we knew them here)
   while(selectedCouriers.length < 3 && allCouriers.length > 0) {
     const randomIndex = Math.floor(Math.random() * allCouriers.length);
     selectedCouriers.push(allCouriers.splice(randomIndex, 1)[0]);
@@ -264,12 +263,12 @@ export const mockBidsForOrder: (orderId: string) => CourierBid[] = (orderId) => 
 
   selectedCouriers.forEach((courier, index) => {
     if (orderDetails.requiredVehicleType && orderDetails.requiredVehicleType.length > 0 && !orderDetails.requiredVehicleType.includes(courier.vehicleType)) {
-        return; // Skip if courier vehicle doesn't match requirement
+        return; 
     }
-    const bidAmountVariance = (Math.random() - 0.3) * 2; // -0.6 to +1.4, so bids can be 70% to 120% of base
+    const bidAmountVariance = (Math.random() - 0.3) * 2; 
     const bidAmount = parseFloat((orderDetails.baseCommission + bidAmountVariance).toFixed(2));
     
-    const etaVariance = Math.floor(Math.random() * 10) - 3; // -3 to +7 minutes variance
+    const etaVariance = Math.floor(Math.random() * 10) - 3; 
     const baseEta = (orderDetails.estimatedRouteDistanceKm || orderDetails.estimatedDistanceKm) * (courier.vehicleType === 'bicycle' ? 7 : courier.vehicleType === 'foot' ? 12 : 4);
     const proposedEtaMinutes = Math.max(5, Math.round(baseEta + etaVariance + (Math.random() * 3 + 0.5)*3));
 
@@ -278,14 +277,14 @@ export const mockBidsForOrder: (orderId: string) => CourierBid[] = (orderId) => 
       orderId,
       courierId: courier.id,
       courierName: courier.name,
-      distanceToRestaurantKm: parseFloat((Math.random() * 3 + 0.2).toFixed(1)), // Random distance
-      bidAmount: Math.max(5.00, bidAmount), // Ensure bid is at least 5
+      distanceToRestaurantKm: parseFloat((Math.random() * 3 + 0.2).toFixed(1)), 
+      bidAmount: Math.max(5.00, bidAmount), 
       proposedEtaMinutes,
       courierRating: courier.rating,
       courierTrustScore: courier.trustScore,
       vehicleType: courier.vehicleType,
-      timestamp: new Date(now - (index + 1) * 30000).toISOString(), // Stagger bid times
-      isFastPickup: Math.random() > 0.6, // Randomly assign fast pickup
+      timestamp: new Date(now - (index + 1) * 30000).toISOString(), 
+      isFastPickup: Math.random() > 0.6, 
       status: 'pending',
       courierProfileSnapshot: { ...courier }
     });
@@ -295,12 +294,15 @@ export const mockBidsForOrder: (orderId: string) => CourierBid[] = (orderId) => 
 };
 
 
-export const getMockOrderById = (orderId: string): Order | undefined => {
-  if (orderId.startsWith('mockOrder_')) {
-    const restaurant = mockRestaurants[0]; // Pizza Palace
+export const getMockOrderById = (orderId: string, scheduledDeliveryTime?: string): Order | undefined => {
+  // Use only the base part of orderId for matching if it's a scheduled order ID
+  const baseOrderId = orderId.split('_scheduled_')[0];
+
+  if (baseOrderId.startsWith('mockOrder_')) {
+    const restaurant = mockRestaurants[0]; 
     const items = [
-        { ...restaurant.menu[0], quantity: 1 }, // Margherita
-        { ...restaurant.menu.find(m => m.category === 'Drinks')!, quantity: 2 } // Coke
+        { ...restaurant.menu[0], quantity: 1 }, 
+        { ...restaurant.menu.find(m => m.category === 'Drinks')!, quantity: 2 } 
     ].map(item => ({
         menuItemId: item.id,
         name: item.name,
@@ -311,8 +313,13 @@ export const getMockOrderById = (orderId: string): Order | undefined => {
     }));
     const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+    const initialStatus = scheduledDeliveryTime ? 'SCHEDULED' : 'MATCHING_COURIER';
+    const initialTimelineNote = scheduledDeliveryTime 
+        ? `ההזמנה תוכננה ל: ${scheduledDeliveryTime}.`
+        : "התשלום התקבל. מחפש שליח.";
+
     const baseOrder: Order = {
-      id: orderId,
+      id: orderId, // Use the full orderId which might contain schedule info
       userId: 'userTest1',
       items,
       totalAmount,
@@ -320,18 +327,74 @@ export const getMockOrderById = (orderId: string): Order | undefined => {
       deliveryFee: 0,
       discountAmount: 0,
       finalAmount: totalAmount,
-      status: 'MATCHING_COURIER',
+      status: initialStatus,
       deliveryAddress: '123 Delivery St, Foodtown, CA 90210',
       restaurantId: restaurant.id,
       restaurantName: restaurant.name,
       createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
       updatedAt: new Date().toISOString(),
+      scheduledDeliveryTime: scheduledDeliveryTime, // Store the user-friendly string
+      scheduledDeliveryTimestamp: scheduledDeliveryTime ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() : undefined, // Mock: 24h from now if scheduled
       orderTimeline: [
-        { status: 'PENDING_PAYMENT', timestamp: new Date(Date.now() - 6 * 60 * 1000).toISOString(), notes: "Payment processing initiated." },
-        { status: 'MATCHING_COURIER', timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(), notes: "Payment successful. Finding a courier." }
+        { status: 'PENDING_PAYMENT', timestamp: new Date(Date.now() - 6 * 60 * 1000).toISOString(), notes: "מעבד תשלום..." },
+        { status: initialStatus, timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(), notes: initialTimelineNote }
       ]
     };
     return baseOrder;
   }
   return undefined;
 };
+
+// For Restaurant Admin Orders Page
+export const mockLiveOrdersForAdmin: Order[] = [
+  {
+    id: 'adminOrder1', userId: 'userABC', items: [{ menuItemId: 'item1', name: 'מוצר אקספרס', price: 12.99, quantity: 1 }],
+    totalAmount: 12.99, deliveryPreference: 'arena', deliveryFee: 0, discountAmount: 0, finalAmount: 12.99,
+    status: 'PREPARING_AT_RESTAURANT', deliveryAddress: 'רחוב ראשי 123', restaurantId: 'business1', restaurantName: 'העסק שלי',
+    createdAt: new Date(Date.now() - 5 * 60000).toISOString(), updatedAt: new Date().toISOString(),
+    estimatedDeliveryTime: '15-20 דקות',
+    orderTimeline: [{ status: 'PREPARING_AT_RESTAURANT', timestamp: new Date().toISOString(), notes: "ההזמנה התקבלה במערכת."}]
+  },
+  {
+    id: 'adminOrder2', userId: 'userDEF', items: [{ menuItemId: 'item3', name: 'שירות פרימיום', price: 9.99, quantity: 2 }, { menuItemId: 'item6', name: 'מוצר נלווה', price: 2.50, quantity: 2 }],
+    totalAmount: 24.98, deliveryPreference: 'fastest', deliveryFee: 5, discountAmount: 0, finalAmount: 29.98,
+    status: 'AWAITING_PICKUP', deliveryAddress: 'שדרות העצמאות 456', restaurantId: 'business1', restaurantName: 'העסק שלי',
+    createdAt: new Date(Date.now() - 15 * 60000).toISOString(), updatedAt: new Date().toISOString(),
+    estimatedDeliveryTime: '5-10 דקות לאיסוף',
+    assignedCourier: { id: 'courier1', name: 'שליח זריז', rating: 4.8, vehicleType: 'motorcycle', currentEtaMinutes: 7 },
+    orderTimeline: [
+        { status: 'PREPARING_AT_RESTAURANT', timestamp: new Date(Date.now() - 10 * 60000).toISOString()},
+        { status: 'AWAITING_PICKUP', timestamp: new Date().toISOString(), notes: "המוצר מוכן. השליח עודכן."}
+    ]
+  },
+  {
+    id: 'adminOrderScheduled1', userId: 'userGHI', items: [{ menuItemId: 'item4', name: 'סלט בריאות', price: 10.50, quantity: 1 }],
+    totalAmount: 10.50, deliveryPreference: 'arena', deliveryFee: 0, discountAmount: 0, finalAmount: 10.50,
+    status: 'SCHEDULED', deliveryAddress: 'דרך העתיד 1', restaurantId: 'business1', restaurantName: 'העסק שלי',
+    createdAt: new Date(Date.now() - 2 * 60 * 60000).toISOString(), updatedAt: new Date().toISOString(),
+    scheduledDeliveryTime: 'מחר, 12:00-12:30',
+    scheduledDeliveryTimestamp: new Date(Date.now() + 22 * 60 * 60000).toISOString(),
+    orderTimeline: [{ status: 'SCHEDULED', timestamp: new Date().toISOString(), notes: "הזמנה מתוכננת התקבלה."}]
+  },
+];
+
+export const mockOrderHistoryForAdmin: Order[] = [
+ {
+    id: 'adminOrderHist1', userId: 'userXYZ', items: [{ menuItemId: 'item2', name: 'מוצר פופולרי', price: 14.99, quantity: 1 }],
+    totalAmount: 14.99, deliveryPreference: 'arena', deliveryFee: 0, discountAmount: 0, finalAmount: 14.99,
+    status: 'DELIVERED', deliveryAddress: 'סמטת האורנים 789', restaurantId: 'business1', restaurantName: 'העסק שלי',
+    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60000).toISOString(), updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60000 + 30 * 60000).toISOString(),
+    actualDeliveryTime: new Date(Date.now() - 2 * 24 * 60 * 60000 + 30 * 60000).toISOString(),
+    orderTimeline: [{ status: 'DELIVERED', timestamp: new Date(Date.now() - 2 * 24 * 60 * 60000 + 30 * 60000).toISOString()}]
+  },
+   {
+    id: 'adminOrderScheduledDelivered', userId: 'userJKL', items: [{ menuItemId: 'item5', name: 'פסטה מפנקת', price: 18.00, quantity: 1 }],
+    totalAmount: 18.00, deliveryPreference: 'smartSaver', deliveryFee: 0, discountAmount: 3.00, finalAmount: 15.00,
+    status: 'DELIVERED', deliveryAddress: 'כיכר החלומות 2', restaurantId: 'business1', restaurantName: 'העסק שלי',
+    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60000).toISOString(), updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60000 + 45 * 60000).toISOString(),
+    scheduledDeliveryTime: 'לפני יומיים, 19:00-19:30',
+    scheduledDeliveryTimestamp: new Date(Date.now() - 3 * 24 * 60 * 60000 + 40 * 60000).toISOString(), // Simulating it was scheduled
+    actualDeliveryTime: new Date(Date.now() - 3 * 24 * 60 * 60000 + 45 * 60000).toISOString(),
+    orderTimeline: [{ status: 'DELIVERED', timestamp: new Date(Date.now() - 3 * 24 * 60 * 60000 + 45 * 60000).toISOString()}]
+  },
+];

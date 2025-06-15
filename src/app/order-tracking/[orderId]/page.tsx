@@ -12,9 +12,9 @@ import { DeliveryCompleteView } from '@/components/order/delivery-complete-view'
 import { TriviaChallengeCard } from '@/components/order/trivia-challenge-card'; // Added
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, AlertTriangle, Info } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, Info, Clock } from 'lucide-react'; // Added Clock
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 
 // Mock courier for CourierAssignedView - choose one from mock data
@@ -46,7 +46,7 @@ export default function OrderTrackingPage() {
 
   // Simulate order status changes for demo purposes
   const simulateStatusProgression = useCallback(() => {
-    if (!order || order.status === 'DELIVERED' || order.status === 'CANCELLED') return;
+    if (!order || order.status === 'DELIVERED' || order.status === 'CANCELLED' || order.status === 'SCHEDULED') return;
 
     let nextStatus: OrderStatus | null = null;
     let delay = 5000 + Math.random() * 5000; // Base delay
@@ -56,11 +56,10 @@ export default function OrderTrackingPage() {
     switch (order.status) {
       case 'MATCHING_COURIER':
         nextStatus = 'COURIER_ASSIGNED';
-        // Pick a random courier from mock data for simulation
         const randomCourierProfile = mockCourierProfiles[Math.floor(Math.random() * mockCourierProfiles.length)];
         newCourierInfo = getAssignedCourierDetails(randomCourierProfile.id);
         newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: `שליח ${newCourierInfo?.name} שובץ.` };
-        delay = 8000; // Longer for matching
+        delay = 8000; 
         break;
       case 'COURIER_ASSIGNED':
         nextStatus = 'PREPARING_AT_RESTAURANT';
@@ -74,19 +73,19 @@ export default function OrderTrackingPage() {
       case 'AWAITING_PICKUP':
         nextStatus = 'OUT_FOR_DELIVERY';
         newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: `שליח ${order.assignedCourier?.name || 'לא ידוע'} אסף את ההזמנה.` };
-        delay = 10000; // Simulate travel time
+        delay = 10000; 
         break;
       case 'OUT_FOR_DELIVERY':
         nextStatus = 'DELIVERED';
         newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: "ההזמנה נמסרה. בתאבון!" };
-        delay = 15000 + ((order.assignedCourier?.currentEtaMinutes || 1) * 1000 * 0.5); // Shorter for demo
+        delay = 15000 + ((order.assignedCourier?.currentEtaMinutes || 1) * 1000 * 0.5); 
         break;
     }
 
     if (nextStatus) {
       const timer = setTimeout(() => {
         setOrder(prev => {
-          if (!prev || prev.status !== order.status) return prev; // Stale update check
+          if (!prev || prev.status !== order.status) return prev; 
           const updatedOrder: Order = {
             ...prev,
             status: nextStatus!,
@@ -95,7 +94,7 @@ export default function OrderTrackingPage() {
             orderTimeline: newTimelineEvent ? [...(prev.orderTimeline || []), newTimelineEvent] : prev.orderTimeline,
           };
           if (nextStatus === 'OUT_FOR_DELIVERY' && updatedOrder.assignedCourier) {
-            updatedOrder.assignedCourier.currentEtaMinutes = Math.max(5, (updatedOrder.assignedCourier.currentEtaMinutes || 15) - 5); // Simulate ETA decrease
+            updatedOrder.assignedCourier.currentEtaMinutes = Math.max(5, (updatedOrder.assignedCourier.currentEtaMinutes || 15) - 5); 
           }
           return updatedOrder;
         });
@@ -107,14 +106,24 @@ export default function OrderTrackingPage() {
 
   useEffect(() => {
     if (!orderId) return;
-    const fetchedOrder = getMockOrderById(orderId);
+    
+    // Extract scheduled time from orderId if present (mocking this info passing)
+    let extractedScheduledTime: string | undefined = undefined;
+    if (orderId.includes('_scheduled_')) {
+        const parts = orderId.split('_scheduled_');
+        if (parts.length > 1 && parts[1]) {
+            extractedScheduledTime = decodeURIComponent(parts[1]);
+        }
+    }
+
+    const fetchedOrder = getMockOrderById(orderId, extractedScheduledTime);
     if (!fetchedOrder) {
-      setOrder(null); // Not found
+      setOrder(null); 
       return;
     }
     setOrder(fetchedOrder);
-    // Reset trivia state for new order
-    const storedTriviaState = localStorage.getItem(`triviaAnswered_${orderId}`);
+    
+    const storedTriviaState = localStorage.getItem(`triviaAnswered_${orderId.split('_scheduled_')[0]}`); // Use base ID for trivia
     if (storedTriviaState === 'true') {
         setTriviaAnswered(true);
     } else {
@@ -129,7 +138,6 @@ export default function OrderTrackingPage() {
   }, [order, simulateStatusProgression]);
 
 
-  // Simulate ETA countdown for OUT_FOR_DELIVERY and AWAITING_PICKUP (if courier assigned)
   useEffect(() => {
     if (order && (order.status === 'OUT_FOR_DELIVERY' || order.status === 'AWAITING_PICKUP') && order.assignedCourier && (order.assignedCourier.currentEtaMinutes || 0) > 0) {
       const etaInterval = setInterval(() => {
@@ -142,23 +150,19 @@ export default function OrderTrackingPage() {
                 ...prev.assignedCourier,
                 currentEtaMinutes: newEta,
               },
-              estimatedDeliveryTime: `${newEta}-${newEta + 5} דק'`, // Update user-facing string too
+              estimatedDeliveryTime: `${newEta}-${newEta + 5} דק'`, 
               updatedAt: new Date().toISOString(),
             };
-          } else if (prev && prev.assignedCourier && (prev.assignedCourier.currentEtaMinutes || 0) <= 1 && prev.status === 'OUT_FOR_DELIVERY') {
-            // If ETA is 1 or less and out for delivery, force DELIVERED (or a step before)
-            // This is a fallback if the main status progression is too slow
-            // For now, just stop countdown. Main progression handles 'DELIVERED'.
           }
           return prev;
         });
-      }, 60 * 1000); // Update ETA every minute
+      }, 60 * 1000); 
       return () => clearInterval(etaInterval);
     }
   }, [order?.status, order?.assignedCourier?.currentEtaMinutes]);
 
 
-  if (order === undefined) { // Loading state
+  if (order === undefined) { 
     return (
       <div className="space-y-6 max-w-3xl mx-auto py-8">
         <Skeleton className="h-12 w-3/4" />
@@ -185,6 +189,22 @@ export default function OrderTrackingPage() {
 
   const renderOrderStatusView = () => {
     switch (order.status) {
+      case 'SCHEDULED':
+        return (
+            <Card className="shadow-xl text-center py-10">
+                <CardHeader className="items-center">
+                    <Clock className="h-12 w-12 text-primary mb-3" />
+                    <CardTitle className="text-2xl font-semibold text-primary">הזמנה מתוכננת</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-lg text-muted-foreground">
+                        ההזמנה שלך מ-<span className="font-semibold">{order.restaurantName}</span> מתוכננת ל:
+                    </p>
+                    <p className="text-xl font-bold text-accent mt-2">{order.scheduledDeliveryTime}</p>
+                    <p className="text-sm text-muted-foreground mt-4">אנו נתחיל לעבד אותה לקראת מועד זה.</p>
+                </CardContent>
+            </Card>
+        );
       case 'MATCHING_COURIER':
         return <MatchingCourierView order={order} />;
       case 'COURIER_ASSIGNED':
@@ -226,11 +246,13 @@ export default function OrderTrackingPage() {
   };
 
   const showTriviaForStatus: OrderStatus[] = ['COURIER_ASSIGNED', 'PREPARING_AT_RESTAURANT', 'AWAITING_PICKUP', 'OUT_FOR_DELIVERY'];
-  const shouldShowTrivia = showTriviaForStatus.includes(order.status) && !triviaAnswered;
+  // Only show trivia if order is not scheduled or if it's actively being processed (not in 'SCHEDULED' status)
+  const shouldShowTrivia = showTriviaForStatus.includes(order.status) && !triviaAnswered && order.status !== 'SCHEDULED';
+
 
   const handleTriviaComplete = () => {
     setTriviaAnswered(true);
-    localStorage.setItem(`triviaAnswered_${orderId}`, 'true');
+    localStorage.setItem(`triviaAnswered_${orderId.split('_scheduled_')[0]}`, 'true');
   };
 
 
