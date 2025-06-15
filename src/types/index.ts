@@ -4,6 +4,24 @@ export interface MenuItemOption {
   priceModifier: number; // e.g., +1.00 for extra cheese
 }
 
+// New types for Menu Item Add-ons
+export interface MenuItemAddonChoice {
+  id: string;
+  name: string;
+  price: number; // Can be 0 for free options
+  selectedByDefault?: boolean;
+}
+
+export interface MenuItemAddonGroup {
+  id: string;
+  title: string; // e.g., "Choose your side", "Extra Toppings"
+  type: 'radio' | 'checkbox'; // Single or multiple selection
+  minSelection?: number;
+  maxSelection?: number;
+  options: MenuItemAddonChoice[];
+  required?: boolean;
+}
+
 export interface MenuItem {
   id: string;
   name: string;
@@ -12,8 +30,10 @@ export interface MenuItem {
   imageUrl: string;
   dataAiHint?: string;
   category: string;
-  options?: MenuItemOption[]; // e.g., size, toppings
+  options?: MenuItemOption[]; // e.g., size, toppings - Original simple options
+  addons?: MenuItemAddonGroup[]; // New advanced add-ons
   restaurantId: string;
+  isAvailable?: boolean; // For real-time availability
 }
 
 export interface Restaurant {
@@ -37,10 +57,11 @@ export interface CartItem {
   quantity: number;
   imageUrl?: string;
   dataAiHint?: string;
+  // Note: Selected addons and their prices would also be stored here in a real cart
 }
 
 export interface User {
-  id: string;
+  id:string;
   email: string;
   name?: string;
   // other user fields
@@ -126,6 +147,7 @@ export interface Order {
     id: string;
     name: string;
     photoUrl?: string;
+    dataAiHint?: string; // Added for placeholder consistency
     rating: number;
     vehicleType: DeliveryVehicle;
     currentEtaMinutes?: number; // Dynamic ETA shown to customer
@@ -135,4 +157,30 @@ export interface Order {
   orderTimeline?: { status: OrderStatus, timestamp: string, notes?: string }[]; // For tracking history
   createdAt: string; // ISO string
   updatedAt: string; // ISO string
+}
+
+// Restaurant Admin Panel Specific Types
+export type DayOfWeek = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
+
+export interface OperatingHour {
+  day: DayOfWeek;
+  openTime: string; // e.g., "09:00"
+  closeTime: string; // e.g., "22:00"
+  isClosed: boolean;
+}
+
+export interface RestaurantSettings {
+  id: string; // Typically same as restaurantId
+  businessName: string;
+  logoUrl?: string;
+  coverImageUrl?: string;
+  category: string; // e.g., Pizza, Asian
+  address: string;
+  // mapLocation: { lat: number; lng: number }; // For future map integration
+  operatingHours: OperatingHour[];
+  isOpenNow: boolean; // Manual override or calculated
+  specialsStatus?: string; // e.g., "SUMMER20 for 20% off" or simple checkbox text
+  primaryColor?: string; // For store design
+  accentColor?: string; // For store design
+  dishDisplayStlye?: 'grid' | 'list';
 }

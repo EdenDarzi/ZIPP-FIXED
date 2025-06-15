@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck } from 'lucide-react';
+import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat } from 'lucide-react'; // Added ChefHat
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
 import { Badge } from '@/components/ui/badge';
@@ -40,6 +40,12 @@ const Header = () => {
             <Link href="/courier/open-bids" className="flex items-center">
               <Truck className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Courier Portal</span>
+            </Link>
+          </Button>
+           <Button variant="ghost" asChild size="sm">
+            <Link href="/restaurant-admin" className="flex items-center">
+              <ChefHat className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Restaurant Admin</span>
             </Link>
           </Button>
           <Button variant="ghost" asChild size="icon" className="relative">
