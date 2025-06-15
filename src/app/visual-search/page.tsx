@@ -3,14 +3,14 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { identifyDishFromImage, IdentifyDishInput, IdentifyDishOutput } from '@/ai/flows/identify-dish-flow';
-import { Camera, ImageUp, Loader2, Sparkles, Utensils } from 'lucide-react';
+import { Camera, ImageUp, Loader2, Sparkles, Utensils, Share2 } from 'lucide-react'; // Added Share2
 import Image from 'next/image';
-import { Label } from '@/components/ui/label'; // Added import for Label
+import { Label } from '@/components/ui/label';
 
 export default function VisualSearchPage() {
   const { toast } = useToast();
@@ -63,6 +63,16 @@ export default function VisualSearchPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleShareResults = () => {
+    if (!aiResponse) return;
+    // const shareText = `Look what I found with SwiftServe Visual Search! Identified: ${aiResponse.identifiedDishName}. Suggestions: ${aiResponse.suggestedText}`;
+    // const shareUrl = window.location.href; // Or a specific link to the results if available
+    toast({
+      title: "שיתוף תוצאות (דמו)",
+      description: "תוצאות החיפוש החזותי שותפו!",
+    });
   };
 
   return (
@@ -121,10 +131,14 @@ export default function VisualSearchPage() {
 
       {aiResponse && (
         <Card className="shadow-lg animate-fadeIn bg-muted/30">
-          <CardHeader>
+          <CardHeader className="flex flex-row justify-between items-center">
             <CardTitle className="flex items-center text-xl text-primary font-headline">
               <Utensils className="ml-2 h-6 w-6" /> תוצאת ניתוח AI
             </CardTitle>
+             <Button variant="outline" size="icon" onClick={handleShareResults}>
+                <Share2 className="h-5 w-5" />
+                <span className="sr-only">שתף תוצאות</span>
+              </Button>
           </CardHeader>
           <CardContent className="space-y-3">
             <h3 className="text-lg font-semibold">{aiResponse.identifiedDishName}</h3>

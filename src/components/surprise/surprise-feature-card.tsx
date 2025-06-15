@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { getSurpriseMealSuggestion, SurpriseMealInput, SurpriseMealOutput } from '@/ai/flows/surprise-meal-flow';
-import { Gift, Sparkles, Loader2, Utensils } from 'lucide-react';
+import { Gift, Sparkles, Loader2, Utensils, Share2 } from 'lucide-react'; // Added Share2
 import { Label } from '../ui/label';
 
 export default function SurpriseFeatureCard() {
@@ -21,7 +21,7 @@ export default function SurpriseFeatureCard() {
     setSurpriseResult(null);
     try {
       const input: SurpriseMealInput = {
-        userId: 'mockUserSurpriseMe123', // Using a mock user ID
+        userId: 'mockUserSurpriseMe123', 
         preferences: preferences,
       };
       const result = await getSurpriseMealSuggestion(input);
@@ -36,6 +36,16 @@ export default function SurpriseFeatureCard() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleShareSurprise = () => {
+    if (!surpriseResult) return;
+    // const shareText = `My SwiftServe AI surprise: ${surpriseResult.itemName} from ${surpriseResult.restaurantName}! Reason: ${surpriseResult.playfulReasoning}`;
+    // const shareUrl = window.location.href; // Or a specific link to the app
+    toast({
+      title: "שיתוף הפתעה (דמו)",
+      description: `ארוחת ההפתעה שלך "${surpriseResult.itemName}" שותפה!`,
+    });
   };
 
   return (
@@ -76,16 +86,20 @@ export default function SurpriseFeatureCard() {
 
         {surpriseResult && !isLoading && (
           <Card className="mt-6 bg-background/80 shadow-inner animate-fadeInUp">
-            <CardHeader>
+            <CardHeader className="flex flex-row justify-between items-center">
               <CardTitle className="flex items-center text-xl text-primary">
                 <Utensils className="ml-2 h-6 w-6" /> השף שלנו ממליץ על...
               </CardTitle>
+              <Button variant="outline" size="icon" onClick={handleShareSurprise}>
+                <Share2 className="h-5 w-5" />
+                <span className="sr-only">שתף הפתעה</span>
+              </Button>
             </CardHeader>
             <CardContent className="space-y-2">
               <h3 className="text-2xl font-bold text-accent">{surpriseResult.itemName}</h3>
               <p className="text-sm text-muted-foreground">ממסעדת: <span className="font-semibold text-primary/90">{surpriseResult.restaurantName}</span> (המצאה שלנו!)</p>
               <p className="text-md text-foreground">{surpriseResult.itemDescription}</p>
-              <blockquote className="border-r-4 border-accent bg-accent/10 p-3 rounded-md text-accent-foreground italic text-sm"> {/* Adjusted for RTL */}
+              <blockquote className="border-r-4 border-accent bg-accent/10 p-3 rounded-md text-accent-foreground italic text-sm"> 
                 {surpriseResult.playfulReasoning}
               </blockquote>
                <p className="text-xs text-muted-foreground pt-2 text-center">

@@ -26,7 +26,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { useToast } from '@/hooks/use-toast';
 import type { NutritionalGoal, DishRecommendation } from '@/types';
 import { getNutritionalAdvice, NutritionalAdvisorInput, NutritionalAdvisorOutput } from '@/ai/flows/nutritional-advisor-flow';
-import { Loader2, Sparkles, Utensils, Lightbulb, HeartPulse } from 'lucide-react';
+import { Loader2, Sparkles, Utensils, Lightbulb, HeartPulse, Share2 } from 'lucide-react'; // Added Share2
 
 const nutritionalGoals: { value: NutritionalGoal; label: string }[] = [
   { value: 'TONING', label: 'חיטוב ובניית שריר' },
@@ -52,7 +52,7 @@ export default function NutritionalAdvisorPage() {
   const form = useForm<NutritionalAdvisorFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      goal: undefined, // No default goal initially
+      goal: undefined, 
       preferences: '',
     },
   });
@@ -62,7 +62,7 @@ export default function NutritionalAdvisorPage() {
     setAdvisorResponse(null);
     try {
       const input: NutritionalAdvisorInput = {
-        userId: 'mockUserNutrition123', // Mock user ID
+        userId: 'mockUserNutrition123', 
         goal: values.goal as NutritionalGoal,
         preferences: values.preferences,
       };
@@ -82,6 +82,16 @@ export default function NutritionalAdvisorPage() {
       setIsLoading(false);
     }
   }
+
+  const handleShareRecommendations = () => {
+    if (!advisorResponse || !advisorResponse.recommendations || advisorResponse.recommendations.length === 0) return;
+    // const shareText = `My SwiftServe Nutritional Advisor recommended these dishes: ${advisorResponse.recommendations.map(r => r.dishName).join(', ')}. Goal: ${form.getValues('goal')}`;
+    // const shareUrl = window.location.href;
+    toast({
+      title: "שיתוף המלצות (דמו)",
+      description: "המלצות התזונה שלך שותפו!",
+    });
+  };
 
   return (
     <div className="max-w-3xl mx-auto py-8 space-y-8">
@@ -154,9 +164,13 @@ export default function NutritionalAdvisorPage() {
 
       {advisorResponse && advisorResponse.recommendations && advisorResponse.recommendations.length > 0 && (
         <Card className="mt-8 shadow-lg animate-fadeInUp">
-          <CardHeader>
+          <CardHeader className="flex flex-row justify-between items-center">
             <CardTitle className="text-2xl font-headline text-accent flex items-center">
                 <Utensils className="ml-3 h-7 w-7"/>המלצות השף התזונתי שלנו עבורך:</CardTitle>
+            <Button variant="outline" size="icon" onClick={handleShareRecommendations}>
+                <Share2 className="h-5 w-5" />
+                <span className="sr-only">שתף המלצות</span>
+            </Button>
           </CardHeader>
           <CardContent className="space-y-6">
             {advisorResponse.recommendations.map((rec, index) => (
@@ -164,7 +178,7 @@ export default function NutritionalAdvisorPage() {
                 <CardTitle className="text-xl text-primary mb-1">{rec.dishName}</CardTitle>
                 <CardDescription className="text-sm text-muted-foreground mb-2">מאת: {rec.restaurantName}</CardDescription>
                 <p className="text-foreground/90 mb-2">{rec.description}</p>
-                <div className="text-xs text-muted-foreground space-x-3 rtl:space-x-reverse mb-2"> {/* Adjusted for RTL */}
+                <div className="text-xs text-muted-foreground space-x-3 rtl:space-x-reverse mb-2"> 
                   {rec.estimatedCalories && <span>כ-{rec.estimatedCalories} קלוריות</span>}
                   {rec.estimatedProteinGrams && <span>כ-{rec.estimatedProteinGrams} גרם חלבון</span>}
                 </div>
