@@ -75,56 +75,56 @@ const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
 export const mockRestaurants: Restaurant[] = [
   {
     id: 'restaurant1',
-    name: 'פיצה פאלאס', // Translated
-    description: 'פיצות איטלקיות אותנטיות שנאפות לשלמות עם המרכיבים הטריים ביותר.', // Translated
+    name: 'פיצה פאלאס', 
+    description: 'פיצות איטלקיות אותנטיות שנאפות לשלמות עם המרכיבים הטריים ביותר.', 
     imageUrl: 'https://placehold.co/800x600.png',
     dataAiHint: 'pizza italian',
-    location: 'רחוב ראשי 123, אבן יהודה', // Translated
-    cuisineType: 'איטלקי', // Translated
+    location: 'רחוב ראשי 123, אבן יהודה', 
+    cuisineType: 'איטלקי', 
     rating: 4.5,
-    deliveryTimeEstimate: '25-35 דקות', // Translated
+    deliveryTimeEstimate: '25-35 דקות', 
     menu: mockMenuItems.filter(item => item.category === 'Pizza' || item.category === 'Drinks').map(item => ({ ...item, restaurantId: 'restaurant1' })),
     hasDeliveryArena: true,
     tags: ['Popular', 'Fast Delivery', 'Delivery Arena'],
   },
   {
     id: 'restaurant2',
-    name: 'בורגר בוננזה', // Translated
-    description: 'ההמבורגרים הטובים בעיר, צלויים בדיוק כמו שצריך. טעמו את ההבדל!', // Translated
+    name: 'בורגר בוננזה', 
+    description: 'ההמבורגרים הטובים בעיר, צלויים בדיוק כמו שצריך. טעמו את ההבדל!', 
     imageUrl: 'https://placehold.co/800x600.png',
     dataAiHint: 'burger american',
-    location: 'שדרות האלון 456, אבן יהודה', // Translated
-    cuisineType: 'אמריקאי', // Translated
+    location: 'שדרות האלון 456, אבן יהודה', 
+    cuisineType: 'אמריקאי', 
     rating: 4.2,
-    deliveryTimeEstimate: '20-30 דקות', // Translated
+    deliveryTimeEstimate: '20-30 דקות', 
     menu: mockMenuItems.filter(item => item.category === 'Burgers' || item.category === 'Drinks').map(item => ({ ...item, restaurantId: 'restaurant2' })),
     hasDeliveryArena: false,
     tags: ['Recommended', 'Hot Now'],
   },
   {
     id: 'restaurant3',
-    name: 'פסטה פרפקשן', // Translated
-    description: 'מנות פסטה טעימות שנעשו באהבה ומתכונים מסורתיים.', // Translated
+    name: 'פסטה פרפקשן', 
+    description: 'מנות פסטה טעימות שנעשו באהבה ומתכונים מסורתיים.', 
     imageUrl: 'https://placehold.co/800x600.png',
     dataAiHint: 'pasta authentic',
-    location: 'סמטת האורן 789, אבן יהודה', // Translated
-    cuisineType: 'איטלקי', // Translated
+    location: 'סמטת האורן 789, אבן יהודה', 
+    cuisineType: 'איטלקי', 
     rating: 4.8,
-    deliveryTimeEstimate: '30-40 דקות', // Translated
+    deliveryTimeEstimate: '30-40 דקות', 
     menu: mockMenuItems.filter(item => item.category === 'Pasta' || item.category === 'Salads' || item.category === 'Drinks').map(item => ({ ...item, restaurantId: 'restaurant3' })),
     hasDeliveryArena: true,
     tags: ['New', 'Recommended', 'Delivery Arena'],
   },
   {
     id: 'restaurant4',
-    name: 'סלט סנסיישנס', // Translated
-    description: 'סלטים טריים ובריאים לארוחה טעימה וללא רגשות אשם.', // Translated
+    name: 'סלט סנסיישנס', 
+    description: 'סלטים טריים ובריאים לארוחה טעימה וללא רגשות אשם.', 
     imageUrl: 'https://placehold.co/800x600.png',
     dataAiHint: 'salad healthy',
-    location: 'דרך המייפל 101, אבן יהודה', // Translated
-    cuisineType: 'בריא', // Translated
+    location: 'דרך המייפל 101, אבן יהודה', 
+    cuisineType: 'בריא', 
     rating: 4.0,
-    deliveryTimeEstimate: '15-25 דקות', // Translated
+    deliveryTimeEstimate: '15-25 דקות', 
     menu: mockMenuItems.filter(item => item.category === 'Salads' || item.category === 'Drinks').map(item => ({ ...item, restaurantId: 'restaurant4' })),
     hasDeliveryArena: true,
     tags: ['Fast Delivery', 'Delivery Arena'],
@@ -348,7 +348,7 @@ export const mockSecondHandItems: SecondHandItem[] = [
       { url: 'https://placehold.co/600x400.png', dataAiHint: 'iphone back' },
     ],
     location: 'אשדוד',
-    publishedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+    publishedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), 
     isSold: false,
     sellerRating: 4.8,
     contactMethod: 'whatsapp',
@@ -364,7 +364,7 @@ export const mockSecondHandItems: SecondHandItem[] = [
     description: 'אוזניות סוני מעולות עם ביטול רעשים אקטיבי. שימוש מועט מאוד, נמכרות עקב שדרוג.',
     images: [{ url: 'https://placehold.co/600x400.png', dataAiHint: 'sony headphones' }],
     location: 'תל אביב',
-    publishedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
+    publishedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), 
     isSold: false,
     sellerRating: 4.9,
     contactMethod: 'app-chat'
@@ -379,7 +379,7 @@ export const mockSecondHandItems: SecondHandItem[] = [
     description: 'שמלת קיץ קלילה ונוחה, נלבשה פעם אחת בלבד. מצב כמו חדש. בד נעים ונושם.',
     images: [{ url: 'https://placehold.co/600x400.png', dataAiHint: 'summer dress' }],
     location: 'חיפה',
-    publishedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
+    publishedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), 
     isSold: true,
     sellerRating: 4.5
   },
@@ -393,7 +393,7 @@ export const mockSecondHandItems: SecondHandItem[] = [
     description: 'דל XPS 13, מעבד i7 דור 10, 16GB RAM, 512GB SSD. מצב מצוין, סוללה טובה. שימש בעיקר ללימודים.',
     images: [{ url: 'https://placehold.co/600x400.png', dataAiHint: 'dell laptop' }],
     location: 'ירושלים',
-    publishedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
+    publishedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), 
     isSold: false,
     sellerRating: 5.0,
     contactMethod: 'phone',
@@ -402,7 +402,7 @@ export const mockSecondHandItems: SecondHandItem[] = [
 ];
 
 export const getSecondHandItems = (): SecondHandItem[] => {
-  return mockSecondHandItems.filter(item => !item.isSold); // Return only items not sold for listing
+  return mockSecondHandItems.filter(item => !item.isSold); 
 };
 
 export const getSecondHandItemById = (id: string): SecondHandItem | undefined => {
@@ -414,7 +414,7 @@ export const secondHandCategories: SecondHandItemCategory[] = ['טלפונים',
 const daysOfWeek: DayOfWeek[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 export const mockExistingSettings: RestaurantSettings = {
-  id: 'restaurant1', // Assuming settings for restaurant1
+  id: 'restaurant1', 
   businessName: 'פיצה פאלאס',
   logoUrl: 'https://placehold.co/200x100.png?text=Pizza+Palace+Logo',
   coverImageUrl: 'https://placehold.co/1200x300.png?text=Pizza+Palace+Cover',
@@ -424,16 +424,16 @@ export const mockExistingSettings: RestaurantSettings = {
     day,
     openTime: (day === 'Friday' || day === 'Saturday') ? '12:00' : '10:00',
     closeTime: (day === 'Friday' || day === 'Saturday') ? '23:00' : '22:00',
-    isClosed: false, // For simplicity, all open. Adjust as needed.
+    isClosed: day === 'Saturday', 
   })),
   isOpenNow: true,
   specialsStatus: 'מבצע: 2 מגשים משפחתיים ב-100₪!',
-  // Optional visual settings, if managed here instead of the "Design" page
-  primaryColor: '#E53935', // Example red for pizza
-  accentColor: '#FFB300', // Example yellow/orange
+  primaryColor: '#E53935', 
+  accentColor: '#FFB300', 
   dishDisplayStlye: 'grid',
   storeFont: 'sans',
   bannerLayout: 'textOverImage',
   showRatingsOnStore: true,
   showDeliveryTimeOnStore: true,
 };
+
