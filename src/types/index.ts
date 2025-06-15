@@ -187,3 +187,49 @@ export interface RestaurantSettings {
   accentColor?: string; // For store design
   dishDisplayStlye?: 'grid' | 'list';
 }
+
+// P2P / Custom Errand Delivery Types
+export interface P2PDeliveryRequestDetails {
+  pickupAddress: string;
+  destinationAddress: string;
+  packageDescription: string;
+  pickupContactName?: string;
+  pickupContactPhone?: string;
+  destinationContactName?: string;
+  destinationContactPhone?: string;
+  isPurchaseRequired: boolean;
+  shoppingList?: string;
+  estimatedBudget?: number; // For purchases
+  specialInstructions?: string;
+  requestedPickupTime?: string; // e.g., 'ASAP', '2024-07-26T14:00:00Z'
+}
+
+export type P2POrderStatus =
+  | 'REQUESTED'
+  | 'MATCHING_COURIER'
+  | 'COURIER_ASSIGNED'
+  | 'PICKUP_IN_PROGRESS'
+  | 'EN_ROUTE_TO_DESTINATION'
+  | 'DELIVERED'
+  | 'CANCELLED';
+
+export interface P2POrder {
+  id: string;
+  userId: string;
+  requestDetails: P2PDeliveryRequestDetails;
+  status: P2POrderStatus;
+  assignedCourier?: {
+    id: string;
+    name: string;
+    vehicleType: DeliveryVehicle;
+    currentEtaMinutes?: number;
+    liveLocation?: { lat: number; lng: number };
+  };
+  estimatedCost?: number;
+  actualCost?: number; // Includes item purchase if applicable
+  createdAt: string; // ISO string
+  updatedAt: string; // ISO string
+  orderTimeline?: { status: P2POrderStatus, timestamp: string, notes?: string }[];
+}
+
+    

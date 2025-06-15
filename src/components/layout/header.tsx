@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, Camera, Languages } from 'lucide-react';
+import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, Camera, Languages, Send } from 'lucide-react'; // Added Send
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
 import { Badge } from '@/components/ui/badge';
@@ -40,25 +40,33 @@ const Header = () => {
             </Link>
           </Button>
           <Button variant="ghost" asChild size="sm">
-            <Link href="/recommendations">
+            <Link href="/send-package">
               <span className="flex items-center">
-                <Brain className="h-4 w-4 sm:mr-2" /> {/* Adjusted margin for RTL */}
-                <span className="hidden sm:inline">המלצות AI</span>
+                <Send className="h-4 w-4 sm:mr-2" /> {/* New Icon */}
+                <span className="hidden sm:inline">שלח חבילה</span> {/* New Link */}
+              </span>
+            </Link>
+          </Button>
+           <Button variant="ghost" asChild size="sm">
+            <Link href="/visual-search">
+              <span className="flex items-center">
+                <Camera className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">חיפוש חזותי</span>
               </span>
             </Link>
           </Button>
           <Button variant="ghost" asChild size="sm">
-            <Link href="/visual-search">
+            <Link href="/recommendations">
               <span className="flex items-center">
-                <Camera className="h-4 w-4 sm:mr-2" /> {/* Adjusted margin for RTL */}
-                <span className="hidden sm:inline">חיפוש חזותי</span>
+                <Brain className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">המלצות AI</span>
               </span>
             </Link>
           </Button>
           <Button variant="ghost" asChild size="sm">
             <Link href="/courier/open-bids">
               <span className="flex items-center">
-                <Truck className="h-4 w-4 sm:mr-2" /> {/* Adjusted margin for RTL */}
+                <Truck className="h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">שליחים</span>
               </span>
             </Link>
@@ -66,7 +74,7 @@ const Header = () => {
            <Button variant="ghost" asChild size="sm">
             <Link href="/restaurant-admin">
               <span className="flex items-center">
-                <ChefHat className="h-4 w-4 sm:mr-2" /> {/* Adjusted margin for RTL */}
+                <ChefHat className="h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">ניהול מסעדה</span>
               </span>
             </Link>
@@ -76,7 +84,7 @@ const Header = () => {
               <span className="relative flex items-center justify-center w-full h-full">
                 <ShoppingCart className="h-5 w-5" />
                 {itemCount > 0 && (
-                  <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-xs"> {/* Adjusted for RTL */}
+                  <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-xs">
                     {itemCount}
                   </Badge>
                 )}
@@ -86,14 +94,14 @@ const Header = () => {
           <Button variant="outline" size="sm" asChild>
             <Link href="/auth/login">
               <span className="flex items-center">
-                <UserCircle className="h-4 w-4 mr-0 sm:mr-2" /> {/* Adjusted margin for RTL */}
+                <UserCircle className="h-4 w-4 mr-0 sm:mr-2" />
                 <span className="hidden sm:inline">כניסה</span>
               </span>
             </Link>
           </Button>
           <Button variant="ghost" size="sm" onClick={handleLanguageToggle} className="flex items-center" aria-label="Toggle language">
             <span className="flex items-center">
-                <Languages className="h-4 w-4 sm:mr-1" /> {/* Adjusted margin for RTL */}
+                <Languages className="h-4 w-4 sm:mr-1" />
                 <span className="hidden sm:inline">EN</span>
             </span>
           </Button>
@@ -104,3 +112,5 @@ const Header = () => {
 };
 
 export default Header;
+
+    
