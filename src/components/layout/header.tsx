@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, Camera, Languages, Send, HeartPulse, TrendingUp, Award, MapIcon, Briefcase, Gem, Users } from 'lucide-react'; // Added MapIcon for Food Radar, Briefcase for TravelMode, Gem for VIP, Users for Affiliate
+import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, Camera, Languages, Send, HeartPulse, TrendingUp, Award, MapIcon, Briefcase, Gem, Users } from 'lucide-react'; 
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
 import { Badge } from '@/components/ui/badge';
@@ -21,7 +21,7 @@ const Header = () => {
   };
 
   const handleTravelModeToggle = () => {
-    toast({ title: "TravelMode (בטא)", description: "המלצות מותאמות למיקום ושירותים בינלאומיים יגיעו בקרוב!" });
+    toast({ title: "מצב נסיעות (בטא)", description: "המלצות מותאמות למיקום ושירותים בינלאומיים יגיעו בקרוב!" });
   };
 
   return (
@@ -65,9 +65,9 @@ const Header = () => {
             <Link href="/restaurant-admin"><span className="flex items-center"><ChefHat className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">ניהול עסק</span></span></Link>
           </Button>
           
-          <Button variant="ghost" size="sm" onClick={handleTravelModeToggle} className="hidden lg:inline-flex items-center" title="TravelMode (בטא)">
+          <Button variant="ghost" size="sm" onClick={handleTravelModeToggle} className="hidden lg:inline-flex items-center" title="מצב נסיעות (בטא)">
             <Briefcase className="h-4 w-4 text-blue-500 sm:mr-1" />
-            <span className="hidden lg:inline text-xs">TravelMode</span> 
+            <span className="hidden lg:inline text-xs">מצב נסיעות</span> 
           </Button>
 
           <Button variant="ghost" asChild size="icon" className="relative">
