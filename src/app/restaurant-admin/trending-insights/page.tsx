@@ -6,58 +6,57 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Lightbulb, TrendingUp, ThumbsUp, Search, PlusCircle, AlertTriangle } from 'lucide-react';
+import { Lightbulb, TrendingUp, ThumbsUp, Search, PlusCircle, AlertTriangle, Info } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
-import type { IdentifyDishOutput } from '@/ai/flows/identify-dish-flow'; // Assuming schema is defined and exported
+import type { IdentifyDishOutput } from '@/ai/flows/identify-dish-flow';
 
 
-// Mock data for trending insights - in a real app, this would come from the backend/AI system
 const mockTrendingInsights: IdentifyDishOutput[] = [
   {
     identifiedDishName: "Korean Corndogs with Cheese Pull",
     isTrend: true,
     trendSource: "TikTok & Instagram",
-    generalSuggestion: "Users are loving the dramatic cheese pull! Similar items can be found by searching 'gourmet hotdogs' or 'fried cheese snacks'.",
+    generalSuggestion: "משתמשים אוהבים את משיכת הגבינה הדרמטית! פריטים דומים ניתן למצוא בחיפוש 'נקניקיות גורמה' או 'חטיפי גבינה מטוגנים'.",
     businessOpportunity: {
-      suggestedItemName: "The Ultimate SwiftServe Cheesy Corndog",
+      suggestedItemName: "הקורנדוג הגבינתי האולטימטיבי של SwiftServe",
       suggestedPriceRange: "₪28-₪35",
-      suggestedDescription: "Crispy panko-crusted corndog with a molten mozzarella center, perfect for that satisfying cheese pull. Served with your choice of dipping sauce.",
-      suggestedTags: ["New", "TikTok Viral", "Cheesy", "Street Food"],
-      rationale: "High social media engagement and visually appealing. Could attract younger audiences and impulse buys."
+      suggestedDescription: "קורנדוג פריך מצופה פנקו עם ליבת מוצרלה נמסה, מושלם למשיכת גבינה מספקת. מוגש עם רוטב לבחירה.",
+      suggestedTags: ["חדש", "להיט טיקטוק", "גבינתי", "אוכל רחוב"],
+      rationale: "מעורבות גבוהה ברשתות חברתיות ומושך ויזואלית. יכול למשוך קהלים צעירים וקניות אימפולסיביות."
     }
   },
   {
-    identifiedDishName: "Spicy Ramen Challenge Bowl",
+    identifiedDishName: "קערת אתגר ראמן חריף",
     isTrend: true,
-    trendSource: "YouTube & Social Challenges",
-    generalSuggestion: "The 'spicy challenge' trend continues. Users looking for extreme heat can explore our spiciest ramen options.",
+    trendSource: "אתגרי יוטיוב ורשתות חברתיות",
+    generalSuggestion: "טרנד 'האתגר החריף' ממשיך. משתמשים המחפשים חריפות קיצונית יכולים לבדוק את אפשרויות הראמן החריפות ביותר שלנו.",
     businessOpportunity: {
-      suggestedItemName: "Inferno Noodle Challenge",
-      suggestedPriceRange: "₪45-₪55 (includes a small milk)",
-      suggestedDescription: "Dare to try our hottest ramen ever? Packed with ghost peppers and a secret spice blend. Finish it and get your photo on our Wall of Flame!",
-      suggestedTags: ["Challenge", "Spicy", "Ramen", "Limited Time Offer"],
-      rationale: "Drives engagement and user-generated content. Great for social media marketing."
+      suggestedItemName: "אתגר נודלס אינפרנו",
+      suggestedPriceRange: "₪45-₪55 (כולל חלב קטן)",
+      suggestedDescription: "העזו לנסות את הראמן הכי חריף שלנו אי פעם? עמוס בפלפלי רפאים ותערובת תבלינים סודית. סיימו אותו ותקבלו את תמונתכם על קיר התהילה שלנו!",
+      suggestedTags: ["אתגר", "חריף", "ראמן", "הצעה לזמן מוגבל"],
+      rationale: "מניע מעורבות ותוכן שנוצר על ידי משתמשים. מצוין לשיווק ברשתות חברתיות."
     }
   },
   {
-    identifiedDishName: "Dalgona Coffee (Whipped Coffee)",
+    identifiedDishName: "קפה דלגונה (קפה מוקצף)",
     isTrend: true,
-    trendSource: "TikTok (Past Trend, Recurring Interest)",
-    generalSuggestion: "A nostalgic trend that still sees searches. Offer a gourmet version or a seasonal twist.",
+    trendSource: "טיקטוק (טרנד עבר, עניין חוזר)",
+    generalSuggestion: "טרנד נוסטלגי שעדיין זוכה לחיפושים. הציעו גרסת גורמה או טוויסט עונתי.",
     businessOpportunity: {
-      suggestedItemName: "Cloud Nine Whipped Latte",
+      suggestedItemName: "לאטה מוקצף ענן תשע",
       suggestedPriceRange: "₪18-₪24",
-      suggestedDescription: "Velvety smooth whipped coffee layered over iced milk, with a hint of vanilla and caramel drizzle. An elevated classic.",
-      suggestedTags: ["Coffee", "Trendy Drink", "Instagrammable"],
-      rationale: "Easy to prepare, high-profit margin, and visually appealing for social sharing. Appeals to coffee lovers looking for something different."
+      suggestedDescription: "קפה מוקצף חלק וקטיפתי על חלב קר, עם נגיעת וניל וזילוף קרמל. קלאסיקה משודרגת.",
+      suggestedTags: ["קפה", "משקה טרנדי", "אינסטגרמי"],
+      rationale: "קל להכנה, רווחיות גבוהה ומושך ויזואלית לשיתוף חברתי. פונה לאוהבי קפה המחפשים משהו שונה."
     }
   },
   {
-    identifiedDishName: "Avocado Toast (Artisanal)",
-    isTrend: false, // Example of something not flagged as a *new* viral trend but still relevant
-    generalSuggestion: "A perennial favorite. SwiftServe offers many cafes with great avocado toast options. Users can filter by 'breakfast' or 'cafe'.",
-    // No specific new businessOpportunity here as it's already common
+    identifiedDishName: "טוסט אבוקדו (ארטיזנלי)",
+    isTrend: false, 
+    generalSuggestion: "מועדף תמידי. SwiftServe מציעה בתי קפה רבים עם אפשרויות טוסט אבוקדו מעולות. משתמשים יכולים לסנן לפי 'ארוחת בוקר' או 'בית קפה'.",
+    // No businessOpportunity as it's common
   }
 ];
 
@@ -67,10 +66,6 @@ export default function TrendingInsightsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [insights, setInsights] = useState<IdentifyDishOutput[]>(mockTrendingInsights);
 
-  // In a real app, you'd fetch these insights or subscribe to updates.
-  // useEffect(() => {
-  //   // fetchInsights().then(setInsights);
-  // }, []);
 
   const handleQuickAddToMenu = (suggestion: IdentifyDishOutput['businessOpportunity']) => {
     if (!suggestion) return;
@@ -79,9 +74,6 @@ export default function TrendingInsightsPage() {
       description: `"${suggestion.suggestedItemName}" נוסף לתפריט שלך עם תיוג 'בהשראת לקוחות'. ניתן לערוך אותו בדף ניהול המוצרים.`,
       action: <ThumbsUp className="text-green-500" />,
     });
-    // In a real app, this would either:
-    // 1. Directly add a new menu item to the backend.
-    // 2. Pre-fill the "Add New Item" form on the menu management page.
   };
   
   const filteredInsights = insights.filter(insight => 
@@ -98,7 +90,7 @@ export default function TrendingInsightsPage() {
             <Lightbulb className="mr-2 h-6 w-6 text-primary" /> תובנות טרנדים מבוססות AI
           </CardTitle>
           <CardDescription>
-            גלה מה חם עכשיו בשוק! המערכת מזהה טרנדים קולינריים וחברתיים על בסיס פעילות משתמשים (חיפושים, שיתופים, העלאות תמונות) ומציעה רעיונות לעסק שלך.
+            גלה מה חם עכשיו בשוק! המערכת מזהה טרנדים קולינריים וחברתיים על בסיס פעילות משתמשים (חיפושים, שיתופים, העלאות תמונות) ומציעה רעיונות לעסק שלך. עסקים מקבלים התראות וסטטיסטיקות על טרנדים רלוונטיים באזורם.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -112,8 +104,9 @@ export default function TrendingInsightsPage() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-             <p className="text-sm text-muted-foreground">
-              מוצגות הצעות טרנדים מבוססות על נתוני דמה. במערכת חיה, אלו יתעדכנו בזמן אמת.
+             <p className="text-sm text-muted-foreground p-2 bg-blue-50 border border-blue-200 rounded-md flex items-start">
+                <Info className="h-4 w-4 mr-2 mt-0.5 text-blue-600 flex-shrink-0" />
+                <span>מוצגות הצעות טרנדים מבוססות על נתוני דמה. במערכת חיה, אלו יתעדכנו בזמן אמת ויכללו סטטיסטיקות כמו מספר חיפושים, שיתופים ובקשות דומות לכל טרנד.</span>
             </p>
         </CardContent>
       </Card>
@@ -161,11 +154,11 @@ export default function TrendingInsightsPage() {
                     </div>
                     <div className="mt-3 relative aspect-video bg-gray-200 rounded overflow-hidden">
                         <Image 
-                            src={`https://placehold.co/300x200.png?text=AI+Preview`} 
-                            alt="AI generated preview" 
+                            src={`https://placehold.co/300x200.png`} 
+                            alt={`AI preview for ${insight.businessOpportunity.suggestedItemName}`}
                             layout="fill" 
                             objectFit="cover"
-                            data-ai-hint="ai generated food image concept"
+                            data-ai-hint={insight.businessOpportunity.suggestedItemName?.toLowerCase().split(' ').slice(0,2).join(' ') || "food concept"}
                         />
                         <p className="absolute bottom-1 right-1 text-xs bg-black/50 text-white px-1 rounded">תצוגת AI (דמו)</p>
                     </div>
@@ -190,7 +183,7 @@ export default function TrendingInsightsPage() {
         ))}
       </div>
        <p className="text-xs text-muted-foreground text-center mt-4">
-        תובנות אלו הן המלצות בלבד. עסקים יכולים לבחור לאמץ, לדחות או לערוך כל הצעה.
+        תובנות אלו הן המלצות בלבד. עסקים יכולים לבחור לאמץ, לדחות או לערוך כל הצעה. מנות שנוספו דרך "הוספה מהירה" יסומנו כ"בהשראת לקוחות".
       </p>
     </div>
   );

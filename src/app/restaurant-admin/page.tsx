@@ -1,16 +1,15 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, ListOrdered, ShoppingCart, Users, AlertTriangle, Settings, LayoutList, Palette, BarChart3 } from "lucide-react";
+import { DollarSign, ListOrdered, ShoppingCart, Users, AlertTriangle, Settings, LayoutList, Palette, BarChart3, Video } from "lucide-react"; // Added Video for LiveKitchen
 import Link from "next/link";
 
 export default function RestaurantAdminDashboard() {
-  // Mock data - in a real app, this would come from a backend
   const stats = {
     todayOrders: 12,
     pendingOrders: 3,
     totalRevenueToday: 450.75,
-    popularItem: "מוצר הדגל", // Generic popular item
+    popularItem: "מוצר הדגל",
   };
 
   const quickLinks = [
@@ -26,14 +25,12 @@ export default function RestaurantAdminDashboard() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-3xl font-bold font-headline text-primary">לוח בקרה לעסק</h1>
         <Button asChild>
-          {/* Assuming restaurant1 is a generic ID or could be dynamic */}
           <Link href="/restaurants/restaurant1" target="_blank"> 
             <span>צפה בחנות החיה</span>
           </Link>
         </Button>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -77,7 +74,6 @@ export default function RestaurantAdminDashboard() {
         </Card>
       </div>
 
-      {/* Quick Links Section */}
       <Card>
         <CardHeader>
           <CardTitle>פעולות מהירות</CardTitle>
@@ -99,20 +95,34 @@ export default function RestaurantAdminDashboard() {
         </CardContent>
       </Card>
 
-      {/* Placeholder for Recent Activity or Important Alerts */}
-      <Card>
-        <CardHeader>
-          <CardTitle>התראות ועדכונים</CardTitle>
-          <CardDescription>עדכונים חשובים ופעולות נדרשות.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center text-muted-foreground py-8">
-            <Users className="h-12 w-12 mx-auto mb-4" />
-            <p>אין התראות חדשות או עדכונים קריטיים כרגע.</p>
-            <p className="text-xs mt-1">סטטוס מערכת: כל המערכות פועלות כשורה.</p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="grid md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>התראות ועדכונים</CardTitle>
+            <CardDescription>עדכונים חשובים ופעולות נדרשות.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center text-muted-foreground py-8">
+              <Users className="h-12 w-12 mx-auto mb-4" />
+              <p>אין התראות חדשות או עדכונים קריטיים כרגע.</p>
+              <p className="text-xs mt-1">סטטוס מערכת: כל המערכות פועלות כשורה.</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center"><Video className="mr-2 h-5 w-5 text-red-500" /> LiveKitchen סטטוס</CardTitle>
+            <CardDescription>שתף את הלקוחות שלך במה שקורה מאחורי הקלעים!</CardDescription>
+          </CardHeader>
+          <CardContent className="text-center space-y-3">
+            <p className="text-lg font-medium text-muted-foreground">פיד ה-LiveKitchen שלך <span className="text-red-600 font-semibold">לא פעיל</span> כרגע.</p>
+            <Image src="https://placehold.co/300x150.png" alt="LiveKitchen Placeholder" width={300} height={150} className="mx-auto rounded-md border data-ai-hint='kitchen live stream preview'" />
+            <Button variant="outline" disabled>הפעל שידור חי (בקרוב)</Button>
+            <p className="text-xs text-muted-foreground">הגבר אמון ועניין עם שידורים חיים מהמטבח או אזור העבודה שלך.</p>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

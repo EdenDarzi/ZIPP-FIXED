@@ -18,10 +18,10 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import type { RestaurantSettings, OperatingHour, DayOfWeek } from '@/types'; // RestaurantSettings might need to become BusinessSettings
+import type { RestaurantSettings, OperatingHour, DayOfWeek } from '@/types';
 import { TimePicker } from '@/components/ui/time-picker';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Trash2, PlusCircle, UploadCloud } from 'lucide-react';
+import { Trash2, PlusCircle, UploadCloud, Info } from 'lucide-react';
 import Image from 'next/image';
 
 const operatingHourSchema = z.object({
@@ -46,12 +46,11 @@ const defaultOperatingHours: OperatingHour[] = (['Monday', 'Tuesday', 'Wednesday
   day,
   openTime: '09:00',
   closeTime: '22:00',
-  isClosed: day === 'Sunday', // Example default
+  isClosed: day === 'Sunday', 
 }));
 
-// Mock existing settings - in a real app, this would be fetched
-const mockExistingSettings: RestaurantSettings = { // Consider renaming RestaurantSettings type to BusinessSettings
-    id: 'business1', // Generic ID
+const mockExistingSettings: RestaurantSettings = { 
+    id: 'business1', 
     businessName: 'העסק המגניב שלי',
     logoUrl: 'https://placehold.co/200x100.png?text=Current+Logo',
     coverImageUrl: 'https://placehold.co/1200x300.png?text=Current+Cover',
@@ -90,7 +89,6 @@ export default function RestaurantSettingsPage() {
       title: 'ההגדרות עודכנו',
       description: 'הגדרות העסק שלך נשמרו בהצלחה.',
     });
-    // Here you would typically send data to your backend
   }
 
   const handleUploadClick = (fieldName: 'logoUrl' | 'coverImageUrl') => {
@@ -99,7 +97,6 @@ export default function RestaurantSettingsPage() {
         description: `העלאת קבצים עבור ${fieldName} תתאפשר בקרוב. בינתיים, אנא השתמש בכתובת URL ישירה לתמונה.`,
         variant: 'default',
     });
-    // In a real app, this would trigger a file input or a file manager dialog.
   };
 
   return (
@@ -116,7 +113,7 @@ export default function RestaurantSettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle>מידע על העסק</CardTitle>
-              <CardDescription>פרטים בסיסיים על העסק שלך.</CardDescription>
+              <CardDescription>פרטים בסיסיים על העסק שלך. SwiftServe AI יכול לסייע בהצעת פרטים התחלתיים (בקרוב!).</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <FormField
@@ -126,7 +123,7 @@ export default function RestaurantSettingsPage() {
                   <FormItem>
                     <FormLabel>שם העסק</FormLabel>
                     <FormControl>
-                      <Input placeholder="לדוגמה: החנות המופלאה" {...field} />
+                      <Input placeholder="לדוגמה: החנות המופלאה, מאפיית הפינה" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -139,7 +136,7 @@ export default function RestaurantSettingsPage() {
                   <FormItem>
                     <FormLabel>קטגוריה / סוג עסק</FormLabel>
                     <FormControl>
-                      <Input placeholder="לדוגמה: אופנה, אלקטרוניקה, ייעוץ" {...field} />
+                      <Input placeholder="לדוגמה: אופנה, מאפייה, פרחים, ייעוץ" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -158,6 +155,10 @@ export default function RestaurantSettingsPage() {
                   </FormItem>
                 )}
               />
+               <div className="text-xs text-muted-foreground p-2 bg-blue-50 border border-blue-200 rounded-md flex items-start">
+                <Info className="h-4 w-4 mr-2 mt-0.5 text-blue-600 flex-shrink-0" />
+                <span>עבור עסקים חדשים, במיוחד עסקים קטנים (מאפיות, פרחים, חנויות פופ-אפ), SwiftServe AI יכול לעזור לבנות תפריט/קטלוג ראשוני, עיצוב בסיסי והצעות מחיר - תוך דקות (בקרוב!).</span>
+              </div>
             </CardContent>
           </Card>
 
@@ -326,7 +327,3 @@ export default function RestaurantSettingsPage() {
     </div>
   );
 }
-
-// Placeholder for TimePicker component. In a real scenario, you might use a library or build one.
-// For now, we'll just use <Input type="time" />
-// const TimePicker = Input;

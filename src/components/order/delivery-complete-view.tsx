@@ -6,15 +6,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { Star, CheckCircle, Gift, Heart, RotateCcw, DollarSign, MessageCircle,Camera, Share2 } from 'lucide-react'; // Assuming TikTok is MessageCircle, Instagram Camera
+import { Star, CheckCircle, Gift, Heart, RotateCcw, DollarSign, MessageCircle, Camera, Share2, Mic } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Separator } from '../ui/separator';
 import { Label } from '../ui/label';
 
-// Lucide doesn't have TikTok or specific social media icons. Using generic ones.
-// Consider react-icons or SVGs for specific brand icons if needed.
 const TikTokIcon = MessageCircle; 
 const InstagramIcon = Camera;
 const WhatsAppIcon = MessageCircle;
@@ -79,9 +77,15 @@ export function DeliveryCompleteView({ order }: DeliveryCompleteViewProps) {
     const dishName = order.items.length > 0 ? order.items[0].name : "my amazing meal";
     toast({
         title: `שיתוף ב-${platform} (דמו)`,
-        description: `שיתפת את "${dishName}" מ-${order.restaurantName} ב-${platform}! +10 כוכבים נוספו לחשבונך! (דמו)`,
+        description: `שיתפת את "${dishName}" מ-${order.restaurantName} ב-${platform}! +10 כוכבים נוספו לחשבונך! (SocialDrop דמו)`,
     });
-    // Actual sharing logic would go here (e.g., window.open with share URLs)
+  };
+
+  const handleVoiceFeedback = () => {
+    toast({
+        title: "משוב קולי (בקרוב!)",
+        description: "הקלטת משוב קולי תתאפשר בקרוב. נשמח לשמוע אותך!",
+    });
   };
 
   return (
@@ -94,14 +98,14 @@ export function DeliveryCompleteView({ order }: DeliveryCompleteViewProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* SocialDrop Section */}
+        
         <Card className="bg-accent/10 border-accent/30 p-4">
           <CardHeader className="p-0 pb-2 text-center">
             <CardTitle className="text-xl text-accent font-headline flex items-center justify-center">
                 <Share2 className="h-6 w-6 ml-2" /> SocialDrop: שתפו וזכו בכוכבים!
             </CardTitle>
             <CardDescription className="text-sm text-accent-foreground/80">
-                שתפו את המנה שלכם וצברו כוכבים להנחות ופרסים!
+                כל שיתוף מוצלח של המנה שלכם בטיקטוק, אינסטגרם או וואטסאפ יכול לזכות אתכם ב"כוכבים" להנחות ופרסים!
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0 pt-3 flex justify-center items-center gap-3">
@@ -119,9 +123,8 @@ export function DeliveryCompleteView({ order }: DeliveryCompleteViewProps) {
 
         <Separator />
         
-        {/* Restaurant Feedback */}
         <div>
-          <h3 className="text-lg font-semibold mb-2 text-center">דרג את המסעדה</h3>
+          <h3 className="text-lg font-semibold mb-2 text-center">דרג את העסק/מסעדה</h3>
           <div className="flex justify-center space-x-1 mb-3" dir="ltr">
             {[1, 2, 3, 4, 5].map((star) => (
               <Star
@@ -131,22 +134,21 @@ export function DeliveryCompleteView({ order }: DeliveryCompleteViewProps) {
                 onClick={() => setRestaurantRating(star)}
                 onMouseEnter={() => setHoverRestaurantRating(star)}
                 onMouseLeave={() => setHoverRestaurantRating(0)}
-                aria-label={`דרג מסעדה ${star} כוכבים`}
+                aria-label={`דרג עסק ${star} כוכבים`}
               />
             ))}
           </div>
           <Textarea
-            placeholder={`איך הייתה האוכל במסעדת ${order.restaurantName}?`}
+            placeholder={`איך הייתה החוויה שלך עם ${order.restaurantName}?`}
             value={restaurantFeedback}
             onChange={(e) => setRestaurantFeedback(e.target.value)}
             className="min-h-[80px]"
-            aria-label="משוב על המסעדה"
+            aria-label="משוב על העסק"
           />
         </div>
 
         <Separator />
 
-        {/* Delivery Feedback */}
         <div>
           <h3 className="text-lg font-semibold mb-2 text-center">דרג את המשלוח</h3>
           <div className="flex justify-center space-x-1 mb-3" dir="ltr">
@@ -170,10 +172,16 @@ export function DeliveryCompleteView({ order }: DeliveryCompleteViewProps) {
             aria-label="משוב על המשלוח"
           />
         </div>
+        
+        <div className="flex flex-col sm:flex-row gap-2 mt-3">
+            <Button onClick={handleFeedbackSubmit} className="flex-1 bg-primary hover:bg-primary/90">
+              שלח משוב
+            </Button>
+            <Button variant="outline" onClick={handleVoiceFeedback} className="flex-1">
+              <Mic className="mr-2 h-4 w-4" /> השאר משוב קולי (בקרוב!)
+            </Button>
+        </div>
 
-        <Button onClick={handleFeedbackSubmit} className="w-full mt-3 bg-primary hover:bg-primary/90">
-          שלח משוב
-        </Button>
 
         <Separator />
 
@@ -222,7 +230,7 @@ export function DeliveryCompleteView({ order }: DeliveryCompleteViewProps) {
         <Button asChild className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground">
           <Link href="/restaurants">
             <span className="flex items-center justify-center w-full">
-              <CheckCircle className="mr-2 h-4 w-4" /> הזמן ממקום אחר
+              <CheckCircle className="mr-2 h-4 w-4" /> הזמן מעסק אחר
             </span>
           </Link>
         </Button>

@@ -7,17 +7,17 @@ import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import { CartProvider } from '@/context/cart-context';
 import { cn } from '@/lib/utils';
-import AiChatAssistant from '@/components/layout/ai-chat-assistant'; // Added
+import AiChatAssistant from '@/components/layout/ai-chat-assistant';
 
 const ptSans = PT_Sans({
-  subsets: ['latin', 'cyrillic'], // Added cyrillic for PT Sans, Hebrew is generally well supported
+  subsets: ['latin', 'cyrillic'],
   weight: ['400', '700'],
   variable: '--font-pt-sans',
 });
 
 export const metadata: Metadata = {
-  title: 'SwiftServe - אפליקציית המשלוחים החכמה שלך', // Placeholder
-  description: 'הזמינו משלוח ממסעדות, חנויות ובתי קפה עם SwiftServe.', // Placeholder
+  title: 'SwiftServe - פלטפורמת המשלוחים החכמה שלך',
+  description: 'הזמינו משלוח ממסעדות, חנויות ובתי קפה עם SwiftServe. גלו טרנדים, שתפו וזכו בפרסים!',
 };
 
 export default function RootLayout({
@@ -40,7 +40,7 @@ export default function RootLayout({
           </main>
           <Footer />
           <Toaster />
-          <AiChatAssistant /> {/* Added AI Chat Assistant FAB */}
+          <AiChatAssistant />
         </CartProvider>
       </body>
     </html>

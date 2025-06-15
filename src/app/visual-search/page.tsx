@@ -8,9 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { identifyDishFromImage, IdentifyDishInput, IdentifyDishOutput } from '@/ai/flows/identify-dish-flow';
-import { Camera, ImageUp, Loader2, Sparkles, Utensils, Share2, TrendingUp } from 'lucide-react';
+import { Camera, ImageUp, Loader2, Sparkles, Utensils, Share2, TrendingUp, Info } from 'lucide-react';
 import Image from 'next/image';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 
 export default function AiTrendScannerPage() {
   const { toast } = useToast();
@@ -23,7 +24,7 @@ export default function AiTrendScannerPage() {
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size > 4 * 1024 * 1024) { // 4MB limit for Gemini
+      if (file.size > 4 * 1024 * 1024) { 
         toast({
           title: "התמונה גדולה מדי",
           description: "אנא העלה/י תמונה קטנה מ-4MB.",
@@ -69,7 +70,7 @@ export default function AiTrendScannerPage() {
     if (!aiResponse) return;
     toast({
       title: "שיתוף ממצאי טרנד (דמו)",
-      description: `זיהוי: ${aiResponse.identifiedDishName}. הצעה: ${aiResponse.suggestedText.substring(0,50)}...`,
+      description: `זיהוי: ${aiResponse.identifiedDishName}. הצעה כללית: ${aiResponse.generalSuggestion.substring(0,50)}...`,
     });
   };
 
@@ -80,7 +81,7 @@ export default function AiTrendScannerPage() {
           <TrendingUp className="h-12 w-12 text-primary mx-auto mb-3" />
           <CardTitle className="text-3xl font-headline text-primary">AI TrendScanner - מנוע הטרנדים</CardTitle>
           <CardDescription>
-            ראית טרנד קולינרי בטיקטוק או באינסטגרם? העלה/י תמונה, וה-AI שלנו ינסה לזהות אותו, להציע איפה למצוא משהו דומה, או אפילו לתת רעיונות לעסקים!
+            ראית טרנד קולינרי בטיקטוק או באינסטגרם? העלה/י תמונה, וה-AI שלנו ינסה לזהות אותו, להציע איפה למצוא משהו דומה, או אפילו לתת רעיונות לעסקים! תמונות שאתה מעלה עוזרות למערכת לזהות טרנדים לכל הקהילה.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -140,9 +141,28 @@ export default function AiTrendScannerPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <h3 className="text-lg font-semibold">{aiResponse.identifiedDishName}</h3>
-            <p className="text-foreground/90 whitespace-pre-wrap">{aiResponse.suggestedText}</p>
+            {aiResponse.isTrend && <Badge variant="secondary" className="bg-accent/20 text-accent-foreground border-accent/50"><TrendingUp className="mr-1 h-3 w-3"/> טרנד {aiResponse.trendSource ? `מזוהה מ-${aiResponse.trendSource}` : 'מזוהה'}</Badge>}
+            <p className="text-foreground/90 whitespace-pre-wrap">{aiResponse.generalSuggestion}</p>
+            
+            {aiResponse.businessOpportunity && (
+              <div className="mt-4 p-3 border border-dashed border-green-500 rounded-md bg-green-50/50">
+                <h4 className="text-md font-semibold text-green-700 flex items-center">
+                  <Info className="mr-2 h-4 w-4"/> הצעה לעסקים ב-SwiftServe:
+                </h4>
+                <p className="text-sm text-green-600"><strong>שם מוצע למנה:</strong> {aiResponse.businessOpportunity.suggestedItemName}</p>
+                <p className="text-sm text-green-600"><strong>טווח מחירים מוצע:</strong> {aiResponse.businessOpportunity.suggestedPriceRange}</p>
+                <p className="text-sm text-green-600"><strong>תיאור לדוגמה:</strong> <em>{aiResponse.businessOpportunity.suggestedDescription}</em></p>
+                <div className="mt-1">
+                  <strong className="text-sm text-green-600">תגיות מוצעות:</strong>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {aiResponse.businessOpportunity.suggestedTags.map(tag => <Badge key={tag} variant="outline" className="border-green-400 text-green-700">{tag}</Badge>)}
+                  </div>
+                </div>
+                <p className="text-xs text-green-500 mt-2"><strong>נימוק:</strong> {aiResponse.businessOpportunity.rationale}</p>
+              </div>
+            )}
             <p className="text-xs text-muted-foreground pt-2">
-                טיפ: השתמש/י בשם המנה או במילות מפתח מההצעה כדי לחפש ב-SwiftServe. עסקים מקומיים - אולי זה הלהיט הבא שלכם?
+                טיפ: השתמש/י בשם המנה או במילות מפתח מההצעה כדי לחפש ב-SwiftServe.
             </p>
           </CardContent>
         </Card>

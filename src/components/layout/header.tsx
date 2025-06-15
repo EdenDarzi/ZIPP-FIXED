@@ -2,17 +2,23 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, Camera, Languages, Send, HeartPulse, TrendingUp, Award } from 'lucide-react'; // Added TrendingUp, Award
+import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, Camera, Languages, Send, HeartPulse, TrendingUp, Award, MapIcon, Briefcase, Gem, Users } from 'lucide-react'; // Added MapIcon for Food Radar, Briefcase for TravelMode, Gem for VIP, Users for Affiliate
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 
 const Header = () => {
   const { cart } = useCart();
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const { toast } = useToast();
 
   const handleLanguageToggle = () => {
-    alert("Language toggle clicked. Full i18n setup required for functionality.");
+    toast({ title: "Language toggle clicked", description: "Full i18n setup required for functionality."});
+  };
+
+  const handleTravelModeToggle = () => {
+    toast({ title: "TravelMode (Beta)", description: "Localized recommendations and international services coming soon!" });
   };
 
   return (
@@ -21,37 +27,45 @@ const Header = () => {
         <Link href="/" className="text-2xl font-bold text-primary font-headline">
           SwiftServe
         </Link>
-        <nav className="flex items-center space-x-1 sm:space-x-2">
-          <Button variant="ghost" asChild size="sm">
+        <nav className="flex items-center space-x-1 sm:space-x-2 flex-wrap justify-end">
+          <Button variant="ghost" asChild size="sm" className="hidden md:inline-flex">
             <Link href="/"><span className="flex items-center"><Home className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">בית</span></span></Link>
           </Button>
           <Button variant="ghost" asChild size="sm">
-            <Link href="/restaurants"><span className="flex items-center"><Utensils className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">מסעדות</span></span></Link>
+            <Link href="/restaurants"><span className="flex items-center"><Utensils className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">עסקים</span></span></Link>
           </Button>
-          <Button variant="ghost" asChild size="sm">
+          <Button variant="ghost" asChild size="sm" className="hidden lg:inline-flex">
+            <Link href="/food-radar"><span className="flex items-center"><MapIcon className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">Food Radar</span></span></Link>
+          </Button>
+          <Button variant="ghost" asChild size="sm" className="hidden lg:inline-flex">
             <Link href="/send-package"><span className="flex items-center"><Send className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">שלח חבילה</span></span></Link>
           </Button>
            <Button variant="ghost" asChild size="sm">
             <Link href="/visual-search"><span className="flex items-center"><TrendingUp className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">TrendScanner</span></span></Link>
           </Button>
-          <Button variant="ghost" asChild size="sm">
+          <Button variant="ghost" asChild size="sm" className="hidden lg:inline-flex">
             <Link href="/nutritional-advisor"><span className="flex items-center"><HeartPulse className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">יועץ תזונה</span></span></Link>
           </Button>
-          <Button variant="ghost" asChild size="sm">
+          <Button variant="ghost" asChild size="sm" className="hidden md:inline-flex">
             <Link href="/recommendations"><span className="flex items-center"><Brain className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">המלצות AI</span></span></Link>
           </Button>
-          <Button variant="ghost" asChild size="sm">
+          <Button variant="ghost" asChild size="sm" className="hidden md:inline-flex">
+            <Link href="/affiliate"><span className="flex items-center"><Users className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">שותפים</span></span></Link>
+          </Button>
+           <Button variant="ghost" asChild size="sm" className="hidden md:inline-flex">
+            <Link href="/vip"><span className="flex items-center"><Gem className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">VIP</span></span></Link>
+          </Button>
+           <Button variant="ghost" asChild size="sm" className="hidden xl:inline-flex">
             <Link href="/courier/open-bids"><span className="flex items-center"><Truck className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">שליחים</span></span></Link>
           </Button>
-           <Button variant="ghost" asChild size="sm">
+           <Button variant="ghost" asChild size="sm" className="hidden xl:inline-flex">
             <Link href="/restaurant-admin"><span className="flex items-center"><ChefHat className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">ניהול עסק</span></span></Link>
           </Button>
           
-          {/* Placeholder for Stars - can be enhanced later */}
-          {/* <Button variant="ghost" size="sm" className="hidden sm:flex items-center" title="My Stars (SocialDrop Rewards - Demo)">
-            <Award className="h-4 w-4 text-yellow-500 sm:mr-1" />
-            <span className="hidden lg:inline text-xs">125</span> 
-          </Button> */}
+          <Button variant="ghost" size="sm" onClick={handleTravelModeToggle} className="hidden lg:inline-flex items-center" title="Travel Mode (Beta)">
+            <Briefcase className="h-4 w-4 text-blue-500 sm:mr-1" />
+            <span className="hidden lg:inline text-xs">Travel</span> 
+          </Button>
 
           <Button variant="ghost" asChild size="icon" className="relative">
             <Link href="/cart" aria-label="Cart"><span className="relative flex items-center justify-center w-full h-full">

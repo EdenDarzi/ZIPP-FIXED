@@ -2,23 +2,22 @@
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart, LineChart, PieChart, Users, DollarSign, Utensils, Star, TrendingUp, Clock } from 'lucide-react';
+import { BarChart, LineChart, PieChart, Users, DollarSign, Utensils, Star, TrendingUp, Clock, Lightbulb, Activity } from 'lucide-react';
 import { Bar, BarChart as RechartsBarChart, Line, LineChart as RechartsLineChart, Pie, PieChart as RechartsPieChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell } from 'recharts';
 import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
 
-// Mock data for charts
-const dailySalesData = [ // Renamed fromยอดขายรายวันData for clarity
+const dailySalesData = [
   { date: 'יום א', sales: 4000 }, { date: 'יום ב', sales: 3000 }, { date: 'יום ג', sales: 2000 },
   { date: 'יום ד', sales: 2780 }, { date: 'יום ה', sales: 1890 }, { date: 'יום ו', sales: 2390 }, { date: 'שבת', sales: 3490 },
 ];
-const chartConfigSales: ChartConfig = { מכירות: { label: "מכירות (₪)", color: "hsl(var(--primary))" } }; // Renamed for clarity
+const chartConfigSales: ChartConfig = { מכירות: { label: "מכירות (₪)", color: "hsl(var(--primary))" } };
 
 
-const popularItemsData = [ // Renamed from popularDishesData for clarity
+const popularItemsData = [
   { name: 'מוצר א', sold: 400, fill: "hsl(var(--chart-1))" }, { name: 'מוצר ב', sold: 300, fill: "hsl(var(--chart-2))" },
   { name: 'שירות ג', sold: 300, fill: "hsl(var(--chart-3))" }, { name: 'מוצר ד', sold: 200, fill: "hsl(var(--chart-4))" },
 ];
-const chartConfigItems: ChartConfig = { // Renamed for clarity
+const chartConfigItems: ChartConfig = {
   itemA: { label: "מוצר א", color: "hsl(var(--chart-1))" },
   itemB: { label: "מוצר ב", color: "hsl(var(--chart-2))" },
   serviceC: { label: "שירות ג", color: "hsl(var(--chart-3))" },
@@ -37,7 +36,7 @@ export default function AnalyticsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-headline">ניתוחים וביצועים</CardTitle>
-          <CardDescription>עקוב אחר מדדי המפתח וביצועי העסק שלך.</CardDescription>
+          <CardDescription>עקוב אחר מדדי המפתח וביצועי העסק שלך. קבל תובנות AI לשיפור.</CardDescription>
         </CardHeader>
       </Card>
 
@@ -130,6 +129,35 @@ export default function AnalyticsPage() {
         </CardContent>
        </Card>
 
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <Card className="bg-blue-50 border-blue-200">
+          <CardHeader>
+            <CardTitle className="text-lg text-blue-700 flex items-center"><Lightbulb className="mr-2 h-5 w-5" /> תובנת AI: שעות שיא צפויות</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-blue-600">המערכת צופה עומס גבוה בימי חמישי בערב ובשבת בצהריים. שקול תגבור צוות/שליחים.</p>
+            <p className="text-xs text-blue-500 mt-2">(תכונה בפיתוח - נתונים מדומים)</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-green-50 border-green-200">
+          <CardHeader>
+            <CardTitle className="text-lg text-green-700 flex items-center"><Activity className="mr-2 h-5 w-5" /> תובנת AI: טרנד עונתי</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-green-600">זוהתה עלייה בחיפוש משקאות קרים וגלידות. שקול לקדם מוצרים אלו או להוסיף חדשים.</p>
+            <p className="text-xs text-green-500 mt-2">(תכונה בפיתוח - נתונים מדומים)</p>
+          </CardContent>
+        </Card>
+         <Card className="bg-orange-50 border-orange-200">
+          <CardHeader>
+            <CardTitle className="text-lg text-orange-700 flex items-center"><DollarSign className="mr-2 h-5 w-5" /> תובנת AI: אופטימיזציית רווחיות</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-orange-600">שקול להציע "ארוחה עסקית" בשעות הצהריים (12-15) כדי להגדיל ממוצע הזמנה.</p>
+            <p className="text-xs text-orange-500 mt-2">(תכונה בפיתוח - נתונים מדומים)</p>
+          </CardContent>
+        </Card>
+      </div>
 
       <p className="text-xs text-muted-foreground text-center mt-4">
         ניתוחים מתקדמים ודוחות מותאמים אישית ידרשו עיבוד נתונים נוסף ואינטגרציה בצד השרת.
