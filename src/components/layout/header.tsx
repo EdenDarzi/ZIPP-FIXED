@@ -59,7 +59,7 @@ const Header = () => {
             <Link href="/vip"><span className="flex items-center"><Gem className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">VIP</span></span></Link>
           </Button>
            <Button variant="ghost" asChild size="sm" className="hidden xl:inline-flex">
-            <Link href="/courier/open-bids"><span className="flex items-center"><Truck className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">שליחים</span></span></Link>
+            <Link href="/courier/dashboard"><span className="flex items-center"><Truck className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">שליחים</span></span></Link>
           </Button>
            <Button variant="ghost" asChild size="sm" className="hidden xl:inline-flex">
             <Link href="/restaurant-admin"><span className="flex items-center"><ChefHat className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">ניהול עסק</span></span></Link>
