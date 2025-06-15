@@ -32,10 +32,16 @@ const menuItemAddonGroupSchema = z.object({
   id: z.string().uuid().optional(), // Optional for new items
   title: z.string().min(1, "Addon group title is required"),
   type: z.enum(['radio', 'checkbox']),
-  minSelection: z.preprocess(val => Number(val), z.number().min(0).optional()),
-  maxSelection: z.preprocess(val => Number(val), z.number().min(0).optional()),
+  minSelection: z.preprocess(
+    (val) => (val === '' || val === undefined ? undefined : Number(val)), 
+    z.number().min(0, "Minimum selections cannot be negative").optional()
+  ),
+  maxSelection: z.preprocess(
+    (val) => (val === '' || val === undefined ? undefined : Number(val)), 
+    z.number().min(0, "Maximum selections cannot be negative").optional()
+  ),
   options: z.array(menuItemAddonChoiceSchema).min(1, "At least one choice is required for an addon group"),
-  required: z.boolean().optional(),
+  required: z.boolean().optional().default(false),
 });
 
 const menuItemFormSchema = z.object({
@@ -157,6 +163,8 @@ export default function MenuManagementPage() {
       addons: values.addons?.map(ag => ({
         ...ag,
         id: ag.id || `addon-group-${Date.now()}-${Math.random().toString(36).substring(2,7)}`,
+        minSelection: ag.minSelection ? Number(ag.minSelection) : undefined,
+        maxSelection: ag.maxSelection ? Number(ag.maxSelection) : undefined,
         options: ag.options.map(opt => ({
           ...opt,
           id: opt.id || `addon-choice-${Date.now()}-${Math.random().toString(36).substring(2,7)}`,
@@ -364,7 +372,7 @@ export default function MenuManagementPage() {
                 <CardHeader className="p-4 border-b">
                     <div className="flex justify-between items-center">
                         <CardTitle className="text-md">Add-on Groups</CardTitle>
-                        <Button type="button" variant="outline" size="sm" onClick={() => appendAddonGroup({ title: '', type: 'checkbox', options: [{ name: '', price: 0 }], required: false })}>
+                        <Button type="button" variant="outline" size="sm" onClick={() => appendAddonGroup({ title: '', type: 'checkbox', minSelection:0, maxSelection: undefined, options: [{ name: '', price: 0, selectedByDefault: false }], required: false })}>
                             <PlusCircle className="mr-2 h-4 w-4"/> Add Group
                         </Button>
                     </div>
@@ -383,20 +391,20 @@ export default function MenuManagementPage() {
                                     <FormItem><FormLabel className="text-xs">Selection Type</FormLabel>
                                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl><SelectTrigger className="h-8"><SelectValue /></SelectTrigger></FormControl>
-                                        <SelectContent><SelectItem value="checkbox">Multiple Choice</SelectItem><SelectItem value="radio">Single Choice</SelectItem></SelectContent>
+                                        <SelectContent><SelectItem value="checkbox">Multiple Choice (Checkbox)</SelectItem><SelectItem value="radio">Single Choice (Radio)</SelectItem></SelectContent>
                                       </Select>
                                     <FormMessage className="text-xs"/></FormItem>
                                 )}/>
                                  <FormField control={form.control} name={`addons.${groupIndex}.required`} render={({ field }) => (
-                                    <FormItem className="flex flex-row items-center space-x-2 pt-5"><FormControl><Switch checked={field.value} onCheckedChange={field.onChange}/></FormControl><FormLabel className="text-xs !mt-0">Required</FormLabel><FormMessage className="text-xs"/></FormItem>
+                                    <FormItem className="flex flex-row items-center space-x-2 pt-5"><FormControl><Switch checked={field.value} onCheckedChange={field.onChange}/></FormControl><FormLabel className="text-xs !mt-0">Required Group</FormLabel><FormMessage className="text-xs"/></FormItem>
                                 )}/>
                              </div>
                              <div className="grid grid-cols-2 gap-2 mb-2">
                                  <FormField control={form.control} name={`addons.${groupIndex}.minSelection`} render={({ field }) => (
-                                     <FormItem><FormLabel className="text-xs">Min Choices</FormLabel><FormControl><Input type="number" {...field} placeholder="0" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
+                                     <FormItem><FormLabel className="text-xs">Min Choices (Optional)</FormLabel><FormControl><Input type="number" {...field} placeholder="e.g., 1" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
                                  )}/>
                                   <FormField control={form.control} name={`addons.${groupIndex}.maxSelection`} render={({ field }) => (
-                                     <FormItem><FormLabel className="text-xs">Max Choices</FormLabel><FormControl><Input type="number" {...field} placeholder="e.g., 3" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
+                                     <FormItem><FormLabel className="text-xs">Max Choices (Optional)</FormLabel><FormControl><Input type="number" {...field} placeholder="e.g., 3" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
                                  )}/>
                              </div>
 
@@ -451,4 +459,3 @@ function AddonOptionsArray({ groupIndex, control }: { groupIndex: number, contro
     </div>
   );
 }
-

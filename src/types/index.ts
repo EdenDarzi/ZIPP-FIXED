@@ -16,10 +16,10 @@ export interface MenuItemAddonGroup {
   id: string;
   title: string; // e.g., "Choose your side", "Extra Toppings"
   type: 'radio' | 'checkbox'; // Single or multiple selection
-  minSelection?: number;
-  maxSelection?: number;
+  minSelection?: number; // Minimum number of choices required
+  maxSelection?: number; // Maximum number of choices allowed
   options: MenuItemAddonChoice[];
-  required?: boolean;
+  required?: boolean; // Is this addon group mandatory?
 }
 
 export interface MenuItem {
