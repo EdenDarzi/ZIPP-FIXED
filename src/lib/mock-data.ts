@@ -9,7 +9,7 @@ const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
     description: 'Classic delight with 100% real mozzarella cheese',
     price: 12.99,
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'pizza margherita delicious',
+    dataAiHint: 'pizza margherita',
     category: 'Pizza',
   },
   {
@@ -18,7 +18,7 @@ const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
     description: 'A classic favorite with rich, savory pepperoni.',
     price: 14.99,
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'pizza pepperoni spicy',
+    dataAiHint: 'pizza pepperoni',
     category: 'Pizza',
   },
   {
@@ -27,7 +27,7 @@ const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
     description: 'Juicy beef patty with lettuce, tomato, and our special sauce.',
     price: 9.99,
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'burger classic beef',
+    dataAiHint: 'burger classic',
     category: 'Burgers',
   },
   {
@@ -36,7 +36,7 @@ const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
     description: 'Crisp romaine lettuce, Parmesan cheese, croutons, and Caesar dressing.',
     price: 8.50,
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'salad caesar fresh',
+    dataAiHint: 'salad caesar',
     category: 'Salads',
   },
   {
@@ -45,7 +45,7 @@ const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
     description: 'Creamy pasta with pancetta, egg, and Parmesan cheese.',
     price: 13.50,
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'pasta carbonara italian',
+    dataAiHint: 'pasta carbonara',
     category: 'Pasta',
   },
   {
@@ -54,7 +54,7 @@ const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
     description: 'Classic Coca-Cola',
     price: 2.50,
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'soda drink refreshment',
+    dataAiHint: 'soda drink',
     category: 'Drinks',
   },
 ];
@@ -65,7 +65,7 @@ export const mockRestaurants: Restaurant[] = [
     name: 'פיצה פאלאס', // Translated
     description: 'פיצות איטלקיות אותנטיות שנאפות לשלמות עם המרכיבים הטריים ביותר.', // Translated
     imageUrl: 'https://placehold.co/800x600.png',
-    dataAiHint: 'pizza restaurant italian', 
+    dataAiHint: 'pizza italian', 
     location: 'רחוב ראשי 123, אבן יהודה', // Translated
     cuisineType: 'איטלקי', // Translated
     rating: 4.5,
@@ -79,7 +79,7 @@ export const mockRestaurants: Restaurant[] = [
     name: 'בורגר בוננזה', // Translated
     description: 'ההמבורגרים הטובים בעיר, צלויים בדיוק כמו שצריך. טעמו את ההבדל!', // Translated
     imageUrl: 'https://placehold.co/800x600.png',
-    dataAiHint: 'burger joint american', 
+    dataAiHint: 'burger american', 
     location: 'שדרות האלון 456, אבן יהודה', // Translated
     cuisineType: 'אמריקאי', // Translated
     rating: 4.2,
@@ -93,7 +93,7 @@ export const mockRestaurants: Restaurant[] = [
     name: 'פסטה פרפקשן', // Translated
     description: 'מנות פסטה טעימות שנעשו באהבה ומתכונים מסורתיים.', // Translated
     imageUrl: 'https://placehold.co/800x600.png',
-    dataAiHint: 'pasta place authentic', 
+    dataAiHint: 'pasta authentic', 
     location: 'סמטת האורן 789, אבן יהודה', // Translated
     cuisineType: 'איטלקי', // Translated
     rating: 4.8,
@@ -107,7 +107,7 @@ export const mockRestaurants: Restaurant[] = [
     name: 'סלט סנסיישנס', // Translated
     description: 'סלטים טריים ובריאים לארוחה טעימה וללא רגשות אשם.', // Translated
     imageUrl: 'https://placehold.co/800x600.png',
-    dataAiHint: 'salad bar healthy', 
+    dataAiHint: 'salad healthy', 
     location: 'דרך המייפל 101, אבן יהודה', // Translated
     cuisineType: 'בריא', // Translated
     rating: 4.0,
@@ -121,14 +121,14 @@ export const mockRestaurants: Restaurant[] = [
     name: 'פרחי העונה',
     description: 'זרים טריים וסידורי פרחים מרהיבים לכל אירוע.',
     imageUrl: 'https://placehold.co/800x600.png',
-    dataAiHint: 'flowers florist bouquets',
+    dataAiHint: 'flowers bouquets',
     location: 'שדרות הפרחים 5, עיר הגנים',
     cuisineType: 'חנות פרחים', 
     rating: 4.9,
     deliveryTimeEstimate: 'שעה - שעתיים',
     menu: [ 
-        { id: 'flower1', name: 'זר ורדים אדומים קלאסי', description: '12 ורדים אדומים טריים באריזת מתנה.', price: 120.00, imageUrl: 'https://placehold.co/600x400.png', dataAiHint: 'red roses bouquet', category: 'זרים', restaurantId: 'florist1' },
-        { id: 'flower2', name: 'סידור סחלבים לבנים', description: 'סחלב לבן מרשים בכלי דקורטיבי.', price: 180.00, imageUrl: 'https://placehold.co/600x400.png', dataAiHint: 'white orchid arrangement', category: 'עציצים', restaurantId: 'florist1' },
+        { id: 'flower1', name: 'זר ורדים אדומים קלאסי', description: '12 ורדים אדומים טריים באריזת מתנה.', price: 120.00, imageUrl: 'https://placehold.co/600x400.png', dataAiHint: 'red roses', category: 'זרים', restaurantId: 'florist1' },
+        { id: 'flower2', name: 'סידור סחלבים לבנים', description: 'סחלב לבן מרשים בכלי דקורטיבי.', price: 180.00, imageUrl: 'https://placehold.co/600x400.png', dataAiHint: 'white orchid', category: 'עציצים', restaurantId: 'florist1' },
     ],
     hasDeliveryArena: true,
     tags: ['Recommended', 'New'],
@@ -138,14 +138,14 @@ export const mockRestaurants: Restaurant[] = [
     name: 'מאפיית הבוקר',
     description: 'לחמים טריים, מאפים מתוקים ומלוחים, ועוגות מיוחדות.',
     imageUrl: 'https://placehold.co/800x600.png',
-    dataAiHint: 'bakery pastries bread',
+    dataAiHint: 'bakery bread',
     location: 'רחוב הקונדיטוריה 10, קרית מאפה',
     cuisineType: 'מאפייה',
     rating: 4.7,
     deliveryTimeEstimate: '30-45 דקות',
     menu: [
-        { id: 'bake1', name: 'קרואסון חמאה', description: 'קרואסון צרפתי קלאסי, פריך ועשיר בחמאה.', price: 12.00, imageUrl: 'https://placehold.co/600x400.png', dataAiHint: 'croissant butter flaky', category: 'מאפים', restaurantId: 'bakery1' },
-        { id: 'bake2', name: 'עוגת גבינה פירורים', description: 'עוגת גבינה קרה עם בסיס פריך וציפוי פירורים.', price: 85.00, imageUrl: 'https://placehold.co/600x400.png', dataAiHint: 'cheesecake crumb cake', category: 'עוגות', restaurantId: 'bakery1' },
+        { id: 'bake1', name: 'קרואסון חמאה', description: 'קרואסון צרפתי קלאסי, פריך ועשיר בחמאה.', price: 12.00, imageUrl: 'https://placehold.co/600x400.png', dataAiHint: 'croissant pastry', category: 'מאפים', restaurantId: 'bakery1' },
+        { id: 'bake2', name: 'עוגת גבינה פירורים', description: 'עוגת גבינה קרה עם בסיס פריך וציפוי פירורים.', price: 85.00, imageUrl: 'https://placehold.co/600x400.png', dataAiHint: 'cheesecake cake', category: 'עוגות', restaurantId: 'bakery1' },
     ],
     hasDeliveryArena: true,
     tags: ['Popular', 'Fast Delivery'],
@@ -232,7 +232,7 @@ export const getMockOrderById = (orderId: string, scheduledDeliveryTime?: string
   const baseOrderId = orderId.split('_scheduled_')[0];
   if (baseOrderId.startsWith('mockOrder_')) {
     const restaurant = mockRestaurants[0]; 
-    const items = [ { ...restaurant.menu[0], quantity: 1 }, { ...restaurant.menu.find(m => m.category === 'Drinks')!, quantity: 2 } ].map(item => ({ menuItemId: item.id, name: item.name, price: item.price, quantity: item.quantity, imageUrl: item.imageUrl, dataAiHint: item.dataAiHint }));
+    const items = [ { ...restaurant.menu[0], quantity: 1 }, { ...restaurant.menu.find(m => m.category === 'Drinks')!, quantity: 2 } ].map(item => ({ menuItemId: item.id, name: item.name, price: item.price, quantity: item.quantity, imageUrl: item.imageUrl, dataAiHint: item.dataAiHint, selectedAddons: [] }));
     const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const initialStatus = scheduledDeliveryTime ? 'SCHEDULED' : 'MATCHING_COURIER';
     const initialTimelineNote = scheduledDeliveryTime ? `ההזמנה תוכננה ל: ${scheduledDeliveryTime}.` : "התשלום התקבל. מחפש שליח.";
@@ -247,22 +247,22 @@ export const getMockOrderById = (orderId: string, scheduledDeliveryTime?: string
 
 export const mockLiveOrdersForAdmin: Order[] = [
   {
-    id: 'adminOrder1', userId: 'userABC', items: [{ menuItemId: 'item1', name: 'מוצר אקספרס', price: 12.99, quantity: 1 }], totalAmount: 12.99, deliveryPreference: 'arena', deliveryFee: 0, discountAmount: 0, finalAmount: 12.99, status: 'PREPARING_AT_RESTAURANT', deliveryAddress: 'רחוב ראשי 123', restaurantId: 'business1', restaurantName: 'העסק שלי', createdAt: new Date(Date.now() - 5 * 60000).toISOString(), updatedAt: new Date().toISOString(), estimatedDeliveryTime: '15-20 דקות', orderTimeline: [{ status: 'PREPARING_AT_RESTAURANT', timestamp: new Date().toISOString(), notes: "ההזמנה התקבלה במערכת."}]
+    id: 'adminOrder1', userId: 'userABC', items: [{ id: 'cartItem1', menuItemId: 'item1', name: 'מוצר אקספרס', price: 12.99, quantity: 1, selectedAddons: [] }], totalAmount: 12.99, deliveryPreference: 'arena', deliveryFee: 0, discountAmount: 0, finalAmount: 12.99, status: 'PREPARING_AT_RESTAURANT', deliveryAddress: 'רחוב ראשי 123', restaurantId: 'business1', restaurantName: 'העסק שלי', createdAt: new Date(Date.now() - 5 * 60000).toISOString(), updatedAt: new Date().toISOString(), estimatedDeliveryTime: '15-20 דקות', orderTimeline: [{ status: 'PREPARING_AT_RESTAURANT', timestamp: new Date().toISOString(), notes: "ההזמנה התקבלה במערכת."}]
   },
   {
-    id: 'adminOrder2', userId: 'userDEF', items: [{ menuItemId: 'item3', name: 'שירות פרימיום', price: 9.99, quantity: 2 }, { menuItemId: 'item6', name: 'מוצר נלווה', price: 2.50, quantity: 2 }], totalAmount: 24.98, deliveryPreference: 'fastest', deliveryFee: 5, discountAmount: 0, finalAmount: 29.98, status: 'AWAITING_PICKUP', deliveryAddress: 'שדרות העצמאות 456', restaurantId: 'business1', restaurantName: 'העסק שלי', createdAt: new Date(Date.now() - 15 * 60000).toISOString(), updatedAt: new Date().toISOString(), estimatedDeliveryTime: '5-10 דקות לאיסוף', assignedCourier: { id: 'courier1', name: 'שליח זריז', rating: 4.8, vehicleType: 'motorcycle', currentEtaMinutes: 7 }, orderTimeline: [ { status: 'PREPARING_AT_RESTAURANT', timestamp: new Date(Date.now() - 10 * 60000).toISOString()}, { status: 'AWAITING_PICKUP', timestamp: new Date().toISOString(), notes: "המוצר מוכן. השליח עודכן."} ]
+    id: 'adminOrder2', userId: 'userDEF', items: [{ id: 'cartItem2', menuItemId: 'item3', name: 'שירות פרימיום', price: 9.99, quantity: 2, selectedAddons: [] }, { id: 'cartItem3', menuItemId: 'item6', name: 'מוצר נלווה', price: 2.50, quantity: 2, selectedAddons: [] }], totalAmount: 24.98, deliveryPreference: 'fastest', deliveryFee: 5, discountAmount: 0, finalAmount: 29.98, status: 'AWAITING_PICKUP', deliveryAddress: 'שדרות העצמאות 456', restaurantId: 'business1', restaurantName: 'העסק שלי', createdAt: new Date(Date.now() - 15 * 60000).toISOString(), updatedAt: new Date().toISOString(), estimatedDeliveryTime: '5-10 דקות לאיסוף', assignedCourier: { id: 'courier1', name: 'שליח זריז', rating: 4.8, vehicleType: 'motorcycle', currentEtaMinutes: 7 }, orderTimeline: [ { status: 'PREPARING_AT_RESTAURANT', timestamp: new Date(Date.now() - 10 * 60000).toISOString()}, { status: 'AWAITING_PICKUP', timestamp: new Date().toISOString(), notes: "המוצר מוכן. השליח עודכן."} ]
   },
   {
-    id: 'adminOrderScheduled1', userId: 'userGHI', items: [{ menuItemId: 'item4', name: 'סלט בריאות', price: 10.50, quantity: 1 }], totalAmount: 10.50, deliveryPreference: 'arena', deliveryFee: 0, discountAmount: 0, finalAmount: 10.50, status: 'SCHEDULED', deliveryAddress: 'דרך העתיד 1', restaurantId: 'business1', restaurantName: 'העסק שלי', createdAt: new Date(Date.now() - 2 * 60 * 60000).toISOString(), updatedAt: new Date().toISOString(), scheduledDeliveryTime: 'מחר, 12:00-12:30', scheduledDeliveryTimestamp: new Date(Date.now() + 22 * 60 * 60000).toISOString(), orderTimeline: [{ status: 'SCHEDULED', timestamp: new Date().toISOString(), notes: "הזמנה מתוכננת התקבלה."}]
+    id: 'adminOrderScheduled1', userId: 'userGHI', items: [{ id: 'cartItem4', menuItemId: 'item4', name: 'סלט בריאות', price: 10.50, quantity: 1, selectedAddons: [] }], totalAmount: 10.50, deliveryPreference: 'arena', deliveryFee: 0, discountAmount: 0, finalAmount: 10.50, status: 'SCHEDULED', deliveryAddress: 'דרך העתיד 1', restaurantId: 'business1', restaurantName: 'העסק שלי', createdAt: new Date(Date.now() - 2 * 60 * 60000).toISOString(), updatedAt: new Date().toISOString(), scheduledDeliveryTime: 'מחר, 12:00-12:30', scheduledDeliveryTimestamp: new Date(Date.now() + 22 * 60 * 60000).toISOString(), orderTimeline: [{ status: 'SCHEDULED', timestamp: new Date().toISOString(), notes: "הזמנה מתוכננת התקבלה."}]
   },
 ];
 
 export const mockOrderHistoryForAdmin: Order[] = [
  {
-    id: 'adminOrderHist1', userId: 'userXYZ', items: [{ menuItemId: 'item2', name: 'מוצר פופולרי', price: 14.99, quantity: 1 }], totalAmount: 14.99, deliveryPreference: 'arena', deliveryFee: 0, discountAmount: 0, finalAmount: 14.99, status: 'DELIVERED', deliveryAddress: 'סמטת האורנים 789', restaurantId: 'business1', restaurantName: 'העסק שלי', createdAt: new Date(Date.now() - 2 * 24 * 60 * 60000).toISOString(), updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60000 + 30 * 60000).toISOString(), actualDeliveryTime: new Date(Date.now() - 2 * 24 * 60 * 60000 + 30 * 60000).toISOString(), orderTimeline: [{ status: 'DELIVERED', timestamp: new Date(Date.now() - 2 * 24 * 60 * 60000 + 30 * 60000).toISOString()}]
+    id: 'adminOrderHist1', userId: 'userXYZ', items: [{ id: 'cartItem5', menuItemId: 'item2', name: 'מוצר פופולרי', price: 14.99, quantity: 1, selectedAddons: [] }], totalAmount: 14.99, deliveryPreference: 'arena', deliveryFee: 0, discountAmount: 0, finalAmount: 14.99, status: 'DELIVERED', deliveryAddress: 'סמטת האורנים 789', restaurantId: 'business1', restaurantName: 'העסק שלי', createdAt: new Date(Date.now() - 2 * 24 * 60 * 60000).toISOString(), updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60000 + 30 * 60000).toISOString(), actualDeliveryTime: new Date(Date.now() - 2 * 24 * 60 * 60000 + 30 * 60000).toISOString(), orderTimeline: [{ status: 'DELIVERED', timestamp: new Date(Date.now() - 2 * 24 * 60 * 60000 + 30 * 60000).toISOString()}]
   },
    {
-    id: 'adminOrderScheduledDelivered', userId: 'userJKL', items: [{ menuItemId: 'item5', name: 'פסטה מפנקת', price: 18.00, quantity: 1 }], totalAmount: 18.00, deliveryPreference: 'smartSaver', deliveryFee: 0, discountAmount: 3.00, finalAmount: 15.00, status: 'DELIVERED', deliveryAddress: 'כיכר החלומות 2', restaurantId: 'business1', restaurantName: 'העסק שלי', createdAt: new Date(Date.now() - 3 * 24 * 60 * 60000).toISOString(), updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60000 + 45 * 60000).toISOString(), scheduledDeliveryTime: 'לפני יומיים, 19:00-19:30', scheduledDeliveryTimestamp: new Date(Date.now() - 3 * 24 * 60 * 60000 + 40 * 60000).toISOString(), actualDeliveryTime: new Date(Date.now() - 3 * 24 * 60 * 60000 + 45 * 60000).toISOString(), orderTimeline: [{ status: 'DELIVERED', timestamp: new Date(Date.now() - 3 * 24 * 60 * 60000 + 45 * 60000).toISOString()}]
+    id: 'adminOrderScheduledDelivered', userId: 'userJKL', items: [{ id: 'cartItem6', menuItemId: 'item5', name: 'פסטה מפנקת', price: 18.00, quantity: 1, selectedAddons: [] }], totalAmount: 18.00, deliveryPreference: 'smartSaver', deliveryFee: 0, discountAmount: 3.00, finalAmount: 15.00, status: 'DELIVERED', deliveryAddress: 'כיכר החלומות 2', restaurantId: 'business1', restaurantName: 'העסק שלי', createdAt: new Date(Date.now() - 3 * 24 * 60 * 60000).toISOString(), updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60000 + 45 * 60000).toISOString(), scheduledDeliveryTime: 'לפני יומיים, 19:00-19:30', scheduledDeliveryTimestamp: new Date(Date.now() - 3 * 24 * 60 * 60000 + 40 * 60000).toISOString(), actualDeliveryTime: new Date(Date.now() - 3 * 24 * 60 * 60000 + 45 * 60000).toISOString(), orderTimeline: [{ status: 'DELIVERED', timestamp: new Date(Date.now() - 3 * 24 * 60 * 60000 + 45 * 60000).toISOString()}]
   },
 ];
 
@@ -323,8 +323,8 @@ export const mockSecondHandItems: SecondHandItem[] = [
     price: 900,
     description: 'אייפון 12 במצב מעולה, ללא שריטות. מגיע עם קופסה מקורית וכבל טעינה. סוללה 88%.',
     images: [
-      { url: 'https://placehold.co/600x400.png', dataAiHint: 'iphone 12 used' },
-      { url: 'https://placehold.co/600x400.png', dataAiHint: 'iphone 12 back' },
+      { url: 'https://placehold.co/600x400.png', dataAiHint: 'iphone used' },
+      { url: 'https://placehold.co/600x400.png', dataAiHint: 'iphone back' },
     ],
     location: 'אשדוד',
     publishedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
@@ -341,7 +341,7 @@ export const mockSecondHandItems: SecondHandItem[] = [
     category: 'אוזניות',
     price: 650,
     description: 'אוזניות סוני מעולות עם ביטול רעשים אקטיבי. שימוש מועט מאוד, נמכרות עקב שדרוג.',
-    images: [{ url: 'https://placehold.co/600x400.png', dataAiHint: 'sony headphones wh1000xm4' }],
+    images: [{ url: 'https://placehold.co/600x400.png', dataAiHint: 'sony headphones' }],
     location: 'תל אביב',
     publishedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
     isSold: false,
@@ -356,7 +356,7 @@ export const mockSecondHandItems: SecondHandItem[] = [
     category: 'בגדים',
     price: 80,
     description: 'שמלת קיץ קלילה ונוחה, נלבשה פעם אחת בלבד. מצב כמו חדש. בד נעים ונושם.',
-    images: [{ url: 'https://placehold.co/600x400.png', dataAiHint: 'summer dress floral' }],
+    images: [{ url: 'https://placehold.co/600x400.png', dataAiHint: 'summer dress' }],
     location: 'חיפה',
     publishedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
     isSold: true,
@@ -370,7 +370,7 @@ export const mockSecondHandItems: SecondHandItem[] = [
     category: 'מחשבים',
     price: 2200,
     description: 'דל XPS 13, מעבד i7 דור 10, 16GB RAM, 512GB SSD. מצב מצוין, סוללה טובה. שימש בעיקר ללימודים.',
-    images: [{ url: 'https://placehold.co/600x400.png', dataAiHint: 'dell xps 13 laptop' }],
+    images: [{ url: 'https://placehold.co/600x400.png', dataAiHint: 'dell laptop' }],
     location: 'ירושלים',
     publishedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
     isSold: false,
@@ -389,3 +389,4 @@ export const getSecondHandItemById = (id: string): SecondHandItem | undefined =>
 };
 
 export const secondHandCategories: SecondHandItemCategory[] = ['טלפונים', 'מחשבים', 'בגדים', 'אוזניות', 'אחר'];
+
