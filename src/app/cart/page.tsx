@@ -1,15 +1,30 @@
+
 'use client';
 
 import { useCart } from '@/context/cart-context';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Trash2, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Zap, CheckCircle, ShieldQuestion } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Label } from "@/components/ui/label"
+import type { DeliveryPreference } from '@/types';
 
 export default function CartPage() {
-  const { cart, removeFromCart, updateQuantity, clearCart, itemCount, totalPrice } = useCart();
+  const { 
+    cart, 
+    removeFromCart, 
+    updateQuantity, 
+    clearCart, 
+    itemCount, 
+    totalPrice,
+    deliveryPreference,
+    setDeliveryPreference,
+    deliveryFee,
+    finalPriceWithDelivery
+  } = useCart();
 
   if (itemCount === 0) {
     return (
@@ -26,11 +41,13 @@ export default function CartPage() {
     );
   }
 
+  const estimatedPreparationTime = Math.max(15, itemCount * 5); // Mock calculation
+
   return (
     <div className="space-y-8">
       <header>
         <h1 className="text-4xl font-bold font-headline text-primary">Your Shopping Cart</h1>
-        <p className="text-lg text-muted-foreground">Review your items and proceed to checkout.</p>
+        <p className="text-lg text-muted-foreground">Review your items and select delivery options.</p>
       </header>
 
       <div className="grid lg:grid-cols-3 gap-8">
@@ -65,10 +82,50 @@ export default function CartPage() {
               </Button>
             </Card>
           ))}
+
+          <Card className="shadow-md">
+            <CardHeader>
+              <CardTitle className="text-xl font-headline text-primary">Delivery Options</CardTitle>
+              <CardDescription>Choose how you&apos;d like your order delivered.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <RadioGroup 
+                defaultValue={deliveryPreference} 
+                onValueChange={(value) => setDeliveryPreference(value as DeliveryPreference)}
+                className="space-y-3"
+              >
+                <Label htmlFor="arena-delivery" className="flex items-center p-4 border rounded-md cursor-pointer hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all">
+                  <RadioGroupItem value="arena" id="arena-delivery" className="mr-3" />
+                  <div className="flex-grow">
+                    <div className="font-semibold flex items-center">
+                      <Zap className="h-5 w-5 mr-2 text-accent" /> Delivery Arena (Default)
+                    </div>
+                    <p className="text-sm text-muted-foreground">Couriers compete for your order, potentially saving you money. Estimated delivery time varies.</p>
+                  </div>
+                  <span className="font-semibold text-green-600 ml-2">FREE</span>
+                </Label>
+                <Label htmlFor="fastest-delivery" className="flex items-center p-4 border rounded-md cursor-pointer hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all">
+                  <RadioGroupItem value="fastest" id="fastest-delivery" className="mr-3" />
+                  <div className="flex-grow">
+                    <div className="font-semibold flex items-center">
+                       <CheckCircle className="h-5 w-5 mr-2 text-primary" /> Fastest Delivery
+                    </div>
+                    <p className="text-sm text-muted-foreground">Prioritized delivery for the quickest arrival. Fixed additional fee.</p>
+                  </div>
+                  <span className="font-semibold text-primary ml-2">+$5.00</span>
+                </Label>
+              </RadioGroup>
+              <p className="mt-4 text-sm text-muted-foreground p-3 bg-muted/30 rounded-md flex items-start">
+                <ShieldQuestion className="h-5 w-5 mr-2 mt-0.5 text-primary flex-shrink-0" />
+                <span>Deliveries in the area are now competing for your order – if you choose Delivery Arena, we&apos;ll find the best option for you. If you&apos;re in a hurry, choose Fastest Delivery!</span>
+              </p>
+            </CardContent>
+          </Card>
+
         </div>
 
         <div className="lg:col-span-1">
-          <Card className="shadow-xl sticky top-24"> {/* Sticky summary card */}
+          <Card className="shadow-xl sticky top-24">
             <CardHeader>
               <CardTitle className="text-2xl font-headline text-primary">Order Summary</CardTitle>
             </CardHeader>
@@ -77,14 +134,20 @@ export default function CartPage() {
                 <span className="text-muted-foreground">Subtotal ({itemCount} items)</span>
                 <span className="font-medium">${totalPrice.toFixed(2)}</span>
               </div>
+               <div className="flex justify-between">
+                <span className="text-muted-foreground">Est. Prep Time</span>
+                <span className="font-medium">~{estimatedPreparationTime} min</span>
+              </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Delivery Fee</span>
-                <span className="font-medium text-green-600">Free</span> {/* Placeholder */}
+                <span className={`font-medium ${deliveryFee > 0 ? 'text-primary' : 'text-green-600'}`}>
+                  {deliveryFee > 0 ? `$${deliveryFee.toFixed(2)}` : 'Free'}
+                </span>
               </div>
               <Separator />
               <div className="flex justify-between text-xl font-bold text-primary">
                 <span>Total</span>
-                <span>${totalPrice.toFixed(2)}</span>
+                <span>${finalPriceWithDelivery.toFixed(2)}</span>
               </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-3">

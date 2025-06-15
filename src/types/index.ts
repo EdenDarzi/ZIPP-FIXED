@@ -27,6 +27,7 @@ export interface Restaurant {
   rating: number; // e.g., 4.5
   deliveryTimeEstimate: string; // e.g., "25-35 min"
   menu: MenuItem[];
+  hasDeliveryArena?: boolean; // New field for courier arena
 }
 
 export interface CartItem {
@@ -36,7 +37,6 @@ export interface CartItem {
   quantity: number;
   imageUrl?: string;
   dataAiHint?: string;
-  // Potentially add selected options here if they affect price/display
 }
 
 export interface User {
@@ -45,8 +45,6 @@ export interface User {
   name?: string;
   // other user fields
 }
-
-// New types for Courier Bidding System
 
 export type DeliveryVehicle = 'motorcycle' | 'car' | 'bicycle' | 'foot';
 
@@ -87,4 +85,39 @@ export interface CourierBid {
   timestamp: string; // ISO string for when the bid was placed
   isFastPickup: boolean; // If courier committed to faster pickup
   status?: 'pending' | 'accepted' | 'rejected' | 'expired';
+}
+
+export type DeliveryPreference = 'arena' | 'fastest';
+
+export type OrderStatus = 
+  | 'PENDING_PAYMENT' 
+  | 'MATCHING_COURIER' 
+  | 'COURIER_ASSIGNED' 
+  | 'OUT_FOR_DELIVERY' 
+  | 'DELIVERED' 
+  | 'CANCELLED';
+
+export interface Order {
+  id: string;
+  userId: string;
+  items: CartItem[];
+  totalAmount: number;
+  deliveryPreference: DeliveryPreference;
+  deliveryFee: number;
+  finalAmount: number;
+  status: OrderStatus;
+  deliveryAddress: string; // Should be more structured in a real app
+  restaurantId: string;
+  restaurantName: string;
+  estimatedDeliveryTime?: string; // e.g. "10-15 minutes" (after courier assigned)
+  assignedCourier?: {
+    id: string;
+    name: string;
+    photoUrl?: string;
+    rating: number;
+    vehicleType: DeliveryVehicle;
+    currentEtaMinutes?: number;
+  };
+  createdAt: string; // ISO string
+  updatedAt: string; // ISO string
 }

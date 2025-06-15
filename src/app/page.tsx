@@ -1,10 +1,17 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Utensils, ShoppingCart, Brain, ArrowRight } from "lucide-react";
+import { Utensils, ShoppingCart, Brain, ArrowRight, MapPin, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import RestaurantCard from "@/components/restaurants/restaurant-card";
+import { mockRestaurants } from "@/lib/mock-data";
+import type { Restaurant } from "@/types";
+import { Input } from "@/components/ui/input";
 
 export default function HomePage() {
+  const restaurants: Restaurant[] = mockRestaurants.slice(0,3); // Show a few examples
+
   return (
     <div className="space-y-12">
       <section className="text-center py-12 bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg shadow-lg">
@@ -12,6 +19,17 @@ export default function HomePage() {
         <p className="text-xl text-foreground/80 max-w-2xl mx-auto mb-8">
           Your one-stop solution for fast and reliable delivery from your favorite local restaurants, shops, and cafes.
         </p>
+        <div className="max-w-xl mx-auto mb-8">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Input 
+              type="search" 
+              placeholder="What do you want today? (e.g., Pizza, Sushi, Tacos)" 
+              className="w-full pl-12 pr-4 py-3 text-lg rounded-full shadow-md focus:ring-primary focus:border-primary"
+              aria-label="Search for food or restaurants"
+            />
+          </div>
+        </div>
         <div className="space-x-4">
           <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md transition-transform hover:scale-105">
             <Link href="/restaurants">
@@ -26,6 +44,28 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section>
+        <div className="flex items-center mb-4">
+          <MapPin className="h-6 w-6 mr-2 text-primary" />
+          <h2 className="text-2xl font-bold font-headline text-foreground">Near You & Recommended</h2>
+        </div>
+        {/* Placeholder for AI recommendations. Displaying a few mock restaurants for now. */}
+        {restaurants.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {restaurants.map((restaurant) => (
+              <RestaurantCard key={restaurant.id} restaurant={restaurant} />
+            ))}
+          </div>
+        ) : (
+          <p className="text-muted-foreground">Finding recommendations near you...</p>
+        )}
+        <div className="text-center mt-6">
+            <Button variant="link" asChild>
+                <Link href="/restaurants">View all restaurants <ArrowRight className="ml-1 h-4 w-4" /></Link>
+            </Button>
+        </div>
+      </section>
+      
       <section className="grid md:grid-cols-3 gap-8">
         <Card className="hover:shadow-xl transition-shadow duration-300">
           <CardHeader>
@@ -62,18 +102,6 @@ export default function HomePage() {
         </Card>
       </section>
 
-      <section className="text-center py-10">
-        <h2 className="text-3xl font-bold font-headline text-primary mb-4">Ready to Order?</h2>
-        <p className="text-lg text-foreground/80 mb-6">
-          Experience the convenience of SwiftServe today.
-        </p>
-        <Button size="lg" asChild className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-md transition-transform hover:scale-105">
-          <Link href="/restaurants">
-            Find Your Next Meal <ArrowRight className="ml-2 h-5 w-5" />
-          </Link>
-        </Button>
-      </section>
-      
       <section className="relative h-64 md:h-96 rounded-lg overflow-hidden shadow-lg">
         <Image
           src="https://placehold.co/1200x400.png"
@@ -83,8 +111,8 @@ export default function HomePage() {
           data-ai-hint="food delivery collage"
         />
         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-          <h3 className="text-4xl font-bold text-white text-center font-headline">
-            Fast, Fresh, Delivered.
+          <h3 className="text-4xl font-bold text-white text-center font-headline p-4">
+            Fast, Fresh, Delivered. Experience the Courier Arena.
           </h3>
         </div>
       </section>

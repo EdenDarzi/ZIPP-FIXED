@@ -1,6 +1,7 @@
+
 'use client';
 
-import type { CartItem, MenuItem } from '@/types';
+import type { CartItem, MenuItem, DeliveryPreference } from '@/types';
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -12,12 +13,19 @@ interface CartContextType {
   clearCart: () => void;
   itemCount: number;
   totalPrice: number;
+  deliveryPreference: DeliveryPreference;
+  setDeliveryPreference: (preference: DeliveryPreference) => void;
+  deliveryFee: number;
+  finalPriceWithDelivery: number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const FASTEST_DELIVERY_FEE = 5.00; // Example fee
+
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [deliveryPreference, setDeliveryPreferenceState] = useState<DeliveryPreference>('arena');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -25,13 +33,18 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     if (storedCart) {
       setCart(JSON.parse(storedCart));
     }
+    const storedPreference = localStorage.getItem('swiftServeDeliveryPreference') as DeliveryPreference | null;
+    if (storedPreference) {
+      setDeliveryPreferenceState(storedPreference);
+    }
   }, []);
 
   useEffect(() => {
     if (cart.length > 0 || localStorage.getItem('swiftServeCart')) {
       localStorage.setItem('swiftServeCart', JSON.stringify(cart));
     }
-  }, [cart]);
+    localStorage.setItem('swiftServeDeliveryPreference', deliveryPreference);
+  }, [cart, deliveryPreference]);
 
   const addToCart = (item: MenuItem, quantity: number = 1) => {
     setCart(prevCart => {
@@ -82,17 +95,38 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const clearCart = () => {
     setCart([]);
     localStorage.removeItem('swiftServeCart');
+    // Optionally reset delivery preference or keep it
+    // setDeliveryPreferenceState('arena'); 
+    // localStorage.removeItem('swiftServeDeliveryPreference');
     toast({
       title: "Cart cleared",
       description: "Your cart has been emptied.",
     });
   };
+
+  const setDeliveryPreference = (preference: DeliveryPreference) => {
+    setDeliveryPreferenceState(preference);
+  };
   
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const deliveryFee = deliveryPreference === 'fastest' ? FASTEST_DELIVERY_FEE : 0;
+  const finalPriceWithDelivery = totalPrice + deliveryFee;
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, clearCart, itemCount, totalPrice }}>
+    <CartContext.Provider value={{ 
+      cart, 
+      addToCart, 
+      removeFromCart, 
+      updateQuantity, 
+      clearCart, 
+      itemCount, 
+      totalPrice,
+      deliveryPreference,
+      setDeliveryPreference,
+      deliveryFee,
+      finalPriceWithDelivery
+    }}>
       {children}
     </CartContext.Provider>
   );

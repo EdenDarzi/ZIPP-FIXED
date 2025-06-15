@@ -1,9 +1,11 @@
+
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Restaurant } from '@/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Star, Clock, Tag, MapPin } from 'lucide-react';
+import { Star, Clock, Tag, MapPin, Zap } from 'lucide-react'; // Added Zap for arena
+import { Badge } from '@/components/ui/badge';
 
 interface RestaurantCardProps {
   restaurant: Restaurant;
@@ -22,10 +24,15 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
             className="group-hover:scale-105 transition-transform duration-300"
             data-ai-hint={restaurant.dataAiHint || "restaurant food"}
           />
+           {restaurant.hasDeliveryArena && (
+            <Badge variant="default" className="absolute top-2 right-2 bg-accent text-accent-foreground">
+              <Zap className="h-3 w-3 mr-1" /> Arena
+            </Badge>
+          )}
         </div>
         <CardHeader>
           <CardTitle className="text-xl font-headline group-hover:text-primary transition-colors">{restaurant.name}</CardTitle>
-          <CardDescription className="text-sm">{restaurant.description}</CardDescription>
+          <CardDescription className="text-sm h-10 overflow-hidden text-ellipsis">{restaurant.description}</CardDescription>
         </CardHeader>
       </Link>
       <CardContent className="flex-grow space-y-2 text-sm">

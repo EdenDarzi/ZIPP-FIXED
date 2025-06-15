@@ -1,5 +1,5 @@
 
-import type { Restaurant, MenuItem, OrderDetailsForBidding, CourierProfile, CourierBid, DeliveryVehicle } from '@/types';
+import type { Restaurant, MenuItem, OrderDetailsForBidding, CourierProfile, CourierBid, Order } from '@/types';
 
 const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
   {
@@ -70,6 +70,7 @@ export const mockRestaurants: Restaurant[] = [
     rating: 4.5,
     deliveryTimeEstimate: '25-35 min',
     menu: mockMenuItems.filter(item => item.category === 'Pizza' || item.category === 'Drinks').map(item => ({ ...item, restaurantId: 'restaurant1' })),
+    hasDeliveryArena: true,
   },
   {
     id: 'restaurant2',
@@ -82,6 +83,7 @@ export const mockRestaurants: Restaurant[] = [
     rating: 4.2,
     deliveryTimeEstimate: '20-30 min',
     menu: mockMenuItems.filter(item => item.category === 'Burgers' || item.category === 'Drinks').map(item => ({ ...item, restaurantId: 'restaurant2' })),
+    hasDeliveryArena: false,
   },
   {
     id: 'restaurant3',
@@ -94,6 +96,7 @@ export const mockRestaurants: Restaurant[] = [
     rating: 4.8,
     deliveryTimeEstimate: '30-40 min',
     menu: mockMenuItems.filter(item => item.category === 'Pasta' || item.category === 'Salads' || item.category === 'Drinks').map(item => ({ ...item, restaurantId: 'restaurant3' })),
+    hasDeliveryArena: true,
   },
   {
     id: 'restaurant4',
@@ -122,7 +125,6 @@ export const getAllItems = (): MenuItem[] => {
   return mockRestaurants.reduce((acc, curr) => acc.concat(curr.menu), [] as MenuItem[]);
 };
 
-// Mock Data for Courier Bidding System
 export const mockCourierProfiles: CourierProfile[] = [
   {
     id: 'courier1',
@@ -157,9 +159,9 @@ export const mockOpenOrdersForBidding: OrderDetailsForBidding[] = [
   {
     orderId: 'orderBid1',
     restaurantName: 'Pizza Palace',
-    restaurantLocation: { lat: 34.052235, lng: -118.243683 }, // Restaurant's location
+    restaurantLocation: { lat: 34.052235, lng: -118.243683 },
     deliveryAddress: '123 Customer Way, Anytown',
-    deliveryLocation: { lat: 34.0600, lng: -118.2500 }, // Customer's location
+    deliveryLocation: { lat: 34.0600, lng: -118.2500 },
     estimatedDistanceKm: 2.5,
     baseCommission: 10,
     itemsDescription: '1 Margherita Pizza, 2 Cokes',
@@ -183,7 +185,6 @@ export const getOrderForBiddingById = (orderId: string): OrderDetailsForBidding 
   return mockOpenOrdersForBidding.find(order => order.orderId === orderId);
 };
 
-// Mock bids for a specific order (e.g., orderBid1)
 export const mockBidsForOrder: (orderId: string) => CourierBid[] = (orderId) => {
   if (orderId === 'orderBid1') {
     return [
@@ -193,12 +194,12 @@ export const mockBidsForOrder: (orderId: string) => CourierBid[] = (orderId) => 
         courierId: 'courier1',
         courierName: 'Speedy Sam',
         distanceToRestaurantKm: 0.5,
-        bidAmount: 10, // Base
-        proposedEtaMinutes: 15, // 5 min to restaurant + 10 min to customer
+        bidAmount: 10,
+        proposedEtaMinutes: 15,
         courierRating: 4.8,
         courierTrustScore: 92,
         vehicleType: 'motorcycle',
-        timestamp: new Date(Date.now() - 60000 * 2).toISOString(), // 2 minutes ago
+        timestamp: new Date(Date.now() - 60000 * 2).toISOString(),
         isFastPickup: false,
         status: 'pending',
       },
@@ -208,16 +209,48 @@ export const mockBidsForOrder: (orderId: string) => CourierBid[] = (orderId) => 
         courierId: 'courier2',
         courierName: 'Reliable Rita',
         distanceToRestaurantKm: 1.2,
-        bidAmount: 12, // +₪2
+        bidAmount: 12,
         proposedEtaMinutes: 18,
         courierRating: 4.6,
         courierTrustScore: 95,
         vehicleType: 'car',
-        timestamp: new Date(Date.now() - 60000 * 1).toISOString(), // 1 minute ago
+        timestamp: new Date(Date.now() - 60000 * 1).toISOString(),
         isFastPickup: false,
         status: 'pending',
       },
     ];
   }
   return [];
+};
+
+// Mock an order for the order tracking page
+export const getMockOrderById = (orderId: string): Order | undefined => {
+  // Simulate finding an order. In a real app, this would fetch from a database.
+  if (orderId === 'mockOrder123') {
+    const baseOrder: Order = {
+      id: 'mockOrder123',
+      userId: 'userTest1',
+      items: [
+        { menuItemId: 'item1', name: 'Margherita Pizza', price: 12.99, quantity: 1, imageUrl: 'https://placehold.co/100x100.png', dataAiHint: "pizza" },
+        { menuItemId: 'item6', name: 'Coca-Cola', price: 2.50, quantity: 2, imageUrl: 'https://placehold.co/100x100.png', dataAiHint: "drink" },
+      ],
+      totalAmount: 12.99 + (2.50 * 2),
+      deliveryPreference: 'arena', // Default or fetched from cart
+      deliveryFee: 0, // Will be calculated or set based on preference
+      finalAmount: 0, // Will be calculated
+      status: 'MATCHING_COURIER', // Initial status for tracking page
+      deliveryAddress: '123 Delivery St, Foodtown',
+      restaurantId: 'restaurant1',
+      restaurantName: 'Pizza Palace',
+      createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(), // 5 mins ago
+      updatedAt: new Date().toISOString(),
+    };
+    
+    if (baseOrder.deliveryPreference === 'fastest') {
+      baseOrder.deliveryFee = 5.00; // Example fee for fastest
+    }
+    baseOrder.finalAmount = baseOrder.totalAmount + baseOrder.deliveryFee;
+    return baseOrder;
+  }
+  return undefined;
 };
