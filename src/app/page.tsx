@@ -27,14 +27,6 @@ export default function HomePage() {
   const [showLivePickSaleBanner, setShowLivePickSaleBanner] = useState(false); 
   const { toast } = useToast();
 
-  const handleSpinWheelClick = () => {
-    toast({
-        title: "גלגל ההפתעות של LivePick! 🎡",
-        description: "זכית בהנחה של 10% על ההזמנה הבאה! (קוד: SPINWIN10 - משחק יתווסף בקרוב).",
-        duration: 5000,
-    });
-  };
-
   useEffect(() => {
     async function fetchSuggestion() {
       setIsLoadingSuggestion(true);
@@ -188,8 +180,10 @@ export default function HomePage() {
               <CardDescription className="text-teal-600/80">מרגיש בר מזל? סובב את הגלגל וזכה בהנחות, קינוחים, משלוחים חינם ועוד הפתעות!</CardDescription>
             </CardHeader>
             <CardContent className="text-center">
-              <Button onClick={handleSpinWheelClick} className="bg-teal-600 hover:bg-teal-700 text-white shadow-md">
-                סובב את הגלגל (בקרוב)
+              <Button asChild className="bg-teal-600 hover:bg-teal-700 text-white shadow-md">
+                <Link href="/spin-wheel">
+                  סובב את הגלגל
+                </Link>
               </Button>
             </CardContent>
           </Card>
