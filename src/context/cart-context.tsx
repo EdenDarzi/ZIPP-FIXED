@@ -16,12 +16,17 @@ interface CartContextType {
   deliveryPreference: DeliveryPreference;
   setDeliveryPreference: (preference: DeliveryPreference) => void;
   deliveryFee: number;
+  discountAmount: number;
   finalPriceWithDelivery: number;
+  smartCouponApplied: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-const FASTEST_DELIVERY_FEE = 5.00; // Example fee
+const FASTEST_DELIVERY_FEE = 5.00;
+const SMART_SAVER_DISCOUNT = 3.00;
+const SMART_COUPON_THRESHOLD = 70.00;
+const SMART_COUPON_DISCOUNT_PERCENTAGE = 0.05; // 5%
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -56,11 +61,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             : cartItem
         );
       }
-      return [...prevCart, { 
-        menuItemId: item.id, 
-        name: item.name, 
-        price: item.price, 
-        quantity, 
+      return [...prevCart, {
+        menuItemId: item.id,
+        name: item.name,
+        price: item.price,
+        quantity,
         imageUrl: item.imageUrl,
         dataAiHint: item.dataAiHint
       }];
@@ -95,9 +100,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const clearCart = () => {
     setCart([]);
     localStorage.removeItem('swiftServeCart');
-    // Optionally reset delivery preference or keep it
-    // setDeliveryPreferenceState('arena'); 
-    // localStorage.removeItem('swiftServeDeliveryPreference');
     toast({
       title: "Cart cleared",
       description: "Your cart has been emptied.",
@@ -107,25 +109,43 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const setDeliveryPreference = (preference: DeliveryPreference) => {
     setDeliveryPreferenceState(preference);
   };
-  
+
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const deliveryFee = deliveryPreference === 'fastest' ? FASTEST_DELIVERY_FEE : 0;
-  const finalPriceWithDelivery = totalPrice + deliveryFee;
+
+  let deliveryFee = 0;
+  let currentDiscount = 0;
+
+  if (deliveryPreference === 'fastest') {
+    deliveryFee = FASTEST_DELIVERY_FEE;
+  } else if (deliveryPreference === 'smartSaver') {
+    currentDiscount += SMART_SAVER_DISCOUNT;
+    // Smart saver implies no additional delivery fee other than potential base fees (not implemented here)
+  }
+  // Arena has no specific fee or discount by default from this logic
+
+  const smartCouponApplied = totalPrice >= SMART_COUPON_THRESHOLD;
+  if (smartCouponApplied) {
+    currentDiscount += totalPrice * SMART_COUPON_DISCOUNT_PERCENTAGE;
+  }
+
+  const finalPriceWithDelivery = totalPrice + deliveryFee - currentDiscount;
 
   return (
-    <CartContext.Provider value={{ 
-      cart, 
-      addToCart, 
-      removeFromCart, 
-      updateQuantity, 
-      clearCart, 
-      itemCount, 
+    <CartContext.Provider value={{
+      cart,
+      addToCart,
+      removeFromCart,
+      updateQuantity,
+      clearCart,
+      itemCount,
       totalPrice,
       deliveryPreference,
       setDeliveryPreference,
       deliveryFee,
-      finalPriceWithDelivery
+      discountAmount: currentDiscount,
+      finalPriceWithDelivery,
+      smartCouponApplied
     }}>
       {children}
     </CartContext.Provider>

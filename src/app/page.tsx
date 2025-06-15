@@ -1,16 +1,40 @@
 
+'use client'; // Made client component for culinary assistant state
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Utensils, ShoppingCart, Brain, ArrowRight, MapPin, Search } from "lucide-react";
+import { Utensils, ShoppingCart, Brain, ArrowRight, MapPin, Search, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import RestaurantCard from "@/components/restaurants/restaurant-card";
 import { mockRestaurants } from "@/lib/mock-data";
 import type { Restaurant } from "@/types";
 import { Input } from "@/components/ui/input";
+import { useEffect, useState } from "react";
+import { getCulinarySuggestion, CulinaryAssistantInput } from "@/ai/flows/culinary-assistant-flow"; // Assuming path
 
 export default function HomePage() {
   const restaurants: Restaurant[] = mockRestaurants.slice(0,3); // Show a few examples
+  const [culinarySuggestion, setCulinarySuggestion] = useState<string | null>(null);
+  const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(true);
+
+  useEffect(() => {
+    async function fetchSuggestion() {
+      setIsLoadingSuggestion(true);
+      try {
+        // In a real app, userId would come from auth
+        const input: CulinaryAssistantInput = { userId: "mockUser123", currentDay: new Date().toLocaleString('en-us', { weekday: 'long' }) };
+        const result = await getCulinarySuggestion(input);
+        setCulinarySuggestion(result.suggestion);
+      } catch (error) {
+        console.error("Failed to get culinary suggestion:", error);
+        setCulinarySuggestion("Explore our amazing restaurants today!"); // Fallback
+      } finally {
+        setIsLoadingSuggestion(false);
+      }
+    }
+    fetchSuggestion();
+  }, []);
 
   return (
     <div className="space-y-12">
@@ -22,9 +46,9 @@ export default function HomePage() {
         <div className="max-w-xl mx-auto mb-8">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input 
-              type="search" 
-              placeholder="What do you want today? (e.g., Pizza, Sushi, Tacos)" 
+            <Input
+              type="search"
+              placeholder="What are you craving? (e.g., Pizza, Sushi, 'something light')"
               className="w-full pl-12 pr-4 py-3 text-lg rounded-full shadow-md focus:ring-primary focus:border-primary"
               aria-label="Search for food or restaurants"
             />
@@ -45,11 +69,31 @@ export default function HomePage() {
       </section>
 
       <section>
+        <Card className="bg-primary/5 border-primary/20 shadow-md hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle className="text-xl font-headline text-primary flex items-center">
+              <Sparkles className="h-6 w-6 mr-2 text-yellow-500" /> Your Culinary Assistant
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoadingSuggestion ? (
+              <p className="text-muted-foreground animate-pulse">Thinking of something delicious for you...</p>
+            ) : (
+              <p className="text-lg text-foreground/90">{culinarySuggestion}</p>
+            )}
+            <Button variant="link" className="p-0 h-auto mt-2 text-primary" asChild>
+              <Link href="/recommendations">Get more personalized recommendations &rarr;</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </section>
+
+
+      <section>
         <div className="flex items-center mb-4">
           <MapPin className="h-6 w-6 mr-2 text-primary" />
           <h2 className="text-2xl font-bold font-headline text-foreground">Near You & Recommended</h2>
         </div>
-        {/* Placeholder for AI recommendations. Displaying a few mock restaurants for now. */}
         {restaurants.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {restaurants.map((restaurant) => (
@@ -65,7 +109,7 @@ export default function HomePage() {
             </Button>
         </div>
       </section>
-      
+
       <section className="grid md:grid-cols-3 gap-8">
         <Card className="hover:shadow-xl transition-shadow duration-300">
           <CardHeader>
@@ -92,11 +136,11 @@ export default function HomePage() {
         <Card className="hover:shadow-xl transition-shadow duration-300">
           <CardHeader>
             <Brain className="h-10 w-10 text-accent mb-2" />
-            <CardTitle className="font-headline">Smart Recommendations</CardTitle>
+            <CardTitle className="font-headline">Smart Suggestions</CardTitle>
           </CardHeader>
           <CardContent>
             <CardDescription>
-              Get personalized item suggestions powered by our AI engine.
+              Get personalized item and restaurant suggestions powered by our AI engine.
             </CardDescription>
           </CardContent>
         </Card>

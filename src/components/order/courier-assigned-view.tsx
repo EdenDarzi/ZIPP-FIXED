@@ -1,23 +1,24 @@
 
 'use client';
 
-import type { Order } from '@/types';
+import type { Order, DeliveryVehicle } from '@/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { MapPin, MessageSquare, Phone, ShieldAlert, Star, Navigation, Bike, Car, Footprints } from 'lucide-react';
+import { MapPin, MessageSquare, Phone, ShieldAlert, Star, Navigation, Bike, Car, Footprints, Shirt } from 'lucide-react'; // Using Shirt for generic vehicle details
 import Image from 'next/image'; // For map placeholder
 
 interface CourierAssignedViewProps {
   order: Order;
 }
 
-const VehicleIcon = ({ type }: { type: Order['assignedCourier']['vehicleType'] | undefined }) => {
-  if (type === 'motorcycle') return <Bike className="h-5 w-5 mr-2 text-primary" />;
-  if (type === 'car') return <Car className="h-5 w-5 mr-2 text-primary" />;
-  if (type === 'bicycle') return <Bike className="h-5 w-5 mr-2 text-primary" />; // Using Bike for bicycle too
-  if (type === 'foot') return <Footprints className="h-5 w-5 mr-2 text-primary" />;
-  return null;
+const VehicleIcon = ({ type }: { type: DeliveryVehicle | undefined }) => {
+  if (type === 'motorcycle') return <Bike className="h-5 w-5 mr-1 text-primary" />;
+  if (type === 'scooter') return <Bike className="h-5 w-5 mr-1 text-primary" />; // Placeholder
+  if (type === 'car') return <Car className="h-5 w-5 mr-1 text-primary" />;
+  if (type === 'bicycle') return <Bike className="h-5 w-5 mr-1 text-primary" />;
+  if (type === 'foot') return <Footprints className="h-5 w-5 mr-1 text-primary" />;
+  return <Shirt className="h-5 w-5 mr-1 text-primary" />; // Default icon
 };
 
 
@@ -52,12 +53,14 @@ export function CourierAssignedView({ order }: CourierAssignedViewProps) {
             <div className="flex items-center text-sm text-muted-foreground">
               <Star className="h-4 w-4 mr-1 text-yellow-500 fill-yellow-500" /> {courier.rating.toFixed(1)}
               <span className="mx-2">|</span>
-              <VehicleIcon type={courier.vehicleType} /> {courier.vehicleType}
+              <VehicleIcon type={courier.vehicleType} />
+              <span className="capitalize">{courier.vehicleType}</span>
+              {courier.vehicleDetails && <span className="ml-1 text-xs">({courier.vehicleDetails})</span>}
             </div>
           </div>
         </div>
         <CardDescription className="text-base">
-          Your order from <span className="font-semibold text-primary">{order.restaurantName}</span> is {order.status === 'OUT_FOR_DELIVERY' ? 'out for delivery' : 'assigned and being prepared'}.
+          Your order from <span className="font-semibold text-primary">{order.restaurantName}</span> is <span className="font-medium">{order.status.replace(/_/g, ' ').toLowerCase()}</span>.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -71,22 +74,24 @@ export function CourierAssignedView({ order }: CourierAssignedViewProps) {
             </div>
             <Navigation className="h-10 w-10 text-primary" />
           </div>
+           {order.status === 'AWAITING_PICKUP' && <p className="text-xs text-center mt-2 text-blue-600">Courier is heading to {order.restaurantName}.</p>}
+           {order.status === 'PREPARING_AT_RESTAURANT' && <p className="text-xs text-center mt-2 text-orange-600">{order.restaurantName} is preparing your order.</p>}
         </div>
 
         {/* Map Placeholder */}
         <div className="aspect-video rounded-lg overflow-hidden border shadow-inner">
-          <Image 
-            src={mapPlaceholderUrl} 
-            alt="Delivery map placeholder" 
-            width={800} 
+          <Image
+            src={mapPlaceholderUrl}
+            alt="Delivery map placeholder"
+            width={800}
             height={400}
             layout="responsive"
             objectFit="cover"
             data-ai-hint="map delivery route"
           />
-          <p className="text-xs text-center text-muted-foreground p-1 bg-background">Real-time map coming soon!</p>
+          <p className="text-xs text-center text-muted-foreground p-1 bg-background">Real-time map coming soon! (Courier live location: {courier.liveLocation ? `${courier.liveLocation.lat.toFixed(4)}, ${courier.liveLocation.lng.toFixed(4)}` : 'N/A'})</p>
         </div>
-        
+
         <div className="flex items-center text-sm">
           <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
           Delivering to: {order.deliveryAddress}

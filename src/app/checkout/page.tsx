@@ -3,15 +3,16 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreditCard, Lock, ShoppingBag, AlertTriangle } from "lucide-react";
+import { CreditCard, Lock, ShoppingBag, AlertTriangle, Zap, Sparkles, DollarSign } from "lucide-react";
 import Link from "next/link";
 import { useCart } from "@/context/cart-context";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
 
 export default function CheckoutPage() {
-  const { cart, itemCount, finalPriceWithDelivery, deliveryPreference, deliveryFee, clearCart } = useCart();
+  const { cart, itemCount, totalPrice, deliveryPreference, deliveryFee, discountAmount, finalPriceWithDelivery, smartCouponApplied, clearCart } = useCart();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -31,18 +32,22 @@ export default function CheckoutPage() {
   }
 
   const handleMockPayment = () => {
-    // Simulate payment processing
     toast({
       title: "Payment Successful (Mock)",
       description: "Your order is being processed!",
     });
 
-    // Create a mock order ID
-    const mockOrderId = `mockOrder${Date.now()}`;
-    
-    // In a real app, you would save the order to a database here.
-    // For now, we'll just navigate.
+    const mockOrderId = `mockOrder_${Date.now()}`; // More unique mock ID
 
+    // In a real app, you would save the order details (including deliveryPreference, finalPriceWithDelivery) to a database here.
+    // The order tracking page would then fetch this by orderId.
+    // For now, some info might be lost if not passed via query or context that persists across navigation.
+    // For simplicity, we'll just navigate. The order tracking page uses a generic mock order for now.
+
+    // To make the mock more realistic, we could pass the final amount and preference
+    // However, this is a GET request and sensitive data shouldn't be in URL.
+    // In a real app, this would be POSTed and then redirected to tracking page with just ID.
+    
     // Clear cart after successful "payment"
     // clearCart(); // Optional: clear cart now or after viewing order status
 
@@ -64,11 +69,11 @@ export default function CheckoutPage() {
               {cart.map(item => (
                 <div key={item.menuItemId} className="flex justify-between items-center text-sm">
                   <div className="flex items-center">
-                    <Image 
-                      src={item.imageUrl || 'https://placehold.co/40x40.png'} 
-                      alt={item.name} 
-                      width={40} 
-                      height={40} 
+                    <Image
+                      src={item.imageUrl || 'https://placehold.co/40x40.png'}
+                      alt={item.name}
+                      width={40}
+                      height={40}
                       className="rounded mr-3"
                       data-ai-hint={item.dataAiHint || "item"}
                     />
@@ -80,12 +85,18 @@ export default function CheckoutPage() {
               <div className="border-t pt-3 mt-3 space-y-1">
                 <div className="flex justify-between text-sm">
                   <span>Subtotal</span>
-                  <span>${(finalPriceWithDelivery - deliveryFee).toFixed(2)}</span>
+                  <span>${totalPrice.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span>Delivery ({deliveryPreference === 'fastest' ? 'Fastest' : 'Arena'})</span>
-                  <span>${deliveryFee.toFixed(2)}</span>
+                  <span>Delivery ({deliveryPreference === 'fastest' ? 'Fastest' : deliveryPreference === 'smartSaver' ? 'Smart Saver' : 'Arena'})</span>
+                  <span>{deliveryFee > 0 ? `$${deliveryFee.toFixed(2)}` : 'Free'}</span>
                 </div>
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-sm text-green-600">
+                    <span>Discounts Applied</span>
+                    <span>-${discountAmount.toFixed(2)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between font-bold text-lg text-primary pt-1">
                   <span>Total</span>
                   <span>${finalPriceWithDelivery.toFixed(2)}</span>
@@ -105,13 +116,26 @@ export default function CheckoutPage() {
               <p className="text-sm text-muted-foreground">Securely process your payment.</p>
             </div>
           </div>
-          
+
           {deliveryPreference === 'arena' && (
              <div className="p-3 bg-blue-50 border border-blue-200 rounded-md text-sm text-blue-700 flex items-start">
                 <Zap className="h-5 w-5 mr-2 mt-0.5 text-blue-600 flex-shrink-0" />
                 <span>You&apos;ve selected Delivery Arena! After payment, we&apos;ll find the best courier for you. This might take a moment.</span>
             </div>
           )}
+          {deliveryPreference === 'smartSaver' && (
+             <div className="p-3 bg-green-50 border border-green-200 rounded-md text-sm text-green-700 flex items-start">
+                <DollarSign className="h-5 w-5 mr-2 mt-0.5 text-green-600 flex-shrink-0" />
+                <span>Smart Saver: Your order will be delivered with a discount, potentially taking a bit longer.</span>
+            </div>
+          )}
+          {smartCouponApplied && deliveryPreference !== 'smartSaver' && (
+             <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md text-sm text-yellow-700 flex items-start">
+                <Sparkles className="h-5 w-5 mr-2 mt-0.5 text-yellow-600 flex-shrink-0" />
+                <span>Smart 5% coupon applied to your order over $70!</span>
+            </div>
+          )}
+
 
           <Button size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg" onClick={handleMockPayment}>
             <Lock className="mr-2 h-5 w-5" /> Pay ${finalPriceWithDelivery.toFixed(2)} (Mock)

@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { PT_Sans } from 'next/font/google';
@@ -6,6 +7,7 @@ import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import { CartProvider } from '@/context/cart-context';
 import { cn } from '@/lib/utils';
+import AiChatAssistant from '@/components/layout/ai-chat-assistant'; // Added
 
 const ptSans = PT_Sans({
   subsets: ['latin'],
@@ -38,6 +40,7 @@ export default function RootLayout({
           </main>
           <Footer />
           <Toaster />
+          <AiChatAssistant /> {/* Added AI Chat Assistant FAB */}
         </CartProvider>
       </body>
     </html>

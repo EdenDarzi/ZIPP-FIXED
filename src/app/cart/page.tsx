@@ -5,25 +5,28 @@ import { useCart } from '@/context/cart-context';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Zap, CheckCircle, ShieldQuestion } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Zap, CheckCircle, ShieldQuestion, Sparkles, DollarSign } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import type { DeliveryPreference } from '@/types';
+import { Badge } from '@/components/ui/badge';
 
 export default function CartPage() {
-  const { 
-    cart, 
-    removeFromCart, 
-    updateQuantity, 
-    clearCart, 
-    itemCount, 
+  const {
+    cart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    itemCount,
     totalPrice,
     deliveryPreference,
     setDeliveryPreference,
     deliveryFee,
-    finalPriceWithDelivery
+    discountAmount,
+    finalPriceWithDelivery,
+    smartCouponApplied,
   } = useCart();
 
   if (itemCount === 0) {
@@ -89,8 +92,8 @@ export default function CartPage() {
               <CardDescription>Choose how you&apos;d like your order delivered.</CardDescription>
             </CardHeader>
             <CardContent>
-              <RadioGroup 
-                defaultValue={deliveryPreference} 
+              <RadioGroup
+                value={deliveryPreference}
                 onValueChange={(value) => setDeliveryPreference(value as DeliveryPreference)}
                 className="space-y-3"
               >
@@ -114,10 +117,20 @@ export default function CartPage() {
                   </div>
                   <span className="font-semibold text-primary ml-2">+$5.00</span>
                 </Label>
+                <Label htmlFor="smart-saver-delivery" className="flex items-center p-4 border rounded-md cursor-pointer hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all">
+                  <RadioGroupItem value="smartSaver" id="smart-saver-delivery" className="mr-3" />
+                  <div className="flex-grow">
+                    <div className="font-semibold flex items-center">
+                       <DollarSign className="h-5 w-5 mr-2 text-green-600" /> Smart Saver Delivery
+                    </div>
+                    <p className="text-sm text-muted-foreground">Wait a bit longer (up to 30 extra min) and get a discount. Good for non-urgent orders.</p>
+                  </div>
+                  <span className="font-semibold text-green-600 ml-2">-$3.00</span>
+                </Label>
               </RadioGroup>
               <p className="mt-4 text-sm text-muted-foreground p-3 bg-muted/30 rounded-md flex items-start">
                 <ShieldQuestion className="h-5 w-5 mr-2 mt-0.5 text-primary flex-shrink-0" />
-                <span>Deliveries in the area are now competing for your order – if you choose Delivery Arena, we&apos;ll find the best option for you. If you&apos;re in a hurry, choose Fastest Delivery!</span>
+                <span>Deliveries in the area are now competing for your order – if you choose Delivery Arena, we&apos;ll find the best option for you. If you&apos;re in a hurry, choose Fastest Delivery! Or, save with Smart Saver if time is flexible.</span>
               </p>
             </CardContent>
           </Card>
@@ -144,6 +157,24 @@ export default function CartPage() {
                   {deliveryFee > 0 ? `$${deliveryFee.toFixed(2)}` : 'Free'}
                 </span>
               </div>
+              {discountAmount > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground flex items-center">
+                    <Sparkles className="h-4 w-4 mr-1 text-green-500" /> Discounts
+                  </span>
+                  <span className="font-medium text-green-600">-${discountAmount.toFixed(2)}</span>
+                </div>
+              )}
+              {smartCouponApplied && deliveryPreference !== 'smartSaver' && ( // Don't show coupon if smart saver already applied it for simplicity
+                <Badge variant="secondary" className="w-full justify-center bg-green-100 text-green-700 border-green-300 py-1">
+                   <Sparkles className="h-4 w-4 mr-1"/> Smart Coupon Applied! 5% off for orders over $70.
+                </Badge>
+              )}
+               {deliveryPreference === 'smartSaver' && (
+                 <Badge variant="secondary" className="w-full justify-center bg-blue-100 text-blue-700 border-blue-300 py-1">
+                   <DollarSign className="h-4 w-4 mr-1"/> Smart Saver Discount Applied!
+                </Badge>
+               )}
               <Separator />
               <div className="flex justify-between text-xl font-bold text-primary">
                 <span>Total</span>
