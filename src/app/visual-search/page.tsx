@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { identifyDishFromImage, IdentifyDishInput, IdentifyDishOutput } from '@/ai/flows/identify-dish-flow';
 import { Camera, ImageUp, Loader2, Sparkles, Utensils, Share2, TrendingUp, Info, Star } from 'lucide-react';
 import Image from 'next/image';
-import { Label } from '@/components/ui/label';
+import { Label } from '../ui/label';
 import { Badge } from '@/components/ui/badge';
 
 export default function AiTrendScannerPage() {
