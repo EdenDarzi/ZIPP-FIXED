@@ -1,9 +1,9 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, ListOrdered, ShoppingCart, Users, AlertTriangle, Settings, LayoutList, Palette, BarChart3, Video } from "lucide-react";
+import { DollarSign, ListOrdered, ShoppingCart, Users, AlertTriangle, Settings, LayoutList, Palette, BarChart3, Video, Info } from "lucide-react"; // Added Info
 import Link from "next/link";
-import Image from "next/image"; // Added import for Image
+import Image from "next/image";
 
 export default function RestaurantAdminDashboard() {
   const stats = {
@@ -31,6 +31,20 @@ export default function RestaurantAdminDashboard() {
           </Link>
         </Button>
       </div>
+
+      <Card className="bg-blue-50 border-blue-200">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg text-blue-700 flex items-center"><Info className="mr-2 h-5 w-5" /> מידע חשוב</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-blue-600">
+            ברוכים הבאים לממשק ניהול העסק! כאן תוכלו לעדכן את פרטי העסק שלכם, לנהל מוצרים ושירותים, לעקוב אחר הזמנות, לצפות בניתוחים ועוד.
+          </p>
+          <p className="text-sm text-blue-600 mt-1">
+            <strong>הערה:</strong> ממשק זה מיועד לניהול עסק קיים. הקמת עסק חדש והרשמה לפלטפורמה יתאפשרו בקרוב דרך תהליך ייעודי.
+          </p>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
