@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { notFound, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
-import { Minus, Plus, ShoppingCart, ArrowLeft, Star, Share2, Award } from 'lucide-react';
+import { Minus, Plus, ShoppingCart, ArrowLeft, Star, Share2, Award, Heart } from 'lucide-react'; // Added Heart
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -45,7 +45,13 @@ export default function ItemPage({ params }: ItemPageParams) {
       description: `שיתפת את "${item.name}"! +5 כוכבים התווספו לחשבונך (דמו).`,
       action: <Award className="h-5 w-5 text-yellow-400"/>
     });
-    // Actual sharing logic would go here
+  };
+
+  const handleAddToFavorites = () => {
+    toast({
+        title: "נוסף למועדפים (בקרוב!)",
+        description: `"${item.name}" נוסף לספריית הטעמים שלך. תוכל למצוא אותו שם בפעם הבאה!`,
+    });
   };
 
   return (
@@ -54,10 +60,16 @@ export default function ItemPage({ params }: ItemPageParams) {
         <Button variant="outline" onClick={() => router.back()}>
           <ArrowLeft className="mr-2 h-4 w-4" /> חזרה לתפריט
         </Button>
-         <Button variant="outline" size="icon" onClick={handleShareItem} className="ml-auto">
-            <Share2 className="h-5 w-5" />
-            <span className="sr-only">שתף פריט</span>
-          </Button>
+        <div className="flex items-center space-x-2">
+            <Button variant="ghost" size="icon" onClick={handleAddToFavorites} title="הוסף למועדפים (בקרוב)">
+                <Heart className="h-5 w-5 text-pink-500" />
+                <span className="sr-only">הוסף למועדפים</span>
+            </Button>
+            <Button variant="outline" size="icon" onClick={handleShareItem} className="ml-auto">
+                <Share2 className="h-5 w-5" />
+                <span className="sr-only">שתף פריט</span>
+            </Button>
+        </div>
       </div>
       
 

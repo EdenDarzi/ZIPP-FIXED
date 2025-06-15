@@ -30,7 +30,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { NutritionalGoal, DishRecommendation, WeeklyMenu, DailyMealPlan, Meal } from '@/types';
 import { getNutritionalAdvice, NutritionalAdvisorInput, NutritionalAdvisorOutput } from '@/ai/flows/nutritional-advisor-flow';
 import { generateWeeklyMenu, WeeklyMenuInput, WeeklyMenuOutput } from '@/ai/flows/weekly-menu-planner-flow';
-import { Loader2, Sparkles, Utensils, Lightbulb, HeartPulse, Share2, CalendarDays, Info, ListChecks } from 'lucide-react';
+import { Loader2, Sparkles, Utensils, Lightbulb, HeartPulse, Share2, CalendarDays, Info, ListChecks, ShoppingBasket } from 'lucide-react'; // Added ShoppingBasket
 import { Separator } from '@/components/ui/separator';
 
 const nutritionalGoals: { value: NutritionalGoal; label: string }[] = [
@@ -113,7 +113,7 @@ export default function NutritionalAdvisorPage() {
   async function onWeeklyMenuSubmit(values: WeeklyMenuFormValues) {
     setIsLoadingWeeklyMenu(true);
     setWeeklyMenuResponse(null);
-    const dishPreferences = dishForm.getValues('preferences'); // Get preferences from the other form
+    const dishPreferences = dishForm.getValues('preferences'); 
 
     try {
         const input: WeeklyMenuInput = {
@@ -155,15 +155,22 @@ export default function NutritionalAdvisorPage() {
     });
   };
 
+  const handleSetupRecurringBasket = () => {
+    toast({
+        title: "הגדרת סל שבועי (בקרוב!)",
+        description: "האפשרות להגדיר סל קבוע שיישלח אליך אוטומטית תתווסף בקרוב.",
+        duration: 5000,
+    });
+  };
 
   return (
     <div className="max-w-3xl mx-auto py-8 space-y-8">
       <Card className="shadow-xl">
         <CardHeader className="text-center items-center">
           <HeartPulse className="h-12 w-12 text-primary mx-auto mb-3" />
-          <CardTitle className="text-3xl font-headline text-primary">יועץ התזונה החכם שלך</CardTitle>
+          <CardTitle className="text-3xl font-headline text-primary">יועץ התזונה והתפריטים החכם שלך</CardTitle>
           <PageCardDescription>
-            קבל המלצות מותאמות אישית למנות ותכנן תפריט שבועי שיעזרו לך להשיג את מטרות התזונה שלך!
+            קבל המלצות מותאמות אישית למנות, תכנן תפריט שבועי ואפילו הגדר סל קבוע שיעזרו לך להשיג את מטרות התזונה שלך!
           </PageCardDescription>
         </CardHeader>
         <CardContent>
@@ -275,7 +282,6 @@ export default function NutritionalAdvisorPage() {
 
       <Separator className="my-10" />
 
-      {/* Weekly Menu Planning Section */}
       <Card className="shadow-xl">
         <CardHeader className="text-center items-center">
           <CalendarDays className="h-12 w-12 text-primary mx-auto mb-3" />
@@ -323,7 +329,6 @@ export default function NutritionalAdvisorPage() {
                         </FormItem>
                         )}
                     />
-                     {/* Preferences from the other form will be used, so no need for a field here, but a note might be good */}
                      <p className="text-sm text-muted-foreground"><Info className="inline h-4 w-4 mr-1" />העדפות, הגבלות ומאכלים אהובים יילקחו מהטופס של המלצות המנות למעלה.</p>
 
                     <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg" disabled={isLoadingWeeklyMenu}>
@@ -382,6 +387,11 @@ export default function NutritionalAdvisorPage() {
                     </div>
                 )}
             </CardContent>
+            <CardFooter>
+                <Button onClick={handleSetupRecurringBasket} variant="default" className="w-full bg-teal-500 hover:bg-teal-600 text-white">
+                    <ShoppingBasket className="ml-2 h-4 w-4" /> הגדר כסל שבועי קבוע (בקרוב)
+                </Button>
+            </CardFooter>
         </Card>
       )}
       {weeklyMenuResponse && (!weeklyMenuResponse.plan || weeklyMenuResponse.plan.length === 0) && !isLoadingWeeklyMenu && (

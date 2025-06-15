@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Utensils, ShoppingCart, Brain, ArrowLeft, MapPin, Search, Sparkles, Heart, History, Award, Flame, Gift, Gem, UsersIcon, MapIcon as FoodRadarIcon, ShoppingBag as SwiftSaleIcon, TrendingUp as LiveTrendIcon } from "lucide-react";
+import { Utensils, ShoppingCart, Brain, ArrowLeft, MapPin, Search, Sparkles, Heart, History, Award, Flame, Gift, Gem, UsersIcon, MapIcon as FoodRadarIcon, ShoppingBag as SwiftSaleIcon, TrendingUp as LiveTrendIcon, MessageCircle, ExternalLink, Info, ShoppingBasket, Gamepad2, Library, ListChecks } from "lucide-react"; // Added Gamepad2, Library, ListChecks
 import Image from "next/image";
 import Link from "next/link";
 import RestaurantCard from "@/components/restaurants/restaurant-card";
@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { getCulinarySuggestion, CulinaryAssistantInput } from "@/ai/flows/culinary-assistant-flow"; 
 import SurpriseFeatureCard from "@/components/surprise/surprise-feature-card";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast"; // Added useToast
 
 export default function HomePage() {
   const allRestaurants: Restaurant[] = mockRestaurants;
@@ -23,7 +24,16 @@ export default function HomePage() {
 
   const [culinarySuggestion, setCulinarySuggestion] = useState<string | null>(null);
   const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(true);
-  const [showSwiftSaleBanner, setShowSwiftSaleBanner] = useState(false); // Mock logic for banner
+  const [showSwiftSaleBanner, setShowSwiftSaleBanner] = useState(false); 
+  const { toast } = useToast(); // Added toast
+
+  const handleSpinWheelClick = () => {
+    toast({
+        title: "גלגל ההפתעות של SwiftServe! 🎡",
+        description: "זכית בהנחה של 10% על ההזמנה הבאה! (קוד: SPINWIN10 - משחק יתווסף בקרוב).",
+        duration: 5000,
+    });
+  };
 
   useEffect(() => {
     async function fetchSuggestion() {
@@ -41,9 +51,8 @@ export default function HomePage() {
     }
     fetchSuggestion();
 
-    // Mock logic to show SwiftSale banner sometimes
     const currentHour = new Date().getHours();
-    if (currentHour >= 19 && currentHour <= 23) { // Example: Show between 7 PM and 11 PM
+    if (currentHour >= 19 && currentHour <= 23) { 
         setShowSwiftSaleBanner(true);
     }
 
@@ -164,10 +173,27 @@ export default function HomePage() {
           </CardHeader>
           <CardContent className="text-center text-orange-700/90">
             <p>"קבל 15% הנחה על קולקציית הקיץ של 'FashionForward' בהשראת טרנד ה-Y2K שזוהה לאחרונה!" (בקרוב)</p>
+            <Button variant="link" size="sm" className="text-orange-600 hover:text-orange-700 p-0 h-auto mt-1" onClick={() => toast({title: "בקרוב!", description: "שיתופי פעולה עם מותגים יתווספו כאן."})}>
+                צפה בכל שיתופי הפעולה <ExternalLink className="h-3 w-3 mr-1"/>
+            </Button>
           </CardContent>
         </Card>
       </section>
 
+      <section className="animate-fadeInUp animation-delay-650">
+          <Card className="bg-teal-500/10 border-teal-500/30">
+            <CardHeader className="items-center text-center">
+              <Gamepad2 className="h-10 w-10 text-teal-600 mb-2" />
+              <CardTitle className="text-xl font-headline text-teal-700">🎡 גלגל ההפתעות של SwiftServe!</CardTitle>
+              <CardDescription className="text-teal-600/80">מרגיש בר מזל? סובב את הגלגל וזכה בהנחות, קינוחים, משלוחים חינם ועוד הפתעות!</CardDescription>
+            </CardHeader>
+            <CardContent className="text-center">
+              <Button onClick={handleSpinWheelClick} className="bg-teal-600 hover:bg-teal-700 text-white shadow-md">
+                סובב את הגלגל (בקרוב)
+              </Button>
+            </CardContent>
+          </Card>
+      </section>
 
       {recommendedForYou.length > 0 && (
         <section className="animate-fadeInUp animation-delay-800">
@@ -197,6 +223,30 @@ export default function HomePage() {
         </section>
       )}
 
+      <section className="animate-fadeInUp animation-delay-1100">
+         <div className="flex items-center mb-6">
+            <Library className="h-7 w-7 ml-3 text-indigo-500" />
+            <h2 className="text-3xl font-bold font-headline text-foreground">ספריית הטעמים שלך (בקרוב)</h2>
+          </div>
+          <Card className="bg-indigo-500/5 border-indigo-500/20">
+            <CardContent className="p-6 text-center">
+                <p className="text-muted-foreground mb-3">כאן יוצגו המנות והעסקים שאהבת, דירגת או הזמנת שוב, עם הצעות דומות.</p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {[1,2,3,4].map(i => (
+                        <div key={i} className="p-2 border rounded-md bg-background/50">
+                            <div className="h-16 w-full bg-muted rounded mb-1 data-ai-hint='liked food item'"></div>
+                            <p className="text-xs font-medium truncate">מנה שאהבת {i}</p>
+                        </div>
+                    ))}
+                </div>
+                <Button variant="link" className="mt-3 text-indigo-600 p-0 h-auto" onClick={() => toast({title: "בקרוב!", description: "ספריית הטעמים האישית שלך תהיה זמינה כאן."})}>
+                    הצג את כל ספריית הטעמים
+                </Button>
+            </CardContent>
+          </Card>
+      </section>
+
+
       {recentlyViewedMock.length > 0 && (
          <section className="animate-fadeInUp animation-delay-1200">
           <div className="flex items-center mb-6">
@@ -213,7 +263,7 @@ export default function HomePage() {
       
       <section className="animate-fadeInUp animation-delay-1400">
         <div className="flex items-center mb-6">
-          <Award className="h-7 w-7 ml-3 text-purple-500" />
+          <ListChecks className="h-7 w-7 ml-3 text-gray-500" />
           <h2 className="text-3xl font-bold font-headline text-foreground">גלה את כל העסקים</h2>
         </div>
         {allRestaurants.length > 0 ? (
@@ -291,10 +341,12 @@ export default function HomePage() {
         .animation-delay-400 { animation-delay: 0.4s; }
         .animation-delay-500 { animation-delay: 0.5s; }
         .animation-delay-600 { animation-delay: 0.6s; }
+        .animation-delay-650 { animation-delay: 0.65s; }
         .animation-delay-700 { animation-delay: 0.7s; }
         .animation-delay-750 { animation-delay: 0.75s; }
         .animation-delay-800 { animation-delay: 0.8s; }
         .animation-delay-1000 { animation-delay: 1s; }
+        .animation-delay-1100 { animation-delay: 1.1s; }
         .animation-delay-1200 { animation-delay: 1.2s; }
         .animation-delay-1400 { animation-delay: 1.4s; }
         .animation-delay-1600 { animation-delay: 1.6s; }
@@ -313,6 +365,14 @@ export default function HomePage() {
         .animate-fadeInUp {
           animation: fadeInUp 0.6s ease-out forwards;
           opacity: 0; 
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
       `}</style>
     </div>

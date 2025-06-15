@@ -6,12 +6,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { Star, CheckCircle, Gift, Heart, RotateCcw, DollarSign, MessageCircle, Camera, Share2, Mic } from 'lucide-react';
+import { Star, CheckCircle, Gift, Heart, RotateCcw, DollarSign, MessageCircle, Camera, Share2, Mic, ThumbsUp } from 'lucide-react'; // Added ThumbsUp
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Separator } from '../ui/separator';
 import { Label } from '../ui/label';
+import { Checkbox } from '../ui/checkbox'; // Added Checkbox
 
 const TikTokIcon = MessageCircle; 
 const InstagramIcon = Camera;
@@ -33,6 +34,7 @@ export function DeliveryCompleteView({ order }: DeliveryCompleteViewProps) {
 
   const [showCustomTipInput, setShowCustomTipInput] = useState(false);
   const [customTipAmount, setCustomTipAmount] = useState('');
+  const [addToTasteLibrary, setAddToTasteLibrary] = useState(false);
 
 
   const { toast } = useToast();
@@ -48,15 +50,23 @@ export function DeliveryCompleteView({ order }: DeliveryCompleteViewProps) {
       restaurantFeedback,
       deliveryRating,
       deliveryFeedback,
+      addToTasteLibrary,
     });
     toast({
       title: "המשוב נשלח!",
       description: "תודה ששיתפת אותנו בדעתך.",
     });
+    if (addToTasteLibrary && order.items.length > 0) {
+        toast({
+            title: "נוסף לספריית הטעמים!",
+            description: `"${order.items[0].name}" נשמר במועדפים שלך (בקרוב).`,
+        });
+    }
     setRestaurantRating(0);
     setRestaurantFeedback('');
     setDeliveryRating(0);
     setDeliveryFeedback('');
+    setAddToTasteLibrary(false);
   };
 
   const handleTip = (amount: number | string) => {
@@ -172,10 +182,17 @@ export function DeliveryCompleteView({ order }: DeliveryCompleteViewProps) {
             aria-label="משוב על המשלוח"
           />
         </div>
+
+        <div className="flex items-center space-x-2 rtl:space-x-reverse justify-center mt-3">
+            <Checkbox id="addToTasteLibrary" checked={addToTasteLibrary} onCheckedChange={(checked) => setAddToTasteLibrary(Boolean(checked))} />
+            <Label htmlFor="addToTasteLibrary" className="cursor-pointer text-sm text-muted-foreground">
+                הוסף את {order.items.length > 0 ? `"${order.items[0].name}"` : "המנה הראשית"} לספריית הטעמים שלי (בקרוב)
+            </Label>
+        </div>
         
         <div className="flex flex-col sm:flex-row gap-2 mt-3">
             <Button onClick={handleFeedbackSubmit} className="flex-1 bg-primary hover:bg-primary/90">
-              שלח משוב
+              <ThumbsUp className="ml-2 h-4 w-4" /> שלח משוב
             </Button>
             <Button variant="outline" onClick={handleVoiceFeedback} className="flex-1">
               <Mic className="mr-2 h-4 w-4" /> השאר משוב קולי (בקרוב!)

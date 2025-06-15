@@ -7,7 +7,7 @@ import { mockRestaurants } from '@/lib/mock-data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { PlusCircle, Edit3, Trash2, Copy, GripVertical, PackageSearch, Image as ImageIcon, Tag, DollarSign, CheckCircle, XCircle, ShoppingBag } from 'lucide-react';
+import { PlusCircle, Edit3, Trash2, Copy, GripVertical, PackageSearch, Image as ImageIcon, Tag, DollarSign, CheckCircle, XCircle, ShoppingBag, Info } from 'lucide-react'; // Added Info
 import Image from 'next/image';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
@@ -440,13 +440,12 @@ export default function MenuManagementPage() {
         </DialogContent>
       </Dialog>
 
-      {/* SwiftSale Management Card */}
       <Card>
         <CardHeader>
             <CardTitle className="text-xl font-headline flex items-center">
                 <ShoppingBag className="mr-2 h-5 w-5 text-red-500" /> ניהול SwiftSale - שקיות סוף יום
             </CardTitle>
-            <CardDescription>הגדר את שקיות ההפתעה המוזלות לסוף היום עבור העסק שלך.</CardDescription>
+            <CardDescription>הגדר את שקיות ההפתעה המוזלות לסוף היום עבור העסק שלך. מתאים גם למבצעי Flash Sales!</CardDescription>
         </CardHeader>
         <CardContent>
             <Form {...swiftSaleForm}>
@@ -457,8 +456,8 @@ export default function MenuManagementPage() {
                         render={({ field }) => (
                             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm">
                                 <div className="space-y-0.5">
-                                    <FormLabel className="text-base">הפעל SwiftSale עבור העסק שלך</FormLabel>
-                                    <FormDescription>מאפשר למכור שקיות הפתעה מוזלות בסוף היום.</FormDescription>
+                                    <FormLabel className="text-base">הפעל SwiftSale / Flash Sale עבור העסק שלך</FormLabel>
+                                    <FormDescription>מאפשר למכור שקיות הפתעה מוזלות או פריטים במבצע בזק.</FormDescription>
                                 </div>
                                 <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                             </FormItem>
@@ -471,9 +470,9 @@ export default function MenuManagementPage() {
                                 name="swiftSaleStartTime"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>שעת התחלת SwiftSale</FormLabel>
+                                        <FormLabel>שעת התחלת המבצע</FormLabel>
                                         <FormControl><Input type="time" {...field} /></FormControl>
-                                        <FormDescription>השעה שבה שקיות ההפתעה יהפכו זמינות.</FormDescription>
+                                        <FormDescription>השעה שבה שקיות ההפתעה/המבצע יהפכו זמינות.</FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -484,7 +483,7 @@ export default function MenuManagementPage() {
                                     name="swiftSaleBagCount"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>כמות שקיות הפתעה זמינות</FormLabel>
+                                            <FormLabel>כמות שקיות הפתעה / פריטים במבצע</FormLabel>
                                             <FormControl><Input type="number" placeholder="לדוגמה: 10" {...field} /></FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -495,7 +494,7 @@ export default function MenuManagementPage() {
                                     name="swiftSaleBagPrice"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>מחיר לשקית הפתעה (₪)</FormLabel>
+                                            <FormLabel>מחיר לשקית הפתעה / פריט במבצע (₪)</FormLabel>
                                             <FormControl><Input type="number" step="0.5" placeholder="לדוגמה: 15" {...field} /></FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -513,8 +512,11 @@ export default function MenuManagementPage() {
                 </form>
             </Form>
         </CardContent>
-         <CardFooter>
-            <p className="text-xs text-muted-foreground">סטטיסטיקות SwiftSale (כמה נמכרו / נותרו) יוצגו כאן (בקרוב).</p>
+         <CardFooter className="p-4 border-t">
+             <p className="text-xs text-muted-foreground flex items-center">
+                <Info className="h-4 w-4 mr-2 text-blue-500 flex-shrink-0"/>
+                <span>סטטיסטיקות SwiftSale (כמה נמכרו / נותרו) יוצגו כאן (בקרוב). זכור לעדכן כמויות בתום המבצע.</span>
+            </p>
          </CardFooter>
       </Card>
 

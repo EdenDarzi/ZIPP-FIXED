@@ -3,18 +3,33 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreditCard, Lock, ShoppingBag, AlertTriangle, Zap, Sparkles, DollarSign, Clock } from "lucide-react"; // Added Clock
+import { CreditCard, Lock, ShoppingBag, AlertTriangle, Zap, Sparkles, DollarSign, Clock, Gift, Checkbox } from "lucide-react"; // Added Gift, Checkbox
 import Link from "next/link";
 import { useCart } from "@/context/cart-context";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { useState } from "react"; // Added useState
+import { Label } from "@/components/ui/label"; // Added Label
 
 export default function CheckoutPage() {
   const { cart, itemCount, totalPrice, deliveryPreference, deliveryFee, discountAmount, finalPriceWithDelivery, smartCouponApplied, clearCart, scheduledDeliveryTime } = useCart();
   const router = useRouter();
   const { toast } = useToast();
+  const [discreetDelivery, setDiscreetDelivery] = useState(false); // Added state
+
+  const handleDiscreetToggle = (checked: boolean) => {
+    setDiscreetDelivery(checked);
+    if (checked) {
+        toast({
+            title: "משלוח דיסקרטי",
+            description: "אפשרויות למשלוח אנונימי (למשל, ללא שם שולח, אינטראקציה גנרית של שליח) יתווספו בקרוב.",
+            duration: 5000,
+        });
+    }
+  };
+
 
   if (itemCount === 0) {
     return (
@@ -41,8 +56,6 @@ export default function CheckoutPage() {
 
     const mockOrderId = `mockOrder_${Date.now()}_${scheduledDeliveryTime ? 'scheduled' : 'asap'}`; 
     
-    // In a real app, clearCart() might happen after successful payment confirmation from backend
-    // clearCart(); // Keep cart for now if user navigates back before actual order submission
     router.push(`/order-tracking/${mockOrderId}`);
   };
 
@@ -95,6 +108,13 @@ export default function CheckoutPage() {
                     <span className="font-medium">{scheduledDeliveryTime}</span>
                   </div>
                 )}
+                {/* Mock check if it's a gift - in real app this would come from cart context/state */}
+                {cart.some(item => item.name.toLowerCase().includes("gift")) && ( 
+                    <div className="flex justify-between text-sm text-pink-600">
+                        <span className="font-medium flex items-center"><Gift className="h-4 w-4 ml-1"/>נשלח כמתנה</span>
+                        <span className="font-medium">(פרטים בקרוב)</span>
+                    </div>
+                )}
                 <div className="flex justify-between font-bold text-lg text-primary pt-1">
                   <span>סה"כ</span>
                   <span>{finalPriceWithDelivery.toFixed(2)}₪</span>
@@ -115,34 +135,41 @@ export default function CheckoutPage() {
             </div>
           </div>
           
+          <div className="flex items-center space-x-2 p-3 border rounded-md bg-muted/50">
+            <Checkbox id="discreetDelivery" checked={discreetDelivery} onCheckedChange={handleDiscreetToggle} />
+            <Label htmlFor="discreetDelivery" className="cursor-pointer text-sm">
+              🤫 משלוח דיסקרטי (אפשרויות אנונימיות בקרוב)
+            </Label>
+          </div>
+
           {scheduledDeliveryTime && (
             <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md text-sm text-yellow-700 flex items-start">
-                <Clock className="h-5 w-5 ml-2 mt-0.5 text-yellow-600 flex-shrink-0" /> {/* Adjusted margin for RTL */}
+                <Clock className="h-5 w-5 ml-2 mt-0.5 text-yellow-600 flex-shrink-0" /> 
                 <span>ההזמנה שלך מתוכננת ל: <strong>{scheduledDeliveryTime}</strong>. היא תעובד לקראת מועד זה.</span>
             </div>
           )}
 
           {deliveryPreference === 'arena' && !scheduledDeliveryTime && (
              <div className="p-3 bg-blue-50 border border-blue-200 rounded-md text-sm text-blue-700 flex items-start">
-                <Zap className="h-5 w-5 ml-2 mt-0.5 text-blue-600 flex-shrink-0" /> {/* Adjusted margin for RTL */}
+                <Zap className="h-5 w-5 ml-2 mt-0.5 text-blue-600 flex-shrink-0" /> 
                 <span>בחרת בזירת המשלוחים! לאחר התשלום, נמצא עבורך את השליח הטוב ביותר. זה עשוי לקחת רגע.</span>
             </div>
           )}
           {deliveryPreference === 'smartSaver' && !scheduledDeliveryTime && (
              <div className="p-3 bg-green-50 border border-green-200 rounded-md text-sm text-green-700 flex items-start">
-                <DollarSign className="h-5 w-5 ml-2 mt-0.5 text-green-600 flex-shrink-0" /> {/* Adjusted margin for RTL */}
+                <DollarSign className="h-5 w-5 ml-2 mt-0.5 text-green-600 flex-shrink-0" /> 
                 <span>חסכוני חכם: ההזמנה שלך תימסר עם הנחה, וייתכן שתיקח קצת יותר זמן.</span>
             </div>
           )}
           {smartCouponApplied && deliveryPreference !== 'smartSaver' && (
              <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md text-sm text-yellow-700 flex items-start">
-                <Sparkles className="h-5 w-5 ml-2 mt-0.5 text-yellow-600 flex-shrink-0" /> {/* Adjusted margin for RTL */}
+                <Sparkles className="h-5 w-5 ml-2 mt-0.5 text-yellow-600 flex-shrink-0" /> 
                 <span>קופון חכם של 5% הופעל על הזמנתך מעל 70₪!</span>
             </div>
           )}
 
           <Button size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg" onClick={handleMockPayment}>
-            <Lock className="ml-2 h-5 w-5" /> שלם {finalPriceWithDelivery.toFixed(2)}₪ (דמו) {/* Adjusted for RTL */}
+            <Lock className="ml-2 h-5 w-5" /> שלם {finalPriceWithDelivery.toFixed(2)}₪ (דמו) 
           </Button>
           <p className="text-xs text-muted-foreground text-center">
             בלחיצה על "שלם עכשיו", אתה מסכים לתנאי השירות ומדיניות הפרטיות שלנו.

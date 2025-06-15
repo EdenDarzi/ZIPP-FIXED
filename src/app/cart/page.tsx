@@ -5,15 +5,17 @@ import { useCart } from '@/context/cart-context';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, Zap, CheckCircle, ShieldQuestion, Sparkles, DollarSign, Clock } from 'lucide-react'; // Added Clock
+import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, Zap, CheckCircle, ShieldQuestion, Sparkles, DollarSign, Clock, Gift, Users, Navigation } from 'lucide-react'; // Added Gift, Users, Navigation
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import type { DeliveryPreference } from '@/types';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input'; // Added Input
-import { useState } from 'react'; // Added useState
+import { Input } from '@/components/ui/input'; 
+import { useState } from 'react'; 
+import { Checkbox } from '@/components/ui/checkbox'; // Added Checkbox
+import { useToast } from '@/hooks/use-toast'; // Added useToast
 
 export default function CartPage() {
   const {
@@ -29,11 +31,13 @@ export default function CartPage() {
     discountAmount,
     finalPriceWithDelivery,
     smartCouponApplied,
-    scheduledDeliveryTime, // Added
-    setScheduledDeliveryTime, // Added
+    scheduledDeliveryTime, 
+    setScheduledDeliveryTime, 
   } = useCart();
 
   const [manualScheduledTime, setManualScheduledTime] = useState(scheduledDeliveryTime || '');
+  const [isGift, setIsGift] = useState(false); // Added state for gift
+  const { toast } = useToast(); // Added toast hook
 
   const handleSetManualScheduledTime = () => {
     if (manualScheduledTime.trim()) {
@@ -44,6 +48,32 @@ export default function CartPage() {
   const handleClearScheduledTime = () => {
     setScheduledDeliveryTime(null);
     setManualScheduledTime('');
+  };
+
+  const handleGiftToggle = (checked: boolean) => {
+    setIsGift(checked);
+    if (checked) {
+        toast({
+            title: "משלוח מתנה!",
+            description: "אפשרויות להוספת נמען ופתק אישי יופיעו בקרוב בתהליך התשלום.",
+        });
+    }
+  };
+
+  const handleDynamicLocationClick = () => {
+    toast({
+        title: "משלוח למיקום דינמי (בטא)",
+        description: "המשלוח יעקוב אחר מיקומך! אידיאלי כשאתה בתנועה. פיצ'ר בפיתוח.",
+        duration: 5000,
+    });
+  };
+  
+  const handleGroupOrderClick = () => {
+    toast({
+        title: "הזמנה קבוצתית (בקרוב!)",
+        description: "הזמן חברים להוסיף פריטים לעגלה זו ולחלק את החשבון! פונקציונליות בפיתוח.",
+        duration: 5000,
+    });
   };
 
   if (itemCount === 0) {
@@ -83,7 +113,7 @@ export default function CartPage() {
                   data-ai-hint={item.dataAiHint || "food item"}
                 />
               </div>
-              <div className="flex-grow text-right sm:text-right"> {/* Adjusted for RTL */}
+              <div className="flex-grow text-right sm:text-right"> 
                 <h2 className="text-lg font-semibold text-foreground">{item.name}</h2>
                 <p className="text-sm text-muted-foreground">מחיר: {item.price.toFixed(2)}₪</p>
               </div>
@@ -96,7 +126,7 @@ export default function CartPage() {
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
-              <p className="font-semibold text-lg text-primary w-20 text-left sm:text-left flex-shrink-0">{(item.price * item.quantity).toFixed(2)}₪</p> {/* Adjusted for RTL */}
+              <p className="font-semibold text-lg text-primary w-20 text-left sm:text-left flex-shrink-0">{(item.price * item.quantity).toFixed(2)}₪</p> 
               <Button variant="ghost" size="icon" onClick={() => removeFromCart(item.menuItemId)} className="text-destructive hover:text-destructive/80 flex-shrink-0" aria-label="הסר פריט">
                 <Trash2 className="h-5 w-5" />
               </Button>
@@ -116,14 +146,14 @@ export default function CartPage() {
                 dir="rtl" 
               >
                 <Label htmlFor="arena-delivery" className="flex items-center p-4 border rounded-md cursor-pointer hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all">
-                  <RadioGroupItem value="arena" id="arena-delivery" className="ml-3" /> {/* Adjusted margin for RTL */}
+                  <RadioGroupItem value="arena" id="arena-delivery" className="ml-3" /> 
                   <div className="flex-grow">
                     <div className="font-semibold flex items-center">
                       <Zap className="h-5 w-5 ml-2 text-accent" /> זירת המשלוחים החכמה (ברירת מחדל)
                     </div>
                     <p className="text-sm text-muted-foreground">מערכת ה-AI שלנו מאתרת ומודיעה לשליחים זמינים באזורך. הם מגיבים עם הצעות, והמערכת בוחרת את השליח המתאים ביותר למשלוח מהיר ויעיל, תוך התחשבות במיקום, זמינות ודירוג.</p>
                   </div>
-                  <span className="font-semibold text-green-600 mr-2">חינם</span> {/* Adjusted margin for RTL */}
+                  <span className="font-semibold text-green-600 mr-2">חינם</span> 
                 </Label>
                 <Label htmlFor="fastest-delivery" className="flex items-center p-4 border rounded-md cursor-pointer hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all">
                   <RadioGroupItem value="fastest" id="fastest-delivery" className="ml-3" />
@@ -147,13 +177,12 @@ export default function CartPage() {
                 </Label>
               </RadioGroup>
               <p className="mt-4 text-sm text-muted-foreground p-3 bg-muted/30 rounded-md flex items-start">
-                <ShieldQuestion className="h-5 w-5 ml-2 mt-0.5 text-primary flex-shrink-0" /> {/* Adjusted margin for RTL */}
+                <ShieldQuestion className="h-5 w-5 ml-2 mt-0.5 text-primary flex-shrink-0" /> 
                 <span>ב'זירת המשלוחים החכמה', שליחים באזור מתחרים על הזמנתך. מערכת ה-AI שלנו בוחרת את ההצעה האופטימלית עבורך. אם אתה ממהר, בחר 'משלוח מהיר ביותר'! לחלופין, חסוך עם 'משלוח חסכוני חכם' אם הזמן גמיש.</span>
               </p>
             </CardContent>
           </Card>
 
-          {/* Scheduled Delivery Section */}
           <Card className="shadow-md">
             <CardHeader>
               <CardTitle className="text-xl font-headline text-primary flex items-center">
@@ -186,6 +215,26 @@ export default function CartPage() {
                 </div>
               )}
                <p className="text-xs text-muted-foreground">שימו לב: זמינות המשלוח המתוכנן תלויה בשעות הפעילות של המסעדה והשליחים.</p>
+                 <Button onClick={handleDynamicLocationClick} variant="outline" className="w-full mt-2">
+                    <Navigation className="h-4 w-4 ml-2 text-blue-500" /> משלוח למיקום דינמי (בטא - בקרוב)
+                 </Button>
+            </CardContent>
+          </Card>
+          
+          <Card className="shadow-md">
+            <CardHeader>
+                <CardTitle className="text-xl font-headline text-primary">אפשרויות נוספות</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="flex items-center space-x-2 p-3 border rounded-md">
+                    <Checkbox id="isGift" checked={isGift} onCheckedChange={handleGiftToggle} />
+                    <Label htmlFor="isGift" className="flex items-center cursor-pointer">
+                        <Gift className="h-5 w-5 ml-2 text-pink-500" /> זו מתנה? (פתק אישי בקרוב)
+                    </Label>
+                </div>
+                <Button onClick={handleGroupOrderClick} variant="outline" className="w-full">
+                    <Users className="h-4 w-4 ml-2 text-purple-500" /> התחל הזמנה קבוצתית (בקרוב)
+                 </Button>
             </CardContent>
           </Card>
 
@@ -220,7 +269,7 @@ export default function CartPage() {
               {discountAmount > 0 && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground flex items-center">
-                    <Sparkles className="h-4 w-4 ml-1 text-green-500" /> {/* Adjusted margin for RTL */}
+                    <Sparkles className="h-4 w-4 ml-1 text-green-500" /> 
                     הנחות
                   </span>
                   <span className="font-medium text-green-600">-{discountAmount.toFixed(2)}₪</span>
@@ -236,6 +285,11 @@ export default function CartPage() {
                    <DollarSign className="h-4 w-4 ml-1"/> הנחת משלוח חסכוני חכם הופעלה!
                 </Badge>
                )}
+                {isGift && (
+                    <Badge variant="secondary" className="w-full justify-center bg-pink-100 text-pink-700 border-pink-300 py-1">
+                        <Gift className="h-4 w-4 ml-1"/> ההזמנה תסומן כמתנה!
+                    </Badge>
+                )}
               <Separator />
               <div className="flex justify-between text-xl font-bold text-primary">
                 <span>סה"כ</span>
@@ -246,7 +300,7 @@ export default function CartPage() {
               <Button size="lg" asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg">
                 <Link href="/checkout">
                   <span className="flex items-center justify-center w-full">
-                    <ArrowLeft className="mr-2 h-5 w-5" /> {/* Adjusted for RTL */}
+                    <ArrowLeft className="mr-2 h-5 w-5" /> 
                     המשך לתשלום 
                   </span>
                 </Link>

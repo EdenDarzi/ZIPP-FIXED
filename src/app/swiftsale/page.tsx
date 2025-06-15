@@ -5,25 +5,22 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ShoppingBag, AlertTriangle, Clock, ArrowLeft, PlusCircle } from 'lucide-react';
+import { ShoppingBag, AlertTriangle, Clock, ArrowLeft, PlusCircle, Store } from 'lucide-react'; // Added Store
 import Image from 'next/image';
 import { mockSwiftSaleItems } from '@/lib/mock-data';
 import type { SwiftSaleItem } from '@/types';
-import { useCart } from '@/context/cart-context'; // Assuming useCart can handle generic items or needs adaptation
+import { useCart } from '@/context/cart-context'; 
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 
 export default function SwiftSalePage() {
   const [activeItems, setActiveItems] = useState<SwiftSaleItem[]>([]);
-  const { addToCart } = useCart(); // Adapt if addToCart needs more generic item type
+  const { addToCart } = useCart(); 
   const { toast } = useToast();
 
   useEffect(() => {
-    // Simulate fetching active SwiftSale items
-    // In a real app, this would fetch from a backend based on current time and availability
     const currentHour = new Date().getHours();
-    // Example: SwiftSale active from 7 PM (19) to 11 PM (23)
-    if (currentHour >= 0 && currentHour <= 23) { // For demo, always show some items
+    if (currentHour >= 0 && currentHour <= 23) { 
         setActiveItems(mockSwiftSaleItems.filter(item => item.isActive && item.quantityAvailable > 0));
     } else {
         setActiveItems([]);
@@ -31,8 +28,6 @@ export default function SwiftSalePage() {
   }, []);
 
   const handleAddToCart = (item: SwiftSaleItem) => {
-    // Adapt this to how your cart handles potentially different item structures
-    // For now, creating a mock MenuItem structure for the cart
     const cartItem = {
         id: item.id,
         name: `שקית הפתעה: ${item.name}`,
@@ -41,9 +36,9 @@ export default function SwiftSalePage() {
         imageUrl: item.imageUrl || 'https://placehold.co/600x400.png?text=הפתעה!',
         dataAiHint: 'surprise bag',
         category: 'SwiftSale',
-        restaurantId: item.restaurantId, // Assuming restaurantId is present for routing/context
+        restaurantId: item.restaurantId, 
     };
-    addToCart(cartItem, 1); // Add 1 bag
+    addToCart(cartItem, 1); 
     toast({
         title: "שקית הפתעה נוספה לעגלה!",
         description: `שקית "${item.name}" מ-${item.restaurantName} בדרך אליך.`,
@@ -57,7 +52,7 @@ export default function SwiftSalePage() {
           <ShoppingBag className="h-16 w-16 mx-auto mb-4 animate-bounce" />
           <CardTitle className="text-3xl md:text-4xl font-headline">SwiftSale - שקיות הפתעה חמות מסוף היום!</CardTitle>
           <CardDescription className="text-lg text-red-100 mt-2">
-            תפסו דילים מדהימים על מוצרים איכותיים שעסקים מציעים בהנחה בסוף היום. הפחתת בזבוז, מקסימום חיסכון!
+            תפסו דילים מדהימים על מוצרים איכותיים שעסקים, שווקים ודוכנים מציעים בהנחה בסוף היום. הפחתת בזבוז, מקסימום חיסכון!
           </CardDescription>
         </CardHeader>
          <CardContent>
@@ -88,7 +83,7 @@ export default function SwiftSalePage() {
                 alt={item.name}
                 layout="fill"
                 objectFit="cover"
-                data-ai-hint="surprise bag food bakery items"
+                data-ai-hint={item.dataAiHint || "surprise bag food bakery items"}
               />
               <Badge variant="destructive" className="absolute top-2 right-2 text-sm px-3 py-1">
                 🔥 SwiftSale
@@ -96,7 +91,9 @@ export default function SwiftSalePage() {
             </div>
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-semibold truncate">{item.name}</CardTitle>
-              <CardDescription className="text-xs">מאת: {item.restaurantName}</CardDescription>
+              <CardDescription className="text-xs flex items-center">
+                <Store className="h-3 w-3 mr-1 text-muted-foreground"/> מאת: {item.restaurantName}
+                </CardDescription>
               {item.description && <p className="text-sm text-muted-foreground mt-1 h-10 overflow-hidden text-ellipsis">{item.description}</p>}
             </CardHeader>
             <CardContent className="flex-grow pt-0">
@@ -115,7 +112,7 @@ export default function SwiftSalePage() {
         ))}
       </div>
        <p className="text-xs text-muted-foreground text-center mt-4">
-        כל שקית מגיעה עם תגית "הפתעה טעימה במחיר של פחות מקפה" (או משהו דומה). התכולה משתנה!
+        כל שקית מגיעה עם תגית "הפתעה טעימה במחיר של פחות מקפה". התכולה משתנה!
       </p>
     </div>
   );
