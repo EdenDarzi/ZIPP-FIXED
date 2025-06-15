@@ -23,7 +23,6 @@ export default function CourierProfilePage() {
   const [followers, setFollowers] = useState<number | null>(null);
 
   useEffect(() => {
-    // Simulate fetching follower count
     setFollowers(Math.floor(Math.random() * 500 + 50));
   }, []);
 
@@ -67,7 +66,7 @@ export default function CourierProfilePage() {
           <CardDescription className="text-lg">מזהה: {courier.id}</CardDescription>
           <div className="flex items-center space-x-2 mt-2 text-muted-foreground">
             <VehicleIcon type={courier.vehicleType} />
-            <span className="capitalize">{courier.vehicleType} - {courier.transportationModeDetails || 'N/A'}</span>
+            <span className="capitalize">{courier.vehicleType} - {courier.transportationModeDetails || 'לא זמין'}</span>
             <span className="mx-1">|</span>
             <Users className="h-4 w-4 text-primary" />
             <span>{followers !== null ? `${followers} עוקבים` : 'טוען עוקבים...'} (דמו)</span>
@@ -77,7 +76,7 @@ export default function CourierProfilePage() {
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1">
-              <Label htmlFor="email">אימייל (קריאה בלבד)</Label>
+              <Label htmlFor="email">אימייל (לקריאה בלבד)</Label>
               <Input id="email" defaultValue={`${courier.id}@example.com`} readOnly />
               <p className="text-xs text-muted-foreground">לא ניתן לשנות אימייל.</p>
             </div>
@@ -107,7 +106,7 @@ export default function CourierProfilePage() {
             </div>
             { (courier.vehicleType === 'scooter' || courier.vehicleType === 'bicycle' && courier.batteryPercent) &&
                 <div className="space-y-1">
-                    <Label htmlFor="battery">סוללה נוכחית (%) (קריאה בלבד)</Label>
+                    <Label htmlFor="battery">סוללה נוכחית (%) (לקריאה בלבד)</Label>
                     <Input id="battery" value={courier.batteryPercent} readOnly />
                     <p className="text-xs text-muted-foreground">לרכבים חשמליים, מתעדכן אוטומטית.</p>
                 </div>
@@ -133,11 +132,16 @@ export default function CourierProfilePage() {
            <Separator />
 
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">המלצות ופעילות חברתית (בקרוב)</h3>
+            <h3 className="text-lg font-semibold">המלצות מקומיות ופעילות חברתית (בקרוב)</h3>
             <Card className="p-4 bg-muted/30 text-center">
                 <Camera className="h-8 w-8 mx-auto text-muted-foreground mb-2"/>
                 <p className="text-sm text-muted-foreground">ההמלצות המקומיות שלך וצילומי לקוחות מרוצים יוצגו כאן.</p>
                 <Button variant="outline" size="sm" className="mt-2" disabled>הוסף המלצה (בקרוב)</Button>
+            </Card>
+             <Card className="p-4 bg-muted/30 text-center">
+                <Award className="h-8 w-8 mx-auto text-muted-foreground mb-2"/>
+                <p className="text-sm text-muted-foreground">תגים והישגים (בקרוב)</p>
+                <p className="text-xs">כאן יוצגו התגים שהשגת על שירות מעולה, מהירות, או המלצות פופולריות.</p>
             </Card>
           </div>
 
@@ -154,4 +158,3 @@ export default function CourierProfilePage() {
     </div>
   );
 }
-    

@@ -14,11 +14,14 @@ const Header = () => {
   const { toast } = useToast();
 
   const handleLanguageToggle = () => {
-    toast({ title: "Language toggle clicked", description: "Full i18n setup required for functionality."});
+    toast({ 
+        title: "מערכת שפות (בקרוב)", 
+        description: "אפשרות להחלפה בין עברית, אנגלית, רוסית וערבית תתווסף בעתיד."
+    });
   };
 
   const handleTravelModeToggle = () => {
-    toast({ title: "TravelMode (Beta)", description: "Localized recommendations and international services coming soon!" });
+    toast({ title: "TravelMode (בטא)", description: "המלצות מותאמות למיקום ושירותים בינלאומיים יגיעו בקרוב!" });
   };
 
   return (

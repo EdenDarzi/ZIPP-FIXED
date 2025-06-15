@@ -10,19 +10,19 @@ export default function CourierLayout({ children }: { children: ReactNode }) {
       <nav className="bg-muted/30 border-b p-4">
         <div className="container mx-auto flex justify-between items-center">
           <Link href="/courier/open-bids" className="text-xl font-bold text-primary font-headline">
-            Courier Portal
+            פורטל השליחים
           </Link>
           <div className="space-x-2">
             <Button variant="ghost" asChild>
               <Link href="/courier/open-bids">
                 <ListChecks className="mr-2 h-4 w-4" />
-                Open Bids
+                הצעות פתוחות
               </Link>
             </Button>
             <Button variant="outline" size="sm" asChild>
                 <Link href="/courier/profile">
                     <UserCog className="mr-2 h-4 w-4" />
-                    My Profile
+                    הפרופיל שלי
                 </Link>
             </Button>
           </div>
@@ -34,5 +34,3 @@ export default function CourierLayout({ children }: { children: ReactNode }) {
     </div>
   );
 }
-
-    
