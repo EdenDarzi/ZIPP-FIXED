@@ -243,3 +243,21 @@ export interface DishRecommendation {
   estimatedProteinGrams?: number;
   reasoning: string; // Why this dish fits the goal/preferences
 }
+
+// Weekly Menu Planner Types
+export interface Meal {
+  mealType: 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
+  dishName: string;
+  estimatedCalories: number;
+}
+
+export interface DailyMealPlan {
+  day: string; // e.g., "Day 1", "Monday"
+  meals: Meal[];
+  totalEstimatedCalories: number;
+}
+
+export interface WeeklyMenu {
+  plan: DailyMealPlan[];
+  summaryNotes?: string; // e.g., General advice, variety notes
+}

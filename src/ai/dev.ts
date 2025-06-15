@@ -10,6 +10,8 @@ import '@/ai/flows/identify-dish-flow.ts';
 import '@/ai/flows/surprise-meal-flow.ts';
 import '@/ai/flows/p2p-delivery-request-flow.ts';
 import '@/ai/flows/nutritional-advisor-flow.ts'; // Added new Nutritional Advisor flow
+import '@/ai/flows/weekly-menu-planner-flow.ts'; // Added new Weekly Menu Planner flow
 
 
     
+
