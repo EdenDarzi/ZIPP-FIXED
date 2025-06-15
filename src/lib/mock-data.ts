@@ -1,5 +1,5 @@
 
-import type { Restaurant, MenuItem, OrderDetailsForBidding, CourierProfile, CourierBid, Order, DeliveryPreference, RestaurantTag } from '@/types';
+import type { Restaurant, MenuItem, OrderDetailsForBidding, CourierProfile, CourierBid, Order, DeliveryPreference, RestaurantTag, Location, DeliveryVehicle } from '@/types';
 
 const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
   {
@@ -162,7 +162,7 @@ export const mockCourierProfiles: CourierProfile[] = [
     name: 'Eco Ethan',
     rating: 4.3,
     trustScore: 85,
-    vehicleType: 'bicycle', // Changed from Quick Quinn
+    vehicleType: 'bicycle', 
     areaCoverageRadiusKm: 3,
     currentLocation: { lat: 34.0500, lng: -118.2400 }, // Close to restaurants
     currentSpeedKmh: 15,
@@ -183,6 +183,17 @@ export const mockCourierProfiles: CourierProfile[] = [
     isActive: true,
     transportationModeDetails: "Xiaomi Mi Electric Scooter Pro 2"
   },
+   {
+    id: 'courier5',
+    name: 'Walker Wally',
+    rating: 4.1,
+    trustScore: 80,
+    vehicleType: 'foot',
+    areaCoverageRadiusKm: 1.5,
+    currentLocation: { lat: 34.0510, lng: -118.2420 },
+    isActive: true,
+    transportationModeDetails: "Comfortable Sneakers"
+  }
 ];
 
 export const mockOpenOrdersForBidding: OrderDetailsForBidding[] = [
@@ -194,10 +205,10 @@ export const mockOpenOrdersForBidding: OrderDetailsForBidding[] = [
     deliveryLocation: { lat: 34.0600, lng: -118.2500 },
     estimatedDistanceKm: 2.5, // as the crow flies
     estimatedRouteDistanceKm: 3.1, // from mapping service
-    baseCommission: 10,
+    baseCommission: 10.00,
     itemsDescription: '1 Margherita Pizza, 2 Cokes',
     expectedPickupTime: 'ASAP (~10 min prep)',
-    requiredVehicleType: ['motorcycle', 'car', 'bicycle', 'scooter'],
+    requiredVehicleType: ['motorcycle', 'car', 'scooter', 'bicycle'],
     orderValue: 17.99,
     customerNotes: "Please ring the bell twice."
   },
@@ -209,63 +220,80 @@ export const mockOpenOrdersForBidding: OrderDetailsForBidding[] = [
     deliveryLocation: { lat: 34.0450, lng: -118.2350 },
     estimatedDistanceKm: 1.2,
     estimatedRouteDistanceKm: 1.5,
-    baseCommission: 8,
+    baseCommission: 8.50,
     itemsDescription: '2 Classic Burgers, 1 Fries',
     expectedPickupTime: 'ASAP (~8 min prep)',
     orderValue: 22.48,
+    customerNotes: "Leave at front porch if no answer."
   },
+  {
+    orderId: 'orderBid3',
+    restaurantName: 'Pasta Perfection',
+    restaurantLocation: { lat: 34.0580, lng: -118.2490 },
+    deliveryAddress: '789 Gourmet St, Anytown',
+    deliveryLocation: { lat: 34.0550, lng: -118.2550 },
+    estimatedDistanceKm: 0.8,
+    estimatedRouteDistanceKm: 1.0,
+    baseCommission: 7.00,
+    itemsDescription: '1 Spaghetti Carbonara',
+    expectedPickupTime: 'Ready in 15 mins',
+    requiredVehicleType: ['bicycle', 'foot', 'scooter'], // Suitable for short distance
+    orderValue: 13.50,
+  }
 ];
 
 export const getOrderForBiddingById = (orderId: string): OrderDetailsForBidding | undefined => {
   return mockOpenOrdersForBidding.find(order => order.orderId === orderId);
 };
 
-// More diverse bids for orderBid1
 export const mockBidsForOrder: (orderId: string) => CourierBid[] = (orderId) => {
   const now = Date.now();
-  const courier1Profile = mockCourierProfiles.find(c => c.id === 'courier1');
-  const courier2Profile = mockCourierProfiles.find(c => c.id === 'courier2');
-  const courier3Profile = mockCourierProfiles.find(c => c.id === 'courier3');
-  const courier4Profile = mockCourierProfiles.find(c => c.id === 'courier4');
-
-  if (orderId === 'orderBid1') {
-    const bids: CourierBid[] = [];
-    if (courier1Profile) {
-      bids.push({
-        bidId: 'bid1-1', orderId, courierId: courier1Profile.id, courierName: courier1Profile.name,
-        distanceToRestaurantKm: 0.5, bidAmount: 10, proposedEtaMinutes: 15,
-        courierRating: courier1Profile.rating, courierTrustScore: courier1Profile.trustScore, vehicleType: courier1Profile.vehicleType,
-        timestamp: new Date(now - 120000).toISOString(), isFastPickup: false, status: 'pending', courierProfileSnapshot: courier1Profile
-      });
-    }
-    if (courier2Profile) {
-      bids.push({
-        bidId: 'bid1-2', orderId, courierId: courier2Profile.id, courierName: courier2Profile.name,
-        distanceToRestaurantKm: 1.2, bidAmount: 12, proposedEtaMinutes: 18,
-        courierRating: courier2Profile.rating, courierTrustScore: courier2Profile.trustScore, vehicleType: courier2Profile.vehicleType,
-        timestamp: new Date(now - 60000).toISOString(), isFastPickup: false, status: 'pending', courierProfileSnapshot: courier2Profile
-      });
-    }
-    if (courier4Profile) { // Swift Sarah (scooter)
-      bids.push({
-        bidId: 'bid1-3', orderId, courierId: courier4Profile.id, courierName: courier4Profile.name,
-        distanceToRestaurantKm: 0.8, bidAmount: 9.5, proposedEtaMinutes: 12, // Faster ETA, slightly lower bid
-        courierRating: courier4Profile.rating, courierTrustScore: courier4Profile.trustScore, vehicleType: courier4Profile.vehicleType,
-        timestamp: new Date(now - 90000).toISOString(), isFastPickup: true, status: 'pending', courierProfileSnapshot: courier4Profile
-      });
-    }
-     if (courier3Profile) { // Eco Ethan (bicycle) - might be slower but cheaper or greener
-      bids.push({
-        bidId: 'bid1-4', orderId, courierId: courier3Profile.id, courierName: courier3Profile.name,
-        distanceToRestaurantKm: 1.0, bidAmount: 8.5, proposedEtaMinutes: 22, // Higher ETA, lowest bid
-        courierRating: courier3Profile.rating, courierTrustScore: courier3Profile.trustScore, vehicleType: courier3Profile.vehicleType,
-        timestamp: new Date(now - 30000).toISOString(), isFastPickup: false, status: 'pending', courierProfileSnapshot: courier3Profile
-      });
-    }
-    return bids;
+  const allCouriers = [...mockCourierProfiles]; // Create a mutable copy
+  const selectedCouriers: CourierProfile[] = [];
+  
+  // Select up to 3 random couriers (excluding a potential current bidder if we knew them here)
+  while(selectedCouriers.length < 3 && allCouriers.length > 0) {
+    const randomIndex = Math.floor(Math.random() * allCouriers.length);
+    selectedCouriers.push(allCouriers.splice(randomIndex, 1)[0]);
   }
-  return [];
+
+  const orderDetails = getOrderForBiddingById(orderId);
+  if (!orderDetails) return [];
+
+  const bids: CourierBid[] = [];
+
+  selectedCouriers.forEach((courier, index) => {
+    if (orderDetails.requiredVehicleType && orderDetails.requiredVehicleType.length > 0 && !orderDetails.requiredVehicleType.includes(courier.vehicleType)) {
+        return; // Skip if courier vehicle doesn't match requirement
+    }
+    const bidAmountVariance = (Math.random() - 0.3) * 2; // -0.6 to +1.4, so bids can be 70% to 120% of base
+    const bidAmount = parseFloat((orderDetails.baseCommission + bidAmountVariance).toFixed(2));
+    
+    const etaVariance = Math.floor(Math.random() * 10) - 3; // -3 to +7 minutes variance
+    const baseEta = (orderDetails.estimatedRouteDistanceKm || orderDetails.estimatedDistanceKm) * (courier.vehicleType === 'bicycle' ? 7 : courier.vehicleType === 'foot' ? 12 : 4);
+    const proposedEtaMinutes = Math.max(5, Math.round(baseEta + etaVariance + (Math.random() * 3 + 0.5)*3));
+
+    bids.push({
+      bidId: `bid-${orderId}-${courier.id}-${index}`,
+      orderId,
+      courierId: courier.id,
+      courierName: courier.name,
+      distanceToRestaurantKm: parseFloat((Math.random() * 3 + 0.2).toFixed(1)), // Random distance
+      bidAmount: Math.max(5.00, bidAmount), // Ensure bid is at least 5
+      proposedEtaMinutes,
+      courierRating: courier.rating,
+      courierTrustScore: courier.trustScore,
+      vehicleType: courier.vehicleType,
+      timestamp: new Date(now - (index + 1) * 30000).toISOString(), // Stagger bid times
+      isFastPickup: Math.random() > 0.6, // Randomly assign fast pickup
+      status: 'pending',
+      courierProfileSnapshot: { ...courier }
+    });
+  });
+  
+  return bids;
 };
+
 
 export const getMockOrderById = (orderId: string): Order | undefined => {
   if (orderId.startsWith('mockOrder_')) {

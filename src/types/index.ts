@@ -86,17 +86,22 @@ export interface CourierProfile {
   transportationModeDetails?: string; // e.g. "Honda PCX 150", "Trek FX 2"
 }
 
+export interface Location { // Added for clarity in schemas
+    lat: number;
+    lng: number;
+}
+
 export interface OrderDetailsForBidding {
   orderId: string;
   restaurantName: string;
-  restaurantLocation: { lat: number; lng: number }; // Coordinates of the restaurant
+  restaurantLocation: Location; // Coordinates of the restaurant
   deliveryAddress: string; // Customer's delivery address
-  deliveryLocation: { lat: number; lng: number }; // Coordinates for delivery
+  deliveryLocation: Location; // Coordinates for delivery
   estimatedDistanceKm: number; // Estimated travel distance for delivery // "as the crow flies" for initial estimate
   estimatedRouteDistanceKm?: number; // More accurate route distance from a mapping service
   baseCommission: number; // Base payment for the delivery
   itemsDescription: string; // Brief description of items (e.g., "Pizza, Drinks")
-  expectedPickupTime: string; // e.g., "ASAP", "15:30"
+  expectedPickupTime: string; // e.g., "ASAP ~10 min prep", "15:30"
   requiredVehicleType?: DeliveryVehicle[]; // Optional: if specific vehicle types are needed
   orderValue?: number; // To help couriers prioritize or for dynamic commission adjustments
   customerNotes?: string; // Any special instructions from the customer
