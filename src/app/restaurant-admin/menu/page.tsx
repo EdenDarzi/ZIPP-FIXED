@@ -19,6 +19,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label'; // Added import for Label
 
 // Enhanced Zod schema for MenuItem including addons
 const menuItemAddonChoiceSchema = z.object({
