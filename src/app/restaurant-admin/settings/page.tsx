@@ -19,15 +19,15 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import type { RestaurantSettings, OperatingHour, DayOfWeek } from '@/types';
-import { TimePicker } from '@/components/ui/time-picker';
+// import { TimePicker } from '@/components/ui/time-picker'; // Assuming you have a TimePicker component
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Trash2, PlusCircle, UploadCloud, Info } from 'lucide-react';
 import Image from 'next/image';
 
 const operatingHourSchema = z.object({
   day: z.enum(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']),
-  openTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid time format (HH:MM)"),
-  closeTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid time format (HH:MM)"),
+  openTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "פורמט זמן לא תקין (HH:MM)"),
+  closeTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "פורמט זמן לא תקין (HH:MM)"),
   isClosed: z.boolean(),
 });
 
@@ -37,16 +37,31 @@ const settingsFormSchema = z.object({
   coverImageUrl: z.string().url({ message: 'אנא הזן כתובת URL חוקית לתמונת נושא.' }).optional().or(z.literal('')),
   category: z.string().min(1, { message: 'קטגוריה היא שדה חובה.' }),
   address: z.string().min(5, { message: 'כתובת חייבת להכיל לפחות 5 תווים.' }),
-  operatingHours: z.array(operatingHourSchema).length(7, "אנא הגדר שעות פעילות לכל 7 הימים."),
+  operatingHours: z.array(operatingHourSchema).length(7, "אנא הגדר שעות פעילות לכל 7 הימים.")
+    .refine(hours => { // Custom validation to check if closeTime is after openTime for open days
+        for (const oh of hours) {
+            if (!oh.isClosed && oh.openTime >= oh.closeTime) {
+                return false;
+            }
+        }
+        return true;
+    }, { message: "שעת סגירה חייבת להיות מאוחרת משעת הפתיחה עבור ימים פתוחים.", path: ["operatingHours"] }), // You might want more specific path later
   isOpenNow: z.boolean(),
   specialsStatus: z.string().optional(),
 });
 
-const defaultOperatingHours: OperatingHour[] = (['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as DayOfWeek[]).map(day => ({
+const daysOfWeek: DayOfWeek[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const daysOfWeekHebrew: { [key in DayOfWeek]: string } = {
+    Sunday: 'יום ראשון', Monday: 'יום שני', Tuesday: 'יום שלישי', Wednesday: 'יום רביעי',
+    Thursday: 'יום חמישי', Friday: 'יום שישי', Saturday: 'יום שבת',
+};
+
+
+const defaultOperatingHours: OperatingHour[] = daysOfWeek.map(day => ({
   day,
   openTime: '09:00',
   closeTime: '22:00',
-  isClosed: day === 'Sunday', 
+  isClosed: day === 'Saturday', // Example: Closed on Saturday
 }));
 
 const mockExistingSettings: RestaurantSettings = { 
@@ -86,7 +101,7 @@ export default function RestaurantSettingsPage() {
   function onSubmit(values: z.infer<typeof settingsFormSchema>) {
     console.log(values);
     toast({
-      title: 'ההגדרות עודכנו',
+      title: 'ההגדרות עודכנו (דמו)',
       description: 'הגדרות העסק שלך נשמרו בהצלחה.',
     });
   }
@@ -213,29 +228,23 @@ export default function RestaurantSettingsPage() {
               <CardDescription>הגדר את שעות הפתיחה והסגירה השבועיות שלך.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {fields.map((field, index) => (
-                <Card key={field.id} className="p-4 bg-muted/30">
+              {fields.map((fieldItem, index) => (
+                <Card key={fieldItem.id} className="p-4 bg-muted/30">
                   <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
-                    <FormField
-                      control={form.control}
-                      name={`operatingHours.${index}.day`}
-                      render={({ field: dayField }) => (
-                        <FormItem>
-                          <FormLabel>יום</FormLabel>
-                          <FormControl>
-                            <Input {...dayField} readOnly className="font-semibold bg-background"/>
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
+                    <FormItem>
+                        <FormLabel>יום</FormLabel>
+                        <FormControl>
+                            <Input value={daysOfWeekHebrew[form.watch(`operatingHours.${index}.day`)]} readOnly className="font-semibold bg-background"/>
+                        </FormControl>
+                    </FormItem>
                     <FormField
                       control={form.control}
                       name={`operatingHours.${index}.openTime`}
-                      render={({ field: timeField }) => (
+                      render={({ field }) => (
                         <FormItem>
                           <FormLabel>שעת פתיחה</FormLabel>
                           <FormControl>
-                            <Input type="time" {...timeField} disabled={form.watch(`operatingHours.${index}.isClosed`)} />
+                            <Input type="time" {...field} disabled={form.watch(`operatingHours.${index}.isClosed`)} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -244,11 +253,11 @@ export default function RestaurantSettingsPage() {
                     <FormField
                       control={form.control}
                       name={`operatingHours.${index}.closeTime`}
-                      render={({ field: timeField }) => (
+                      render={({ field }) => (
                         <FormItem>
                           <FormLabel>שעת סגירה</FormLabel>
                           <FormControl>
-                            <Input type="time" {...timeField} disabled={form.watch(`operatingHours.${index}.isClosed`)} />
+                            <Input type="time" {...field} disabled={form.watch(`operatingHours.${index}.isClosed`)} />
                           </FormControl>
                            <FormMessage />
                         </FormItem>
@@ -257,12 +266,13 @@ export default function RestaurantSettingsPage() {
                     <FormField
                       control={form.control}
                       name={`operatingHours.${index}.isClosed`}
-                      render={({ field: switchField }) => (
+                      render={({ field }) => (
                         <FormItem className="flex flex-col items-start sm:items-center sm:flex-row sm:justify-end gap-2 pt-7">
                            <FormControl>
                             <Switch
-                              checked={switchField.value}
-                              onCheckedChange={switchField.onChange}
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              aria-label={`העסק סגור ב${daysOfWeekHebrew[form.getValues(`operatingHours.${index}.day`)]}`}
                             />
                           </FormControl>
                           <FormLabel className="text-sm mt-0 sm:ml-2">סגור</FormLabel>
@@ -272,6 +282,9 @@ export default function RestaurantSettingsPage() {
                   </div>
                 </Card>
               ))}
+               {form.formState.errors.operatingHours && form.formState.errors.operatingHours.root && (
+                  <FormMessage>{form.formState.errors.operatingHours.root.message}</FormMessage>
+                )}
             </CardContent>
           </Card>
 
@@ -287,7 +300,7 @@ export default function RestaurantSettingsPage() {
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">העסק פתוח</FormLabel>
+                      <FormLabel className="text-base">העסק פתוח כעת</FormLabel>
                       <FormDescription>
                         קבע ידנית אם העסק פתוח או סגור להזמנות חדשות. הגדרה זו עוקפת את השעות המתוזמנות.
                       </FormDescription>
@@ -307,7 +320,7 @@ export default function RestaurantSettingsPage() {
                 name="specialsStatus"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>הודעת מבצעים / קופונים</FormLabel>
+                    <FormLabel>הודעת מבצעים / קופונים (אופציונלי)</FormLabel>
                     <FormControl>
                       <Input placeholder="לדוגמה: 'SALE20 ל-20% הנחה על כל המוצרים!'" {...field} />
                     </FormControl>
@@ -327,3 +340,4 @@ export default function RestaurantSettingsPage() {
     </div>
   );
 }
+

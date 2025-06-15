@@ -57,6 +57,9 @@ export default function CheckoutPage() {
 
     const mockOrderId = `mockOrder_${Date.now()}_${scheduledDeliveryTime ? 'scheduled' : 'asap'}`; 
     
+    // It's generally better to clear cart *after* successful navigation or API call in a real app
+    // For demo purposes, clearing it here is fine.
+    // clearCart(); 
     router.push(`/order-tracking/${mockOrderId}`);
   };
 
@@ -73,28 +76,34 @@ export default function CheckoutPage() {
             <h3 className="text-xl font-semibold mb-3">סיכום הזמנה</h3>
             <div className="p-4 bg-muted/30 rounded-md space-y-3">
               {cart.map(item => (
-                <div key={item.id} className="text-sm">
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center">
+                <div key={item.id} className="text-sm pb-2 mb-2 border-b border-border/50 last:border-b-0 last:pb-0 last:mb-0">
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-start">
                       <Image
                         src={item.imageUrl || 'https://placehold.co/40x40.png'}
                         alt={item.name}
                         width={40}
                         height={40}
-                        className="rounded ml-3 rtl:ml-0 rtl:mr-3" 
+                        className="rounded ml-3 rtl:ml-0 rtl:mr-3 flex-shrink-0" 
                         data-ai-hint={item.dataAiHint || "item"}
                       />
-                      <span>{item.name} (x{item.quantity})</span>
+                      <div>
+                        <span className="font-medium">{item.name} (x{item.quantity})</span>
+                        {item.selectedAddons && item.selectedAddons.length > 0 && (
+                          <ul className="list-none mr-0 rtl:mr-0 text-xs text-muted-foreground mt-0.5">
+                              {item.selectedAddons.map(addon => (
+                                  <li key={addon.optionId}>
+                                      <span className="text-muted-foreground/80">{addon.groupTitle}: </span>
+                                      {addon.optionName} 
+                                      {addon.optionPrice > 0 && ` (+₪${addon.optionPrice.toFixed(2)})`}
+                                  </li>
+                              ))}
+                          </ul>
+                        )}
+                      </div>
                     </div>
-                    <span>{(getItemPriceWithAddons(item) * item.quantity).toFixed(2)}₪</span>
+                    <span className="font-medium whitespace-nowrap">{(getItemPriceWithAddons(item) * item.quantity).toFixed(2)}₪</span>
                   </div>
-                  {item.selectedAddons && item.selectedAddons.length > 0 && (
-                    <ul className="list-disc list-inside mr-10 rtl:mr-0 rtl:ml-10 text-xs text-muted-foreground mt-0.5">
-                        {item.selectedAddons.map(addon => (
-                            <li key={addon.optionId}>{addon.optionName} (+₪{addon.optionPrice.toFixed(2)})</li>
-                        ))}
-                    </ul>
-                  )}
                 </div>
               ))}
               <div className="border-t pt-3 mt-3 space-y-1">
