@@ -13,6 +13,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription, // Added missing import
 } from '@/components/ui/form';
 import {
   Select,
@@ -22,7 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardDescription as PageCardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'; // Aliased CardDescription to avoid conflict
 import { useToast } from '@/hooks/use-toast';
 import type { NutritionalGoal, DishRecommendation } from '@/types';
 import { getNutritionalAdvice, NutritionalAdvisorInput, NutritionalAdvisorOutput } from '@/ai/flows/nutritional-advisor-flow';
@@ -52,7 +53,7 @@ export default function NutritionalAdvisorPage() {
   const form = useForm<NutritionalAdvisorFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      goal: undefined, 
+      goal: undefined,
       preferences: '',
     },
   });
@@ -62,7 +63,7 @@ export default function NutritionalAdvisorPage() {
     setAdvisorResponse(null);
     try {
       const input: NutritionalAdvisorInput = {
-        userId: 'mockUserNutrition123', 
+        userId: 'mockUserNutrition123',
         goal: values.goal as NutritionalGoal,
         preferences: values.preferences,
       };
@@ -99,9 +100,9 @@ export default function NutritionalAdvisorPage() {
         <CardHeader className="text-center items-center">
           <HeartPulse className="h-12 w-12 text-primary mx-auto mb-3" />
           <CardTitle className="text-3xl font-headline text-primary">יועץ התזונה החכם שלך</CardTitle>
-          <CardDescription>
+          <PageCardDescription>
             קבל המלצות מותאמות אישית למנות שיעזרו לך להשיג את מטרות התזונה שלך!
-          </CardDescription>
+          </PageCardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -176,9 +177,9 @@ export default function NutritionalAdvisorPage() {
             {advisorResponse.recommendations.map((rec, index) => (
               <Card key={index} className="bg-muted/30 p-4">
                 <CardTitle className="text-xl text-primary mb-1">{rec.dishName}</CardTitle>
-                <CardDescription className="text-sm text-muted-foreground mb-2">מאת: {rec.restaurantName}</CardDescription>
+                <PageCardDescription className="text-sm text-muted-foreground mb-2">מאת: {rec.restaurantName}</PageCardDescription>
                 <p className="text-foreground/90 mb-2">{rec.description}</p>
-                <div className="text-xs text-muted-foreground space-x-3 rtl:space-x-reverse mb-2"> 
+                <div className="text-xs text-muted-foreground space-x-3 rtl:space-x-reverse mb-2">
                   {rec.estimatedCalories && <span>כ-{rec.estimatedCalories} קלוריות</span>}
                   {rec.estimatedProteinGrams && <span>כ-{rec.estimatedProteinGrams} גרם חלבון</span>}
                 </div>
