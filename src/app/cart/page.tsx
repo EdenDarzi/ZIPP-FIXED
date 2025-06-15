@@ -24,7 +24,7 @@ export default function CartPage() {
     updateQuantity,
     clearCart,
     itemCount,
-    totalPrice,
+    totalPrice, // Base total price without delivery/discounts
     deliveryPreference,
     setDeliveryPreference,
     deliveryFee,
@@ -32,7 +32,8 @@ export default function CartPage() {
     finalPriceWithDelivery,
     smartCouponApplied,
     scheduledDeliveryTime, 
-    setScheduledDeliveryTime, 
+    setScheduledDeliveryTime,
+    getItemPriceWithAddons,
   } = useCart();
 
   const [manualScheduledTime, setManualScheduledTime] = useState(scheduledDeliveryTime || '');
@@ -103,7 +104,7 @@ export default function CartPage() {
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
           {cart.map(item => (
-            <Card key={item.menuItemId} className="flex flex-col sm:flex-row items-center p-4 gap-4 shadow-md">
+            <Card key={item.id} className="flex flex-col sm:flex-row items-start p-4 gap-4 shadow-md">
               <div className="relative h-24 w-24 sm:h-28 sm:w-28 rounded-md overflow-hidden flex-shrink-0">
                 <Image
                   src={item.imageUrl || 'https://placehold.co/100x100.png'}
@@ -115,19 +116,31 @@ export default function CartPage() {
               </div>
               <div className="flex-grow text-right sm:text-right"> 
                 <h2 className="text-lg font-semibold text-foreground">{item.name}</h2>
-                <p className="text-sm text-muted-foreground">מחיר: {item.price.toFixed(2)}₪</p>
+                <p className="text-sm text-muted-foreground">מחיר בסיס: {item.price.toFixed(2)}₪</p>
+                {item.selectedAddons && item.selectedAddons.length > 0 && (
+                  <div className="mt-1 text-xs text-muted-foreground">
+                    <p className="font-medium">תוספות:</p>
+                    <ul className="list-disc list-inside mr-4 rtl:mr-0 rtl:ml-4">
+                      {item.selectedAddons.map(addon => (
+                        <li key={addon.optionId}>
+                          {addon.groupTitle}: {addon.optionName} (+₪{addon.optionPrice.toFixed(2)})
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
-              <div className="flex items-center space-x-2 flex-shrink-0 my-2 sm:my-0">
-                <Button variant="outline" size="icon" onClick={() => updateQuantity(item.menuItemId, item.quantity - 1)} aria-label={`הפחת כמות עבור ${item.name}`}>
+              <div className="flex items-center space-x-2 flex-shrink-0 my-2 sm:my-0 self-center sm:self-auto">
+                <Button variant="outline" size="icon" onClick={() => updateQuantity(item.id, item.quantity - 1)} aria-label={`הפחת כמות עבור ${item.name}`}>
                   <Minus className="h-4 w-4" />
                 </Button>
                 <span className="w-8 text-center font-medium" aria-label={`כמות נוכחית עבור ${item.name}: ${item.quantity}`}>{item.quantity}</span>
-                <Button variant="outline" size="icon" onClick={() => updateQuantity(item.menuItemId, item.quantity + 1)} aria-label={`הגדל כמות עבור ${item.name}`}>
+                <Button variant="outline" size="icon" onClick={() => updateQuantity(item.id, item.quantity + 1)} aria-label={`הגדל כמות עבור ${item.name}`}>
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
-              <p className="font-semibold text-lg text-primary w-20 text-left sm:text-left flex-shrink-0">{(item.price * item.quantity).toFixed(2)}₪</p> 
-              <Button variant="ghost" size="icon" onClick={() => removeFromCart(item.menuItemId)} className="text-destructive hover:text-destructive/80 flex-shrink-0" aria-label={`הסר את ${item.name} מהסל`}>
+              <p className="font-semibold text-lg text-primary w-24 text-left sm:text-left flex-shrink-0 self-center sm:self-auto">{(getItemPriceWithAddons(item) * item.quantity).toFixed(2)}₪</p> 
+              <Button variant="ghost" size="icon" onClick={() => removeFromCart(item.id)} className="text-destructive hover:text-destructive/80 flex-shrink-0 self-center sm:self-start" aria-label={`הסר את ${item.name} מהסל`}>
                 <Trash2 className="h-5 w-5" />
               </Button>
             </Card>
@@ -228,7 +241,7 @@ export default function CartPage() {
                 <CardTitle className="text-xl font-headline text-primary">אפשרויות נוספות</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                <div className="flex items-center space-x-2 p-3 border rounded-md">
+                <div className="flex items-center space-x-2 p-3 border rounded-md rtl:space-x-reverse">
                     <Checkbox id="isGift" checked={isGift} onCheckedChange={handleGiftToggle} aria-labelledby="giftLabel" />
                     <Label htmlFor="isGift" id="giftLabel" className="flex items-center cursor-pointer">
                         <Gift className="h-5 w-5 ml-2 text-pink-500" /> זו מתנה? (פתק אישי בקרוב)
@@ -317,3 +330,4 @@ export default function CartPage() {
     </div>
   );
 }
+

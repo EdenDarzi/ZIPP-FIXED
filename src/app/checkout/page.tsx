@@ -2,8 +2,8 @@
 'use client';
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreditCard, Lock, ShoppingBag, AlertTriangle, Zap, Sparkles, DollarSign, Clock, Gift } from "lucide-react"; // Removed Checkbox from here, it's not used for icon
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { CreditCard, Lock, ShoppingBag, AlertTriangle, Zap, Sparkles, DollarSign, Clock, Gift } from "lucide-react"; 
 import Link from "next/link";
 import { useCart } from "@/context/cart-context";
 import Image from "next/image";
@@ -12,10 +12,10 @@ import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react"; 
 import { Label } from "@/components/ui/label"; 
-import { Checkbox } from "@/components/ui/checkbox"; // Correctly import Checkbox
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function CheckoutPage() {
-  const { cart, itemCount, totalPrice, deliveryPreference, deliveryFee, discountAmount, finalPriceWithDelivery, smartCouponApplied, clearCart, scheduledDeliveryTime } = useCart();
+  const { cart, itemCount, totalPrice, deliveryPreference, deliveryFee, discountAmount, finalPriceWithDelivery, smartCouponApplied, clearCart, scheduledDeliveryTime, getItemPriceWithAddons } = useCart();
   const router = useRouter();
   const { toast } = useToast();
   const [discreetDelivery, setDiscreetDelivery] = useState(false);
@@ -73,19 +73,28 @@ export default function CheckoutPage() {
             <h3 className="text-xl font-semibold mb-3">סיכום הזמנה</h3>
             <div className="p-4 bg-muted/30 rounded-md space-y-3">
               {cart.map(item => (
-                <div key={item.menuItemId} className="flex justify-between items-center text-sm">
-                  <div className="flex items-center">
-                    <Image
-                      src={item.imageUrl || 'https://placehold.co/40x40.png'}
-                      alt={item.name}
-                      width={40}
-                      height={40}
-                      className="rounded ml-3" 
-                      data-ai-hint={item.dataAiHint || "item"}
-                    />
-                    <span>{item.name} (x{item.quantity})</span>
+                <div key={item.id} className="text-sm">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center">
+                      <Image
+                        src={item.imageUrl || 'https://placehold.co/40x40.png'}
+                        alt={item.name}
+                        width={40}
+                        height={40}
+                        className="rounded ml-3 rtl:ml-0 rtl:mr-3" 
+                        data-ai-hint={item.dataAiHint || "item"}
+                      />
+                      <span>{item.name} (x{item.quantity})</span>
+                    </div>
+                    <span>{(getItemPriceWithAddons(item) * item.quantity).toFixed(2)}₪</span>
                   </div>
-                  <span>{(item.price * item.quantity).toFixed(2)}₪</span>
+                  {item.selectedAddons && item.selectedAddons.length > 0 && (
+                    <ul className="list-disc list-inside mr-10 rtl:mr-0 rtl:ml-10 text-xs text-muted-foreground mt-0.5">
+                        {item.selectedAddons.map(addon => (
+                            <li key={addon.optionId}>{addon.optionName} (+₪{addon.optionPrice.toFixed(2)})</li>
+                        ))}
+                    </ul>
+                  )}
                 </div>
               ))}
               <div className="border-t pt-3 mt-3 space-y-1">
@@ -105,14 +114,13 @@ export default function CheckoutPage() {
                 )}
                 {scheduledDeliveryTime && (
                   <div className="flex justify-between text-sm text-blue-600">
-                    <span className="font-medium flex items-center"><Clock className="h-4 w-4 ml-1"/>מתוכנן ל:</span>
+                    <span className="font-medium flex items-center"><Clock className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/>מתוכנן ל:</span>
                     <span className="font-medium">{scheduledDeliveryTime}</span>
                   </div>
                 )}
-                {/* Mock check if it's a gift - in real app this would come from cart context/state */}
-                {cart.some(item => item.name.toLowerCase().includes("gift")) && ( 
+                {cart.some(item => item.name.toLowerCase().includes("gift") || item.selectedAddons?.some(sa => sa.optionName.toLowerCase().includes("gift"))) && ( 
                     <div className="flex justify-between text-sm text-pink-600">
-                        <span className="font-medium flex items-center"><Gift className="h-4 w-4 ml-1"/>נשלח כמתנה</span>
+                        <span className="font-medium flex items-center"><Gift className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/>נשלח כמתנה</span>
                         <span className="font-medium">(פרטים בקרוב)</span>
                     </div>
                 )}
@@ -136,7 +144,7 @@ export default function CheckoutPage() {
             </div>
           </div>
           
-          <div className="flex items-center space-x-2 p-3 border rounded-md bg-muted/50">
+          <div className="flex items-center space-x-2 rtl:space-x-reverse p-3 border rounded-md bg-muted/50">
             <Checkbox id="discreetDelivery" checked={discreetDelivery} onCheckedChange={handleDiscreetToggle} aria-labelledby="discreetDeliveryLabel" />
             <Label htmlFor="discreetDelivery" id="discreetDeliveryLabel" className="cursor-pointer text-sm">
               🤫 משלוח דיסקרטי (אפשרויות אנונימיות בקרוב)
@@ -145,32 +153,32 @@ export default function CheckoutPage() {
 
           {scheduledDeliveryTime && (
             <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md text-sm text-yellow-700 flex items-start">
-                <Clock className="h-5 w-5 ml-2 mt-0.5 text-yellow-600 flex-shrink-0" /> 
+                <Clock className="h-5 w-5 ml-2 rtl:ml-0 rtl:mr-2 mt-0.5 text-yellow-600 flex-shrink-0" /> 
                 <span>ההזמנה שלך מתוכננת ל: <strong>{scheduledDeliveryTime}</strong>. היא תעובד לקראת מועד זה.</span>
             </div>
           )}
 
           {deliveryPreference === 'arena' && !scheduledDeliveryTime && (
              <div className="p-3 bg-blue-50 border border-blue-200 rounded-md text-sm text-blue-700 flex items-start">
-                <Zap className="h-5 w-5 ml-2 mt-0.5 text-blue-600 flex-shrink-0" /> 
+                <Zap className="h-5 w-5 ml-2 rtl:ml-0 rtl:mr-2 mt-0.5 text-blue-600 flex-shrink-0" /> 
                 <span>בחרת בזירת המשלוחים! לאחר התשלום, נמצא עבורך את השליח הטוב ביותר. זה עשוי לקחת רגע.</span>
             </div>
           )}
           {deliveryPreference === 'smartSaver' && !scheduledDeliveryTime && (
              <div className="p-3 bg-green-50 border border-green-200 rounded-md text-sm text-green-700 flex items-start">
-                <DollarSign className="h-5 w-5 ml-2 mt-0.5 text-green-600 flex-shrink-0" /> 
+                <DollarSign className="h-5 w-5 ml-2 rtl:ml-0 rtl:mr-2 mt-0.5 text-green-600 flex-shrink-0" /> 
                 <span>חסכוני חכם: ההזמנה שלך תימסר עם הנחה, וייתכן שתיקח קצת יותר זמן.</span>
             </div>
           )}
           {smartCouponApplied && deliveryPreference !== 'smartSaver' && (
              <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md text-sm text-yellow-700 flex items-start">
-                <Sparkles className="h-5 w-5 ml-2 mt-0.5 text-yellow-600 flex-shrink-0" /> 
+                <Sparkles className="h-5 w-5 ml-2 rtl:ml-0 rtl:mr-2 mt-0.5 text-yellow-600 flex-shrink-0" /> 
                 <span>קופון חכם של 5% הופעל על הזמנתך מעל 70₪!</span>
             </div>
           )}
 
           <Button size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg" onClick={handleMockPayment} aria-label={`שלם ${finalPriceWithDelivery.toFixed(2)} שקלים (דמו)`}>
-            <Lock className="ml-2 h-5 w-5" /> שלם {finalPriceWithDelivery.toFixed(2)}₪ (דמו) 
+            <Lock className="ml-2 rtl:ml-0 rtl:mr-2 h-5 w-5" /> שלם {finalPriceWithDelivery.toFixed(2)}₪ (דמו) 
           </Button>
           <p className="text-xs text-muted-foreground text-center">
             בלחיצה על "שלם עכשיו", אתה מסכים לתנאי השירות ומדיניות הפרטיות שלנו.
@@ -185,3 +193,4 @@ export default function CheckoutPage() {
     </div>
   );
 }
+
