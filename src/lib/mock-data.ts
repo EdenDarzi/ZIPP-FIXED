@@ -1,5 +1,6 @@
 
-import type { Restaurant, MenuItem, OrderDetailsForBidding, CourierProfile, CourierBid, Order, DeliveryPreference, RestaurantTag, Location, DeliveryVehicle, SwiftSaleItem } from '@/types';
+
+import type { Restaurant, MenuItem, OrderDetailsForBidding, CourierProfile, CourierBid, Order, DeliveryPreference, RestaurantTag, Location, DeliveryVehicle, LivePickSaleItem, SecondHandItem, SecondHandItemCategory } from '@/types';
 
 const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
   {
@@ -61,56 +62,56 @@ const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
 export const mockRestaurants: Restaurant[] = [
   {
     id: 'restaurant1',
-    name: 'Pizza Palace',
-    description: 'Authentic Italian pizzas baked to perfection with the freshest ingredients.',
+    name: 'פיצה פאלאס', // Translated
+    description: 'פיצות איטלקיות אותנטיות שנאפות לשלמות עם המרכיבים הטריים ביותר.', // Translated
     imageUrl: 'https://placehold.co/800x600.png',
     dataAiHint: 'pizza restaurant italian', 
-    location: '123 Main St, Anytown',
-    cuisineType: 'Italian',
+    location: 'רחוב ראשי 123, אבן יהודה', // Translated
+    cuisineType: 'איטלקי', // Translated
     rating: 4.5,
-    deliveryTimeEstimate: '25-35 min',
+    deliveryTimeEstimate: '25-35 דקות', // Translated
     menu: mockMenuItems.filter(item => item.category === 'Pizza' || item.category === 'Drinks').map(item => ({ ...item, restaurantId: 'restaurant1' })),
     hasDeliveryArena: true,
     tags: ['Popular', 'Fast Delivery', 'Delivery Arena'],
   },
   {
     id: 'restaurant2',
-    name: 'Burger Bonanza',
-    description: 'The best burgers in town, grilled just right. Taste the difference!',
+    name: 'בורגר בוננזה', // Translated
+    description: 'ההמבורגרים הטובים בעיר, צלויים בדיוק כמו שצריך. טעמו את ההבדל!', // Translated
     imageUrl: 'https://placehold.co/800x600.png',
     dataAiHint: 'burger joint american', 
-    location: '456 Oak Ave, Anytown',
-    cuisineType: 'American',
+    location: 'שדרות האלון 456, אבן יהודה', // Translated
+    cuisineType: 'אמריקאי', // Translated
     rating: 4.2,
-    deliveryTimeEstimate: '20-30 min',
+    deliveryTimeEstimate: '20-30 דקות', // Translated
     menu: mockMenuItems.filter(item => item.category === 'Burgers' || item.category === 'Drinks').map(item => ({ ...item, restaurantId: 'restaurant2' })),
     hasDeliveryArena: false,
     tags: ['Recommended', 'Hot Now'],
   },
   {
     id: 'restaurant3',
-    name: 'Pasta Perfection',
-    description: 'Delicious pasta dishes made with love and traditional recipes.',
+    name: 'פסטה פרפקשן', // Translated
+    description: 'מנות פסטה טעימות שנעשו באהבה ומתכונים מסורתיים.', // Translated
     imageUrl: 'https://placehold.co/800x600.png',
     dataAiHint: 'pasta place authentic', 
-    location: '789 Pine Ln, Anytown',
-    cuisineType: 'Italian',
+    location: 'סמטת האורן 789, אבן יהודה', // Translated
+    cuisineType: 'איטלקי', // Translated
     rating: 4.8,
-    deliveryTimeEstimate: '30-40 min',
+    deliveryTimeEstimate: '30-40 דקות', // Translated
     menu: mockMenuItems.filter(item => item.category === 'Pasta' || item.category === 'Salads' || item.category === 'Drinks').map(item => ({ ...item, restaurantId: 'restaurant3' })),
     hasDeliveryArena: true,
     tags: ['New', 'Recommended', 'Delivery Arena'],
   },
   {
     id: 'restaurant4',
-    name: 'Salad Sensations',
-    description: 'Fresh and healthy salads for a guilt-free and delicious meal.',
+    name: 'סלט סנסיישנס', // Translated
+    description: 'סלטים טריים ובריאים לארוחה טעימה וללא רגשות אשם.', // Translated
     imageUrl: 'https://placehold.co/800x600.png',
     dataAiHint: 'salad bar healthy', 
-    location: '101 Maple Dr, Anytown',
-    cuisineType: 'Healthy',
+    location: 'דרך המייפל 101, אבן יהודה', // Translated
+    cuisineType: 'בריא', // Translated
     rating: 4.0,
-    deliveryTimeEstimate: '15-25 min',
+    deliveryTimeEstimate: '15-25 דקות', // Translated
     menu: mockMenuItems.filter(item => item.category === 'Salads' || item.category === 'Drinks').map(item => ({ ...item, restaurantId: 'restaurant4' })),
     hasDeliveryArena: true,
     tags: ['Fast Delivery', 'Delivery Arena'],
@@ -122,10 +123,10 @@ export const mockRestaurants: Restaurant[] = [
     imageUrl: 'https://placehold.co/800x600.png',
     dataAiHint: 'flowers florist bouquets',
     location: 'שדרות הפרחים 5, עיר הגנים',
-    cuisineType: 'חנות פרחים', // Using cuisineType as a generic business type field
+    cuisineType: 'חנות פרחים', 
     rating: 4.9,
     deliveryTimeEstimate: 'שעה - שעתיים',
-    menu: [ // Example items for a florist
+    menu: [ 
         { id: 'flower1', name: 'זר ורדים אדומים קלאסי', description: '12 ורדים אדומים טריים באריזת מתנה.', price: 120.00, imageUrl: 'https://placehold.co/600x400.png', dataAiHint: 'red roses bouquet', category: 'זרים', restaurantId: 'florist1' },
         { id: 'flower2', name: 'סידור סחלבים לבנים', description: 'סחלב לבן מרשים בכלי דקורטיבי.', price: 180.00, imageUrl: 'https://placehold.co/600x400.png', dataAiHint: 'white orchid arrangement', category: 'עציצים', restaurantId: 'florist1' },
     ],
@@ -166,31 +167,31 @@ export const getAllItems = (): MenuItem[] => {
 
 export const mockCourierProfiles: CourierProfile[] = [
   {
-    id: 'courier1', name: 'Speedy Sam', rating: 4.8, trustScore: 92, vehicleType: 'motorcycle', areaCoverageRadiusKm: 5, currentLocation: { lat: 34.0522, lng: -118.2437 }, currentSpeedKmh: 35, batteryPercent: undefined, isActive: true, transportationModeDetails: "Yamaha NMAX 155"
+    id: 'courier1', name: 'סמי המהיר', rating: 4.8, trustScore: 92, vehicleType: 'motorcycle', areaCoverageRadiusKm: 5, currentLocation: { lat: 34.0522, lng: -118.2437 }, currentSpeedKmh: 35, batteryPercent: undefined, isActive: true, transportationModeDetails: "Yamaha NMAX 155"
   },
   {
-    id: 'courier2', name: 'Reliable Rita', rating: 4.6, trustScore: 95, vehicleType: 'car', areaCoverageRadiusKm: 7, currentLocation: { lat: 34.0550, lng: -118.2500 }, currentSpeedKmh: 45, batteryPercent: undefined, isActive: true, transportationModeDetails: "Toyota Prius"
+    id: 'courier2', name: 'ריטה האמינה', rating: 4.6, trustScore: 95, vehicleType: 'car', areaCoverageRadiusKm: 7, currentLocation: { lat: 34.0550, lng: -118.2500 }, currentSpeedKmh: 45, batteryPercent: undefined, isActive: true, transportationModeDetails: "Toyota Prius"
   },
   {
-    id: 'courier3', name: 'Eco Ethan', rating: 4.3, trustScore: 85, vehicleType: 'bicycle',  areaCoverageRadiusKm: 3, currentLocation: { lat: 34.0500, lng: -118.2400 }, currentSpeedKmh: 15, batteryPercent: 75, isActive: true, transportationModeDetails: "Specialized Turbo Vado (e-bike)"
+    id: 'courier3', name: 'איתן האקולוגי', rating: 4.3, trustScore: 85, vehicleType: 'bicycle',  areaCoverageRadiusKm: 3, currentLocation: { lat: 34.0500, lng: -118.2400 }, currentSpeedKmh: 15, batteryPercent: 75, isActive: true, transportationModeDetails: "Specialized Turbo Vado (e-bike)"
   },
   {
-    id: 'courier4', name: 'Swift Sarah', rating: 4.9, trustScore: 90, vehicleType: 'scooter', areaCoverageRadiusKm: 4, currentLocation: { lat: 34.0480, lng: -118.2450 }, currentSpeedKmh: 22, batteryPercent: 88, isActive: true, transportationModeDetails: "Xiaomi Mi Electric Scooter Pro 2"
+    id: 'courier4', name: 'שרה המהירה', rating: 4.9, trustScore: 90, vehicleType: 'scooter', areaCoverageRadiusKm: 4, currentLocation: { lat: 34.0480, lng: -118.2450 }, currentSpeedKmh: 22, batteryPercent: 88, isActive: true, transportationModeDetails: "Xiaomi Mi Electric Scooter Pro 2"
   },
    {
-    id: 'courier5', name: 'Walker Wally', rating: 4.1, trustScore: 80, vehicleType: 'foot', areaCoverageRadiusKm: 1.5, currentLocation: { lat: 34.0510, lng: -118.2420 }, isActive: true, transportationModeDetails: "Comfortable Sneakers"
+    id: 'courier5', name: 'וולי ההולך', rating: 4.1, trustScore: 80, vehicleType: 'foot', areaCoverageRadiusKm: 1.5, currentLocation: { lat: 34.0510, lng: -118.2420 }, isActive: true, transportationModeDetails: "נעלי ספורט נוחות"
   }
 ];
 
 export const mockOpenOrdersForBidding: OrderDetailsForBidding[] = [
   {
-    orderId: 'orderBid1', restaurantName: 'Pizza Palace', restaurantLocation: { lat: 34.052235, lng: -118.243683 }, deliveryAddress: '123 Customer Way, Anytown', deliveryLocation: { lat: 34.0600, lng: -118.2500 }, estimatedDistanceKm: 2.5, estimatedRouteDistanceKm: 3.1, baseCommission: 10.00, itemsDescription: '1 Margherita Pizza, 2 Cokes', expectedPickupTime: 'ASAP (~10 min prep)', requiredVehicleType: ['motorcycle', 'car', 'scooter', 'bicycle'], orderValue: 17.99, customerNotes: "Please ring the bell twice."
+    orderId: 'orderBid1', restaurantName: 'פיצה פאלאס', restaurantLocation: { lat: 34.052235, lng: -118.243683 }, deliveryAddress: 'דרך הלקוח 123, אבן יהודה', deliveryLocation: { lat: 34.0600, lng: -118.2500 }, estimatedDistanceKm: 2.5, estimatedRouteDistanceKm: 3.1, baseCommission: 10.00, itemsDescription: '1 פיצה מרגריטה, 2 קולה', expectedPickupTime: 'מיידי (~10 דק\' הכנה)', requiredVehicleType: ['motorcycle', 'car', 'scooter', 'bicycle'], orderValue: 17.99, customerNotes: "נא לצלצל בפעמון פעמיים."
   },
   {
-    orderId: 'orderBid2', restaurantName: 'Burger Bonanza', restaurantLocation: { lat: 34.050000, lng: -118.240000 }, deliveryAddress: '456 Client Ave, Anytown', deliveryLocation: { lat: 34.0450, lng: -118.2350 }, estimatedDistanceKm: 1.2, estimatedRouteDistanceKm: 1.5, baseCommission: 8.50, itemsDescription: '2 Classic Burgers, 1 Fries', expectedPickupTime: 'ASAP (~8 min prep)', orderValue: 22.48, customerNotes: "Leave at front porch if no answer."
+    orderId: 'orderBid2', restaurantName: 'בורגר בוננזה', restaurantLocation: { lat: 34.050000, lng: -118.240000 }, deliveryAddress: 'שדרות הלקוח 456, אבן יהודה', deliveryLocation: { lat: 34.0450, lng: -118.2350 }, estimatedDistanceKm: 1.2, estimatedRouteDistanceKm: 1.5, baseCommission: 8.50, itemsDescription: '2 המבורגרים קלאסיים, 1 צ\'יפס', expectedPickupTime: 'מיידי (~8 דק\' הכנה)', orderValue: 22.48, customerNotes: "להשאיר במרפסת הקדמית אם אין מענה."
   },
   {
-    orderId: 'orderBid3', restaurantName: 'Pasta Perfection', restaurantLocation: { lat: 34.0580, lng: -118.2490 }, deliveryAddress: '789 Gourmet St, Anytown', deliveryLocation: { lat: 34.0550, lng: -118.2550 }, estimatedDistanceKm: 0.8, estimatedRouteDistanceKm: 1.0, baseCommission: 7.00, itemsDescription: '1 Spaghetti Carbonara', expectedPickupTime: 'Ready in 15 mins', requiredVehicleType: ['bicycle', 'foot', 'scooter'], orderValue: 13.50,
+    orderId: 'orderBid3', restaurantName: 'פסטה פרפקשן', restaurantLocation: { lat: 34.0580, lng: -118.2490 }, deliveryAddress: 'רחוב הגורמה 789, אבן יהודה', deliveryLocation: { lat: 34.0550, lng: -118.2550 }, estimatedDistanceKm: 0.8, estimatedRouteDistanceKm: 1.0, baseCommission: 7.00, itemsDescription: '1 ספגטי קרבונרה', expectedPickupTime: 'מוכן בעוד 15 דקות', requiredVehicleType: ['bicycle', 'foot', 'scooter'], orderValue: 13.50,
   }
 ];
 
@@ -237,7 +238,7 @@ export const getMockOrderById = (orderId: string, scheduledDeliveryTime?: string
     const initialTimelineNote = scheduledDeliveryTime ? `ההזמנה תוכננה ל: ${scheduledDeliveryTime}.` : "התשלום התקבל. מחפש שליח.";
 
     const baseOrder: Order = {
-      id: orderId, userId: 'userTest1', items, totalAmount, deliveryPreference: 'arena' as DeliveryPreference, deliveryFee: 0, discountAmount: 0, finalAmount: totalAmount, status: initialStatus, deliveryAddress: '123 Delivery St, Foodtown, CA 90210', restaurantId: restaurant.id, restaurantName: restaurant.name, createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(), updatedAt: new Date().toISOString(), scheduledDeliveryTime: scheduledDeliveryTime, scheduledDeliveryTimestamp: scheduledDeliveryTime ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() : undefined, orderTimeline: [ { status: 'PENDING_PAYMENT', timestamp: new Date(Date.now() - 6 * 60 * 1000).toISOString(), notes: "מעבד תשלום..." }, { status: initialStatus, timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(), notes: initialTimelineNote } ]
+      id: orderId, userId: 'userTest1', items, totalAmount, deliveryPreference: 'arena' as DeliveryPreference, deliveryFee: 0, discountAmount: 0, finalAmount: totalAmount, status: initialStatus, deliveryAddress: 'רחוב המשלוחים 123, עיר האוכל, 90210', restaurantId: restaurant.id, restaurantName: restaurant.name, createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(), updatedAt: new Date().toISOString(), scheduledDeliveryTime: scheduledDeliveryTime, scheduledDeliveryTimestamp: scheduledDeliveryTime ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() : undefined, orderTimeline: [ { status: 'PENDING_PAYMENT', timestamp: new Date(Date.now() - 6 * 60 * 1000).toISOString(), notes: "מעבד תשלום..." }, { status: initialStatus, timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(), notes: initialTimelineNote } ]
     };
     return baseOrder;
   }
@@ -266,10 +267,9 @@ export const mockOrderHistoryForAdmin: Order[] = [
 ];
 
 
-// SwiftSale Mock Data
-export const mockSwiftSaleItems: SwiftSaleItem[] = [
+export const mockLivePickSaleItems: LivePickSaleItem[] = [ // Renamed from mockSwiftSaleItems
     {
-        id: 'swiftsale-item1',
+        id: 'livepick-sale-item1', // Renamed ID
         restaurantId: 'bakery1',
         restaurantName: 'מאפיית הבוקר',
         name: 'שקית מאפים מסוף יום',
@@ -282,9 +282,9 @@ export const mockSwiftSaleItems: SwiftSaleItem[] = [
         isActive: true,
     },
     {
-        id: 'swiftsale-item2',
+        id: 'livepick-sale-item2', // Renamed ID
         restaurantId: 'restaurant4',
-        restaurantName: 'Salad Sensations',
+        restaurantName: 'סלט סנסיישנס',
         name: 'שקית סלטים טריים',
         description: 'סלטים טריים שהוכנו היום ולא נמכרו. הזדמנות לבריאות במחיר מנצח!',
         price: 12.00,
@@ -295,7 +295,7 @@ export const mockSwiftSaleItems: SwiftSaleItem[] = [
         isActive: true,
     },
     {
-        id: 'swiftsale-item3',
+        id: 'livepick-sale-item3', // Renamed ID
         restaurantId: 'florist1',
         restaurantName: 'פרחי העונה',
         name: 'זר הפתעה מסוף שבוע',
@@ -309,6 +309,83 @@ export const mockSwiftSaleItems: SwiftSaleItem[] = [
     }
 ];
 
-export const getSwiftSaleItemById = (id: string): SwiftSaleItem | undefined => {
-    return mockSwiftSaleItems.find(item => item.id === id);
+export const getLivePickSaleItemById = (id: string): LivePickSaleItem | undefined => { // Renamed function
+    return mockLivePickSaleItems.find(item => item.id === id);
 };
+
+export const mockSecondHandItems: SecondHandItem[] = [
+  {
+    id: 'sh1',
+    userId: 'userJaneDoe',
+    sellerName: 'ג׳יין דואו',
+    title: 'iPhone 12 - שמור כמו חדש, 128GB',
+    category: 'טלפונים',
+    price: 900,
+    description: 'אייפון 12 במצב מעולה, ללא שריטות. מגיע עם קופסה מקורית וכבל טעינה. סוללה 88%.',
+    images: [
+      { url: 'https://placehold.co/600x400.png', dataAiHint: 'iphone 12 used' },
+      { url: 'https://placehold.co/600x400.png', dataAiHint: 'iphone 12 back' },
+    ],
+    location: 'אשדוד',
+    publishedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+    isSold: false,
+    sellerRating: 4.8,
+    contactMethod: 'whatsapp',
+    contactDetails: '+972501234567'
+  },
+  {
+    id: 'sh2',
+    userId: 'userJohnSmith',
+    sellerName: 'יוחנן סמית',
+    title: 'אוזניות Sony WH-1000XM4 במצב חדש',
+    category: 'אוזניות',
+    price: 650,
+    description: 'אוזניות סוני מעולות עם ביטול רעשים אקטיבי. שימוש מועט מאוד, נמכרות עקב שדרוג.',
+    images: [{ url: 'https://placehold.co/600x400.png', dataAiHint: 'sony headphones wh1000xm4' }],
+    location: 'תל אביב',
+    publishedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
+    isSold: false,
+    sellerRating: 4.9,
+    contactMethod: 'app-chat'
+  },
+  {
+    id: 'sh3',
+    userId: 'userSarahL',
+    sellerName: 'שרה לוי',
+    title: 'שמלת קיץ פרחונית - מידה M',
+    category: 'בגדים',
+    price: 80,
+    description: 'שמלת קיץ קלילה ונוחה, נלבשה פעם אחת בלבד. מצב כמו חדש. בד נעים ונושם.',
+    images: [{ url: 'https://placehold.co/600x400.png', dataAiHint: 'summer dress floral' }],
+    location: 'חיפה',
+    publishedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
+    isSold: true,
+    sellerRating: 4.5
+  },
+    {
+    id: 'sh4',
+    userId: 'userMikeB',
+    sellerName: 'מייק בראון',
+    title: 'מחשב נייד Dell XPS 13 (2020)',
+    category: 'מחשבים',
+    price: 2200,
+    description: 'דל XPS 13, מעבד i7 דור 10, 16GB RAM, 512GB SSD. מצב מצוין, סוללה טובה. שימש בעיקר ללימודים.',
+    images: [{ url: 'https://placehold.co/600x400.png', dataAiHint: 'dell xps 13 laptop' }],
+    location: 'ירושלים',
+    publishedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
+    isSold: false,
+    sellerRating: 5.0,
+    contactMethod: 'phone',
+    contactDetails: '054-9876543'
+  },
+];
+
+export const getSecondHandItems = (): SecondHandItem[] => {
+  return mockSecondHandItems.filter(item => !item.isSold); // Return only items not sold for listing
+};
+
+export const getSecondHandItemById = (id: string): SecondHandItem | undefined => {
+  return mockSecondHandItems.find(item => item.id === id);
+};
+
+export const secondHandCategories: SecondHandItemCategory[] = ['טלפונים', 'מחשבים', 'בגדים', 'אוזניות', 'אחר'];

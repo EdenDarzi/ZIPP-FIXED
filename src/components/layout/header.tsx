@@ -1,8 +1,9 @@
 
+
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, TrendingUp, Languages, Send, HeartPulse, MapIcon, Briefcase, Gem, Users } from 'lucide-react'; 
+import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, TrendingUp, Languages, Send, HeartPulse, MapIcon, Briefcase, Gem, Users, Store } from 'lucide-react'; 
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
 import { Badge } from '@/components/ui/badge';
@@ -36,6 +37,9 @@ const Header = () => {
           </Button>
           <Button variant="ghost" asChild size="sm">
             <Link href="/restaurants"><span className="flex items-center"><Utensils className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">עסקים</span></span></Link>
+          </Button>
+           <Button variant="ghost" asChild size="sm" className="hidden lg:inline-flex">
+            <Link href="/marketplace"><span className="flex items-center"><Store className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">יד 2</span></span></Link>
           </Button>
           <Button variant="ghost" asChild size="sm" className="hidden lg:inline-flex">
             <Link href="/food-radar"><span className="flex items-center"><MapIcon className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">רדאר אוכל</span></span></Link>

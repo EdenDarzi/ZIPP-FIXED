@@ -1,4 +1,5 @@
 
+
 export interface MenuItemOption {
   name: string;
   priceModifier: number; // e.g., +1.00 for extra cheese
@@ -266,17 +267,35 @@ export interface WeeklyMenu {
   summaryNotes?: string; 
 }
 
-// New Type for SwiftSale (End-of-Day Surprise Bags)
-export interface SwiftSaleItem {
+export interface LivePickSaleItem { // Renamed from SwiftSaleItem
     id: string;
     restaurantId: string;
-    restaurantName: string; // For display on SwiftSale page
-    name: string; // e.g., "שקית מאפים מסוף יום"
-    description?: string; // Optional description of typical contents
-    price: number; // Discounted price
-    originalPrice?: number; // Original value of contents (optional)
+    restaurantName: string; 
+    name: string; 
+    description?: string; 
+    price: number; 
+    originalPrice?: number; 
     quantityAvailable: number;
-    imageUrl?: string; // Generic image for "surprise bag" or specific if known
+    imageUrl?: string; 
     dataAiHint?: string;
-    isActive: boolean; // If currently offered by the restaurant
+    isActive: boolean; 
+}
+
+export type SecondHandItemCategory = 'טלפונים' | 'מחשבים' | 'בגדים' | 'אוזניות' | 'אחר';
+
+export interface SecondHandItem {
+  id: string;
+  userId: string; // ID of the seller
+  sellerName: string; // For display
+  title: string;
+  category: SecondHandItemCategory;
+  price: number;
+  description: string;
+  images: { url: string; dataAiHint?: string }[]; // Array for up to 3 images
+  location: string; // City / Area
+  publishedAt: string; // ISO date string
+  isSold: boolean;
+  sellerRating?: number; // Optional
+  contactMethod?: 'whatsapp' | 'phone' | 'app-chat'; // Mock for now
+  contactDetails?: string; // Phone number or WhatsApp link
 }
