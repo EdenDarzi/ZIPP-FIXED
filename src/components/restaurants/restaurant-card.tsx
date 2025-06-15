@@ -1,12 +1,15 @@
 
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Restaurant, RestaurantTag } from '@/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Star, Clock, Tag as CuisineIcon, MapPin, Zap, Award, Flame, ShoppingBag, CircleHelp, ArrowLeft } from 'lucide-react'; // ArrowRight becomes ArrowLeft
+import { Star, Clock, Tag as CuisineIcon, MapPin, Zap, Award, Flame, ShoppingBag, CircleHelp, ArrowLeft } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { useState, useEffect } from 'react'; // Added for client-side random number
 
 interface RestaurantCardProps {
   restaurant: Restaurant;
@@ -32,6 +35,13 @@ const tagColorMap: Record<RestaurantTag, string> = {
 
 
 export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
+  const [reviewCount, setReviewCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    // Generate random review count only on the client side after hydration
+    setReviewCount(Math.floor(Math.random() * 150 + 50));
+  }, []); // Empty dependency array ensures this runs once on mount
+
   return (
     <Card className="overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col h-full bg-card text-card-foreground rounded-xl border hover:border-primary/50 group">
       <Link href={`/restaurants/${restaurant.id}`} className="block">
@@ -68,7 +78,11 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
         <div className="flex items-center text-muted-foreground">
           <Star className="h-4 w-4 ml-2 text-yellow-500 fill-yellow-500" /> {/* Adjusted margin for RTL */}
           <span>{restaurant.rating.toFixed(1)}</span>
-           <span className="mr-1 text-xs">({Math.floor(Math.random() * 150 + 50)} ביקורות)</span> {/* Adjusted margin for RTL and translated */}
+           {reviewCount !== null ? (
+            <span className="mr-1 text-xs">({reviewCount} ביקורות)</span>
+           ) : (
+            <span className="mr-1 text-xs">(טוען ביקורות...)</span> // Or some placeholder
+           )}
         </div>
         <div className="flex items-center text-muted-foreground">
           <Clock className="h-4 w-4 ml-2 text-blue-500" /> {/* Adjusted margin for RTL */}
