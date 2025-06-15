@@ -1,5 +1,5 @@
 
-import type { Restaurant, MenuItem, OrderDetailsForBidding, CourierProfile, CourierBid, Order, DeliveryPreference } from '@/types';
+import type { Restaurant, MenuItem, OrderDetailsForBidding, CourierProfile, CourierBid, Order, DeliveryPreference, RestaurantTag } from '@/types';
 
 const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
   {
@@ -8,7 +8,7 @@ const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
     description: 'Classic delight with 100% real mozzarella cheese',
     price: 12.99,
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'pizza margherita',
+    dataAiHint: 'pizza margherita delicious',
     category: 'Pizza',
   },
   {
@@ -17,7 +17,7 @@ const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
     description: 'A classic favorite with rich, savory pepperoni.',
     price: 14.99,
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'pizza pepperoni',
+    dataAiHint: 'pizza pepperoni spicy',
     category: 'Pizza',
   },
   {
@@ -26,7 +26,7 @@ const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
     description: 'Juicy beef patty with lettuce, tomato, and our special sauce.',
     price: 9.99,
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'burger classic',
+    dataAiHint: 'burger classic beef',
     category: 'Burgers',
   },
   {
@@ -35,7 +35,7 @@ const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
     description: 'Crisp romaine lettuce, Parmesan cheese, croutons, and Caesar dressing.',
     price: 8.50,
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'salad caesar',
+    dataAiHint: 'salad caesar fresh',
     category: 'Salads',
   },
   {
@@ -44,7 +44,7 @@ const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
     description: 'Creamy pasta with pancetta, egg, and Parmesan cheese.',
     price: 13.50,
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'pasta carbonara',
+    dataAiHint: 'pasta carbonara italian',
     category: 'Pasta',
   },
   {
@@ -53,7 +53,7 @@ const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
     description: 'Classic Coca-Cola',
     price: 2.50,
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'soda drink',
+    dataAiHint: 'soda drink refreshment',
     category: 'Drinks',
   },
 ];
@@ -62,54 +62,58 @@ export const mockRestaurants: Restaurant[] = [
   {
     id: 'restaurant1',
     name: 'Pizza Palace',
-    description: 'Authentic Italian pizzas baked to perfection.',
+    description: 'Authentic Italian pizzas baked to perfection with the freshest ingredients.',
     imageUrl: 'https://placehold.co/800x600.png',
-    dataAiHint: 'pizza restaurant', // Updated hint
+    dataAiHint: 'pizza restaurant italian', 
     location: '123 Main St, Anytown',
     cuisineType: 'Italian',
     rating: 4.5,
     deliveryTimeEstimate: '25-35 min',
     menu: mockMenuItems.filter(item => item.category === 'Pizza' || item.category === 'Drinks').map(item => ({ ...item, restaurantId: 'restaurant1' })),
     hasDeliveryArena: true,
+    tags: ['Popular', 'Fast Delivery', 'Delivery Arena'],
   },
   {
     id: 'restaurant2',
     name: 'Burger Bonanza',
-    description: 'The best burgers in town, grilled just right.',
+    description: 'The best burgers in town, grilled just right. Taste the difference!',
     imageUrl: 'https://placehold.co/800x600.png',
-    dataAiHint: 'burger joint', // Updated hint
+    dataAiHint: 'burger joint american', 
     location: '456 Oak Ave, Anytown',
     cuisineType: 'American',
     rating: 4.2,
     deliveryTimeEstimate: '20-30 min',
     menu: mockMenuItems.filter(item => item.category === 'Burgers' || item.category === 'Drinks').map(item => ({ ...item, restaurantId: 'restaurant2' })),
     hasDeliveryArena: false,
+    tags: ['Recommended', 'Hot Now'],
   },
   {
     id: 'restaurant3',
     name: 'Pasta Perfection',
-    description: 'Delicious pasta dishes made with fresh ingredients.',
+    description: 'Delicious pasta dishes made with love and traditional recipes.',
     imageUrl: 'https://placehold.co/800x600.png',
-    dataAiHint: 'pasta place', // Updated hint
+    dataAiHint: 'pasta place authentic', 
     location: '789 Pine Ln, Anytown',
     cuisineType: 'Italian',
     rating: 4.8,
     deliveryTimeEstimate: '30-40 min',
     menu: mockMenuItems.filter(item => item.category === 'Pasta' || item.category === 'Salads' || item.category === 'Drinks').map(item => ({ ...item, restaurantId: 'restaurant3' })),
     hasDeliveryArena: true,
+    tags: ['New', 'Recommended', 'Delivery Arena'],
   },
   {
     id: 'restaurant4',
     name: 'Salad Sensations',
-    description: 'Fresh and healthy salads for a guilt-free meal.',
+    description: 'Fresh and healthy salads for a guilt-free and delicious meal.',
     imageUrl: 'https://placehold.co/800x600.png',
-    dataAiHint: 'salad bar', // Updated hint
+    dataAiHint: 'salad bar healthy', 
     location: '101 Maple Dr, Anytown',
     cuisineType: 'Healthy',
     rating: 4.0,
     deliveryTimeEstimate: '15-25 min',
     menu: mockMenuItems.filter(item => item.category === 'Salads' || item.category === 'Drinks').map(item => ({ ...item, restaurantId: 'restaurant4' })),
     hasDeliveryArena: true,
+    tags: ['Fast Delivery', 'Delivery Arena'],
   },
 ];
 
@@ -303,4 +307,3 @@ export const getMockOrderById = (orderId: string): Order | undefined => {
   }
   return undefined;
 };
-

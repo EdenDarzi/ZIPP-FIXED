@@ -36,6 +36,8 @@ export interface MenuItem {
   isAvailable?: boolean; // For real-time availability
 }
 
+export type RestaurantTag = 'Recommended' | 'Hot Now' | 'Fast Delivery' | 'New' | 'Popular' | 'Delivery Arena';
+
 export interface Restaurant {
   id: string;
   name: string;
@@ -47,7 +49,8 @@ export interface Restaurant {
   rating: number; // e.g., 4.5
   deliveryTimeEstimate: string; // e.g., "25-35 min"
   menu: MenuItem[];
-  hasDeliveryArena?: boolean; // New field for courier arena
+  hasDeliveryArena?: boolean;
+  tags?: RestaurantTag[];
 }
 
 export interface CartItem {
