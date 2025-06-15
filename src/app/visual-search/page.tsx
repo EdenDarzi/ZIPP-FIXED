@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { identifyDishFromImage, IdentifyDishInput, IdentifyDishOutput } from '@/ai/flows/identify-dish-flow';
 import { Camera, ImageUp, Loader2, Sparkles, Utensils, Share2, TrendingUp, Info, Star } from 'lucide-react';
 import Image from 'next/image';
-import { Label } from '../ui/label';
+import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 
 export default function AiTrendScannerPage() {
@@ -166,6 +166,16 @@ export default function AiTrendScannerPage() {
                   <div className="flex flex-wrap gap-1 mt-1">
                     {aiResponse.businessOpportunity.suggestedTags.map(tag => <Badge key={tag} variant="outline" className="border-green-400 text-green-700">{tag}</Badge>)}
                   </div>
+                </div>
+                 <div className="mt-2 relative aspect-video bg-gray-200 rounded overflow-hidden">
+                    <Image 
+                        src={`https://placehold.co/300x200.png`} 
+                        alt={`AI preview for ${aiResponse.businessOpportunity.suggestedItemName}`}
+                        layout="fill" 
+                        objectFit="cover"
+                        data-ai-hint={aiResponse.businessOpportunity.suggestedItemName?.toLowerCase().split(' ').slice(0,2).join(' ') || "food concept"}
+                    />
+                    <p className="absolute bottom-1 right-1 text-xs bg-black/50 text-white px-1 rounded">תצוגת AI (דמו)</p>
                 </div>
                 <p className="text-xs text-green-500 mt-2"><strong>נימוק:</strong> {aiResponse.businessOpportunity.rationale}</p>
               </div>
