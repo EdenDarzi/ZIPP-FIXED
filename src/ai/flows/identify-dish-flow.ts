@@ -36,22 +36,28 @@ const identifyDishPrompt = ai.definePrompt({
   input: { schema: IdentifyDishInputSchema },
   output: { schema: IdentifyDishOutputSchema },
   prompt: `You are an AI assistant for SwiftServe, a food delivery app.
-A user has uploaded an image of a food item.
+A user has uploaded an image of a food item, possibly from a social media trend.
 Image: {{media url=imageDataUri}}
 
 {{#if userQuery}}User's query related to the image: "{{{userQuery}}}"{{/if}}
 
-1.  First, try to identify the main food item in the image. Be concise. If you are not sure, say "Food item detected".
-2.  Then, provide a helpful response. If there was a user query, answer it in relation to the image.
-3.  Suggest 1-2 similar dishes or types of cuisine that might be available on SwiftServe. You can invent plausible dish names or restaurant types and mention that users can search for them on the app. Keep this part brief and engaging.
+1.  First, try to identify the main food item or dish in the image. Be as specific as possible (e.g., "Korean Cheese Corn Dog", "Cronut with Matcha Glaze"). If you are not sure, say "Food item detected" or "Interesting dish detected".
+2.  Then, provide a helpful and engaging response.
+    *   If there was a user query, answer it in relation to the image.
+    *   If no query, briefly describe what you see or comment on its trendiness if applicable (e.g., "This looks like the viral [Dish Name] everyone is talking about!").
+3.  Suggest 1-2 similar dishes or types of cuisine that might be available on SwiftServe. You can invent plausible dish names or restaurant types that would fit the identified item and mention that users can search for them on the app. Keep this part brief, appealing, and actionable.
+    *   Example: "You might find similar cheesy corn dogs at 'Seoul Food Express' on SwiftServe, or try searching for 'Crispy Fried Mozzarella Sticks' for a different cheesy delight!"
+    *   Example: "That trendy looking [Dish Name] is all the rage! For a similar vibe on SwiftServe, check out 'Fusion Bites Cafe' or search for 'gourmet dessert waffles'."
 
-Example Output (if no user query):
-identifiedDishName: "Pepperoni Pizza"
-suggestedText: "That looks like a delicious Pepperoni Pizza! You can find similar pizzas at 'Pizza Palace' or search for 'Pepperoni Special' on SwiftServe. We also have great calzones!"
+Example Output (if no user query, identified trendy item):
+identifiedDishName: "Korean Cheese Corn Dog"
+suggestedText: "Wow, that's the famous Korean Cheese Corn Dog! It's super popular right now. On SwiftServe, you could look for 'Cheesy Sausage Sticks' at 'Street Food Mania' or explore our 'Korean Fusion' category for more exciting bites!"
 
 Example Output (with user query "is this healthy?"):
-identifiedDishName: "Caesar Salad with Grilled Chicken"
-suggestedText: "This appears to be a Caesar Salad with Grilled Chicken, which can be a healthy option! For other healthy choices on SwiftServe, try searching for 'Grilled Salmon Salad' or check out restaurants under our 'Healthy Eats' category."
+identifiedDishName: "Avocado Toast with Poached Egg"
+suggestedText: "This appears to be Avocado Toast with Poached Egg. It's generally a nutritious choice, packed with healthy fats and protein! If you're looking for other healthy options on SwiftServe, try searching for 'Quinoa Salad with Grilled Chicken' or browse restaurants under our 'Healthy Eats' tag."
+
+Output format should be JSON. Be creative and helpful!
 `,
 });
 
@@ -66,10 +72,11 @@ const identifyDishFlow = ai.defineFlow(
     const { output } = await identifyDishPrompt(input);
     if (!output) {
       return {
-        identifiedDishName: "Could not analyze image",
-        suggestedText: "Sorry, I wasn't able to process the image at this time. Please try another image or search manually."
+        identifiedDishName: "לא הצלחתי לנתח את התמונה",
+        suggestedText: "מצטערים, לא הצלחתי לעבד את התמונה כרגע. אנא נסה/י תמונה אחרת או חפש/י ידנית."
       }
     }
     return output;
   }
 );
+

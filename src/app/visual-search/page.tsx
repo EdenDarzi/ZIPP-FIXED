@@ -25,8 +25,8 @@ export default function VisualSearchPage() {
     if (file) {
       if (file.size > 4 * 1024 * 1024) { // 4MB limit for Gemini
         toast({
-          title: "Image too large",
-          description: "Please upload an image smaller than 4MB.",
+          title: "התמונה גדולה מדי",
+          description: "אנא העלה/י תמונה קטנה מ-4MB.",
           variant: "destructive",
         });
         return;
@@ -44,7 +44,7 @@ export default function VisualSearchPage() {
 
   const handleSubmit = async () => {
     if (!imageDataUri) {
-      toast({ title: 'No image selected', description: 'Please upload an image to search.', variant: 'destructive' });
+      toast({ title: 'לא נבחרה תמונה', description: 'אנא העלה/י תמונה לחיפוש.', variant: 'destructive' });
       return;
     }
     setIsLoading(true);
@@ -56,8 +56,8 @@ export default function VisualSearchPage() {
     } catch (error) {
       console.error('Error identifying dish:', error);
       toast({
-        title: 'Error',
-        description: 'Could not get suggestions for the image. Please try again.',
+        title: 'שגיאה',
+        description: 'לא ניתן היה לקבל הצעות לתמונה. אנא נסה/י שוב.',
         variant: 'destructive',
       });
     } finally {
@@ -70,35 +70,35 @@ export default function VisualSearchPage() {
       <Card className="shadow-xl">
         <CardHeader className="text-center">
           <Camera className="h-12 w-12 text-primary mx-auto mb-3" />
-          <CardTitle className="text-3xl font-headline text-primary">Visual Dish Search</CardTitle>
+          <CardTitle className="text-3xl font-headline text-primary">חיפוש מנות חזותי</CardTitle>
           <CardDescription>
-            Got a picture of something tasty? Upload it, and our AI will try to identify it and suggest similar items on SwiftServe!
+            יש לך תמונה של משהו טעים? העלה/י אותה, וה-AI שלנו ינסה לזהות ולהציע פריטים דומים ב-SwiftServe!
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div>
-            <Label htmlFor="imageUpload" className="mb-2 block text-sm font-medium text-foreground">Upload Food Image</Label>
+            <Label htmlFor="imageUpload" className="mb-2 block text-sm font-medium text-foreground">העלה/י תמונת אוכל</Label>
             <Input
               id="imageUpload"
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+              className="file:ml-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20" // Adjusted for RTL
             />
-             <p className="text-xs text-muted-foreground mt-1">Max file size: 4MB.</p>
+             <p className="text-xs text-muted-foreground mt-1">גודל קובץ מקסימלי: 4MB.</p>
           </div>
 
           {imagePreview && (
             <div className="mt-4 border rounded-lg overflow-hidden shadow-inner">
-              <Image src={imagePreview} alt="Uploaded food preview" width={500} height={300} objectFit="contain" className="mx-auto max-h-[300px]" data-ai-hint="food image preview"/>
+              <Image src={imagePreview} alt="תצוגה מקדימה של תמונת אוכל שהועלתה" width={500} height={300} objectFit="contain" className="mx-auto max-h-[300px]" data-ai-hint="food image preview"/>
             </div>
           )}
 
           <div>
-            <Label htmlFor="userQuery" className="mb-2 block text-sm font-medium text-foreground">Optional: What are you looking for?</Label>
+            <Label htmlFor="userQuery" className="mb-2 block text-sm font-medium text-foreground">אופציונלי: מה את/ה מחפש/ת?</Label>
             <Textarea
               id="userQuery"
-              placeholder="e.g., 'Is this spicy?', 'Find vegan options like this', 'What cuisine is this?'"
+              placeholder="לדוגמה: 'האם זה חריף?', 'מצא אפשרויות טבעוניות כמו זו', 'איזה מטבח זה?'"
               value={userQuery}
               onChange={(e) => setUserQuery(e.target.value)}
               className="min-h-[80px]"
@@ -108,11 +108,11 @@ export default function VisualSearchPage() {
           <Button onClick={handleSubmit} disabled={isLoading || !imageDataUri} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg">
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Analyzing Image...
+                <Loader2 className="ml-2 h-5 w-5 animate-spin" /> מנתח תמונה...
               </>
             ) : (
               <>
-                <Sparkles className="mr-2 h-5 w-5" /> Get AI Suggestions
+                <Sparkles className="ml-2 h-5 w-5" /> קבל הצעות AI
               </>
             )}
           </Button>
@@ -123,14 +123,14 @@ export default function VisualSearchPage() {
         <Card className="shadow-lg animate-fadeIn bg-muted/30">
           <CardHeader>
             <CardTitle className="flex items-center text-xl text-primary font-headline">
-              <Utensils className="mr-2 h-6 w-6" /> AI Analysis Result
+              <Utensils className="ml-2 h-6 w-6" /> תוצאת ניתוח AI
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <h3 className="text-lg font-semibold">{aiResponse.identifiedDishName}</h3>
             <p className="text-foreground/90 whitespace-pre-wrap">{aiResponse.suggestedText}</p>
             <p className="text-xs text-muted-foreground pt-2">
-                Tip: You can use the identified dish name or keywords from the suggestions in the main search bar to find items on SwiftServe.
+                טיפ: תוכל/י להשתמש בשם המנה שזוהתה או במילות מפתח מההצעות בשורת החיפוש הראשית כדי למצוא פריטים ב-SwiftServe.
             </p>
           </CardContent>
         </Card>
