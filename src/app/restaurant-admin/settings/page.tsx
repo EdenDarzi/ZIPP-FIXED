@@ -19,13 +19,12 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import type { RestaurantSettings, OperatingHour, DayOfWeek } from '@/types';
-// import { TimePicker } from '@/components/ui/time-picker'; // Assuming you have a TimePicker component
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Trash2, PlusCircle, UploadCloud, Info } from 'lucide-react';
+import { mockExistingSettings } from '@/lib/mock-data'; // Assuming this is correctly exported
+import { UploadCloud, Info } from 'lucide-react';
 import Image from 'next/image';
 
 const operatingHourSchema = z.object({
-  day: z.enum(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']),
+  day: z.enum(['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']),
   openTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "פורמט זמן לא תקין (HH:MM)"),
   closeTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "פורמט זמן לא תקין (HH:MM)"),
   isClosed: z.boolean(),
@@ -38,14 +37,14 @@ const settingsFormSchema = z.object({
   category: z.string().min(1, { message: 'קטגוריה היא שדה חובה.' }),
   address: z.string().min(5, { message: 'כתובת חייבת להכיל לפחות 5 תווים.' }),
   operatingHours: z.array(operatingHourSchema).length(7, "אנא הגדר שעות פעילות לכל 7 הימים.")
-    .refine(hours => { // Custom validation to check if closeTime is after openTime for open days
+    .refine(hours => {
         for (const oh of hours) {
             if (!oh.isClosed && oh.openTime >= oh.closeTime) {
                 return false;
             }
         }
         return true;
-    }, { message: "שעת סגירה חייבת להיות מאוחרת משעת הפתיחה עבור ימים פתוחים.", path: ["operatingHours"] }), // You might want more specific path later
+    }, { message: "שעת סגירה חייבת להיות מאוחרת משעת הפתיחה עבור ימים פתוחים.", path: ["operatingHours"] }),
   isOpenNow: z.boolean(),
   specialsStatus: z.string().optional(),
 });
@@ -56,24 +55,22 @@ const daysOfWeekHebrew: { [key in DayOfWeek]: string } = {
     Thursday: 'יום חמישי', Friday: 'יום שישי', Saturday: 'יום שבת',
 };
 
-
-const defaultOperatingHours: OperatingHour[] = daysOfWeek.map(day => ({
-  day,
-  openTime: '09:00',
-  closeTime: '22:00',
-  isClosed: day === 'Saturday', // Example: Closed on Saturday
-}));
-
-const mockExistingSettings: RestaurantSettings = { 
-    id: 'business1', 
-    businessName: 'העסק המגניב שלי',
-    logoUrl: 'https://placehold.co/200x100.png?text=Current+Logo',
-    coverImageUrl: 'https://placehold.co/1200x300.png?text=Current+Cover',
-    category: 'שירותים כלליים',
-    address: 'רחוב ראשי 123, תל אביב',
-    operatingHours: defaultOperatingHours,
-    isOpenNow: true,
-    specialsStatus: 'WEEKEND20 להנחה של 20% בסופי שבוע!'
+// Ensure mockExistingSettings is properly typed and initialized
+const typedMockExistingSettings: RestaurantSettings = mockExistingSettings || {
+    id: 'temp-id', // Provide a default ID if necessary
+    businessName: '',
+    logoUrl: '',
+    coverImageUrl: '',
+    category: '',
+    address: '',
+    operatingHours: daysOfWeek.map(day => ({
+      day,
+      openTime: '09:00',
+      closeTime: '17:00',
+      isClosed: day === 'Saturday',
+    })),
+    isOpenNow: false,
+    specialsStatus: '',
 };
 
 
@@ -81,16 +78,21 @@ export default function RestaurantSettingsPage() {
   const { toast } = useToast();
   const form = useForm<z.infer<typeof settingsFormSchema>>({
     resolver: zodResolver(settingsFormSchema),
-    defaultValues: mockExistingSettings || {
-      businessName: '',
-      logoUrl: '',
-      coverImageUrl: '',
-      category: '',
-      address: '',
-      operatingHours: defaultOperatingHours,
-      isOpenNow: false,
-      specialsStatus: '',
-    },
+    defaultValues: { // Ensure default values are correctly structured
+        businessName: typedMockExistingSettings.businessName,
+        logoUrl: typedMockExistingSettings.logoUrl || '',
+        coverImageUrl: typedMockExistingSettings.coverImageUrl || '',
+        category: typedMockExistingSettings.category,
+        address: typedMockExistingSettings.address,
+        operatingHours: typedMockExistingSettings.operatingHours.length === 7 ? typedMockExistingSettings.operatingHours : daysOfWeek.map(day => ({
+            day,
+            openTime: '09:00',
+            closeTime: '17:00',
+            isClosed: day === 'Saturday',
+        })),
+        isOpenNow: typedMockExistingSettings.isOpenNow,
+        specialsStatus: typedMockExistingSettings.specialsStatus || '',
+    }
   });
 
   const { fields } = useFieldArray({
@@ -113,6 +115,9 @@ export default function RestaurantSettingsPage() {
         variant: 'default',
     });
   };
+
+  const watchedLogoUrl = form.watch('logoUrl');
+  const watchedCoverImageUrl = form.watch('coverImageUrl');
 
   return (
     <div className="space-y-6">
@@ -180,7 +185,7 @@ export default function RestaurantSettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle>מיתוג ונראות</CardTitle>
-              <CardDescription>העלה את הלוגו ותמונת הנושא שלך.</CardDescription>
+              <CardDescription>העלה את הלוגו ותמונת הנושא שלך (באמצעות קישור URL).</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <FormField
@@ -189,7 +194,11 @@ export default function RestaurantSettingsPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>כתובת URL של לוגו</FormLabel>
-                     {field.value && <Image src={field.value} alt="לוגו נוכחי" width={150} height={75} className="rounded border mb-2 object-contain data-ai-hint='business logo'"/>}
+                     {watchedLogoUrl && (
+                        <div className="my-2 p-2 border rounded-md inline-block">
+                            <Image src={watchedLogoUrl} alt="תצוגה מקדימה של לוגו" width={150} height={75} className="rounded object-contain data-ai-hint='business logo'"/>
+                        </div>
+                     )}
                     <FormControl>
                         <div className="flex items-center gap-2">
                            <Input placeholder="https://example.com/logo.png" {...field} />
@@ -207,7 +216,11 @@ export default function RestaurantSettingsPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>כתובת URL של תמונת נושא (באנר)</FormLabel>
-                    {field.value && <Image src={field.value} alt="תמונת נושא נוכחית" width={600} height={150} className="rounded border mb-2 object-cover data-ai-hint='business cover'"/>}
+                    {watchedCoverImageUrl && (
+                         <div className="my-2 p-2 border rounded-md inline-block">
+                            <Image src={watchedCoverImageUrl} alt="תצוגה מקדימה של תמונת נושא" width={600} height={150} className="rounded object-cover data-ai-hint='business cover'"/>
+                        </div>
+                    )}
                     <FormControl>
                          <div className="flex items-center gap-2">
                             <Input placeholder="https://example.com/cover.png" {...field} />
@@ -232,9 +245,9 @@ export default function RestaurantSettingsPage() {
                 <Card key={fieldItem.id} className="p-4 bg-muted/30">
                   <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
                     <FormItem>
-                        <FormLabel>יום</FormLabel>
+                        <FormLabel htmlFor={`operatingHours.${index}.day`}>יום</FormLabel>
                         <FormControl>
-                            <Input value={daysOfWeekHebrew[form.watch(`operatingHours.${index}.day`)]} readOnly className="font-semibold bg-background"/>
+                            <Input id={`operatingHours.${index}.day`} value={daysOfWeekHebrew[form.watch(`operatingHours.${index}.day`)]} readOnly className="font-semibold bg-background"/>
                         </FormControl>
                     </FormItem>
                     <FormField
@@ -275,7 +288,7 @@ export default function RestaurantSettingsPage() {
                               aria-label={`העסק סגור ב${daysOfWeekHebrew[form.getValues(`operatingHours.${index}.day`)]}`}
                             />
                           </FormControl>
-                          <FormLabel className="text-sm mt-0 sm:ml-2">סגור</FormLabel>
+                          <FormLabel className="text-sm mt-0 sm:ml-2 whitespace-nowrap">סגור ביום זה</FormLabel>
                         </FormItem>
                       )}
                     />
@@ -340,4 +353,3 @@ export default function RestaurantSettingsPage() {
     </div>
   );
 }
-
