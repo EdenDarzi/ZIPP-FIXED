@@ -6,14 +6,14 @@ export interface MenuItemOption {
 }
 
 export interface MenuItemAddonChoice {
-  id?: string; // Optional for new items, generated on save
+  id?: string; 
   name: string;
   price: number; 
   selectedByDefault?: boolean;
 }
 
 export interface MenuItemAddonGroup {
-  id?: string; // Optional for new items, generated on save
+  id?: string; 
   title: string; 
   type: 'radio' | 'checkbox'; 
   minSelection?: number; 
@@ -53,13 +53,25 @@ export interface Restaurant {
   tags?: RestaurantTag[];
 }
 
+export interface SelectedAddon {
+  groupId: string;
+  groupTitle: string;
+  optionId: string;
+  optionName: string;
+  optionPrice: number;
+}
+
 export interface CartItem {
-  menuItemId: string;
+  id: string; // Unique identifier for this cart entry
+  menuItemId: string; // ID of the original menu item
   name: string;
-  price: number;
+  price: number; // Base price of the menu item
   quantity: number;
   imageUrl?: string;
   dataAiHint?: string;
+  selectedAddons?: SelectedAddon[];
+  // restaurantId is needed to group items by restaurant in cart if that's a feature
+  // restaurantId: string; 
 }
 
 export interface User {
@@ -138,7 +150,7 @@ export type OrderStatus =
 export interface Order {
   id: string;
   userId: string;
-  items: CartItem[];
+  items: CartItem[]; // CartItem now includes selected addons
   totalAmount: number; 
   deliveryPreference: DeliveryPreference;
   deliveryFee: number;
