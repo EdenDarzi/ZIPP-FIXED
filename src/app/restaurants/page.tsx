@@ -8,11 +8,13 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Filter, Star, Clock, MapPinIcon } from 'lucide-react';
-import { useState } from 'react'; // For handling filter states
+import { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function RestaurantsPage() {
   const restaurants: Restaurant[] = mockRestaurants;
   const [searchTerm, setSearchTerm] = useState('');
+  const { toast } = useToast();
   // Placeholder states for filters - actual filtering logic would be more complex
   const [cuisineFilter, setCuisineFilter] = useState('all');
   const [ratingFilter, setRatingFilter] = useState('all');
@@ -30,6 +32,13 @@ export default function RestaurantsPage() {
     return matchesSearch && matchesCuisine && matchesRating;
   });
 
+  const handleMoreFiltersClick = () => {
+    toast({
+        title: "More Filters Coming Soon!",
+        description: "Advanced filtering options will be available in a future update.",
+    });
+  };
+
 
   return (
     <div className="space-y-8">
@@ -40,10 +49,10 @@ export default function RestaurantsPage() {
         </p>
         <div className="relative max-w-xl">
            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-           <Input 
-            type="search" 
-            placeholder="Search restaurants or cuisines..." 
-            className="pl-10 pr-4 py-3 text-base shadow-sm focus:ring-primary focus:border-primary" 
+           <Input
+            type="search"
+            placeholder="Search restaurants or cuisines..."
+            className="pl-10 pr-4 py-3 text-base shadow-sm focus:ring-primary focus:border-primary"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -83,7 +92,7 @@ export default function RestaurantsPage() {
             </div>
              <div className="space-y-1">
                 <label htmlFor="distanceFilter" className="text-sm font-medium text-muted-foreground">Distance</label>
-                 <Select value={distanceFilter} onValueChange={setDistanceFilter} disabled>
+                 <Select value={distanceFilter} onValueChange={setDistanceFilter}>
                     <SelectTrigger id="distanceFilter" className="w-full bg-background shadow-sm">
                          <MapPinIcon className="inline h-4 w-4 mr-1 text-primary" />
                         <SelectValue placeholder="Any Distance" />
@@ -96,8 +105,8 @@ export default function RestaurantsPage() {
                     </SelectContent>
                 </Select>
             </div>
-            <Button variant="outline" className="w-full bg-background shadow-sm" disabled>
-                <Filter className="mr-2 h-4 w-4" /> More Filters (Soon)
+            <Button variant="outline" className="w-full bg-background shadow-sm" onClick={handleMoreFiltersClick}>
+                <Filter className="mr-2 h-4 w-4" /> More Filters
             </Button>
         </div>
       </div>
@@ -118,3 +127,5 @@ export default function RestaurantsPage() {
     </div>
   );
 }
+
+    

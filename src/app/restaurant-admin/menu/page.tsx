@@ -33,11 +33,11 @@ const menuItemAddonGroupSchema = z.object({
   title: z.string().min(1, "Addon group title is required"),
   type: z.enum(['radio', 'checkbox']),
   minSelection: z.preprocess(
-    (val) => (val === '' || val === undefined ? undefined : Number(val)), 
+    (val) => (val === '' || val === undefined ? undefined : Number(val)),
     z.number().min(0, "Minimum selections cannot be negative").optional()
   ),
   maxSelection: z.preprocess(
-    (val) => (val === '' || val === undefined ? undefined : Number(val)), 
+    (val) => (val === '' || val === undefined ? undefined : Number(val)),
     z.number().min(0, "Maximum selections cannot be negative").optional()
   ),
   options: z.array(menuItemAddonChoiceSchema).min(1, "At least one choice is required for an addon group"),
@@ -52,9 +52,19 @@ const menuItemFormSchema = z.object({
   imageUrl: z.string().url("Invalid image URL").or(z.literal('')),
   dataAiHint: z.string().optional(),
   category: z.string().min(1, "Category is required"),
+  newCategoryName: z.string().optional(),
   isAvailable: z.boolean().default(true),
   addons: z.array(menuItemAddonGroupSchema).optional(),
+}).refine(data => {
+  if (data.category === 'NEW_CATEGORY_INPUT') {
+    return !!data.newCategoryName && data.newCategoryName.trim().length > 0;
+  }
+  return true;
+}, {
+  message: "New category name cannot be empty if 'Create new category' is selected.",
+  path: ['newCategoryName'],
 });
+
 
 type MenuItemFormValues = z.infer<typeof menuItemFormSchema>;
 
@@ -68,6 +78,7 @@ export default function MenuManagementPage() {
   const [restaurant, setRestaurant] = useState<Restaurant | undefined>(initialRestaurant);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItemType | null>(null);
+  const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
 
   const form = useForm<MenuItemFormValues>({
     resolver: zodResolver(menuItemFormSchema),
@@ -78,12 +89,13 @@ export default function MenuManagementPage() {
       imageUrl: '',
       dataAiHint: '',
       category: '',
+      newCategoryName: '',
       isAvailable: true,
       addons: [],
     },
   });
 
-  const { fields: addonGroups, append: appendAddonGroup, remove: removeAddonGroup, update: updateAddonGroup } = useFieldArray({
+  const { fields: addonGroups, append: appendAddonGroup, remove: removeAddonGroup } = useFieldArray({
     control: form.control,
     name: "addons",
   });
@@ -92,6 +104,7 @@ export default function MenuManagementPage() {
 
   const handleEditItem = (item: MenuItemType) => {
     setEditingItem(item);
+    setShowNewCategoryInput(false); // Reset new category input visibility
     form.reset({
       id: item.id,
       name: item.name,
@@ -100,6 +113,7 @@ export default function MenuManagementPage() {
       imageUrl: item.imageUrl,
       dataAiHint: item.dataAiHint,
       category: item.category,
+      newCategoryName: '',
       isAvailable: item.isAvailable === undefined ? true : item.isAvailable,
       addons: item.addons?.map(ag => ({
         ...ag,
@@ -111,6 +125,7 @@ export default function MenuManagementPage() {
 
   const handleAddNewItem = () => {
     setEditingItem(null);
+    setShowNewCategoryInput(false); // Reset
     form.reset({ // Reset to default values for a new item
       name: '',
       description: '',
@@ -118,12 +133,13 @@ export default function MenuManagementPage() {
       imageUrl: '',
       dataAiHint: '',
       category: categories.length > 0 ? categories[0] : '',
+      newCategoryName: '',
       isAvailable: true,
       addons: [],
     });
     setIsFormOpen(true);
   };
-  
+
   const handleDuplicateItem = (itemToDuplicate: MenuItemType) => {
     if (!restaurant) return;
     const newItem: MenuItemType = {
@@ -154,12 +170,34 @@ export default function MenuManagementPage() {
 
   function onSubmit(values: MenuItemFormValues) {
     if (!restaurant) return;
-    
+
+    let finalCategory = values.category;
+    if (values.category === 'NEW_CATEGORY_INPUT' && values.newCategoryName && values.newCategoryName.trim() !== '') {
+      finalCategory = values.newCategoryName.trim();
+      // Optionally, add this new category to your global list of categories if not already present
+      if (!categories.includes(finalCategory) && restaurant) {
+         setRestaurant(prev => prev ? ({
+            ...prev,
+            // This is a bit simplistic; ideally, categories would be managed separately
+            // For now, just assume the new item's category will create the section
+         }) : undefined)
+      }
+    } else if (values.category === 'NEW_CATEGORY_INPUT') {
+        form.setError("newCategoryName", { type: "manual", message: "New category name is required."});
+        return; // Stop submission if new category selected but name is empty
+    }
+
+
     const submittedItem: MenuItemType = {
       id: editingItem?.id || `item-${Date.now()}`, // Use existing ID if editing, else generate
       restaurantId: restaurant.id,
-      ...values,
+      name: values.name,
+      description: values.description,
       price: Number(values.price), // Ensure price is number
+      imageUrl: values.imageUrl,
+      dataAiHint: values.dataAiHint,
+      category: finalCategory,
+      isAvailable: values.isAvailable,
       addons: values.addons?.map(ag => ({
         ...ag,
         id: ag.id || `addon-group-${Date.now()}-${Math.random().toString(36).substring(2,7)}`,
@@ -186,12 +224,16 @@ export default function MenuManagementPage() {
       toast({ title: "Item Added", description: `${submittedItem.name} has been added to your menu.` });
     }
     setIsFormOpen(false);
+    setShowNewCategoryInput(false);
     form.reset(); // Reset form after submission
   }
 
   if (!restaurant) {
     return <p>Restaurant data not found. Please configure your restaurant settings.</p>;
   }
+  
+  const currentCategories = restaurant ? Array.from(new Set(restaurant.menu.map(item => item.category))) : [];
+
 
   return (
     <div className="space-y-6">
@@ -206,7 +248,7 @@ export default function MenuManagementPage() {
       </div>
 
       {/* Category Sections */}
-      {categories.length === 0 && restaurant.menu.length === 0 && (
+      {currentCategories.length === 0 && restaurant.menu.length === 0 && (
          <Card className="text-center py-12">
             <CardContent className="flex flex-col items-center gap-4">
               <PackageSearch className="h-16 w-16 text-muted-foreground" />
@@ -219,17 +261,17 @@ export default function MenuManagementPage() {
           </Card>
       )}
 
-      {categories.map(category => (
+      {currentCategories.map(category => (
         <section key={category}>
           <h2 className="text-xl font-semibold mb-3 sticky top-0 bg-muted/80 backdrop-blur-sm py-2 px-3 rounded-md z-10 -mx-3">{category}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {restaurant.menu.filter(item => item.category === category).map(item => (
               <Card key={item.id} className="flex flex-col overflow-hidden">
                 <div className="relative h-40 w-full">
-                  <Image 
-                    src={item.imageUrl || 'https://placehold.co/600x400.png?text=No+Image'} 
-                    alt={item.name} 
-                    layout="fill" 
+                  <Image
+                    src={item.imageUrl || 'https://placehold.co/600x400.png?text=No+Image'}
+                    alt={item.name}
+                    layout="fill"
                     objectFit="cover"
                     data-ai-hint={item.dataAiHint || "food item"}
                     className={!(item.isAvailable === undefined ? true : item.isAvailable) ? 'opacity-50 grayscale' : ''}
@@ -250,7 +292,7 @@ export default function MenuManagementPage() {
                     <Button variant="outline" size="sm" onClick={() => handleDuplicateItem(item)}><Copy className="mr-1 h-3 w-3"/> Duplicate</Button>
                     <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive col-span-1" onClick={() => handleDeleteItem(item.id)}><Trash2 className="mr-1 h-3 w-3"/> Delete</Button>
                      <div className="flex items-center justify-end space-x-2 col-span-1">
-                        <Switch 
+                        <Switch
                             id={`available-${item.id}`}
                             checked={item.isAvailable === undefined ? true : item.isAvailable}
                             onCheckedChange={() => toggleItemAvailability(item.id)}
@@ -264,8 +306,8 @@ export default function MenuManagementPage() {
           </div>
         </section>
       ))}
-      
-      {/* Fallback for items without category */}
+
+      {/* Fallback for items without category - should be less common now with category creation */}
        {restaurant.menu.filter(item => !item.category || item.category.trim() === "").length > 0 && (
          <section>
           <h2 className="text-xl font-semibold mb-3 sticky top-0 bg-muted/80 backdrop-blur-sm py-2 px-3 rounded-md z-10 -mx-3 text-orange-600">Uncategorized Items</h2>
@@ -273,10 +315,10 @@ export default function MenuManagementPage() {
             {restaurant.menu.filter(item => !item.category || item.category.trim() === "").map(item => (
               <Card key={item.id} className="flex flex-col overflow-hidden border-orange-500">
                  <div className="relative h-40 w-full">
-                  <Image 
-                    src={item.imageUrl || 'https://placehold.co/600x400.png?text=No+Image'} 
-                    alt={item.name} 
-                    layout="fill" 
+                  <Image
+                    src={item.imageUrl || 'https://placehold.co/600x400.png?text=No+Image'}
+                    alt={item.name}
+                    layout="fill"
                     objectFit="cover"
                     data-ai-hint={item.dataAiHint || "food item"}
                     className={!(item.isAvailable === undefined ? true : item.isAvailable) ? 'opacity-50 grayscale' : ''}
@@ -297,7 +339,7 @@ export default function MenuManagementPage() {
                     <Button variant="outline" size="sm" onClick={() => handleDuplicateItem(item)}><Copy className="mr-1 h-3 w-3"/> Duplicate</Button>
                     <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive col-span-1" onClick={() => handleDeleteItem(item.id)}><Trash2 className="mr-1 h-3 w-3"/> Delete</Button>
                      <div className="flex items-center justify-end space-x-2 col-span-1">
-                        <Switch 
+                        <Switch
                             id={`available-${item.id}`}
                             checked={item.isAvailable === undefined ? true : item.isAvailable}
                             onCheckedChange={() => toggleItemAvailability(item.id)}
@@ -314,7 +356,7 @@ export default function MenuManagementPage() {
 
 
       {/* Add/Edit Item Dialog */}
-      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+      <Dialog open={isFormOpen} onOpenChange={(open) => { setIsFormOpen(open); if (!open) setShowNewCategoryInput(false); }}>
         <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>{editingItem ? 'Edit Menu Item' : 'Add New Menu Item'}</DialogTitle>
@@ -337,20 +379,40 @@ export default function MenuManagementPage() {
                  <FormField control={form.control} name="category" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Category</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                        onValueChange={(value) => {
+                            field.onChange(value);
+                            setShowNewCategoryInput(value === 'NEW_CATEGORY_INPUT');
+                        }}
+                        defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {categories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
+                        {currentCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
                         <SelectItem value="NEW_CATEGORY_INPUT">Create new category...</SelectItem>
                       </SelectContent>
                     </Select>
-                    {/* TODO: Input for new category if "Create new" is selected */}
                     <FormMessage />
                   </FormItem>
                 )}/>
               </div>
+              {showNewCategoryInput && (
+                <FormField
+                  control={form.control}
+                  name="newCategoryName"
+                  render={({ field }) => (
+                    <FormItem className="mt-2">
+                      <FormLabel>New Category Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Enter new category name" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
               <FormField control={form.control} name="imageUrl" render={({ field }) => (
                 <FormItem><FormLabel>Image URL</FormLabel><FormControl><Input {...field} placeholder="https://example.com/image.jpg" /></FormControl>
                 <FormDescription>URL of the dish image. Use services like Placehold.co for placeholders.</FormDescription><FormMessage /></FormItem>
@@ -459,3 +521,5 @@ function AddonOptionsArray({ groupIndex, control }: { groupIndex: number, contro
     </div>
   );
 }
+
+    

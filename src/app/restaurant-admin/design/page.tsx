@@ -19,7 +19,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import type { RestaurantSettings } from '@/types';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Palette, ThumbsUp } from 'lucide-react';
+import { Palette, GripVertical, ThumbsUp } from 'lucide-react';
 
 const designFormSchema = z.object({
   primaryColor: z.string().regex(/^#([0-9a-f]{3}){1,2}$/i, "Invalid hex color").optional().or(z.literal('')),
@@ -145,17 +145,18 @@ export default function StoreDesignPage() {
                       </FormItem>
                     )}
                   />
-                  {/* Placeholder for category arrangement */}
                   <FormItem>
                     <FormLabel>Category Arrangement</FormLabel>
-                    <FormControl>
-                      <Input disabled placeholder="Drag & drop reordering (coming soon)" />
-                    </FormControl>
+                    <div className="p-4 border border-dashed rounded-md text-center text-muted-foreground bg-muted/20">
+                        <GripVertical className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">Drag & drop reordering for categories</p>
+                        <p className="text-xs">(Coming Soon)</p>
+                    </div>
                     <FormDescription>Customize the order of menu categories on your store page.</FormDescription>
                   </FormItem>
                 </CardContent>
               </Card>
-              
+
               <Button type="submit" className="w-full sm:w-auto" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting ? "Saving..." : "Save Design Settings"}
               </Button>
@@ -170,7 +171,7 @@ export default function StoreDesignPage() {
                     <CardDescription>A simplified preview of your store page.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div 
+                    <div
                         className="border rounded-lg p-4 space-y-3 min-h-[300px]"
                         style={{
                             // @ts-ignore
@@ -202,3 +203,5 @@ export default function StoreDesignPage() {
     </div>
   );
 }
+
+    

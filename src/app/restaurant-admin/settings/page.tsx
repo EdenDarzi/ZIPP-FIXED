@@ -19,7 +19,7 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import type { RestaurantSettings, OperatingHour, DayOfWeek } from '@/types';
-import { TimePicker } from '@/components/ui/time-picker'; // Assuming a time picker component exists or will be created
+import { TimePicker } from '@/components/ui/time-picker';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Trash2, PlusCircle, UploadCloud } from 'lucide-react';
 import Image from 'next/image';
@@ -79,7 +79,7 @@ export default function RestaurantSettingsPage() {
     },
   });
 
-  const { fields, append, remove, update } = useFieldArray({
+  const { fields } = useFieldArray({
     control: form.control,
     name: "operatingHours",
   });
@@ -92,6 +92,15 @@ export default function RestaurantSettingsPage() {
     });
     // Here you would typically send data to your backend
   }
+
+  const handleUploadClick = (fieldName: 'logoUrl' | 'coverImageUrl') => {
+    toast({
+        title: 'File Upload (Placeholder)',
+        description: `Actual file upload for ${fieldName} is coming soon. For now, please use a direct image URL.`,
+        variant: 'default',
+    });
+    // In a real app, this would trigger a file input or a file manager dialog.
+  };
 
   return (
     <div className="space-y-6">
@@ -168,7 +177,7 @@ export default function RestaurantSettingsPage() {
                     <FormControl>
                         <div className="flex items-center gap-2">
                            <Input placeholder="https://example.com/logo.png" {...field} />
-                           {/* <Button type="button" variant="outline"><UploadCloud className="mr-2 h-4 w-4" /> Upload (Soon)</Button> */}
+                           <Button type="button" variant="outline" onClick={() => handleUploadClick('logoUrl')}><UploadCloud className="mr-2 h-4 w-4" /> Upload</Button>
                         </div>
                     </FormControl>
                     <FormDescription>Direct URL to your logo image (e.g., PNG, JPG, SVG).</FormDescription>
@@ -186,7 +195,7 @@ export default function RestaurantSettingsPage() {
                     <FormControl>
                          <div className="flex items-center gap-2">
                             <Input placeholder="https://example.com/cover.png" {...field} />
-                            {/* <Button type="button" variant="outline"><UploadCloud className="mr-2 h-4 w-4" /> Upload (Soon)</Button> */}
+                            <Button type="button" variant="outline" onClick={() => handleUploadClick('coverImageUrl')}><UploadCloud className="mr-2 h-4 w-4" /> Upload</Button>
                         </div>
                     </FormControl>
                     <FormDescription>URL for a large banner image for your store page (recommended 1200x300px).</FormDescription>
@@ -196,7 +205,7 @@ export default function RestaurantSettingsPage() {
               />
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>Operating Hours</CardTitle>
@@ -321,3 +330,5 @@ export default function RestaurantSettingsPage() {
 // Placeholder for TimePicker component. In a real scenario, you might use a library or build one.
 // For now, we'll just use <Input type="time" />
 // const TimePicker = Input;
+
+    

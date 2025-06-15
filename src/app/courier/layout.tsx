@@ -19,11 +19,10 @@ export default function CourierLayout({ children }: { children: ReactNode }) {
                 Open Bids
               </Link>
             </Button>
-            {/* Add more courier specific navigation here, e.g., My Deliveries, Profile */}
             <Button variant="outline" size="sm" asChild>
-                <Link href="#"> 
+                <Link href="/courier/profile">
                     <UserCog className="mr-2 h-4 w-4" />
-                    My Profile (Soon)
+                    My Profile
                 </Link>
             </Button>
           </div>
@@ -35,3 +34,5 @@ export default function CourierLayout({ children }: { children: ReactNode }) {
     </div>
   );
 }
+
+    

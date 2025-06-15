@@ -10,7 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { Printer, MessageSquare, CheckCircle, Package, Clock, AlertCircle, Search, Filter } from 'lucide-react';
 import type { Order, OrderStatus } from '@/types'; // Assuming Order type is defined
 import { Input } from '@/components/ui/input';
-import { DatePickerWithRange } from '@/components/ui/date-range-picker'; // Assuming this exists
+import { DatePickerWithRange } from '@/components/ui/date-range-picker';
+import type { DateRange } from 'react-day-picker';
 
 // Mock Data
 const mockLiveOrders: Order[] = [
@@ -63,6 +64,7 @@ const getStatusBadgeVariant = (status: OrderStatus): "default" | "secondary" | "
 export default function OrderManagementPage() {
   const [liveOrders, setLiveOrders] = useState<Order[]>(mockLiveOrders);
   const [orderHistory, setOrderHistory] = useState<Order[]>(mockOrderHistory);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
 
   // Mock function to update order status
   const updateOrderStatus = (orderId: string, newStatus: OrderStatus) => {
@@ -84,10 +86,18 @@ export default function OrderManagementPage() {
   const handlePrintReceipt = (orderId: string) => {
     alert(`Printing receipt for order ${orderId} (mock). PDF/ESC-POS integration needed.`);
   };
-  
+
   const handleChat = (orderId: string, entity: 'courier' | 'customer') => {
      alert(`Opening chat for order ${orderId} with ${entity} (mock). Socket.IO integration needed.`);
   }
+
+  const handleDateRangeChange = (newRange: DateRange | undefined) => {
+    setDateRange(newRange);
+    // In a real app, you'd refetch or filter orderHistory based on newRange
+    console.log("Selected date range:", newRange);
+    // For now, just log it. Actual filtering of mockOrderHistory isn't implemented.
+  };
+
 
   return (
     <div className="space-y-6">
@@ -175,8 +185,7 @@ export default function OrderManagementPage() {
             <CardHeader>
               <CardTitle>Order History</CardTitle>
               <CardDescription>Review past orders.</CardDescription>
-              {/* Placeholder for date range picker */}
-              {/* <DatePickerWithRange className="mt-2" /> */}
+              <DatePickerWithRange className="mt-2" onDateChange={handleDateRangeChange} />
             </CardHeader>
             <CardContent>
                {orderHistory.length === 0 ? (
@@ -224,3 +233,5 @@ export default function OrderManagementPage() {
     </div>
   );
 }
+
+    

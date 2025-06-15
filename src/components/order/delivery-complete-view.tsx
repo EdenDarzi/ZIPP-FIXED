@@ -5,11 +5,13 @@ import type { Order } from '@/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Star, CheckCircle, Gift, Heart, RotateCcw } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Star, CheckCircle, Gift, Heart, RotateCcw, DollarSign } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Separator } from '../ui/separator';
+import { Label } from '../ui/label';
 
 interface DeliveryCompleteViewProps {
   order: Order;
@@ -23,6 +25,10 @@ export function DeliveryCompleteView({ order }: DeliveryCompleteViewProps) {
   const [deliveryRating, setDeliveryRating] = useState(0);
   const [hoverDeliveryRating, setHoverDeliveryRating] = useState(0);
   const [deliveryFeedback, setDeliveryFeedback] = useState('');
+
+  const [showCustomTipInput, setShowCustomTipInput] = useState(false);
+  const [customTipAmount, setCustomTipAmount] = useState('');
+
 
   const { toast } = useToast();
 
@@ -49,12 +55,19 @@ export function DeliveryCompleteView({ order }: DeliveryCompleteViewProps) {
     setDeliveryRating(0);
     setDeliveryFeedback('');
   };
-  
-  const handleTip = (amount: number) => {
+
+  const handleTip = (amount: number | string) => {
+     const tipValue = typeof amount === 'string' ? parseFloat(amount) : amount;
+     if (isNaN(tipValue) || tipValue <=0) {
+        toast({ title: "סכום טיפ לא תקין", description: "אנא הזן סכום חיובי.", variant: "destructive"});
+        return;
+     }
      toast({
-      title: `טיפ בסך ₪${amount} נוסף! (דמו)`,
+      title: `טיפ בסך ₪${tipValue.toFixed(2)} נוסף! (דמו)`,
       description: `תודה על נדיבותך כלפי ${order.assignedCourier?.name || 'השליח שלך'}.`,
     });
+    setShowCustomTipInput(false);
+    setCustomTipAmount('');
   }
 
   return (
@@ -122,7 +135,7 @@ export function DeliveryCompleteView({ order }: DeliveryCompleteViewProps) {
         <Button onClick={handleFeedbackSubmit} className="w-full mt-3 bg-primary hover:bg-primary/90">
           שלח משוב
         </Button>
-        
+
         <Separator />
 
         <div className="pt-2 space-y-3">
@@ -130,12 +143,32 @@ export function DeliveryCompleteView({ order }: DeliveryCompleteViewProps) {
             <p className="text-sm text-muted-foreground text-center">
                 {order.assignedCourier?.name || 'השליח/ה שלך'} עבד/ה קשה כדי להביא את ההזמנה. אפשר לשקול להשאיר טיפ!
             </p>
-            <div className="flex justify-center space-x-2 rtl:space-x-reverse">
-                <Button variant="outline" onClick={() => handleTip(2)}>₪2</Button>
-                <Button variant="outline" onClick={() => handleTip(5)}>₪5</Button>
-                <Button variant="outline" onClick={() => handleTip(10)}>₪10</Button>
-                <Button variant="outline" disabled>טיפ מותאם (בקרוב)</Button>
-            </div>
+            {!showCustomTipInput ? (
+                <div className="flex flex-wrap justify-center gap-2">
+                    <Button variant="outline" onClick={() => handleTip(2)}>₪2</Button>
+                    <Button variant="outline" onClick={() => handleTip(5)}>₪5</Button>
+                    <Button variant="outline" onClick={() => handleTip(10)}>₪10</Button>
+                    <Button variant="outline" onClick={() => setShowCustomTipInput(true)}>טיפ מותאם אישית</Button>
+                </div>
+            ) : (
+                <div className="flex flex-col items-center gap-2 animate-fadeIn">
+                    <Label htmlFor="customTip" className="sr-only">סכום טיפ מותאם אישית</Label>
+                    <Input
+                        id="customTip"
+                        type="number"
+                        placeholder="הזן סכום (למשל, 7.50)"
+                        value={customTipAmount}
+                        onChange={(e) => setCustomTipAmount(e.target.value)}
+                        className="max-w-xs text-center"
+                    />
+                    <div className="flex gap-2">
+                        <Button onClick={() => handleTip(customTipAmount)} className="bg-accent hover:bg-accent/90">
+                            <DollarSign className="mr-1 h-4 w-4"/> שלח טיפ
+                        </Button>
+                        <Button variant="ghost" onClick={() => setShowCustomTipInput(false)}>בטל</Button>
+                    </div>
+                </div>
+            )}
         </div>
 
       </CardContent>
@@ -158,3 +191,5 @@ export function DeliveryCompleteView({ order }: DeliveryCompleteViewProps) {
     </Card>
   );
 }
+
+    
