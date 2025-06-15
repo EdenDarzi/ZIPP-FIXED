@@ -163,7 +163,7 @@ const courierMatchingFlow = ai.defineFlow(
       Customer Notes: ${orderDetails.customerNotes || 'None'}
       ${orderDetails.requiredVehicleType && orderDetails.requiredVehicleType.length > 0 ? `Required Vehicle(s): ${orderDetails.requiredVehicleType.join(', ')}` : ''}
 
-      The AI has chosen ${bestBid.courierName}'s bid as the most suitable for this delivery.
+      The AI has intelligently chosen ${bestBid.courierName}'s bid as the most suitable for this delivery from the pool of available and responsive couriers who placed a bid.
       Details of the Winning Bid:
       - Courier ID: ${bestBid.courierId}
       - Bid Amount: ₪${bestBid.bidAmount}
@@ -188,10 +188,10 @@ const courierMatchingFlow = ai.defineFlow(
         score: (b.courierTrustScore * 0.3) + (Math.max(0, 100 - b.proposedEtaMinutes * 2)) + (b.courierRating * 10) - (b.bidAmount * 2) + (b.isFastPickup ? 15 : 0) // Show score for context
       })))}
 
-      Provide a concise, professional reasoning (1-2 sentences) for why ${bestBid.courierName}'s bid was selected as the best option.
+      Provide a concise, professional reasoning (1-2 sentences) for why ${bestBid.courierName}'s bid was selected as the most suitable and optimal option for this delivery.
       Focus on the key factors that made this bid stand out from the others, such as the balance of bid amount vs. ETA, reliability (rating & trust score),
-      vehicle suitability, distance to restaurant, and fast pickup.
-      The goal is to achieve a balance of speed, reliability, and cost-effectiveness.
+      vehicle suitability, proximity to restaurant (distanceToRestaurantKm), and fast pickup offer.
+      The system aims to achieve an optimal balance of speed, reliability, and cost-effectiveness for the customer.
       If the winning bid amount is higher than the base commission, briefly justify if other factors (like much better ETA or trust) make it worthwhile.
       If the bid is significantly lower, mention this as a positive factor.
     `;

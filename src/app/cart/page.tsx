@@ -119,9 +119,9 @@ export default function CartPage() {
                   <RadioGroupItem value="arena" id="arena-delivery" className="ml-3" /> {/* Adjusted margin for RTL */}
                   <div className="flex-grow">
                     <div className="font-semibold flex items-center">
-                      <Zap className="h-5 w-5 ml-2 text-accent" /> זירת המשלוחים (ברירת מחדל)
+                      <Zap className="h-5 w-5 ml-2 text-accent" /> זירת המשלוחים החכמה (ברירת מחדל)
                     </div>
-                    <p className="text-sm text-muted-foreground">שליחים מתחרים על ההזמנה שלך, מה שעשוי לחסוך לך כסף. זמן אספקה ​​משוער משתנה.</p>
+                    <p className="text-sm text-muted-foreground">מערכת ה-AI שלנו מאתרת ומודיעה לשליחים זמינים באזורך. הם מגיבים עם הצעות, והמערכת בוחרת את השליח המתאים ביותר למשלוח מהיר ויעיל, תוך התחשבות במיקום, זמינות ודירוג.</p>
                   </div>
                   <span className="font-semibold text-green-600 mr-2">חינם</span> {/* Adjusted margin for RTL */}
                 </Label>
@@ -148,7 +148,7 @@ export default function CartPage() {
               </RadioGroup>
               <p className="mt-4 text-sm text-muted-foreground p-3 bg-muted/30 rounded-md flex items-start">
                 <ShieldQuestion className="h-5 w-5 ml-2 mt-0.5 text-primary flex-shrink-0" /> {/* Adjusted margin for RTL */}
-                <span>שליחים באזור מתחרים כעת על ההזמנה שלך – אם תבחר בזירת המשלוחים, אנו נמצא את האפשרות הטובה ביותר עבורך. אם אתה ממהר, בחר במשלוח המהיר ביותר! או, חסוך עם 'חסכוני חכם' אם הזמן גמיש.</span>
+                <span>ב'זירת המשלוחים החכמה', שליחים באזור מתחרים על הזמנתך. מערכת ה-AI שלנו בוחרת את ההצעה האופטימלית עבורך. אם אתה ממהר, בחר 'משלוח מהיר ביותר'! לחלופין, חסוך עם 'משלוח חסכוני חכם' אם הזמן גמיש.</span>
               </p>
             </CardContent>
           </Card>
