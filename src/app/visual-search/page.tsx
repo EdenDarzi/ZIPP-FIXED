@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { identifyDishFromImage, IdentifyDishInput, IdentifyDishOutput } from '@/ai/flows/identify-dish-flow';
 import { Camera, ImageUp, Loader2, Sparkles, Utensils } from 'lucide-react';
 import Image from 'next/image';
+import { Label } from '@/components/ui/label'; // Added import for Label
 
 export default function VisualSearchPage() {
   const { toast } = useToast();
