@@ -2,8 +2,8 @@
 'use client'; 
 
 import RestaurantCard from '@/components/restaurants/restaurant-card';
-import { mockRestaurants, mockSwiftSaleItems } from '@/lib/mock-data';
-import type { Restaurant, SwiftSaleItem } from '@/types';
+import { mockRestaurants, mockLivePickSaleItems } from '@/lib/mock-data';
+import type { Restaurant, LivePickSaleItem } from '@/types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -21,12 +21,12 @@ export default function RestaurantsPage() {
   const [cuisineFilter, setCuisineFilter] = useState('all');
   const [ratingFilter, setRatingFilter] = useState('all');
   const [distanceFilter, setDistanceFilter] = useState('all');
-  const [activeLivePickSaleItems, setActiveLivePickSaleItems] = useState<SwiftSaleItem[]>([]); // Renamed
+  const [activeLivePickSaleItems, setActiveLivePickSaleItems] = useState<LivePickSaleItem[]>([]);
 
   useEffect(() => {
     const currentHour = new Date().getHours();
     if (currentHour >= 19 && currentHour <= 23) { 
-        setActiveLivePickSaleItems(mockSwiftSaleItems.filter(item => item.isActive)); // Assuming mockSwiftSaleItems is still appropriate or should be renamed too
+        setActiveLivePickSaleItems(mockLivePickSaleItems.filter(item => item.isActive));
     }
   }, []);
 
@@ -89,7 +89,7 @@ export default function RestaurantsPage() {
                                     <CardDescription className="text-xs">מאת: {item.restaurantName}</CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-3 pt-0">
-                                    <p className="text-lg font-bold text-primary">₪{item.price.toFixed(2)} <span className="text-xs line-through text-muted-foreground">₪{item.originalPrice.toFixed(2)}</span></p>
+                                    <p className="text-lg font-bold text-primary">₪{item.price.toFixed(2)} <span className="text-xs line-through text-muted-foreground">₪{item.originalPrice?.toFixed(2)}</span></p>
                                 </CardContent>
                                 <CardFooter className="p-2 pt-0">
                                      <Button size="sm" className="w-full" asChild>
