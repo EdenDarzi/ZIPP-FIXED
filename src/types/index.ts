@@ -180,20 +180,24 @@ export interface OperatingHour {
   isClosed: boolean;
 }
 
-export interface RestaurantSettings {
-  id: string; // Typically same as restaurantId
+export interface RestaurantSettings { // Effectively BusinessSettings
+  id: string;
   businessName: string;
   logoUrl?: string;
   coverImageUrl?: string;
-  category: string; // e.g., Pizza, Asian
+  category: string;
   address: string;
-  // mapLocation: { lat: number; lng: number }; // For future map integration
   operatingHours: OperatingHour[];
-  isOpenNow: boolean; // Manual override or calculated
-  specialsStatus?: string; // e.g., "SUMMER20 for 20% off" or simple checkbox text
-  primaryColor?: string; // For store design
-  accentColor?: string; // For store design
-  dishDisplayStlye?: 'grid' | 'list';
+  isOpenNow: boolean;
+  specialsStatus?: string;
+  primaryColor?: string;
+  accentColor?: string;
+  dishDisplayStlye?: 'grid' | 'list'; // Should be itemDisplayStyle
+  // New design options
+  storeFont?: 'sans' | 'serif' | 'mono';
+  bannerLayout?: 'textOverImage' | 'textBelowImage';
+  showRatingsOnStore?: boolean;
+  showDeliveryTimeOnStore?: boolean;
 }
 
 // P2P / Custom Errand Delivery Types
