@@ -45,7 +45,7 @@ const Header = () => {
             <Link href="/courier/open-bids"><span className="flex items-center"><Truck className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">שליחים</span></span></Link>
           </Button>
            <Button variant="ghost" asChild size="sm">
-            <Link href="/restaurant-admin"><span className="flex items-center"><ChefHat className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">ניהול מסעדה</span></span></Link>
+            <Link href="/restaurant-admin"><span className="flex items-center"><ChefHat className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">ניהול עסק</span></span></Link>
           </Button>
           <Button variant="ghost" asChild size="icon" className="relative">
             <Link href="/cart" aria-label="Cart"><span className="relative flex items-center justify-center w-full h-full">

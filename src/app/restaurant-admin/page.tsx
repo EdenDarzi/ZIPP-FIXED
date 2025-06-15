@@ -10,24 +10,25 @@ export default function RestaurantAdminDashboard() {
     todayOrders: 12,
     pendingOrders: 3,
     totalRevenueToday: 450.75,
-    popularItem: "Margherita Pizza",
+    popularItem: "מוצר הדגל", // Generic popular item
   };
 
   const quickLinks = [
-    { href: '/restaurant-admin/settings', label: 'Restaurant Settings', icon: Settings },
-    { href: '/restaurant-admin/menu', label: 'Manage Menu', icon: LayoutList },
-    { href: '/restaurant-admin/design', label: 'Customize Store', icon: Palette },
-    { href: '/restaurant-admin/orders', label: 'View Orders', icon: ShoppingCart },
-    { href: '/restaurant-admin/analytics', label: 'View Analytics', icon: BarChart3 },
+    { href: '/restaurant-admin/settings', label: 'הגדרות עסק', icon: Settings },
+    { href: '/restaurant-admin/menu', label: 'נהל מוצרים/שירותים', icon: LayoutList },
+    { href: '/restaurant-admin/design', label: 'התאם אישית את החנות', icon: Palette },
+    { href: '/restaurant-admin/orders', label: 'צפה בהזמנות', icon: ShoppingCart },
+    { href: '/restaurant-admin/analytics', label: 'צפה בניתוחים', icon: BarChart3 },
   ];
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-3xl font-bold font-headline text-primary">Restaurant Dashboard</h1>
+        <h1 className="text-3xl font-bold font-headline text-primary">לוח בקרה לעסק</h1>
         <Button asChild>
-          <Link href="/restaurants/restaurant1" target="_blank"> {/* Assuming restaurant1 is the admin's restaurant */}
-            <span>View Live Storefront</span>
+          {/* Assuming restaurant1 is a generic ID or could be dynamic */}
+          <Link href="/restaurants/restaurant1" target="_blank"> 
+            <span>צפה בחנות החיה</span>
           </Link>
         </Button>
       </div>
@@ -36,42 +37,42 @@ export default function RestaurantAdminDashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Today's Orders</CardTitle>
+            <CardTitle className="text-sm font-medium">הזמנות היום</CardTitle>
             <ListOrdered className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.todayOrders}</div>
-            <p className="text-xs text-muted-foreground">+5 from yesterday (mock)</p>
+            <p className="text-xs text-muted-foreground">+5 מאתמול (דמו)</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Orders</CardTitle>
+            <CardTitle className="text-sm font-medium">הזמנות ממתינות</CardTitle>
             <AlertTriangle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.pendingOrders}</div>
-            <p className="text-xs text-muted-foreground">Action required</p>
+            <p className="text-xs text-muted-foreground">נדרשת פעולה</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Today's Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium">הכנסות היום</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">₪{stats.totalRevenueToday.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">+10% from yesterday (mock)</p>
+            <p className="text-xs text-muted-foreground">+10% מאתמול (דמו)</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Most Popular Item</CardTitle>
+            <CardTitle className="text-sm font-medium">המוצר/שירות הפופולרי ביותר</CardTitle>
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-lg font-bold truncate">{stats.popularItem}</div>
-            <p className="text-xs text-muted-foreground">Based on recent sales</p>
+            <p className="text-xs text-muted-foreground">מבוסס על מכירות אחרונות</p>
           </CardContent>
         </Card>
       </div>
@@ -79,8 +80,8 @@ export default function RestaurantAdminDashboard() {
       {/* Quick Links Section */}
       <Card>
         <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>Quickly navigate to key management areas.</CardDescription>
+          <CardTitle>פעולות מהירות</CardTitle>
+          <CardDescription>נווט במהירות לאזורי ניהול מרכזיים.</CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {quickLinks.map((link) => (
@@ -101,14 +102,14 @@ export default function RestaurantAdminDashboard() {
       {/* Placeholder for Recent Activity or Important Alerts */}
       <Card>
         <CardHeader>
-          <CardTitle>Notifications & Alerts</CardTitle>
-          <CardDescription>Important updates and actions needed.</CardDescription>
+          <CardTitle>התראות ועדכונים</CardTitle>
+          <CardDescription>עדכונים חשובים ופעולות נדרשות.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center text-muted-foreground py-8">
             <Users className="h-12 w-12 mx-auto mb-4" />
-            <p>No new notifications or critical alerts at this time.</p>
-            <p className="text-xs mt-1">System status: All systems operational.</p>
+            <p>אין התראות חדשות או עדכונים קריטיים כרגע.</p>
+            <p className="text-xs mt-1">סטטוס מערכת: כל המערכות פועלות כשורה.</p>
           </div>
         </CardContent>
       </Card>

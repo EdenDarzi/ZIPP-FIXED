@@ -18,7 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import type { RestaurantSettings, OperatingHour, DayOfWeek } from '@/types';
+import type { RestaurantSettings, OperatingHour, DayOfWeek } from '@/types'; // RestaurantSettings might need to become BusinessSettings
 import { TimePicker } from '@/components/ui/time-picker';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Trash2, PlusCircle, UploadCloud } from 'lucide-react';
@@ -32,12 +32,12 @@ const operatingHourSchema = z.object({
 });
 
 const settingsFormSchema = z.object({
-  businessName: z.string().min(2, { message: 'Business name must be at least 2 characters.' }),
-  logoUrl: z.string().url({ message: 'Please enter a valid URL for the logo.' }).optional().or(z.literal('')),
-  coverImageUrl: z.string().url({ message: 'Please enter a valid URL for the cover image.' }).optional().or(z.literal('')),
-  category: z.string().min(1, { message: 'Category is required.' }),
-  address: z.string().min(5, { message: 'Address must be at least 5 characters.' }),
-  operatingHours: z.array(operatingHourSchema).length(7, "Please define hours for all 7 days."),
+  businessName: z.string().min(2, { message: 'שם העסק חייב להכיל לפחות 2 תווים.' }),
+  logoUrl: z.string().url({ message: 'אנא הזן כתובת URL חוקית ללוגו.' }).optional().or(z.literal('')),
+  coverImageUrl: z.string().url({ message: 'אנא הזן כתובת URL חוקית לתמונת נושא.' }).optional().or(z.literal('')),
+  category: z.string().min(1, { message: 'קטגוריה היא שדה חובה.' }),
+  address: z.string().min(5, { message: 'כתובת חייבת להכיל לפחות 5 תווים.' }),
+  operatingHours: z.array(operatingHourSchema).length(7, "אנא הגדר שעות פעילות לכל 7 הימים."),
   isOpenNow: z.boolean(),
   specialsStatus: z.string().optional(),
 });
@@ -50,16 +50,16 @@ const defaultOperatingHours: OperatingHour[] = (['Monday', 'Tuesday', 'Wednesday
 }));
 
 // Mock existing settings - in a real app, this would be fetched
-const mockExistingSettings: RestaurantSettings = {
-    id: 'restaurant1',
-    businessName: 'Pizza Palace Deluxe',
+const mockExistingSettings: RestaurantSettings = { // Consider renaming RestaurantSettings type to BusinessSettings
+    id: 'business1', // Generic ID
+    businessName: 'העסק המגניב שלי',
     logoUrl: 'https://placehold.co/200x100.png?text=Current+Logo',
     coverImageUrl: 'https://placehold.co/1200x300.png?text=Current+Cover',
-    category: 'Italian',
-    address: '123 Main St, Anytown, USA',
+    category: 'שירותים כלליים',
+    address: 'רחוב ראשי 123, תל אביב',
     operatingHours: defaultOperatingHours,
     isOpenNow: true,
-    specialsStatus: 'WEEKEND20 for 20% off on weekends!'
+    specialsStatus: 'WEEKEND20 להנחה של 20% בסופי שבוע!'
 };
 
 
@@ -87,16 +87,16 @@ export default function RestaurantSettingsPage() {
   function onSubmit(values: z.infer<typeof settingsFormSchema>) {
     console.log(values);
     toast({
-      title: 'Settings Updated',
-      description: 'Your restaurant settings have been successfully saved.',
+      title: 'ההגדרות עודכנו',
+      description: 'הגדרות העסק שלך נשמרו בהצלחה.',
     });
     // Here you would typically send data to your backend
   }
 
   const handleUploadClick = (fieldName: 'logoUrl' | 'coverImageUrl') => {
     toast({
-        title: 'File Upload (Placeholder)',
-        description: `Actual file upload for ${fieldName} is coming soon. For now, please use a direct image URL.`,
+        title: 'העלאת קובץ (ממתין לפיתוח)',
+        description: `העלאת קבצים עבור ${fieldName} תתאפשר בקרוב. בינתיים, אנא השתמש בכתובת URL ישירה לתמונה.`,
         variant: 'default',
     });
     // In a real app, this would trigger a file input or a file manager dialog.
@@ -106,8 +106,8 @@ export default function RestaurantSettingsPage() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl font-headline">Restaurant Settings</CardTitle>
-          <CardDescription>Manage your restaurant's general information, appearance, and operational hours.</CardDescription>
+          <CardTitle className="text-2xl font-headline">הגדרות העסק</CardTitle>
+          <CardDescription>נהל את המידע הכללי של העסק שלך, מראה ושעות פעילות.</CardDescription>
         </CardHeader>
       </Card>
 
@@ -115,8 +115,8 @@ export default function RestaurantSettingsPage() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <Card>
             <CardHeader>
-              <CardTitle>Business Information</CardTitle>
-              <CardDescription>Basic details about your restaurant.</CardDescription>
+              <CardTitle>מידע על העסק</CardTitle>
+              <CardDescription>פרטים בסיסיים על העסק שלך.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <FormField
@@ -124,9 +124,9 @@ export default function RestaurantSettingsPage() {
                 name="businessName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Business Name</FormLabel>
+                    <FormLabel>שם העסק</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., The Gourmet Place" {...field} />
+                      <Input placeholder="לדוגמה: החנות המופלאה" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -137,9 +137,9 @@ export default function RestaurantSettingsPage() {
                 name="category"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Category / Cuisine Type</FormLabel>
+                    <FormLabel>קטגוריה / סוג עסק</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., Italian, Mexican, Cafe" {...field} />
+                      <Input placeholder="לדוגמה: אופנה, אלקטרוניקה, ייעוץ" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -150,9 +150,9 @@ export default function RestaurantSettingsPage() {
                 name="address"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Address</FormLabel>
+                    <FormLabel>כתובת מלאה</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., 123 Foodie Lane, Flavor Town, FT 54321" {...field} />
+                      <Input placeholder="לדוגמה: הרצל 10, תל אביב, 12345" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -163,8 +163,8 @@ export default function RestaurantSettingsPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Branding & Appearance</CardTitle>
-              <CardDescription>Upload your logo and cover image.</CardDescription>
+              <CardTitle>מיתוג ונראות</CardTitle>
+              <CardDescription>העלה את הלוגו ותמונת הנושא שלך.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <FormField
@@ -172,15 +172,15 @@ export default function RestaurantSettingsPage() {
                 name="logoUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Logo Image URL</FormLabel>
-                     {field.value && <Image src={field.value} alt="Current Logo" width={150} height={75} className="rounded border mb-2 object-contain data-ai-hint='restaurant logo'"/>}
+                    <FormLabel>כתובת URL של לוגו</FormLabel>
+                     {field.value && <Image src={field.value} alt="לוגו נוכחי" width={150} height={75} className="rounded border mb-2 object-contain data-ai-hint='business logo'"/>}
                     <FormControl>
                         <div className="flex items-center gap-2">
                            <Input placeholder="https://example.com/logo.png" {...field} />
-                           <Button type="button" variant="outline" onClick={() => handleUploadClick('logoUrl')}><UploadCloud className="mr-2 h-4 w-4" /> Upload</Button>
+                           <Button type="button" variant="outline" onClick={() => handleUploadClick('logoUrl')}><UploadCloud className="mr-2 h-4 w-4" /> העלה</Button>
                         </div>
                     </FormControl>
-                    <FormDescription>Direct URL to your logo image (e.g., PNG, JPG, SVG).</FormDescription>
+                    <FormDescription>כתובת URL ישירה לתמונת הלוגו שלך (למשל PNG, JPG, SVG).</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -190,15 +190,15 @@ export default function RestaurantSettingsPage() {
                 name="coverImageUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Cover Image URL (Banner)</FormLabel>
-                    {field.value && <Image src={field.value} alt="Current Cover" width={600} height={150} className="rounded border mb-2 object-cover data-ai-hint='restaurant banner'"/>}
+                    <FormLabel>כתובת URL של תמונת נושא (באנר)</FormLabel>
+                    {field.value && <Image src={field.value} alt="תמונת נושא נוכחית" width={600} height={150} className="rounded border mb-2 object-cover data-ai-hint='business cover'"/>}
                     <FormControl>
                          <div className="flex items-center gap-2">
                             <Input placeholder="https://example.com/cover.png" {...field} />
-                            <Button type="button" variant="outline" onClick={() => handleUploadClick('coverImageUrl')}><UploadCloud className="mr-2 h-4 w-4" /> Upload</Button>
+                            <Button type="button" variant="outline" onClick={() => handleUploadClick('coverImageUrl')}><UploadCloud className="mr-2 h-4 w-4" /> העלה</Button>
                         </div>
                     </FormControl>
-                    <FormDescription>URL for a large banner image for your store page (recommended 1200x300px).</FormDescription>
+                    <FormDescription>כתובת URL לתמונת באנר גדולה לעמוד החנות שלך (מומלץ 1200x300px).</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -208,8 +208,8 @@ export default function RestaurantSettingsPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Operating Hours</CardTitle>
-              <CardDescription>Define your weekly opening and closing times.</CardDescription>
+              <CardTitle>שעות פעילות</CardTitle>
+              <CardDescription>הגדר את שעות הפתיחה והסגירה השבועיות שלך.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {fields.map((field, index) => (
@@ -220,7 +220,7 @@ export default function RestaurantSettingsPage() {
                       name={`operatingHours.${index}.day`}
                       render={({ field: dayField }) => (
                         <FormItem>
-                          <FormLabel>Day</FormLabel>
+                          <FormLabel>יום</FormLabel>
                           <FormControl>
                             <Input {...dayField} readOnly className="font-semibold bg-background"/>
                           </FormControl>
@@ -232,7 +232,7 @@ export default function RestaurantSettingsPage() {
                       name={`operatingHours.${index}.openTime`}
                       render={({ field: timeField }) => (
                         <FormItem>
-                          <FormLabel>Open Time</FormLabel>
+                          <FormLabel>שעת פתיחה</FormLabel>
                           <FormControl>
                             <Input type="time" {...timeField} disabled={form.watch(`operatingHours.${index}.isClosed`)} />
                           </FormControl>
@@ -245,7 +245,7 @@ export default function RestaurantSettingsPage() {
                       name={`operatingHours.${index}.closeTime`}
                       render={({ field: timeField }) => (
                         <FormItem>
-                          <FormLabel>Close Time</FormLabel>
+                          <FormLabel>שעת סגירה</FormLabel>
                           <FormControl>
                             <Input type="time" {...timeField} disabled={form.watch(`operatingHours.${index}.isClosed`)} />
                           </FormControl>
@@ -264,7 +264,7 @@ export default function RestaurantSettingsPage() {
                               onCheckedChange={switchField.onChange}
                             />
                           </FormControl>
-                          <FormLabel className="text-sm mt-0 sm:ml-2">Closed</FormLabel>
+                          <FormLabel className="text-sm mt-0 sm:ml-2">סגור</FormLabel>
                         </FormItem>
                       )}
                     />
@@ -276,8 +276,8 @@ export default function RestaurantSettingsPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Operational Status</CardTitle>
-              <CardDescription>Manage current availability and specials.</CardDescription>
+              <CardTitle>סטטוס תפעולי</CardTitle>
+              <CardDescription>נהל זמינות נוכחית ומבצעים.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <FormField
@@ -286,16 +286,16 @@ export default function RestaurantSettingsPage() {
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">Restaurant Open</FormLabel>
+                      <FormLabel className="text-base">העסק פתוח</FormLabel>
                       <FormDescription>
-                        Manually set your restaurant as open or closed for new orders. This overrides scheduled hours.
+                        קבע ידנית אם העסק פתוח או סגור להזמנות חדשות. הגדרה זו עוקפת את השעות המתוזמנות.
                       </FormDescription>
                     </div>
                     <FormControl>
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
-                        aria-label="Restaurant open status"
+                        aria-label="סטטוס פתיחת העסק"
                       />
                     </FormControl>
                   </FormItem>
@@ -306,11 +306,11 @@ export default function RestaurantSettingsPage() {
                 name="specialsStatus"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Specials / Coupon Note</FormLabel>
+                    <FormLabel>הודעת מבצעים / קופונים</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., 'TASTY20 for 20% off all pizzas!'" {...field} />
+                      <Input placeholder="לדוגמה: 'SALE20 ל-20% הנחה על כל המוצרים!'" {...field} />
                     </FormControl>
-                    <FormDescription>Display a short message about current specials or coupons on your store page.</FormDescription>
+                    <FormDescription>הצג הודעה קצרה על מבצעים או קופונים עדכניים בעמוד החנות שלך.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -319,7 +319,7 @@ export default function RestaurantSettingsPage() {
           </Card>
 
           <Button type="submit" className="w-full sm:w-auto" disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting ? "Saving..." : "Save Settings"}
+            {form.formState.isSubmitting ? "שומר..." : "שמור הגדרות"}
           </Button>
         </form>
       </Form>
@@ -330,5 +330,3 @@ export default function RestaurantSettingsPage() {
 // Placeholder for TimePicker component. In a real scenario, you might use a library or build one.
 // For now, we'll just use <Input type="time" />
 // const TimePicker = Input;
-
-    

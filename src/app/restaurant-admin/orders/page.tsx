@@ -16,32 +16,32 @@ import type { DateRange } from 'react-day-picker';
 // Mock Data
 const mockLiveOrders: Order[] = [
   {
-    id: 'order123', userId: 'userABC', items: [{ menuItemId: 'item1', name: 'Margherita Pizza', price: 12.99, quantity: 1 }],
+    id: 'order123', userId: 'userABC', items: [{ menuItemId: 'item1', name: 'מוצר אקספרס', price: 12.99, quantity: 1 }],
     totalAmount: 12.99, deliveryPreference: 'arena', deliveryFee: 0, discountAmount: 0, finalAmount: 12.99,
-    status: 'PREPARING_AT_RESTAURANT', deliveryAddress: '123 Main St', restaurantId: 'restaurant1', restaurantName: 'Pizza Palace',
+    status: 'PREPARING_AT_RESTAURANT', deliveryAddress: 'רחוב ראשי 123', restaurantId: 'business1', restaurantName: 'העסק שלי',
     createdAt: new Date(Date.now() - 5 * 60000).toISOString(), updatedAt: new Date().toISOString(),
-    estimatedDeliveryTime: '15-20 min',
-    orderTimeline: [{ status: 'PREPARING_AT_RESTAURANT', timestamp: new Date().toISOString(), notes: "Order received by kitchen."}]
+    estimatedDeliveryTime: '15-20 דקות',
+    orderTimeline: [{ status: 'PREPARING_AT_RESTAURANT', timestamp: new Date().toISOString(), notes: "ההזמנה התקבלה במערכת."}]
   },
   {
-    id: 'order124', userId: 'userDEF', items: [{ menuItemId: 'item3', name: 'Classic Burger', price: 9.99, quantity: 2 }, { menuItemId: 'item6', name: 'Coca-Cola', price: 2.50, quantity: 2 }],
+    id: 'order124', userId: 'userDEF', items: [{ menuItemId: 'item3', name: 'שירות פרימיום', price: 9.99, quantity: 2 }, { menuItemId: 'item6', name: 'מוצר נלווה', price: 2.50, quantity: 2 }],
     totalAmount: 24.98, deliveryPreference: 'fastest', deliveryFee: 5, discountAmount: 0, finalAmount: 29.98,
-    status: 'AWAITING_PICKUP', deliveryAddress: '456 Oak Ave', restaurantId: 'restaurant1', restaurantName: 'Pizza Palace',
+    status: 'AWAITING_PICKUP', deliveryAddress: 'שדרות העצמאות 456', restaurantId: 'business1', restaurantName: 'העסק שלי',
     createdAt: new Date(Date.now() - 15 * 60000).toISOString(), updatedAt: new Date().toISOString(),
-    estimatedDeliveryTime: '5-10 min for pickup',
-    assignedCourier: { id: 'courier1', name: 'Speedy Sam', rating: 4.8, vehicleType: 'motorcycle', currentEtaMinutes: 7 },
+    estimatedDeliveryTime: '5-10 דקות לאיסוף',
+    assignedCourier: { id: 'courier1', name: 'שליח זריז', rating: 4.8, vehicleType: 'motorcycle', currentEtaMinutes: 7 },
     orderTimeline: [
         { status: 'PREPARING_AT_RESTAURANT', timestamp: new Date(Date.now() - 10 * 60000).toISOString()},
-        { status: 'AWAITING_PICKUP', timestamp: new Date().toISOString(), notes: "Food ready. Courier notified."}
+        { status: 'AWAITING_PICKUP', timestamp: new Date().toISOString(), notes: "המוצר מוכן. השליח עודכן."}
     ]
   },
 ];
 
 const mockOrderHistory: Order[] = [
  {
-    id: 'order101', userId: 'userXYZ', items: [{ menuItemId: 'item2', name: 'Pepperoni Pizza', price: 14.99, quantity: 1 }],
+    id: 'order101', userId: 'userXYZ', items: [{ menuItemId: 'item2', name: 'מוצר פופולרי', price: 14.99, quantity: 1 }],
     totalAmount: 14.99, deliveryPreference: 'arena', deliveryFee: 0, discountAmount: 0, finalAmount: 14.99,
-    status: 'DELIVERED', deliveryAddress: '789 Pine Ln', restaurantId: 'restaurant1', restaurantName: 'Pizza Palace',
+    status: 'DELIVERED', deliveryAddress: 'סמטת האורנים 789', restaurantId: 'business1', restaurantName: 'העסק שלי',
     createdAt: new Date(Date.now() - 2 * 24 * 60 * 60000).toISOString(), updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60000 + 30 * 60000).toISOString(),
     actualDeliveryTime: new Date(Date.now() - 2 * 24 * 60 * 60000 + 30 * 60000).toISOString(),
     orderTimeline: [{ status: 'DELIVERED', timestamp: new Date(Date.now() - 2 * 24 * 60 * 60000 + 30 * 60000).toISOString()}]
@@ -51,10 +51,10 @@ const mockOrderHistory: Order[] = [
 
 const getStatusBadgeVariant = (status: OrderStatus): "default" | "secondary" | "destructive" | "outline" => {
     switch (status) {
-        case 'PREPARING_AT_RESTAURANT': return 'default'; // Blueish
-        case 'AWAITING_PICKUP': return 'secondary'; // Orange/Yellowish (using accent)
-        case 'OUT_FOR_DELIVERY': return 'default'; // Primary again for active
-        case 'DELIVERED': return 'default'; // Greenish (not a shadcn default, but will use 'default' that might be greenish)
+        case 'PREPARING_AT_RESTAURANT': return 'default'; 
+        case 'AWAITING_PICKUP': return 'secondary'; 
+        case 'OUT_FOR_DELIVERY': return 'default'; 
+        case 'DELIVERED': return 'default'; 
         case 'CANCELLED': return 'destructive';
         case 'MATCHING_COURIER': return 'outline';
         default: return 'outline';
@@ -84,11 +84,11 @@ export default function OrderManagementPage() {
   };
 
   const handlePrintReceipt = (orderId: string) => {
-    alert(`Printing receipt for order ${orderId} (mock). PDF/ESC-POS integration needed.`);
+    alert(`מדפיס קבלה להזמנה ${orderId} (דמו). נדרשת אינטגרציה עם PDF/ESC-POS.`);
   };
 
   const handleChat = (orderId: string, entity: 'courier' | 'customer') => {
-     alert(`Opening chat for order ${orderId} with ${entity} (mock). Socket.IO integration needed.`);
+     alert(`פותח צ'אט להזמנה ${orderId} עם ${entity === 'courier' ? 'השליח' : 'הלקוח'} (דמו). נדרשת אינטגרציה עם Socket.IO.`);
   }
 
   const handleDateRangeChange = (newRange: DateRange | undefined) => {
@@ -103,45 +103,45 @@ export default function OrderManagementPage() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl font-headline">Order Management</CardTitle>
-          <CardDescription>View live orders, update statuses, and access order history.</CardDescription>
+          <CardTitle className="text-2xl font-headline">ניהול הזמנות</CardTitle>
+          <CardDescription>צפה בהזמנות חיות, עדכן סטטוסים וגש להיסטוריית הזמנות.</CardDescription>
         </CardHeader>
       </Card>
 
       <Tabs defaultValue="live">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
             <TabsList>
-                <TabsTrigger value="live">Live Orders ({liveOrders.length})</TabsTrigger>
-                <TabsTrigger value="history">Order History ({orderHistory.length})</TabsTrigger>
+                <TabsTrigger value="live">הזמנות חיות ({liveOrders.length})</TabsTrigger>
+                <TabsTrigger value="history">היסטוריית הזמנות ({orderHistory.length})</TabsTrigger>
             </TabsList>
             <div className="flex items-center gap-2 w-full sm:w-auto">
-                <Input placeholder="Search orders..." className="max-w-xs" disabled/>
-                <Button variant="outline" disabled><Filter className="mr-2 h-4 w-4"/> Filters (Soon)</Button>
+                <Input placeholder="חפש הזמנות..." className="max-w-xs" disabled/>
+                <Button variant="outline" disabled><Filter className="mr-2 h-4 w-4"/> פילטרים (בקרוב)</Button>
             </div>
         </div>
 
         <TabsContent value="live">
           <Card>
             <CardHeader>
-              <CardTitle>Current Live Orders</CardTitle>
-              <CardDescription>Monitor and manage orders as they come in.</CardDescription>
+              <CardTitle>הזמנות חיות נוכחיות</CardTitle>
+              <CardDescription>עקוב ונהל הזמנות כשהן נכנסות.</CardDescription>
             </CardHeader>
             <CardContent>
               {liveOrders.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
                     <Package className="h-16 w-16 mx-auto mb-4" />
-                    <p className="text-lg">No live orders at the moment.</p>
+                    <p className="text-lg">אין הזמנות חיות כרגע.</p>
                 </div>
               ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Order ID</TableHead>
-                    <TableHead>Items</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>ETA / Time</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead>מזהה הזמנה</TableHead>
+                    <TableHead>פריטים</TableHead>
+                    <TableHead>סטטוס</TableHead>
+                    <TableHead>זמן הגעה משוער / שעה</TableHead>
+                    <TableHead className="text-right">סך הכל</TableHead>
+                    <TableHead>פעולות</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -160,16 +160,16 @@ export default function OrderManagementPage() {
                         {/* Example status updates */}
                         {order.status === 'PREPARING_AT_RESTAURANT' && (
                           <Button variant="outline" size="sm" onClick={() => updateOrderStatus(order.id, 'AWAITING_PICKUP')}>
-                            <CheckCircle className="mr-1 h-3 w-3"/> Ready
+                            <CheckCircle className="mr-1 h-3 w-3"/> מוכן
                           </Button>
                         )}
                          {order.status === 'AWAITING_PICKUP' && (
                           <Button variant="outline" size="sm" onClick={() => updateOrderStatus(order.id, 'OUT_FOR_DELIVERY')} disabled={!order.assignedCourier}>
-                            <Package className="mr-1 h-3 w-3"/> Picked Up
+                            <Package className="mr-1 h-3 w-3"/> נאסף
                           </Button>
                         )}
-                        <Button variant="ghost" size="icon" onClick={() => handlePrintReceipt(order.id)} title="Print Receipt (Mock)"><Printer className="h-4 w-4"/></Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleChat(order.id, 'customer')} title="Chat with Customer (Mock)"><MessageSquare className="h-4 w-4"/></Button>
+                        <Button variant="ghost" size="icon" onClick={() => handlePrintReceipt(order.id)} title="הדפס קבלה (דמו)"><Printer className="h-4 w-4"/></Button>
+                        <Button variant="ghost" size="icon" onClick={() => handleChat(order.id, 'customer')} title="צ'אט עם לקוח (דמו)"><MessageSquare className="h-4 w-4"/></Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -183,26 +183,26 @@ export default function OrderManagementPage() {
         <TabsContent value="history">
           <Card>
             <CardHeader>
-              <CardTitle>Order History</CardTitle>
-              <CardDescription>Review past orders.</CardDescription>
+              <CardTitle>היסטוריית הזמנות</CardTitle>
+              <CardDescription>צפה בהזמנות קודמות.</CardDescription>
               <DatePickerWithRange className="mt-2" onDateChange={handleDateRangeChange} />
             </CardHeader>
             <CardContent>
                {orderHistory.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
                     <Clock className="h-16 w-16 mx-auto mb-4" />
-                    <p className="text-lg">No past orders found.</p>
+                    <p className="text-lg">לא נמצאו הזמנות קודמות.</p>
                 </div>
               ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Order ID</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Customer (Mock)</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead>מזהה הזמנה</TableHead>
+                    <TableHead>תאריך</TableHead>
+                    <TableHead>לקוח (דמו)</TableHead>
+                    <TableHead>סטטוס</TableHead>
+                    <TableHead className="text-right">סך הכל</TableHead>
+                    <TableHead>פעולות</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -210,7 +210,7 @@ export default function OrderManagementPage() {
                     <TableRow key={order.id}>
                       <TableCell className="font-medium">#{order.id.substring(order.id.length-6)}</TableCell>
                       <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
-                      <TableCell>User {order.userId.substring(0,5)}...</TableCell>
+                      <TableCell>משתמש {order.userId.substring(0,5)}...</TableCell>
                       <TableCell>
                         <Badge variant={getStatusBadgeVariant(order.status)} className="capitalize">
                           {order.status.replace(/_/g, ' ').toLowerCase()}
@@ -218,7 +218,7 @@ export default function OrderManagementPage() {
                       </TableCell>
                       <TableCell className="text-right">₪{order.finalAmount.toFixed(2)}</TableCell>
                       <TableCell>
-                         <Button variant="ghost" size="icon" onClick={() => handlePrintReceipt(order.id)} title="Print Receipt (Mock)"><Printer className="h-4 w-4"/></Button>
+                         <Button variant="ghost" size="icon" onClick={() => handlePrintReceipt(order.id)} title="הדפס קבלה (דמו)"><Printer className="h-4 w-4"/></Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -229,9 +229,7 @@ export default function OrderManagementPage() {
           </Card>
         </TabsContent>
       </Tabs>
-      <p className="text-xs text-muted-foreground text-center mt-4">Alerts for new orders and real-time updates require backend and WebSocket (e.g. Socket.IO) integration.</p>
+      <p className="text-xs text-muted-foreground text-center mt-4">התראות על הזמנות חדשות ועדכונים בזמן אמת דורשים אינטגרציה עם השרת ו-WebSocket (למשל Socket.IO).</p>
     </div>
   );
 }
-
-    

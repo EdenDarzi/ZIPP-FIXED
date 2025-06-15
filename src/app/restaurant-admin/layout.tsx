@@ -8,18 +8,18 @@ import { LayoutDashboard, Settings, ListChecks, Palette, ShoppingBasket, BarChar
 import { cn } from '@/lib/utils';
 
 const adminNavItems = [
-  { href: '/restaurant-admin', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/restaurant-admin/settings', label: 'Restaurant Settings', icon: Settings },
-  { href: '/restaurant-admin/menu', label: 'Menu Management', icon: ListChecks },
-  { href: '/restaurant-admin/design', label: 'Store Design', icon: Palette },
-  { href: '/restaurant-admin/orders', label: 'Order Management', icon: ShoppingBasket },
-  { href: '/restaurant-admin/analytics', label: 'Analytics', icon: BarChart3 },
-  { href: '/restaurant-admin/courier-management', label: 'Courier Management', icon: CourierIcon },
+  { href: '/restaurant-admin', label: 'לוח בקרה', icon: LayoutDashboard },
+  { href: '/restaurant-admin/settings', label: 'הגדרות עסק', icon: Settings },
+  { href: '/restaurant-admin/menu', label: 'ניהול מוצרים/שירותים', icon: ListChecks },
+  { href: '/restaurant-admin/design', label: 'עיצוב החנות', icon: Palette },
+  { href: '/restaurant-admin/orders', label: 'ניהול הזמנות', icon: ShoppingBasket },
+  { href: '/restaurant-admin/analytics', label: 'ניתוחים', icon: BarChart3 },
+  { href: '/restaurant-admin/courier-management', label: 'ניהול שליחים', icon: CourierIcon },
 ];
 
 export default function RestaurantAdminLayout({ children }: { children: ReactNode }) {
-  // In a real app, you'd get the restaurant name from context/session
-  const restaurantName = "My Restaurant";
+  // In a real app, you'd get the business name from context/session
+  const businessName = "העסק שלי";
 
   return (
     <div className="flex min-h-screen bg-muted/40">
@@ -27,7 +27,7 @@ export default function RestaurantAdminLayout({ children }: { children: ReactNod
         <div className="p-4 border-b">
           <Link href="/restaurant-admin" className="flex items-center gap-2 text-lg font-semibold text-primary font-headline">
             <ChefHat className="h-7 w-7" />
-            <span>{restaurantName}</span>
+            <span>{businessName}</span>
           </Link>
         </div>
         <ScrollArea className="flex-1">
@@ -51,7 +51,7 @@ export default function RestaurantAdminLayout({ children }: { children: ReactNod
             <Button variant="outline" className="w-full justify-start" asChild>
               <Link href="/">
                 <span className="flex items-center">
-                  <LogOut className="mr-2 h-4 w-4" /> Exit Admin
+                  <LogOut className="mr-2 h-4 w-4" /> יציאה מממשק הניהול
                 </span>
               </Link>
             </Button>
@@ -62,7 +62,7 @@ export default function RestaurantAdminLayout({ children }: { children: ReactNod
             {/* Mobile Nav Trigger - To be implemented if needed */}
             <Link href="/restaurant-admin" className="flex items-center gap-2 text-lg font-semibold text-primary font-headline">
                  <ChefHat className="h-6 w-6" />
-                 <span>{restaurantName}</span>
+                 <span>{businessName}</span>
             </Link>
         </header>
         <main className="flex-1 p-4 sm:px-6 sm:py-0 md:p-6 bg-muted/40">

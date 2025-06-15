@@ -19,40 +19,40 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label'; // Added import for Label
+import { Label } from '@/components/ui/label';
 
 // Enhanced Zod schema for MenuItem including addons
 const menuItemAddonChoiceSchema = z.object({
   id: z.string().uuid().optional(), // Optional for new items
-  name: z.string().min(1, "Choice name is required"),
-  price: z.preprocess(val => Number(val), z.number().min(0, "Price cannot be negative")),
+  name: z.string().min(1, "שם האפשרות הוא שדה חובה"),
+  price: z.preprocess(val => Number(val), z.number().min(0, "מחיר לא יכול להיות שלילי")),
   selectedByDefault: z.boolean().optional(),
 });
 
 const menuItemAddonGroupSchema = z.object({
   id: z.string().uuid().optional(), // Optional for new items
-  title: z.string().min(1, "Addon group title is required"),
+  title: z.string().min(1, "כותרת קבוצת תוספות היא שדה חובה"),
   type: z.enum(['radio', 'checkbox']),
   minSelection: z.preprocess(
     (val) => (val === '' || val === undefined ? undefined : Number(val)),
-    z.number().min(0, "Minimum selections cannot be negative").optional()
+    z.number().min(0, "מספר בחירות מינימלי לא יכול להיות שלילי").optional()
   ),
   maxSelection: z.preprocess(
     (val) => (val === '' || val === undefined ? undefined : Number(val)),
-    z.number().min(0, "Maximum selections cannot be negative").optional()
+    z.number().min(0, "מספר בחירות מקסימלי לא יכול להיות שלילי").optional()
   ),
-  options: z.array(menuItemAddonChoiceSchema).min(1, "At least one choice is required for an addon group"),
+  options: z.array(menuItemAddonChoiceSchema).min(1, "נדרשת לפחות אפשרות אחת בקבוצת תוספות"),
   required: z.boolean().optional().default(false),
 });
 
 const menuItemFormSchema = z.object({
   id: z.string().optional(),
-  name: z.string().min(3, "Dish name must be at least 3 characters"),
-  description: z.string().min(10, "Description must be at least 10 characters"),
-  price: z.preprocess(val => parseFloat(val as string), z.number().positive("Price must be a positive number")),
-  imageUrl: z.string().url("Invalid image URL").or(z.literal('')),
+  name: z.string().min(3, "שם המוצר/שירות חייב להכיל לפחות 3 תווים"),
+  description: z.string().min(10, "תיאור חייב להכיל לפחות 10 תווים"),
+  price: z.preprocess(val => parseFloat(val as string), z.number().positive("מחיר חייב להיות מספר חיובי")),
+  imageUrl: z.string().url("כתובת URL של תמונה לא תקינה").or(z.literal('')),
   dataAiHint: z.string().optional(),
-  category: z.string().min(1, "Category is required"),
+  category: z.string().min(1, "קטגוריה היא שדה חובה"),
   newCategoryName: z.string().optional(),
   isAvailable: z.boolean().default(true),
   addons: z.array(menuItemAddonGroupSchema).optional(),
@@ -62,7 +62,7 @@ const menuItemFormSchema = z.object({
   }
   return true;
 }, {
-  message: "New category name cannot be empty if 'Create new category' is selected.",
+  message: "שם קטגוריה חדשה לא יכול להיות ריק אם 'צור קטגוריה חדשה' נבחרה.",
   path: ['newCategoryName'],
 });
 
@@ -70,13 +70,13 @@ const menuItemFormSchema = z.object({
 type MenuItemFormValues = z.infer<typeof menuItemFormSchema>;
 
 // Assume restaurantId 'restaurant1' is the one being managed
-const managedRestaurantId = 'restaurant1';
+const managedRestaurantId = 'restaurant1'; // This ID might need to be more generic or dynamically set for a "Business Admin"
 const initialRestaurant = mockRestaurants.find(r => r.id === managedRestaurantId);
 
 
 export default function MenuManagementPage() {
   const { toast } = useToast();
-  const [restaurant, setRestaurant] = useState<Restaurant | undefined>(initialRestaurant);
+  const [restaurant, setRestaurant] = useState<Restaurant | undefined>(initialRestaurant); // Restaurant type might need generalization
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItemType | null>(null);
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
@@ -146,17 +146,17 @@ export default function MenuManagementPage() {
     const newItem: MenuItemType = {
       ...itemToDuplicate,
       id: `item-${Date.now()}-${Math.random().toString(36).substring(2,7)}`, // Ensure new ID
-      name: `${itemToDuplicate.name} (Copy)`,
-      restaurantId: restaurant.id,
+      name: `${itemToDuplicate.name} (עותק)`,
+      restaurantId: restaurant.id, // This might need to be businessId
     };
     setRestaurant(prev => prev ? ({ ...prev, menu: [...prev.menu, newItem] }) : undefined);
-    toast({ title: "Item Duplicated", description: `${newItem.name} has been added to your menu.` });
+    toast({ title: "פריט שוכפל", description: `${newItem.name} נוסף לרשימה שלך.` });
   };
 
   const handleDeleteItem = (itemId: string) => {
      if (!restaurant) return;
      setRestaurant(prev => prev ? ({ ...prev, menu: prev.menu.filter(item => item.id !== itemId) }) : undefined);
-     toast({ title: "Item Deleted", description: `Item has been removed from your menu.`, variant: "destructive" });
+     toast({ title: "פריט נמחק", description: `הפריט הוסר מהרשימה שלך.`, variant: "destructive" });
   };
 
   const toggleItemAvailability = (itemId: string) => {
@@ -175,23 +175,15 @@ export default function MenuManagementPage() {
     let finalCategory = values.category;
     if (values.category === 'NEW_CATEGORY_INPUT' && values.newCategoryName && values.newCategoryName.trim() !== '') {
       finalCategory = values.newCategoryName.trim();
-      // Optionally, add this new category to your global list of categories if not already present
-      if (!categories.includes(finalCategory) && restaurant) {
-         setRestaurant(prev => prev ? ({
-            ...prev,
-            // This is a bit simplistic; ideally, categories would be managed separately
-            // For now, just assume the new item's category will create the section
-         }) : undefined)
-      }
     } else if (values.category === 'NEW_CATEGORY_INPUT') {
-        form.setError("newCategoryName", { type: "manual", message: "New category name is required."});
+        form.setError("newCategoryName", { type: "manual", message: "שם קטגוריה חדשה הוא שדה חובה."});
         return; // Stop submission if new category selected but name is empty
     }
 
 
     const submittedItem: MenuItemType = {
       id: editingItem?.id || `item-${Date.now()}`, // Use existing ID if editing, else generate
-      restaurantId: restaurant.id,
+      restaurantId: restaurant.id, // businessId
       name: values.name,
       description: values.description,
       price: Number(values.price), // Ensure price is number
@@ -218,11 +210,11 @@ export default function MenuManagementPage() {
         ...prev,
         menu: prev.menu.map(item => item.id === editingItem.id ? submittedItem : item)
       }) : undefined);
-      toast({ title: "Item Updated", description: `${submittedItem.name} has been updated.` });
+      toast({ title: "פריט עודכן", description: `${submittedItem.name} עודכן.` });
     } else {
       // Add new item
       setRestaurant(prev => prev ? ({ ...prev, menu: [...prev.menu, submittedItem] }) : undefined);
-      toast({ title: "Item Added", description: `${submittedItem.name} has been added to your menu.` });
+      toast({ title: "פריט נוסף", description: `${submittedItem.name} נוסף לרשימה שלך.` });
     }
     setIsFormOpen(false);
     setShowNewCategoryInput(false);
@@ -230,7 +222,7 @@ export default function MenuManagementPage() {
   }
 
   if (!restaurant) {
-    return <p>Restaurant data not found. Please configure your restaurant settings.</p>;
+    return <p>נתוני העסק לא נמצאו. אנא הגדר את פרטי העסק שלך.</p>;
   }
   
   const currentCategories = restaurant ? Array.from(new Set(restaurant.menu.map(item => item.category))) : [];
@@ -240,11 +232,11 @@ export default function MenuManagementPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <CardHeader className="p-0">
-            <CardTitle className="text-2xl font-headline">Menu Management</CardTitle>
-            <CardDescription>Add, edit, and organize your menu items and categories.</CardDescription>
+            <CardTitle className="text-2xl font-headline">ניהול מוצרים/שירותים</CardTitle>
+            <CardDescription>הוסף, ערוך וארגן את המוצרים או השירותים והקטגוריות שלך.</CardDescription>
         </CardHeader>
         <Button onClick={handleAddNewItem}>
-          <PlusCircle className="mr-2 h-4 w-4" /> Add New Item
+          <PlusCircle className="mr-2 h-4 w-4" /> הוסף מוצר/שירות חדש
         </Button>
       </div>
 
@@ -253,10 +245,10 @@ export default function MenuManagementPage() {
          <Card className="text-center py-12">
             <CardContent className="flex flex-col items-center gap-4">
               <PackageSearch className="h-16 w-16 text-muted-foreground" />
-              <p className="text-xl text-muted-foreground">Your menu is empty.</p>
-              <p>Start by adding your first delicious item!</p>
+              <p className="text-xl text-muted-foreground">אין עדיין מוצרים או שירותים.</p>
+              <p>התחל על ידי הוספת המוצר או השירות הראשון שלך!</p>
               <Button onClick={handleAddNewItem} size="lg">
-                <PlusCircle className="mr-2 h-5 w-5" /> Add First Menu Item
+                <PlusCircle className="mr-2 h-5 w-5" /> הוסף מוצר/שירות ראשון
               </Button>
             </CardContent>
           </Card>
@@ -274,11 +266,11 @@ export default function MenuManagementPage() {
                     alt={item.name}
                     layout="fill"
                     objectFit="cover"
-                    data-ai-hint={item.dataAiHint || "food item"}
+                    data-ai-hint={item.dataAiHint || "product service item"}
                     className={!(item.isAvailable === undefined ? true : item.isAvailable) ? 'opacity-50 grayscale' : ''}
                   />
                   {!(item.isAvailable === undefined ? true : item.isAvailable) && (
-                    <Badge variant="destructive" className="absolute top-2 right-2">Unavailable</Badge>
+                    <Badge variant="destructive" className="absolute top-2 right-2">לא זמין</Badge>
                   )}
                 </div>
                 <CardHeader className="pb-2">
@@ -289,17 +281,17 @@ export default function MenuManagementPage() {
                   <p className="text-lg font-semibold text-primary">₪{item.price.toFixed(2)}</p>
                 </CardContent>
                 <CardFooter className="p-2 grid grid-cols-2 gap-2 border-t mt-2">
-                    <Button variant="outline" size="sm" onClick={() => handleEditItem(item)}><Edit3 className="mr-1 h-3 w-3"/> Edit</Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDuplicateItem(item)}><Copy className="mr-1 h-3 w-3"/> Duplicate</Button>
-                    <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive col-span-1" onClick={() => handleDeleteItem(item.id)}><Trash2 className="mr-1 h-3 w-3"/> Delete</Button>
+                    <Button variant="outline" size="sm" onClick={() => handleEditItem(item)}><Edit3 className="mr-1 h-3 w-3"/> ערוך</Button>
+                    <Button variant="outline" size="sm" onClick={() => handleDuplicateItem(item)}><Copy className="mr-1 h-3 w-3"/> שכפל</Button>
+                    <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive col-span-1" onClick={() => handleDeleteItem(item.id)}><Trash2 className="mr-1 h-3 w-3"/> מחק</Button>
                      <div className="flex items-center justify-end space-x-2 col-span-1">
                         <Switch
                             id={`available-${item.id}`}
                             checked={item.isAvailable === undefined ? true : item.isAvailable}
                             onCheckedChange={() => toggleItemAvailability(item.id)}
-                            aria-label={`Toggle availability for ${item.name}`}
+                            aria-label={`שנה זמינות עבור ${item.name}`}
                         />
-                        <Label htmlFor={`available-${item.id}`} className="text-xs">Available</Label>
+                        <Label htmlFor={`available-${item.id}`} className="text-xs">זמין</Label>
                     </div>
                 </CardFooter>
               </Card>
@@ -308,10 +300,10 @@ export default function MenuManagementPage() {
         </section>
       ))}
 
-      {/* Fallback for items without category - should be less common now with category creation */}
+      {/* Fallback for items without category */}
        {restaurant.menu.filter(item => !item.category || item.category.trim() === "").length > 0 && (
          <section>
-          <h2 className="text-xl font-semibold mb-3 sticky top-0 bg-muted/80 backdrop-blur-sm py-2 px-3 rounded-md z-10 -mx-3 text-orange-600">Uncategorized Items</h2>
+          <h2 className="text-xl font-semibold mb-3 sticky top-0 bg-muted/80 backdrop-blur-sm py-2 px-3 rounded-md z-10 -mx-3 text-orange-600">פריטים ללא קטגוריה</h2>
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {restaurant.menu.filter(item => !item.category || item.category.trim() === "").map(item => (
               <Card key={item.id} className="flex flex-col overflow-hidden border-orange-500">
@@ -321,11 +313,11 @@ export default function MenuManagementPage() {
                     alt={item.name}
                     layout="fill"
                     objectFit="cover"
-                    data-ai-hint={item.dataAiHint || "food item"}
+                    data-ai-hint={item.dataAiHint || "product service item"}
                     className={!(item.isAvailable === undefined ? true : item.isAvailable) ? 'opacity-50 grayscale' : ''}
                   />
                    {!(item.isAvailable === undefined ? true : item.isAvailable) && (
-                    <Badge variant="destructive" className="absolute top-2 right-2">Unavailable</Badge>
+                    <Badge variant="destructive" className="absolute top-2 right-2">לא זמין</Badge>
                   )}
                 </div>
                 <CardHeader className="pb-2">
@@ -336,17 +328,17 @@ export default function MenuManagementPage() {
                   <p className="text-lg font-semibold text-primary">₪{item.price.toFixed(2)}</p>
                 </CardContent>
                 <CardFooter className="p-2 grid grid-cols-2 gap-2 border-t mt-2">
-                    <Button variant="outline" size="sm" onClick={() => handleEditItem(item)}><Edit3 className="mr-1 h-3 w-3"/> Edit</Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDuplicateItem(item)}><Copy className="mr-1 h-3 w-3"/> Duplicate</Button>
-                    <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive col-span-1" onClick={() => handleDeleteItem(item.id)}><Trash2 className="mr-1 h-3 w-3"/> Delete</Button>
+                    <Button variant="outline" size="sm" onClick={() => handleEditItem(item)}><Edit3 className="mr-1 h-3 w-3"/> ערוך</Button>
+                    <Button variant="outline" size="sm" onClick={() => handleDuplicateItem(item)}><Copy className="mr-1 h-3 w-3"/> שכפל</Button>
+                    <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive col-span-1" onClick={() => handleDeleteItem(item.id)}><Trash2 className="mr-1 h-3 w-3"/> מחק</Button>
                      <div className="flex items-center justify-end space-x-2 col-span-1">
                         <Switch
                             id={`available-${item.id}`}
                             checked={item.isAvailable === undefined ? true : item.isAvailable}
                             onCheckedChange={() => toggleItemAvailability(item.id)}
-                             aria-label={`Toggle availability for ${item.name}`}
+                             aria-label={`שנה זמינות עבור ${item.name}`}
                         />
-                        <Label htmlFor={`available-${item.id}`} className="text-xs">Available</Label>
+                        <Label htmlFor={`available-${item.id}`} className="text-xs">זמין</Label>
                     </div>
                 </CardFooter>
               </Card>
@@ -360,26 +352,26 @@ export default function MenuManagementPage() {
       <Dialog open={isFormOpen} onOpenChange={(open) => { setIsFormOpen(open); if (!open) setShowNewCategoryInput(false); }}>
         <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col">
           <DialogHeader>
-            <DialogTitle>{editingItem ? 'Edit Menu Item' : 'Add New Menu Item'}</DialogTitle>
+            <DialogTitle>{editingItem ? 'ערוך מוצר/שירות' : 'הוסף מוצר/שירות חדש'}</DialogTitle>
             <DialogDescription>
-              {editingItem ? 'Update the details of this menu item.' : 'Fill in the details for the new menu item.'}
+              {editingItem ? 'עדכן את פרטי המוצר/שירות הזה.' : 'מלא את הפרטים עבור המוצר/שירות החדש.'}
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 overflow-y-auto flex-grow pr-2">
               <FormField control={form.control} name="name" render={({ field }) => (
-                <FormItem><FormLabel>Dish Name</FormLabel><FormControl><Input {...field} placeholder="e.g., Margherita Pizza" /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>שם המוצר/שירות</FormLabel><FormControl><Input {...field} placeholder="לדוגמה: חולצת טי-שירט, ייעוץ עסקי" /></FormControl><FormMessage /></FormItem>
               )}/>
               <FormField control={form.control} name="description" render={({ field }) => (
-                <FormItem><FormLabel>Short Description</FormLabel><FormControl><Textarea {...field} placeholder="e.g., Classic delight with mozzarella cheese" /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>תיאור קצר</FormLabel><FormControl><Textarea {...field} placeholder="לדוגמה: 100% כותנה, שעת ייעוץ אסטרטגי" /></FormControl><FormMessage /></FormItem>
               )}/>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField control={form.control} name="price" render={({ field }) => (
-                    <FormItem><FormLabel>Price (₪)</FormLabel><FormControl><Input type="number" step="0.01" {...field} placeholder="e.g., 12.99" /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>מחיר (₪)</FormLabel><FormControl><Input type="number" step="0.01" {...field} placeholder="לדוגמה: 99.90" /></FormControl><FormMessage /></FormItem>
                 )}/>
                  <FormField control={form.control} name="category" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Category</FormLabel>
+                    <FormLabel>קטגוריה</FormLabel>
                     <Select
                         onValueChange={(value) => {
                             field.onChange(value);
@@ -388,11 +380,11 @@ export default function MenuManagementPage() {
                         defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder="בחר קטגוריה" /></SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {currentCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
-                        <SelectItem value="NEW_CATEGORY_INPUT">Create new category...</SelectItem>
+                        <SelectItem value="NEW_CATEGORY_INPUT">צור קטגוריה חדשה...</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -405,9 +397,9 @@ export default function MenuManagementPage() {
                   name="newCategoryName"
                   render={({ field }) => (
                     <FormItem className="mt-2">
-                      <FormLabel>New Category Name</FormLabel>
+                      <FormLabel>שם קטגוריה חדשה</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Enter new category name" />
+                        <Input {...field} placeholder="הזן שם קטגוריה חדשה" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -415,17 +407,17 @@ export default function MenuManagementPage() {
                 />
               )}
               <FormField control={form.control} name="imageUrl" render={({ field }) => (
-                <FormItem><FormLabel>Image URL</FormLabel><FormControl><Input {...field} placeholder="https://example.com/image.jpg" /></FormControl>
-                <FormDescription>URL of the dish image. Use services like Placehold.co for placeholders.</FormDescription><FormMessage /></FormItem>
+                <FormItem><FormLabel>כתובת URL של תמונה</FormLabel><FormControl><Input {...field} placeholder="https://example.com/image.jpg" /></FormControl>
+                <FormDescription>כתובת URL של תמונת המוצר/שירות. השתמש בשירותים כמו Placehold.co לתמונות זמניות.</FormDescription><FormMessage /></FormItem>
               )}/>
                <FormField control={form.control} name="dataAiHint" render={({ field }) => (
-                <FormItem><FormLabel>AI Image Hint (Optional)</FormLabel><FormControl><Input {...field} placeholder="e.g., pizza pepperoni" /></FormControl>
-                <FormDescription>One or two keywords for AI image search if this is a placeholder.</FormDescription><FormMessage /></FormItem>
+                <FormItem><FormLabel>רמז AI לתמונה (אופציונלי)</FormLabel><FormControl><Input {...field} placeholder="לדוגמה: חולצה כחולה, טלפון נייד" /></FormControl>
+                <FormDescription>מילת מפתח או שתיים לחיפוש תמונות AI אם זו תמונת Placeholder.</FormDescription><FormMessage /></FormItem>
               )}/>
               <FormField control={form.control} name="isAvailable" render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                    <div className="space-y-0.5"><FormLabel>Available for Ordering</FormLabel>
-                    <FormDescription>Is this item currently available to customers?</FormDescription></div>
+                    <div className="space-y-0.5"><FormLabel>זמין להזמנה</FormLabel>
+                    <FormDescription>האם מוצר/שירות זה זמין כעת ללקוחות?</FormDescription></div>
                     <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                 </FormItem>
               )}/>
@@ -434,9 +426,9 @@ export default function MenuManagementPage() {
               <Card>
                 <CardHeader className="p-4 border-b">
                     <div className="flex justify-between items-center">
-                        <CardTitle className="text-md">Add-on Groups</CardTitle>
+                        <CardTitle className="text-md">אפשרויות נוספות / תוספות</CardTitle>
                         <Button type="button" variant="outline" size="sm" onClick={() => appendAddonGroup({ title: '', type: 'checkbox', minSelection:0, maxSelection: undefined, options: [{ name: '', price: 0, selectedByDefault: false }], required: false })}>
-                            <PlusCircle className="mr-2 h-4 w-4"/> Add Group
+                            <PlusCircle className="mr-2 h-4 w-4"/> הוסף קבוצה
                         </Button>
                     </div>
                 </CardHeader>
@@ -445,46 +437,49 @@ export default function MenuManagementPage() {
                         <Card key={groupField.id} className="p-3 bg-muted/50">
                             <div className="flex justify-between items-center mb-2">
                                 <FormField control={form.control} name={`addons.${groupIndex}.title`} render={({ field }) => (
-                                    <FormItem className="flex-grow mr-2"><FormLabel className="text-xs">Group Title</FormLabel><FormControl><Input {...field} placeholder="e.g., Sides" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
+                                    <FormItem className="flex-grow mr-2"><FormLabel className="text-xs">כותרת קבוצה</FormLabel><FormControl><Input {...field} placeholder="לדוגמה: מידות, צבעים" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
                                 )}/>
                                 <Button type="button" variant="ghost" size="icon" onClick={() => removeAddonGroup(groupIndex)} className="text-destructive h-8 w-8"><Trash2 className="h-4 w-4"/></Button>
                             </div>
                              <div className="grid grid-cols-2 gap-2 mb-2">
                                  <FormField control={form.control} name={`addons.${groupIndex}.type`} render={({ field }) => (
-                                    <FormItem><FormLabel className="text-xs">Selection Type</FormLabel>
+                                    <FormItem><FormLabel className="text-xs">סוג בחירה</FormLabel>
                                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl><SelectTrigger className="h-8"><SelectValue /></SelectTrigger></FormControl>
-                                        <SelectContent><SelectItem value="checkbox">Multiple Choice (Checkbox)</SelectItem><SelectItem value="radio">Single Choice (Radio)</SelectItem></SelectContent>
+                                        <SelectContent>
+                                          <SelectItem value="checkbox">בחירה מרובה (Checkbox)</SelectItem>
+                                          <SelectItem value="radio">בחירה יחידה (Radio)</SelectItem>
+                                        </SelectContent>
                                       </Select>
                                     <FormMessage className="text-xs"/></FormItem>
                                 )}/>
                                  <FormField control={form.control} name={`addons.${groupIndex}.required`} render={({ field }) => (
-                                    <FormItem className="flex flex-row items-center space-x-2 pt-5"><FormControl><Switch checked={field.value} onCheckedChange={field.onChange}/></FormControl><FormLabel className="text-xs !mt-0">Required Group</FormLabel><FormMessage className="text-xs"/></FormItem>
+                                    <FormItem className="flex flex-row items-center space-x-2 pt-5"><FormControl><Switch checked={field.value} onCheckedChange={field.onChange}/></FormControl><FormLabel className="text-xs !mt-0">קבוצת חובה</FormLabel><FormMessage className="text-xs"/></FormItem>
                                 )}/>
                              </div>
                              <div className="grid grid-cols-2 gap-2 mb-2">
                                  <FormField control={form.control} name={`addons.${groupIndex}.minSelection`} render={({ field }) => (
-                                     <FormItem><FormLabel className="text-xs">Min Choices (Optional)</FormLabel><FormControl><Input type="number" {...field} placeholder="e.g., 1" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
+                                     <FormItem><FormLabel className="text-xs">מינימום בחירות (אופציונלי)</FormLabel><FormControl><Input type="number" {...field} placeholder="לדוגמה: 1" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
                                  )}/>
                                   <FormField control={form.control} name={`addons.${groupIndex}.maxSelection`} render={({ field }) => (
-                                     <FormItem><FormLabel className="text-xs">Max Choices (Optional)</FormLabel><FormControl><Input type="number" {...field} placeholder="e.g., 3" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
+                                     <FormItem><FormLabel className="text-xs">מקסימום בחירות (אופציונלי)</FormLabel><FormControl><Input type="number" {...field} placeholder="לדוגמה: 3" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
                                  )}/>
                              </div>
 
-                            <p className="text-xs font-medium mb-1">Choices:</p>
+                            <p className="text-xs font-medium mb-1">אפשרויות:</p>
                             <AddonOptionsArray groupIndex={groupIndex} control={form.control} />
                         </Card>
                     ))}
-                     {addonGroups.length === 0 && <p className="text-xs text-muted-foreground text-center py-2">No addon groups defined.</p>}
+                     {addonGroups.length === 0 && <p className="text-xs text-muted-foreground text-center py-2">לא הוגדרו קבוצות תוספות.</p>}
                 </CardContent>
               </Card>
 
             </form>
           </Form>
           <DialogFooter className="pt-4 border-t">
-            <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
+            <DialogClose asChild><Button type="button" variant="outline">ביטול</Button></DialogClose>
             <Button type="submit" onClick={form.handleSubmit(onSubmit)} disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ? "Saving..." : (editingItem ? 'Save Changes' : 'Add Item')}
+              {form.formState.isSubmitting ? "שומר..." : (editingItem ? 'שמור שינויים' : 'הוסף פריט')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -505,22 +500,20 @@ function AddonOptionsArray({ groupIndex, control }: { groupIndex: number, contro
       {fields.map((optionField, optionIndex) => (
         <div key={optionField.id} className="flex items-end gap-2 p-2 border rounded bg-background/70">
           <FormField control={control} name={`addons.${groupIndex}.options.${optionIndex}.name`} render={({ field }) => (
-            <FormItem className="flex-grow"><FormLabel className="text-xs">Choice Name</FormLabel><FormControl><Input {...field} placeholder="e.g., Extra Cheese" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
+            <FormItem className="flex-grow"><FormLabel className="text-xs">שם אפשרות</FormLabel><FormControl><Input {...field} placeholder="לדוגמה: גבינה נוספת" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
           )}/>
           <FormField control={control} name={`addons.${groupIndex}.options.${optionIndex}.price`} render={({ field }) => (
-            <FormItem className="w-24"><FormLabel className="text-xs">Price (₪)</FormLabel><FormControl><Input type="number" step="0.01" {...field} placeholder="0.00" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
+            <FormItem className="w-24"><FormLabel className="text-xs">מחיר (₪)</FormLabel><FormControl><Input type="number" step="0.01" {...field} placeholder="0.00" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
           )}/>
           <FormField control={control} name={`addons.${groupIndex}.options.${optionIndex}.selectedByDefault`} render={({ field }) => (
-            <FormItem className="flex flex-col items-center pt-5"><FormControl><Switch checked={field.value} onCheckedChange={field.onChange} className="h-4 w-7 data-[state=checked]:translate-x-3 data-[state=unchecked]:translate-x-0"/></FormControl><FormLabel className="text-xs whitespace-nowrap">Default</FormLabel><FormMessage className="text-xs"/></FormItem>
+            <FormItem className="flex flex-col items-center pt-5"><FormControl><Switch checked={field.value} onCheckedChange={field.onChange} className="h-4 w-7 data-[state=checked]:translate-x-3 data-[state=unchecked]:translate-x-0"/></FormControl><FormLabel className="text-xs whitespace-nowrap">ברירת מחדל</FormLabel><FormMessage className="text-xs"/></FormItem>
           )}/>
           <Button type="button" variant="ghost" size="icon" onClick={() => remove(optionIndex)} className="text-destructive h-8 w-8 self-end"><Trash2 className="h-3 w-3"/></Button>
         </div>
       ))}
       <Button type="button" variant="link" size="sm" onClick={() => append({ name: '', price: 0, selectedByDefault: false })} className="text-xs p-0 h-auto">
-        <PlusCircle className="mr-1 h-3 w-3"/> Add Choice
+        <PlusCircle className="mr-1 h-3 w-3"/> הוסף אפשרות
       </Button>
     </div>
   );
 }
-
-    
