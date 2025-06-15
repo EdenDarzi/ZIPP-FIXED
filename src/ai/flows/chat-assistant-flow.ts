@@ -1,28 +1,58 @@
 
 'use server';
 /**
- * @fileOverview A flow for handling chat interactions with the AI ordering assistant.
+ * @fileOverview A flow for handling chat interactions with the LivePick AI ordering assistant.
  *
- * - getChatResponse - A function that returns a response from the AI assistant.
- * - ChatAssistantInput - The input type for the getChatResponse function.
- * - ChatAssistantOutput - The return type for the getChatResponse function.
+ * This module defines the primary interface for the chat assistant, allowing users to
+ * send messages and receive AI-generated responses tailored to the LivePick application context.
+ *
+ * @module ai/flows/chat-assistant-flow
+ * @exports getChatResponse - The main function to interact with the chat assistant.
+ * @exports ChatAssistantInput - Zod schema for the input to the chat assistant.
+ * @exports ChatAssistantOutput - Zod schema for the output from the chat assistant.
+ * @exports type ChatAssistantInputType - TypeScript type derived from ChatAssistantInput.
+ * @exports type ChatAssistantOutputType - TypeScript type derived from ChatAssistantOutput.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
+/**
+ * @description Zod schema for the input to the chat assistant flow.
+ * Defines the expected structure for user input to the chat assistant.
+ */
 const ChatAssistantInputSchema = z.object({
   userInput: z.string().describe("The user's message to the chat assistant."),
   // Optional: chatHistory: z.array(z.object({ sender: z.enum(['user', 'ai']), text: z.string() })).optional(),
 });
-export type ChatAssistantInput = z.infer<typeof ChatAssistantInputSchema>;
+/**
+ * @description TypeScript type for the chat assistant input, inferred from ChatAssistantInputSchema.
+ */
+export type ChatAssistantInputType = z.infer<typeof ChatAssistantInputSchema>;
 
+/**
+ * @description Zod schema for the output from the chat assistant flow.
+ * Defines the expected structure of the AI's response.
+ */
 const ChatAssistantOutputSchema = z.object({
   assistantResponse: z.string().describe("The AI assistant's response to the user."),
 });
-export type ChatAssistantOutput = z.infer<typeof ChatAssistantOutputSchema>;
+/**
+ * @description TypeScript type for the chat assistant output, inferred from ChatAssistantOutputSchema.
+ */
+export type ChatAssistantOutputType = z.infer<typeof ChatAssistantOutputSchema>;
 
-export async function getChatResponse(input: ChatAssistantInput): Promise<ChatAssistantOutput> {
+/**
+ * Retrieves a response from the AI chat assistant based on the user's input.
+ * This function serves as the primary entry point for interacting with the chat assistant flow.
+ *
+ * @async
+ * @function getChatResponse
+ * @param {ChatAssistantInputType} input - The user's input message.
+ * @returns {Promise<ChatAssistantOutputType>} A promise that resolves to the AI assistant's response.
+ * @throws {Error} If the AI flow fails to generate a response.
+ */
+export async function getChatResponse(input: ChatAssistantInputType): Promise<ChatAssistantOutputType> {
   return chatAssistantFlow(input);
 }
 
@@ -104,7 +134,8 @@ const chatAssistantFlow = ai.defineFlow(
   async (input) => {
     const { output } = await chatAssistantPrompt(input);
     if (!output) {
-        return { assistantResponse: "I'm sorry, I didn't quite catch that. Could you please rephrase or ask about ordering, tracking, or app features?" };
+        // Fallback response if the AI doesn't generate a structured output
+        return { assistantResponse: "מצטער, לא הצלחתי להבין את הבקשה. נסה לשאול אותי על הזמנות, מעקב משלוחים או תכונות האפליקציה." };
     }
     return output;
   }

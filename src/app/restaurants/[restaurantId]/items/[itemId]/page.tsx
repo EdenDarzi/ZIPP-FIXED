@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { notFound, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
-import { Minus, Plus, ShoppingCart, ArrowLeft, Star, Share2, Award, Heart } from 'lucide-react'; // Added Heart
+import { Minus, Plus, ShoppingCart, ArrowLeft, Star, Share2, Award, Heart } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -57,15 +57,15 @@ export default function ItemPage({ params }: ItemPageParams) {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center mb-6">
-        <Button variant="outline" onClick={() => router.back()}>
+        <Button variant="outline" onClick={() => router.back()} aria-label="חזור לתפריט">
           <ArrowLeft className="mr-2 h-4 w-4" /> חזרה לתפריט
         </Button>
         <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon" onClick={handleAddToFavorites} title="הוסף למועדפים (בקרוב)">
+            <Button variant="ghost" size="icon" onClick={handleAddToFavorites} title="הוסף למועדפים (בקרוב)" aria-label="הוסף למועדפים (בקרוב)">
                 <Heart className="h-5 w-5 text-pink-500" />
                 <span className="sr-only">הוסף למועדפים</span>
             </Button>
-            <Button variant="outline" size="icon" onClick={handleShareItem} className="ml-auto">
+            <Button variant="outline" size="icon" onClick={handleShareItem} className="ml-auto" title="שתף פריט" aria-label="שתף פריט">
                 <Share2 className="h-5 w-5" />
                 <span className="sr-only">שתף פריט</span>
             </Button>
@@ -98,7 +98,7 @@ export default function ItemPage({ params }: ItemPageParams) {
             <CardContent className="space-y-4 flex-grow">
               <div className="flex items-center space-x-2">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className={`h-5 w-5 ${i < Math.floor(Math.random() * 2 + 3.5) ? 'text-yellow-500 fill-yellow-500' : 'text-muted-foreground/50'}`} />
+                  <Star key={i} className={`h-5 w-5 ${i < Math.floor(Math.random() * 2 + 3.5) ? 'text-yellow-500 fill-yellow-500' : 'text-muted-foreground/50'}`} aria-hidden="true" />
                 ))}
                 <span className="text-sm text-muted-foreground">({Math.floor(Math.random() * 100 + 20)} ביקורות)</span>
               </div>
@@ -121,11 +121,11 @@ export default function ItemPage({ params }: ItemPageParams) {
               <div className="flex items-center space-x-4">
                 <p className="text-lg font-semibold">כמות:</p>
                 <div className="flex items-center border rounded-md">
-                  <Button variant="ghost" size="icon" onClick={decrementQuantity} aria-label="Decrease quantity">
+                  <Button variant="ghost" size="icon" onClick={decrementQuantity} aria-label={`הפחת כמות עבור ${item.name}`}>
                     <Minus className="h-4 w-4" />
                   </Button>
-                  <span className="w-10 text-center font-medium">{quantity}</span>
-                  <Button variant="ghost" size="icon" onClick={incrementQuantity} aria-label="Increase quantity">
+                  <span className="w-10 text-center font-medium" aria-label={`כמות נוכחית: ${quantity}`}>{quantity}</span>
+                  <Button variant="ghost" size="icon" onClick={incrementQuantity} aria-label={`הגדל כמות עבור ${item.name}`}>
                     <Plus className="h-4 w-4" />
                   </Button>
                 </div>
@@ -133,7 +133,7 @@ export default function ItemPage({ params }: ItemPageParams) {
             </CardContent>
 
             <CardFooter className="p-6 bg-muted/20 border-t">
-              <Button size="lg" onClick={handleAddToCart} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-md text-lg">
+              <Button size="lg" onClick={handleAddToCart} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-md text-lg" aria-label={`הוסף ${quantity} ${item.name} לעגלה במחיר כולל של ${(item.price * quantity).toFixed(2)} שקלים`}>
                 <ShoppingCart className="mr-2 h-5 w-5" /> הוסף לעגלה (₪{(item.price * quantity).toFixed(2)})
               </Button>
             </CardFooter>

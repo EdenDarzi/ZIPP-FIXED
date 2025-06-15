@@ -28,44 +28,44 @@ const Header = () => {
   return (
     <header className="bg-card border-b border-border shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold text-primary font-headline">
+        <Link href="/" className="text-2xl font-bold text-primary font-headline" aria-label="LivePick - דף הבית">
           LivePick
         </Link>
         <nav className="flex items-center space-x-1 sm:space-x-2 flex-wrap justify-end">
-          <Button variant="ghost" asChild size="sm" className="hidden md:inline-flex">
+          <Button variant="ghost" asChild size="sm" className="hidden md:inline-flex" title="דף הבית">
             <Link href="/"><span className="flex items-center"><Home className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">בית</span></span></Link>
           </Button>
-          <Button variant="ghost" asChild size="sm">
+          <Button variant="ghost" asChild size="sm" title="מסעדות ועסקים">
             <Link href="/restaurants"><span className="flex items-center"><Utensils className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">עסקים</span></span></Link>
           </Button>
-           <Button variant="ghost" asChild size="sm" className="hidden lg:inline-flex">
+           <Button variant="ghost" asChild size="sm" className="hidden lg:inline-flex" title="שוק יד 2">
             <Link href="/marketplace"><span className="flex items-center"><Store className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">יד 2</span></span></Link>
           </Button>
-          <Button variant="ghost" asChild size="sm" className="hidden lg:inline-flex">
+          <Button variant="ghost" asChild size="sm" className="hidden lg:inline-flex" title="רדאר אוכל">
             <Link href="/food-radar"><span className="flex items-center"><MapIcon className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">רדאר אוכל</span></span></Link>
           </Button>
-          <Button variant="ghost" asChild size="sm" className="hidden lg:inline-flex">
+          <Button variant="ghost" asChild size="sm" className="hidden lg:inline-flex" title="שלח חבילה">
             <Link href="/send-package"><span className="flex items-center"><Send className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">שלח חבילה</span></span></Link>
           </Button>
-           <Button variant="ghost" asChild size="sm">
+           <Button variant="ghost" asChild size="sm" title="סורק טרנדים">
             <Link href="/visual-search"><span className="flex items-center"><TrendingUp className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">סורק טרנדים</span></span></Link>
           </Button>
-          <Button variant="ghost" asChild size="sm" className="hidden lg:inline-flex">
+          <Button variant="ghost" asChild size="sm" className="hidden lg:inline-flex" title="יועץ תזונה">
             <Link href="/nutritional-advisor"><span className="flex items-center"><HeartPulse className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">יועץ תזונה</span></span></Link>
           </Button>
-          <Button variant="ghost" asChild size="sm" className="hidden md:inline-flex">
+          <Button variant="ghost" asChild size="sm" className="hidden md:inline-flex" title="המלצות AI">
             <Link href="/recommendations"><span className="flex items-center"><Brain className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">המלצות AI</span></span></Link>
           </Button>
-          <Button variant="ghost" asChild size="sm" className="hidden md:inline-flex">
+          <Button variant="ghost" asChild size="sm" className="hidden md:inline-flex" title="תוכנית שותפים">
             <Link href="/affiliate"><span className="flex items-center"><Users className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">שותפים</span></span></Link>
           </Button>
-           <Button variant="ghost" asChild size="sm" className="hidden md:inline-flex">
+           <Button variant="ghost" asChild size="sm" className="hidden md:inline-flex" title="LivePick VIP">
             <Link href="/vip"><span className="flex items-center"><Gem className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">VIP</span></span></Link>
           </Button>
-           <Button variant="ghost" asChild size="sm" className="hidden xl:inline-flex">
+           <Button variant="ghost" asChild size="sm" className="hidden xl:inline-flex" title="פורטל שליחים">
             <Link href="/courier/dashboard"><span className="flex items-center"><Truck className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">שליחים</span></span></Link>
           </Button>
-           <Button variant="ghost" asChild size="sm" className="hidden xl:inline-flex">
+           <Button variant="ghost" asChild size="sm" className="hidden xl:inline-flex" title="ניהול עסק">
             <Link href="/restaurant-admin"><span className="flex items-center"><ChefHat className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">ניהול עסק</span></span></Link>
           </Button>
           
@@ -74,20 +74,20 @@ const Header = () => {
             <span className="hidden lg:inline text-xs">מצב נסיעות</span> 
           </Button>
 
-          <Button variant="ghost" asChild size="icon" className="relative">
-            <Link href="/cart" aria-label="Cart"><span className="relative flex items-center justify-center w-full h-full">
+          <Button variant="ghost" asChild size="icon" className="relative" title="עגלת קניות">
+            <Link href="/cart" aria-label={`עגלת קניות, ${itemCount} פריטים`}><span className="relative flex items-center justify-center w-full h-full">
               <ShoppingCart className="h-5 w-5" />
               {itemCount > 0 && (
-                <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-xs">
+                <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-xs" aria-label={`${itemCount} פריטים בעגלה`}>
                   {itemCount}
                 </Badge>
               )}
             </span></Link>
           </Button>
-          <Button variant="outline" size="sm" asChild>
+          <Button variant="outline" size="sm" asChild title="כניסה או הרשמה">
             <Link href="/auth/login"><span className="flex items-center"><UserCircle className="h-4 w-4 mr-0 sm:mr-2" /><span className="hidden sm:inline">כניסה</span></span></Link>
           </Button>
-          <Button variant="ghost" size="sm" onClick={handleLanguageToggle} className="flex items-center" aria-label="Toggle language">
+          <Button variant="ghost" size="sm" onClick={handleLanguageToggle} className="flex items-center" aria-label="החלף שפה (בקרוב)" title="החלף שפה (בקרוב)">
             <span className="flex items-center">
                 <Languages className="h-4 w-4 sm:mr-1" />
                 <span className="hidden sm:inline">EN</span>

@@ -3,42 +3,81 @@
 /**
  * @fileOverview An AI flow for generating a weekly meal plan based on calorie targets and preferences.
  *
- * - generateWeeklyMenu - A function that returns a structured weekly meal plan.
- * - WeeklyMenuInput - The input type for the generateWeeklyMenu function.
- * - WeeklyMenuOutput - The return type for the generateWeeklyMenu function.
+ * This module defines a Genkit flow that creates a structured meal plan for a specified
+ * number of days, aiming to meet a target daily calorie intake and adhering to user
+ * dietary preferences.
+ *
+ * @module ai/flows/weekly-menu-planner-flow
+ * @exports generateWeeklyMenu - The main function to generate a weekly meal plan.
+ * @exports WeeklyMenuInput - Zod schema for the input to the weekly menu planner.
+ * @exports WeeklyMenuOutput - Zod schema for the output from the weekly menu planner.
+ * @exports type WeeklyMenuInputType - TypeScript type for the input.
+ * @exports type WeeklyMenuOutputType - TypeScript type for the output.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
 // Define Zod schemas for input and output structures
+/**
+ * @description Zod schema for the input to the weekly menu planner flow.
+ * Requires userId, target daily calories, number of days, and optional preferences.
+ */
 const WeeklyMenuInputSchema = z.object({
   userId: z.string().describe('The ID of the user requesting the menu.'),
   targetDailyCalories: z.number().positive('Target daily calories must be a positive number.'),
   numberOfDays: z.number().int().min(1).max(7, 'Number of days must be between 1 and 7.'),
   preferences: z.string().optional().describe('User dietary preferences, restrictions, likes, or dislikes (e.g., "vegetarian, no gluten", "loves spicy food", "prefers quick meals").'),
 });
-export type WeeklyMenuInput = z.infer<typeof WeeklyMenuInputSchema>;
+/**
+ * @description TypeScript type for the weekly menu planner input, inferred from WeeklyMenuInputSchema.
+ */
+export type WeeklyMenuInputType = z.infer<typeof WeeklyMenuInputSchema>;
 
+/**
+ * @description Zod schema for a single meal within a daily plan.
+ * Includes meal type, dish name, and estimated calories.
+ */
 const MealSchema = z.object({
   mealType: z.enum(['Breakfast', 'Lunch', 'Dinner', 'Snack']).describe("Type of the meal."),
   dishName: z.string().describe("Name of the dish for the meal."),
   estimatedCalories: z.number().int().positive().describe("Estimated calories for this dish."),
 });
 
+/**
+ * @description Zod schema for a daily meal plan.
+ * Includes the day label, a list of meals, and total estimated calories for the day.
+ */
 const DailyMealPlanSchema = z.object({
   day: z.string().describe("Label for the day (e.g., 'Day 1', 'Monday')."),
   meals: z.array(MealSchema).min(3, "Each day should have at least Breakfast, Lunch, and Dinner.").describe("List of meals for the day."),
   totalEstimatedCalories: z.number().int().positive().describe("Total estimated calories for the day."),
 });
 
+/**
+ * @description Zod schema for the output of the weekly menu planner flow.
+ * Contains the generated meal plan (an array of daily plans) and optional summary notes.
+ */
 const WeeklyMenuOutputSchema = z.object({
   plan: z.array(DailyMealPlanSchema).describe('The generated weekly meal plan, with one entry per day.'),
   summaryNotes: z.string().optional().describe("General advice or notes about the meal plan, e.g., hydration, variety, snack timing."),
 });
-export type WeeklyMenuOutput = z.infer<typeof WeeklyMenuOutputSchema>;
+/**
+ * @description TypeScript type for the weekly menu planner output, inferred from WeeklyMenuOutputSchema.
+ */
+export type WeeklyMenuOutputType = z.infer<typeof WeeklyMenuOutputSchema>;
 
-export async function generateWeeklyMenu(input: WeeklyMenuInput): Promise<WeeklyMenuOutput> {
+/**
+ * Generates a structured weekly meal plan based on user inputs.
+ * This function wraps the Genkit flow `weeklyMenuPlannerFlow`.
+ *
+ * @async
+ * @function generateWeeklyMenu
+ * @param {WeeklyMenuInputType} input - User ID, calorie target, number of days, and preferences.
+ * @returns {Promise<WeeklyMenuOutputType>} A promise that resolves to the generated weekly meal plan.
+ * @throws {Error} If the AI flow fails to generate the menu.
+ */
+export async function generateWeeklyMenu(input: WeeklyMenuInputType): Promise<WeeklyMenuOutputType> {
   return weeklyMenuPlannerFlow(input);
 }
 
@@ -88,18 +127,18 @@ const weeklyMenuPlannerFlow = ai.defineFlow(
     const { output } = await weeklyMenuPlannerPrompt(input);
     if (!output || !output.plan || output.plan.length === 0) {
       // Fallback in case the AI fails to generate a structured plan
-      const fallbackDayPlan: WeeklyMenuOutput['plan'][0] = {
-        day: "Day 1 (Sample)",
+      const fallbackDayPlan: DailyMealPlan = { // Ensure type matches
+        day: "יום 1 (דוגמה)",
         meals: [
-          { mealType: 'Breakfast', dishName: "Balanced Breakfast Bowl", estimatedCalories: Math.round(input.targetDailyCalories * 0.25) },
-          { mealType: 'Lunch', dishName: "Healthy Lunch Plate", estimatedCalories: Math.round(input.targetDailyCalories * 0.35) },
-          { mealType: 'Dinner', dishName: "Satisfying Dinner Option", estimatedCalories: Math.round(input.targetDailyCalories * 0.40) },
+          { mealType: 'Breakfast', dishName: "ארוחת בוקר מאוזנת", estimatedCalories: Math.round(input.targetDailyCalories * 0.25) },
+          { mealType: 'Lunch', dishName: "צלחת צהריים בריאה", estimatedCalories: Math.round(input.targetDailyCalories * 0.35) },
+          { mealType: 'Dinner', dishName: "אופציה לארוחת ערב משביעה", estimatedCalories: Math.round(input.targetDailyCalories * 0.40) },
         ],
         totalEstimatedCalories: input.targetDailyCalories
       };
       return {
-        plan: Array(input.numberOfDays).fill(null).map((_, i) => ({...fallbackDayPlan, day: `Day ${i+1} (Sample)`})),
-        summaryNotes: "Failed to generate a detailed plan. This is a sample structure. Please try adjusting your inputs or try again later. Remember to focus on whole foods and portion control."
+        plan: Array(input.numberOfDays).fill(null).map((_, i) => ({...fallbackDayPlan, day: `יום ${i+1} (דוגמה)`})),
+        summaryNotes: "לא הצלחנו ליצור תוכנית מפורטת. זוהי דוגמה למבנה. אנא נסה/י לשנות את הקלט או נסה/י שוב מאוחר יותר. זכור/י להתמקד במזונות מלאים ובקרת מנות."
       };
     }
     // Ensure the plan length matches numberOfDays, or truncate/pad if necessary (simple version)
@@ -109,7 +148,6 @@ const weeklyMenuPlannerFlow = ai.defineFlow(
             output.plan = output.plan.slice(0, input.numberOfDays);
         } else {
             // Could add more days with a generic message, but for now just return what we have.
-            // Or, provide a more robust fallback as above if length is 0.
         }
     }
 

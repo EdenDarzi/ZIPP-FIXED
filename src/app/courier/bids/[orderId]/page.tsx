@@ -14,7 +14,7 @@ import Link from 'next/link';
 import { notFound, useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { selectBestCourierBid, CourierMatchingInput, CourierMatchingOutput } from '@/ai/flows/courier-matching-flow'; 
+import { selectBestCourierBid, CourierMatchingInputType, CourierMatchingOutputType } from '@/ai/flows/courier-matching-flow'; 
 import { cn } from '@/lib/utils';
 
 const MOCK_CURRENT_COURIER_ID = 'courier1'; 
@@ -48,7 +48,7 @@ export default function CourierBidPage() {
   const [evaluationTriggered, setEvaluationTriggered] = useState(false);
 
   const [otherBids, setOtherBids] = useState<CourierBid[]>([]);
-  const [winningBidInfo, setWinningBidInfo] = useState<CourierMatchingOutput | null>(null);
+  const [winningBidInfo, setWinningBidInfo] = useState<CourierMatchingOutputType | null>(null);
 
 
   useEffect(() => {
@@ -170,7 +170,7 @@ export default function CourierBidPage() {
     if (!order) return;
     toast({ title: "מעבד הצעות...", description: "ה-AI בוחר את השליח המתאים ביותר." });
     try {
-        const input: CourierMatchingInput = { orderDetails: order, bids: allSubmittedBids };
+        const input: CourierMatchingInputType = { orderDetails: order, bids: allSubmittedBids };
         const result = await selectBestCourierBid(input);
         setWinningBidInfo(result);
         setTimeLeft(0); 
@@ -222,7 +222,7 @@ export default function CourierBidPage() {
                 )}
             </CardContent>
             <CardFooter>
-                <Button onClick={() => router.push('/courier/open-bids')} className="w-full mt-4">חזרה להצעות פתוחות</Button>
+                <Button onClick={() => router.push('/courier/open-bids')} className="w-full mt-4" aria-label="חזרה להצעות פתוחות">חזרה להצעות פתוחות</Button>
             </CardFooter>
         </Card>
     )
@@ -231,7 +231,7 @@ export default function CourierBidPage() {
 
   return (
     <div className="space-y-6">
-      <Button variant="outline" onClick={() => router.back()} className="mb-4" disabled={isSubmitting || bidPlaced}>
+      <Button variant="outline" onClick={() => router.back()} className="mb-4" disabled={isSubmitting || bidPlaced} aria-label="חזרה להצעות פתוחות">
         <ArrowLeft className="mr-2 h-4 w-4" /> חזרה להצעות פתוחות
       </Button>
 
@@ -241,7 +241,11 @@ export default function CourierBidPage() {
             <CardTitle className="text-3xl font-headline text-primary">הזדמנות משלוח</CardTitle>
              <Badge 
                 variant={timeLeft > 10 ? "default" : timeLeft > 5 ? "secondary" : "destructive"} 
-                className={cn("text-lg px-3 py-1 transition-all", timeLeft <= 5 && timeLeft > 0 && 'animate-pulse ring-2 ring-offset-2 ring-destructive/70', timeLeft === 0 && 'opacity-50')}>
+                className={cn("text-lg px-3 py-1 transition-all", timeLeft <= 5 && timeLeft > 0 && 'animate-pulse ring-2 ring-offset-2 ring-destructive/70', timeLeft === 0 && 'opacity-50')}
+                aria-label={`נותרו ${timeLeft} שניות להגיש הצעה`}
+                role="timer"
+                aria-live="polite"
+              >
                 <Timer className="inline mr-2 h-5 w-5" /> {timeLeft > 0 ? `נותרו ${timeLeft} שנ'` : "הזמן אזל!"}
             </Badge>
           </div>
@@ -320,6 +324,7 @@ export default function CourierBidPage() {
                 className="text-lg p-2 h-12"
                 placeholder={`לדוגמה: ${order.baseCommission.toFixed(2)}`}
                 disabled={isSubmitting || bidPlaced || timeLeft <=0}
+                aria-label="סכום הצעה מותאם אישית בשקלים"
               />
               <p className={cn("text-xs", bonusRequested > 0 ? "text-green-600" : bonusRequested < 0 ? "text-orange-600" : "text-muted-foreground")}>
                 {bonusRequested > 0 ? `בונוס מבוקש: ₪${bonusRequested.toFixed(2)}` : bonusRequested < 0 ? `מציע הנחה: ₪${Math.abs(bonusRequested).toFixed(2)}` : "ללא בונוס/הנחה"}
@@ -332,6 +337,8 @@ export default function CourierBidPage() {
                     onClick={() => setIsFastPickup(!isFastPickup)}
                     className={cn("w-full", isFastPickup && 'bg-blue-600 hover:bg-blue-700 text-white')}
                     disabled={isSubmitting || bidPlaced || timeLeft <=0}
+                    aria-pressed={isFastPickup}
+                    aria-label={isFastPickup ? "איסוף מהיר פעיל" : "הצע איסוף מהיר"}
                 >
                     <Zap className="mr-2 h-4 w-4" />
                     {isFastPickup ? "איסוף מהיר פעיל (<4 דק' למסעדה)" : "הצע איסוף מהיר"}
@@ -349,20 +356,21 @@ export default function CourierBidPage() {
 
         <CardFooter className="bg-muted/30 p-4 border-t">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
-            <Button onClick={() => handleBidAction('accept')} className="w-full bg-green-600 hover:bg-green-700 text-white" disabled={isSubmitting || timeLeft <= 0 || bidPlaced}>
+            <Button onClick={() => handleBidAction('accept')} className="w-full bg-green-600 hover:bg-green-700 text-white" disabled={isSubmitting || timeLeft <= 0 || bidPlaced} aria-label={`קבל הצעת בסיס של ${order.baseCommission.toFixed(2)} שקלים`}>
               <CheckCircle className="mr-2 h-4 w-4" /> קבל בסיס (₪{order.baseCommission.toFixed(2)})
             </Button>
              <Button 
                 onClick={() => handleBidAction('bid')} 
                 className={cn("w-full", parseFloat(customBid) > order.baseCommission ? "bg-yellow-500 hover:bg-yellow-600 text-black" : "bg-orange-500 hover:bg-orange-600 text-white")}
                 disabled={isSubmitting || timeLeft <= 0 || bidPlaced || parseFloat(customBid) === order.baseCommission || isNaN(parseFloat(customBid))}
+                aria-label={`הגש הצעה מותאמת של ${parseFloat(customBid) || 0} שקלים`}
             >
               <Edit3 className="mr-2 h-4 w-4" /> הגש הצעה (₪{parseFloat(customBid) || 0})
             </Button>
-             <Button onClick={() => handleBidAction('speed')} className="w-full bg-blue-500 hover:bg-blue-600 text-white" disabled={isSubmitting || timeLeft <= 0 || bidPlaced}>
+             <Button onClick={() => handleBidAction('speed')} className="w-full bg-blue-500 hover:bg-blue-600 text-white" disabled={isSubmitting || timeLeft <= 0 || bidPlaced} aria-label={isFastPickup ? "הגש הצעה עם איסוף מהיר" : "הצע איסוף מהיר"}>
               <Zap className="mr-2 h-4 w-4" /> {isFastPickup ? 'הגש הצעה מהירה' : 'הצע איסוף מהיר'}
             </Button>
-            <Button variant="destructive" onClick={() => handleBidAction('skip')} className="w-full" disabled={isSubmitting || timeLeft <= 0 || bidPlaced}>
+            <Button variant="destructive" onClick={() => handleBidAction('skip')} className="w-full" disabled={isSubmitting || timeLeft <= 0 || bidPlaced} aria-label="דלג על הצעה זו">
               <XCircle className="mr-2 h-4 w-4" /> דלג
             </Button>
           </div>

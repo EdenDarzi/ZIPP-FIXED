@@ -1,29 +1,60 @@
 
 'use server';
 /**
- * @fileOverview A flow for providing personalized culinary suggestions.
+ * @fileOverview A flow for providing personalized culinary suggestions using AI.
  *
- * - getCulinarySuggestion - A function that returns a suggestion for a user.
- * - CulinaryAssistantInput - The input type for the getCulinarySuggestion function.
- * - CulinaryAssistantOutput - The return type for the getCulinarySuggestion function.
+ * This module defines a Genkit flow that generates a food or meal suggestion
+ * for a user, potentially based on their ID and the current day. It aims to
+ * provide engaging and appealing recommendations.
+ *
+ * @module ai/flows/culinary-assistant-flow
+ * @exports getCulinarySuggestion - The main function to retrieve a culinary suggestion.
+ * @exports CulinaryAssistantInput - Zod schema for the input to the culinary assistant.
+ * @exports CulinaryAssistantOutput - Zod schema for the output from the culinary assistant.
+ * @exports type CulinaryAssistantInputType - TypeScript type for the input.
+ * @exports type CulinaryAssistantOutputType - TypeScript type for the output.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
+/**
+ * @description Zod schema for the input to the culinary assistant flow.
+ * Defines the information needed to generate a personalized culinary suggestion.
+ */
 const CulinaryAssistantInputSchema = z.object({
   userId: z.string().describe('The ID of the user to generate a suggestion for.'),
   currentDay: z.string().optional().describe('The current day of the week, e.g., "Tuesday".'),
   // Future inputs: weather, mood, detailed order history, etc.
 });
-export type CulinaryAssistantInput = z.infer<typeof CulinaryAssistantInputSchema>;
+/**
+ * @description TypeScript type for the culinary assistant input, inferred from CulinaryAssistantInputSchema.
+ */
+export type CulinaryAssistantInputType = z.infer<typeof CulinaryAssistantInputSchema>;
 
+/**
+ * @description Zod schema for the output from the culinary assistant flow.
+ * Defines the structure of the generated culinary suggestion.
+ */
 const CulinaryAssistantOutputSchema = z.object({
   suggestion: z.string().describe('A personalized culinary suggestion for the user.'),
 });
-export type CulinaryAssistantOutput = z.infer<typeof CulinaryAssistantOutputSchema>;
+/**
+ * @description TypeScript type for the culinary assistant output, inferred from CulinaryAssistantOutputSchema.
+ */
+export type CulinaryAssistantOutputType = z.infer<typeof CulinaryAssistantOutputSchema>;
 
-export async function getCulinarySuggestion(input: CulinaryAssistantInput): Promise<CulinaryAssistantOutput> {
+/**
+ * Retrieves a personalized culinary suggestion for the user.
+ * This function acts as a wrapper around the Genkit flow.
+ *
+ * @async
+ * @function getCulinarySuggestion
+ * @param {CulinaryAssistantInputType} input - The input data, including userId and optionally the current day.
+ * @returns {Promise<CulinaryAssistantOutputType>} A promise that resolves to the culinary suggestion.
+ * @throws {Error} If the AI flow fails to generate a suggestion.
+ */
+export async function getCulinarySuggestion(input: CulinaryAssistantInputType): Promise<CulinaryAssistantOutputType> {
   return culinaryAssistantFlow(input);
 }
 
@@ -67,7 +98,7 @@ const culinaryAssistantFlow = ai.defineFlow(
     const { output } = await culinaryAssistantPrompt(input);
     if (!output) {
         // Fallback suggestion
-        return { suggestion: `Welcome back, ${input.userId}! What culinary adventure are we embarking on today?` };
+        return { suggestion: `ברוך הבא, ${input.userId}! לאיזו הרפתקה קולינרית נצא היום?` };
     }
     return output;
   }

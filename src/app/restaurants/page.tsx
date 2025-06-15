@@ -64,6 +64,7 @@ export default function RestaurantsPage() {
             className="pl-10 pr-4 py-3 text-base shadow-sm focus:ring-primary focus:border-primary"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            aria-label="חיפוש מסעדות, עסקים או מטבחים"
             />
         </div>
       </header>
@@ -83,7 +84,7 @@ export default function RestaurantsPage() {
                             <Card key={item.id} className="bg-white text-card-foreground">
                                 <CardHeader className="p-3 pb-1">
                                      <div className="relative h-24 w-full rounded-t-md overflow-hidden mb-2">
-                                        <Image src={item.imageUrl || "https://placehold.co/200x100.png?text=הפתעה!"} alt={item.name} layout="fill" objectFit="cover" data-ai-hint="surprise bag food bakery" />
+                                        <Image src={item.imageUrl || "https://placehold.co/200x100.png?text=הפתעה!"} alt={item.name} layout="fill" objectFit="cover" data-ai-hint={item.dataAiHint || "surprise bag food bakery"} />
                                     </div>
                                     <CardTitle className="text-sm font-semibold truncate">{item.name}</CardTitle>
                                     <CardDescription className="text-xs">מאת: {item.restaurantName}</CardDescription>
@@ -92,7 +93,7 @@ export default function RestaurantsPage() {
                                     <p className="text-lg font-bold text-primary">₪{item.price.toFixed(2)} <span className="text-xs line-through text-muted-foreground">₪{item.originalPrice?.toFixed(2)}</span></p>
                                 </CardContent>
                                 <CardFooter className="p-2 pt-0">
-                                     <Button size="sm" className="w-full" asChild>
+                                     <Button size="sm" className="w-full" asChild aria-label={`הוסף ${item.name} לעגלה`}>
                                         <Link href={`/livepick-sale#${item.id}`}>הוסף לעגלה</Link>
                                     </Button>
                                 </CardFooter>
@@ -116,7 +117,7 @@ export default function RestaurantsPage() {
             <div className="space-y-1">
                 <label htmlFor="cuisineFilter" className="text-sm font-medium text-muted-foreground">סוג מטבח/עסק</label>
                  <Select value={cuisineFilter} onValueChange={setCuisineFilter}>
-                    <SelectTrigger id="cuisineFilter" className="w-full bg-background shadow-sm">
+                    <SelectTrigger id="cuisineFilter" className="w-full bg-background shadow-sm" aria-label="סנן לפי סוג מטבח או עסק">
                         <SelectValue placeholder="כל הסוגים" />
                     </SelectTrigger>
                     <SelectContent>
@@ -129,7 +130,7 @@ export default function RestaurantsPage() {
              <div className="space-y-1">
                 <label htmlFor="ratingFilter" className="text-sm font-medium text-muted-foreground">דירוג מינימלי</label>
                  <Select value={ratingFilter} onValueChange={setRatingFilter}>
-                    <SelectTrigger id="ratingFilter" className="w-full bg-background shadow-sm">
+                    <SelectTrigger id="ratingFilter" className="w-full bg-background shadow-sm" aria-label="סנן לפי דירוג מינימלי">
                         <Star className="inline h-4 w-4 mr-1 text-yellow-400 fill-yellow-400" />
                         <SelectValue placeholder="כל דירוג" />
                     </SelectTrigger>
@@ -144,7 +145,7 @@ export default function RestaurantsPage() {
              <div className="space-y-1">
                 <label htmlFor="distanceFilter" className="text-sm font-medium text-muted-foreground">מרחק</label>
                  <Select value={distanceFilter} onValueChange={setDistanceFilter}>
-                    <SelectTrigger id="distanceFilter" className="w-full bg-background shadow-sm">
+                    <SelectTrigger id="distanceFilter" className="w-full bg-background shadow-sm" aria-label="סנן לפי מרחק (בקרוב)">
                          <MapPinIcon className="inline h-4 w-4 mr-1 text-primary" />
                         <SelectValue placeholder="כל מרחק (בקרוב)" />
                     </SelectTrigger>
@@ -156,7 +157,7 @@ export default function RestaurantsPage() {
                     </SelectContent>
                 </Select>
             </div>
-            <Button variant="outline" className="w-full bg-background shadow-sm" onClick={handleMoreFiltersClick}>
+            <Button variant="outline" className="w-full bg-background shadow-sm" onClick={handleMoreFiltersClick} aria-label="אפשרויות סינון נוספות (בקרוב)">
                 <Filter className="mr-2 h-4 w-4" /> עוד פילטרים
             </Button>
         </div>

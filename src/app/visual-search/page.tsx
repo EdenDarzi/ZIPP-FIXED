@@ -7,10 +7,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { identifyDishFromImage, IdentifyDishInput, IdentifyDishOutput } from '@/ai/flows/identify-dish-flow';
+import { identifyDishFromImage, IdentifyDishInputType, IdentifyDishOutputType } from '@/ai/flows/identify-dish-flow';
 import { Camera, ImageUp, Loader2, Sparkles, Utensils, Share2, TrendingUp, Info, Star } from 'lucide-react';
 import Image from 'next/image';
-import { Label } from '@/components/ui/label';
+import { Label } from '@/components/ui/label'; 
 import { Badge } from '@/components/ui/badge';
 
 export default function AiTrendScannerPage() {
@@ -18,7 +18,7 @@ export default function AiTrendScannerPage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageDataUri, setImageDataUri] = useState<string | null>(null);
   const [userQuery, setUserQuery] = useState('');
-  const [aiResponse, setAiResponse] = useState<IdentifyDishOutput | null>(null);
+  const [aiResponse, setAiResponse] = useState<IdentifyDishOutputType | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,7 +51,7 @@ export default function AiTrendScannerPage() {
     setIsLoading(true);
     setAiResponse(null);
     try {
-      const input: IdentifyDishInput = { imageDataUri, userQuery };
+      const input: IdentifyDishInputType = { imageDataUri, userQuery };
       const result = await identifyDishFromImage(input);
       setAiResponse(result);
     } catch (error) {
@@ -102,6 +102,7 @@ export default function AiTrendScannerPage() {
               accept="image/*"
               onChange={handleImageChange}
               className="file:ml-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+              aria-label="העלה תמונת טרנד אוכל"
             />
              <p className="text-xs text-muted-foreground mt-1">גודל קובץ מקסימלי: 4MB.</p>
           </div>
@@ -120,10 +121,11 @@ export default function AiTrendScannerPage() {
               value={userQuery}
               onChange={(e) => setUserQuery(e.target.value)}
               className="min-h-[80px]"
+              aria-label="הערות או שאלות לגבי הטרנד"
             />
           </div>
 
-          <Button onClick={handleSubmit} disabled={isLoading || !imageDataUri} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg">
+          <Button onClick={handleSubmit} disabled={isLoading || !imageDataUri} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg" aria-label="זהה טרנד והצע לי">
             {isLoading ? (
               <>
                 <Loader2 className="ml-2 h-5 w-5 animate-spin" /> סורק טרנדים...
@@ -143,7 +145,7 @@ export default function AiTrendScannerPage() {
             <CardTitle className="flex items-center text-xl text-primary font-headline">
               <Utensils className="ml-2 h-6 w-6" /> ממצאי TrendScanner:
             </CardTitle>
-             <Button variant="outline" size="icon" onClick={handleShareResults}>
+             <Button variant="outline" size="icon" onClick={handleShareResults} aria-label="שתף ממצאים">
                 <Share2 className="h-5 w-5" />
                 <span className="sr-only">שתף ממצאים</span>
               </Button>
@@ -185,7 +187,7 @@ export default function AiTrendScannerPage() {
             </p>
           </CardContent>
            <CardFooter className="pt-3 border-t">
-              <Button onClick={handlePostToMyCorner} variant="outline" className="w-full">
+              <Button onClick={handlePostToMyCorner} variant="outline" className="w-full" aria-label="הוסף לפינה שלי ושתף (בקרוב)">
                 <Camera className="ml-2 h-4 w-4" /> הוסף ל'פינה שלי' ושתף (בקרוב)
               </Button>
             </CardFooter>

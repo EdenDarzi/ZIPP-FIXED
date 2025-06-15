@@ -14,8 +14,8 @@ import type { DeliveryPreference } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input'; 
 import { useState } from 'react'; 
-import { Checkbox } from '@/components/ui/checkbox'; // Added Checkbox
-import { useToast } from '@/hooks/use-toast'; // Added useToast
+import { Checkbox } from '@/components/ui/checkbox';
+import { useToast } from '@/hooks/use-toast';
 
 export default function CartPage() {
   const {
@@ -36,8 +36,8 @@ export default function CartPage() {
   } = useCart();
 
   const [manualScheduledTime, setManualScheduledTime] = useState(scheduledDeliveryTime || '');
-  const [isGift, setIsGift] = useState(false); // Added state for gift
-  const { toast } = useToast(); // Added toast hook
+  const [isGift, setIsGift] = useState(false);
+  const { toast } = useToast();
 
   const handleSetManualScheduledTime = () => {
     if (manualScheduledTime.trim()) {
@@ -85,7 +85,7 @@ export default function CartPage() {
           נראה שעדיין לא הוספת שום דבר לסל שלך.
         </p>
         <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
-          <Link href="/restaurants"><span>התחל בקניות</span></Link>
+          <Link href="/restaurants" aria-label="התחל בקניות"><span>התחל בקניות</span></Link>
         </Button>
       </div>
     );
@@ -118,16 +118,16 @@ export default function CartPage() {
                 <p className="text-sm text-muted-foreground">מחיר: {item.price.toFixed(2)}₪</p>
               </div>
               <div className="flex items-center space-x-2 flex-shrink-0 my-2 sm:my-0">
-                <Button variant="outline" size="icon" onClick={() => updateQuantity(item.menuItemId, item.quantity - 1)} aria-label="הפחת כמות">
+                <Button variant="outline" size="icon" onClick={() => updateQuantity(item.menuItemId, item.quantity - 1)} aria-label={`הפחת כמות עבור ${item.name}`}>
                   <Minus className="h-4 w-4" />
                 </Button>
-                <span className="w-8 text-center font-medium">{item.quantity}</span>
-                <Button variant="outline" size="icon" onClick={() => updateQuantity(item.menuItemId, item.quantity + 1)} aria-label="הגדל כמות">
+                <span className="w-8 text-center font-medium" aria-label={`כמות נוכחית עבור ${item.name}: ${item.quantity}`}>{item.quantity}</span>
+                <Button variant="outline" size="icon" onClick={() => updateQuantity(item.menuItemId, item.quantity + 1)} aria-label={`הגדל כמות עבור ${item.name}`}>
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
               <p className="font-semibold text-lg text-primary w-20 text-left sm:text-left flex-shrink-0">{(item.price * item.quantity).toFixed(2)}₪</p> 
-              <Button variant="ghost" size="icon" onClick={() => removeFromCart(item.menuItemId)} className="text-destructive hover:text-destructive/80 flex-shrink-0" aria-label="הסר פריט">
+              <Button variant="ghost" size="icon" onClick={() => removeFromCart(item.menuItemId)} className="text-destructive hover:text-destructive/80 flex-shrink-0" aria-label={`הסר את ${item.name} מהסל`}>
                 <Trash2 className="h-5 w-5" />
               </Button>
             </Card>
@@ -144,9 +144,10 @@ export default function CartPage() {
                 onValueChange={(value) => setDeliveryPreference(value as DeliveryPreference)}
                 className="space-y-3"
                 dir="rtl" 
+                aria-label="אפשרויות משלוח"
               >
                 <Label htmlFor="arena-delivery" className="flex items-center p-4 border rounded-md cursor-pointer hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all">
-                  <RadioGroupItem value="arena" id="arena-delivery" className="ml-3" /> 
+                  <RadioGroupItem value="arena" id="arena-delivery" className="ml-3" aria-label="זירת המשלוחים החכמה" /> 
                   <div className="flex-grow">
                     <div className="font-semibold flex items-center">
                       <Zap className="h-5 w-5 ml-2 text-accent" /> זירת המשלוחים החכמה (ברירת מחדל)
@@ -156,7 +157,7 @@ export default function CartPage() {
                   <span className="font-semibold text-green-600 mr-2">חינם</span> 
                 </Label>
                 <Label htmlFor="fastest-delivery" className="flex items-center p-4 border rounded-md cursor-pointer hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all">
-                  <RadioGroupItem value="fastest" id="fastest-delivery" className="ml-3" />
+                  <RadioGroupItem value="fastest" id="fastest-delivery" className="ml-3" aria-label="משלוח מהיר ביותר" />
                   <div className="flex-grow">
                     <div className="font-semibold flex items-center">
                        <CheckCircle className="h-5 w-5 ml-2 text-primary" /> משלוח מהיר ביותר
@@ -166,7 +167,7 @@ export default function CartPage() {
                   <span className="font-semibold text-primary mr-2">+5.00₪</span>
                 </Label>
                 <Label htmlFor="smart-saver-delivery" className="flex items-center p-4 border rounded-md cursor-pointer hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all">
-                  <RadioGroupItem value="smartSaver" id="smart-saver-delivery" className="ml-3" />
+                  <RadioGroupItem value="smartSaver" id="smart-saver-delivery" className="ml-3" aria-label="משלוח חסכוני חכם"/>
                   <div className="flex-grow">
                     <div className="font-semibold flex items-center">
                        <DollarSign className="h-5 w-5 ml-2 text-green-600" /> משלוח חסכוני חכם
@@ -201,21 +202,22 @@ export default function CartPage() {
                     value={manualScheduledTime}
                     onChange={(e) => setManualScheduledTime(e.target.value)}
                     className="w-full"
+                    aria-label="הזן זמן מבוקש למשלוח מתוכנן"
                   />
-                  <Button onClick={handleSetManualScheduledTime} disabled={!manualScheduledTime.trim()} className="w-full sm:w-auto">
+                  <Button onClick={handleSetManualScheduledTime} disabled={!manualScheduledTime.trim()} className="w-full sm:w-auto" aria-label="קבע זמן למשלוח מתוכנן">
                     קבע זמן
                   </Button>
                 </>
               ) : (
                 <div className="p-3 bg-green-50 border border-green-200 rounded-md">
                   <p className="font-semibold text-green-700">המשלוח שלך מתוכנן ל: {scheduledDeliveryTime}</p>
-                  <Button onClick={handleClearScheduledTime} variant="link" className="p-0 h-auto text-sm text-destructive">
+                  <Button onClick={handleClearScheduledTime} variant="link" className="p-0 h-auto text-sm text-destructive" aria-label="נקה זמן מתוכנן למשלוח">
                     נקה זמן מתוכנן
                   </Button>
                 </div>
               )}
                <p className="text-xs text-muted-foreground">שימו לב: זמינות המשלוח המתוכנן תלויה בשעות הפעילות של המסעדה והשליחים.</p>
-                 <Button onClick={handleDynamicLocationClick} variant="outline" className="w-full mt-2">
+                 <Button onClick={handleDynamicLocationClick} variant="outline" className="w-full mt-2" aria-label="משלוח למיקום דינמי (בטא)">
                     <Navigation className="h-4 w-4 ml-2 text-blue-500" /> משלוח למיקום דינמי (בטא - בקרוב)
                  </Button>
             </CardContent>
@@ -227,12 +229,12 @@ export default function CartPage() {
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="flex items-center space-x-2 p-3 border rounded-md">
-                    <Checkbox id="isGift" checked={isGift} onCheckedChange={handleGiftToggle} />
-                    <Label htmlFor="isGift" className="flex items-center cursor-pointer">
+                    <Checkbox id="isGift" checked={isGift} onCheckedChange={handleGiftToggle} aria-labelledby="giftLabel" />
+                    <Label htmlFor="isGift" id="giftLabel" className="flex items-center cursor-pointer">
                         <Gift className="h-5 w-5 ml-2 text-pink-500" /> זו מתנה? (פתק אישי בקרוב)
                     </Label>
                 </div>
-                <Button onClick={handleGroupOrderClick} variant="outline" className="w-full">
+                <Button onClick={handleGroupOrderClick} variant="outline" className="w-full" aria-label="התחל הזמנה קבוצתית (בקרוב)">
                     <Users className="h-4 w-4 ml-2 text-purple-500" /> התחל הזמנה קבוצתית (בקרוב)
                  </Button>
             </CardContent>
@@ -298,14 +300,14 @@ export default function CartPage() {
             </CardContent>
             <CardFooter className="flex flex-col gap-3">
               <Button size="lg" asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg">
-                <Link href="/checkout">
+                <Link href="/checkout" aria-label="המשך לתשלום">
                   <span className="flex items-center justify-center w-full">
                     <ArrowLeft className="mr-2 h-5 w-5" /> 
                     המשך לתשלום 
                   </span>
                 </Link>
               </Button>
-              <Button variant="outline" onClick={clearCart} className="w-full">
+              <Button variant="outline" onClick={clearCart} className="w-full" aria-label="נקה סל">
                 נקה סל
               </Button>
             </CardFooter>

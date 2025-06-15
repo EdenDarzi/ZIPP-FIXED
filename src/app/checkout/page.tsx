@@ -3,21 +3,22 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreditCard, Lock, ShoppingBag, AlertTriangle, Zap, Sparkles, DollarSign, Clock, Gift, Checkbox } from "lucide-react"; // Added Gift, Checkbox
+import { CreditCard, Lock, ShoppingBag, AlertTriangle, Zap, Sparkles, DollarSign, Clock, Gift } from "lucide-react"; // Removed Checkbox from here, it's not used for icon
 import Link from "next/link";
 import { useCart } from "@/context/cart-context";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react"; // Added useState
-import { Label } from "@/components/ui/label"; // Added Label
+import { useState } from "react"; 
+import { Label } from "@/components/ui/label"; 
+import { Checkbox } from "@/components/ui/checkbox"; // Correctly import Checkbox
 
 export default function CheckoutPage() {
   const { cart, itemCount, totalPrice, deliveryPreference, deliveryFee, discountAmount, finalPriceWithDelivery, smartCouponApplied, clearCart, scheduledDeliveryTime } = useCart();
   const router = useRouter();
   const { toast } = useToast();
-  const [discreetDelivery, setDiscreetDelivery] = useState(false); // Added state
+  const [discreetDelivery, setDiscreetDelivery] = useState(false);
 
   const handleDiscreetToggle = (checked: boolean) => {
     setDiscreetDelivery(checked);
@@ -40,7 +41,7 @@ export default function CheckoutPage() {
           הוסף פריטים לסל שלך לפני שתמשיך לתשלום.
         </p>
         <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
-          <Link href="/restaurants"><span>התחל קניות</span></Link>
+          <Link href="/restaurants" aria-label="התחל בקניות"><span>התחל בקניות</span></Link>
         </Button>
       </div>
     );
@@ -136,8 +137,8 @@ export default function CheckoutPage() {
           </div>
           
           <div className="flex items-center space-x-2 p-3 border rounded-md bg-muted/50">
-            <Checkbox id="discreetDelivery" checked={discreetDelivery} onCheckedChange={handleDiscreetToggle} />
-            <Label htmlFor="discreetDelivery" className="cursor-pointer text-sm">
+            <Checkbox id="discreetDelivery" checked={discreetDelivery} onCheckedChange={handleDiscreetToggle} aria-labelledby="discreetDeliveryLabel" />
+            <Label htmlFor="discreetDelivery" id="discreetDeliveryLabel" className="cursor-pointer text-sm">
               🤫 משלוח דיסקרטי (אפשרויות אנונימיות בקרוב)
             </Label>
           </div>
@@ -168,7 +169,7 @@ export default function CheckoutPage() {
             </div>
           )}
 
-          <Button size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg" onClick={handleMockPayment}>
+          <Button size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg" onClick={handleMockPayment} aria-label={`שלם ${finalPriceWithDelivery.toFixed(2)} שקלים (דמו)`}>
             <Lock className="ml-2 h-5 w-5" /> שלם {finalPriceWithDelivery.toFixed(2)}₪ (דמו) 
           </Button>
           <p className="text-xs text-muted-foreground text-center">
@@ -176,7 +177,7 @@ export default function CheckoutPage() {
           </p>
         </CardContent>
         <CardFooter>
-            <Button variant="outline" asChild className="w-full">
+            <Button variant="outline" asChild className="w-full" aria-label="חזור לסל הקניות">
                 <Link href="/cart"><span>חזור לסל</span></Link>
             </Button>
         </CardFooter>

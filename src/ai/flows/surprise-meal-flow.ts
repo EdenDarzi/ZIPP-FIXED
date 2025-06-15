@@ -3,29 +3,60 @@
 /**
  * @fileOverview An AI flow for generating a surprise meal suggestion.
  *
- * - getSurpriseMealSuggestion - A function that returns a creative meal suggestion.
- * - SurpriseMealInput - The input type for the getSurpriseMealSuggestion function.
- * - SurpriseMealOutput - The return type for the getSurpriseMealSuggestion function.
+ * This module defines a Genkit flow that creates an inventive and playful meal
+ * suggestion for a user seeking a surprise. It includes a fictional dish name,
+ * restaurant name, description, and a fun reasoning.
+ *
+ * @module ai/flows/surprise-meal-flow
+ * @exports getSurpriseMealSuggestion - The main function to get a surprise meal.
+ * @exports SurpriseMealInput - Zod schema for the input to the surprise meal flow.
+ * @exports SurpriseMealOutput - Zod schema for the output from the surprise meal flow.
+ * @exports type SurpriseMealInputType - TypeScript type for the input.
+ * @exports type SurpriseMealOutputType - TypeScript type for the output.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
+/**
+ * @description Zod schema for the input to the surprise meal suggestion flow.
+ * Requires a userId and optional user preferences or mood.
+ */
 const SurpriseMealInputSchema = z.object({
   userId: z.string().describe('The ID of the user requesting a surprise.'),
   preferences: z.string().optional().describe('Optional user preferences, likes, dislikes, or mood (e.g., "spicy, no seafood", "something comforting").'),
 });
-export type SurpriseMealInput = z.infer<typeof SurpriseMealInputSchema>;
+/**
+ * @description TypeScript type for the surprise meal input, inferred from SurpriseMealInputSchema.
+ */
+export type SurpriseMealInputType = z.infer<typeof SurpriseMealInputSchema>;
 
+/**
+ * @description Zod schema for the output of the surprise meal suggestion flow.
+ * Includes an invented dish name, restaurant name, description, and playful reasoning.
+ */
 const SurpriseMealOutputSchema = z.object({
   itemName: z.string().describe("The inventive name of the suggested surprise dish."),
   restaurantName: z.string().describe("A plausible but fictional name for the restaurant serving this dish."),
   itemDescription: z.string().describe("An enticing, brief description of the surprise dish."),
   playfulReasoning: z.string().describe("A short, fun, and playful reason why this dish was chosen for the user."),
 });
-export type SurpriseMealOutput = z.infer<typeof SurpriseMealOutputSchema>;
+/**
+ * @description TypeScript type for the surprise meal output, inferred from SurpriseMealOutputSchema.
+ */
+export type SurpriseMealOutputType = z.infer<typeof SurpriseMealOutputSchema>;
 
-export async function getSurpriseMealSuggestion(input: SurpriseMealInput): Promise<SurpriseMealOutput> {
+/**
+ * Generates a creative and surprising meal suggestion for the user.
+ * This function wraps the Genkit flow `surpriseMealFlow`.
+ *
+ * @async
+ * @function getSurpriseMealSuggestion
+ * @param {SurpriseMealInputType} input - User ID and optional preferences.
+ * @returns {Promise<SurpriseMealOutputType>} A promise that resolves to a surprise meal suggestion.
+ * @throws {Error} If the AI flow fails to generate a suggestion.
+ */
+export async function getSurpriseMealSuggestion(input: SurpriseMealInputType): Promise<SurpriseMealOutputType> {
   return surpriseMealFlow(input);
 }
 
@@ -60,10 +91,10 @@ const surpriseMealFlow = ai.defineFlow(
     if (!output) {
       // Fallback in case the AI fails to generate structured output
       return {
-        itemName: "Mystery Munchies",
-        restaurantName: "The Enigma Eatery",
-        itemDescription: "A delightful surprise that will tantalize your taste buds! What could it be? Only one way to find out.",
-        playfulReasoning: "Because today feels like a day for a delicious mystery! Let's spice things up a bit, shall we?"
+        itemName: "מנצ'יז מסתורי",
+        restaurantName: "מסעדת התעלומה",
+        itemDescription: "הפתעה מענגת שתגרה את בלוטות הטעם שלך! מה זה יכול להיות? יש רק דרך אחת לגלות.",
+        playfulReasoning: "כי היום מרגיש כמו יום למסתורין טעים! בואו נפתיע קצת, נכון?"
       };
     }
     return output;

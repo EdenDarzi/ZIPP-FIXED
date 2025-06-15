@@ -23,7 +23,7 @@ export default function ItemCard({ item, restaurantId }: ItemCardProps) {
 
   return (
     <Card className="overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
-      <Link href={`/restaurants/${restaurantId}/items/${item.id}`} className="block group">
+      <Link href={`/restaurants/${restaurantId}/items/${item.id}`} className="block group" aria-label={`הצג פרטים על ${item.name}`}>
         <div className="relative w-full h-40">
           <Image
             src={item.imageUrl}
@@ -46,13 +46,13 @@ export default function ItemCard({ item, restaurantId }: ItemCardProps) {
       </CardContent>
       <CardFooter className="flex flex-col sm:flex-row gap-2">
         <Button variant="outline" asChild className="w-full sm:w-auto flex-1">
-          <Link href={`/restaurants/${restaurantId}/items/${item.id}`}>
+          <Link href={`/restaurants/${restaurantId}/items/${item.id}`} aria-label={`הצג פרטים נוספים על ${item.name}`}>
             <span className="flex items-center justify-center w-full">
               <Eye className="mr-2 h-4 w-4" /> הצג
             </span>
           </Link>
         </Button>
-        <Button onClick={handleAddToCart} className="w-full sm:w-auto flex-1 bg-accent hover:bg-accent/90 text-accent-foreground">
+        <Button onClick={handleAddToCart} className="w-full sm:w-auto flex-1 bg-accent hover:bg-accent/90 text-accent-foreground" aria-label={`הוסף ${item.name} לעגלה`}>
           <PlusCircle className="mr-2 h-4 w-4" /> הוסף
         </Button>
       </CardFooter>

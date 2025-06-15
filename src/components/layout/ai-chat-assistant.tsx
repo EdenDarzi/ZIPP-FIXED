@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { MessageSquare, Send, Loader2, Bot } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { getChatResponse, ChatAssistantInput } from '@/ai/flows/chat-assistant-flow'; // Adjust path as needed
+import { getChatResponse, ChatAssistantInputType } from '@/ai/flows/chat-assistant-flow'; // Adjust path as needed
 import { ScrollArea } from '../ui/scroll-area';
 
 interface ChatMessage {
@@ -37,7 +37,7 @@ export default function AiChatAssistant() {
     setIsLoading(true);
 
     try {
-      const input: ChatAssistantInput = { userInput: newUserMessage.text };
+      const input: ChatAssistantInputType = { userInput: newUserMessage.text };
       const result = await getChatResponse(input);
       const aiResponse: ChatMessage = {
         sender: 'ai',
@@ -48,13 +48,13 @@ export default function AiChatAssistant() {
     } catch (error) {
       console.error('Error getting chat response:', error);
       toast({
-        title: 'Error',
-        description: 'AI assistant is currently unavailable. Please try again later.',
+        title: 'שגיאה',
+        description: 'עוזר ה-AI אינו זמין כרגע. אנא נסה שוב מאוחר יותר.',
         variant: 'destructive',
       });
       const errorResponse: ChatMessage = {
         sender: 'ai',
-        text: "Sorry, I couldn't process that. Please try again.",
+        text: "מצטער, לא הצלחתי לעבד את הבקשה. אנא נסה שוב.",
         timestamp: new Date(),
       };
       setChatHistory(prev => [...prev, errorResponse]);
@@ -70,7 +70,8 @@ export default function AiChatAssistant() {
         size="lg"
         className="fixed bottom-6 right-6 rounded-full shadow-xl p-4 h-16 w-16 bg-primary hover:bg-primary/90 text-primary-foreground z-50"
         onClick={() => setIsOpen(true)}
-        aria-label="Open AI Chat Assistant"
+        aria-label="פתח עוזר צ'אט AI"
+        title="פתח עוזר צ'אט AI"
       >
         <Bot className="h-7 w-7" />
       </Button>
@@ -82,7 +83,7 @@ export default function AiChatAssistant() {
               <Bot className="h-6 w-6 mr-2" /> LivePick AI Ordering Assistant
             </SheetTitle>
             <SheetDescription>
-              Ask me anything about food, orders, or find what you crave!
+              שאל אותי כל דבר על אוכל, הזמנות, או מצא את מה שמתחשק לך!
             </SheetDescription>
           </SheetHeader>
 
@@ -109,7 +110,7 @@ export default function AiChatAssistant() {
             {isLoading && (
               <div className="flex justify-start">
                 <div className="max-w-[80%] p-3 rounded-lg bg-muted text-muted-foreground flex items-center">
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Thinking...
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" /> חושב...
                 </div>
               </div>
             )}
@@ -119,15 +120,15 @@ export default function AiChatAssistant() {
             <div className="flex w-full items-center space-x-2">
               <Input
                 type="text"
-                placeholder="e.g., 'Something light, under $15'"
+                placeholder="למשל: 'משהו קליל, מתחת ל-50₪'"
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSendMessage()}
                 disabled={isLoading}
                 className="flex-grow"
-                aria-label="Chat input"
+                aria-label="הקלד את הודעתך כאן"
               />
-              <Button onClick={handleSendMessage} disabled={isLoading || !userInput.trim()} aria-label="Send message">
+              <Button onClick={handleSendMessage} disabled={isLoading || !userInput.trim()} aria-label="שלח הודעה">
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               </Button>
             </div>

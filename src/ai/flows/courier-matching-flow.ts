@@ -3,9 +3,17 @@
 /**
  * @fileOverview AI flow for matching the best courier to an order based on bids.
  *
- * - selectBestCourierBid - A function that selects the most suitable courier bid from a list.
- * - CourierMatchingInput - The input type for the selectBestCourierBid function.
- * - CourierMatchingOutput - The return type for the selectBestCourierBid function.
+ * This module is responsible for evaluating courier bids for a given order
+ * and selecting the most suitable one based on various factors including bid amount,
+ * estimated time of arrival (ETA), courier rating, trust score, and vehicle type.
+ * It uses a Genkit flow to process this logic.
+ *
+ * @module ai/flows/courier-matching-flow
+ * @exports selectBestCourierBid - The main function to select the best courier bid.
+ * @exports CourierMatchingInput - Zod schema for the input to the courier matching flow.
+ * @exports CourierMatchingOutput - Zod schema for the output from the courier matching flow.
+ * @exports type CourierMatchingInputType - TypeScript type for the input.
+ * @exports type CourierMatchingOutputTyoe - TypeScript type for the output.
  */
 
 import { ai } from '@/ai/genkit';
@@ -13,13 +21,23 @@ import type { DeliveryVehicle } from '@/types'; // Keep type import for Delivery
 import { z } from 'genkit';
 
 // Define Zod schemas based on TypeScript types
+/**
+ * @description Zod schema for a geographical location.
+ */
 const LocationSchema = z.object({ 
   lat: z.number().describe("Latitude"), 
   lng: z.number().describe("Longitude") 
 });
 
+/**
+ * @description Zod enum for delivery vehicle types.
+ */
 const DeliveryVehicleEnum = z.enum(['motorcycle', 'car', 'bicycle', 'foot', 'scooter']);
 
+/**
+ * @description Zod schema for a courier's profile.
+ * Contains comprehensive details about a courier.
+ */
 const CourierProfileSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -34,7 +52,10 @@ const CourierProfileSchema = z.object({
   transportationModeDetails: z.string().optional().describe("e.g. 'Honda PCX 150', 'Trek FX 2'"),
 });
 
-
+/**
+ * @description Zod schema for a courier's bid on an order.
+ * Details the terms of a courier's offer to deliver an order.
+ */
 const CourierBidSchema = z.object({
   bidId: z.string(),
   orderId: z.string(),
@@ -52,6 +73,10 @@ const CourierBidSchema = z.object({
   courierProfileSnapshot: CourierProfileSchema.partial().optional().describe("A snapshot of the courier's profile at the time of bidding, for context."),
 });
 
+/**
+ * @description Zod schema for order details relevant to the bidding process.
+ * Provides context for couriers to make informed bids.
+ */
 const OrderDetailsForBiddingSchema = z.object({
   orderId: z.string(),
   restaurantName: z.string(),
@@ -68,25 +93,47 @@ const OrderDetailsForBiddingSchema = z.object({
   customerNotes: z.string().optional().describe("Any special instructions from the customer for the delivery."),
 });
 
-
+/**
+ * @description Zod schema for the input to the courier matching flow.
+ * Encapsulates all information needed to select the best courier bid.
+ */
 const CourierMatchingInputSchema = z.object({
   orderDetails: OrderDetailsForBiddingSchema.describe("Details of the order needing a courier."),
   bids: z.array(CourierBidSchema).min(0).describe('A list of bids received from couriers for this order. Can be empty.'),
   // Future: could include real-time traffic conditions, weather, etc.
 });
-export type CourierMatchingInput = z.infer<typeof CourierMatchingInputSchema>;
+/**
+ * @description TypeScript type for the courier matching input, inferred from CourierMatchingInputSchema.
+ */
+export type CourierMatchingInputType = z.infer<typeof CourierMatchingInputSchema>;
 
+/**
+ * @description Zod schema for the output from the courier matching flow.
+ * Contains the selected bid (if any) and reasoning for the decision.
+ */
 const CourierMatchingOutputSchema = z.object({
   selectedBid: CourierBidSchema.optional().describe('The winning courier bid. Undefined if no suitable bid was found.'),
   reasoning: z.string().optional().describe('Explanation for the selection or why no bid was selected, considering all factors.'),
   fallbackRequired: z.boolean().describe('True if no bids were provided or no suitable bid was found, indicating a fallback mechanism should be used.'),
 });
-export type CourierMatchingOutput = z.infer<typeof CourierMatchingOutputSchema>;
+/**
+ * @description TypeScript type for the courier matching output, inferred from CourierMatchingOutputSchema.
+ */
+export type CourierMatchingOutputType = z.infer<typeof CourierMatchingOutputSchema>;
 
 // Ranking function based on the provided logic
 // Type for internal ranking function based on Zod schema
 type CourierBidForRanking = z.infer<typeof CourierBidSchema>;
 
+/**
+ * Ranks courier bids based on a scoring system.
+ * The scoring considers trust score, ETA, rating, bid amount, and fast pickup offer.
+ *
+ * @function rankBids
+ * @param {CourierBidForRanking[]} bids - An array of courier bids to rank.
+ * @returns {CourierBidForRanking[]} The ranked array of courier bids, with the best bid first.
+ * @private
+ */
 function rankBids(bids: CourierBidForRanking[]): CourierBidForRanking[] {
   return bids.sort((a, b) => {
     // Score: trustScore (30%), ETA (lower is better, max 100 points), rating (scaled), bidAmount (lower is better), fast pickup bonus
@@ -108,8 +155,17 @@ function rankBids(bids: CourierBidForRanking[]): CourierBidForRanking[] {
   });
 }
 
-
-export async function selectBestCourierBid(input: CourierMatchingInput): Promise<CourierMatchingOutput> {
+/**
+ * Selects the most suitable courier bid from a list of bids for a given order.
+ * This function serves as the primary entry point for the courier matching logic.
+ *
+ * @async
+ * @function selectBestCourierBid
+ * @param {CourierMatchingInputType} input - The order details and the list of courier bids.
+ * @returns {Promise<CourierMatchingOutputType>} A promise that resolves to the selected bid and reasoning.
+ * @throws {Error} If there's an issue processing the bids.
+ */
+export async function selectBestCourierBid(input: CourierMatchingInputType): Promise<CourierMatchingOutputType> {
   return courierMatchingFlow(input);
 }
 
@@ -128,7 +184,7 @@ const courierMatchingFlow = ai.defineFlow(
       });
       return {
         selectedBid: undefined,
-        reasoning: reasoning || "No bids received. Consider fallback or dynamic price adjustment.",
+        reasoning: reasoning || "לא התקבלו הצעות. מומלץ לשקול שימוש במנגנון גיבוי או התאמה דינמית של המחיר.",
         fallbackRequired: true,
       };
     }
@@ -145,7 +201,7 @@ const courierMatchingFlow = ai.defineFlow(
         });
         return {
             selectedBid: undefined,
-            reasoning: reasoning || `No bids met the vehicle requirements.`,
+            reasoning: reasoning || `לא נמצאו הצעות העומדות בדרישות הרכב.`,
             fallbackRequired: true,
         };
     }
@@ -202,9 +258,8 @@ const courierMatchingFlow = ai.defineFlow(
 
     return {
       selectedBid: bestBid,
-      reasoning: selectionReasoning || `Selected ${bestBid.courierName} based on overall score (considering ETA, bid amount, reliability, and fast pickup offer).`,
+      reasoning: selectionReasoning || `הצעתו של ${bestBid.courierName} נבחרה בהתבסס על ציון כולל (המתחשב בזמן הגעה, סכום ההצעה, אמינות והצעת איסוף מהיר).`,
       fallbackRequired: false,
     };
   }
 );
-

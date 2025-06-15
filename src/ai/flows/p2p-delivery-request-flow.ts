@@ -3,14 +3,26 @@
 /**
  * @fileOverview An AI flow for initiating a Peer-to-Peer (P2P) or custom errand delivery request.
  *
- * - requestP2PDelivery - A function that processes a custom delivery request.
- * - P2PDeliveryRequestInput - The input type for the requestP2PDelivery function.
- * - P2PDeliveryRequestOutput - The return type for the requestP2PDelivery function.
+ * This module defines a Genkit flow that processes user requests for custom deliveries,
+ * such as sending a package or having a courier purchase items. It includes basic
+ * validation and simulates a request initiation process.
+ *
+ * @module ai/flows/p2p-delivery-request-flow
+ * @exports requestP2PDelivery - The main function to initiate a P2P delivery request.
+ * @exports P2PDeliveryRequestInput - Zod schema for the input to the P2P delivery request.
+ * @exports P2PDeliveryRequestOutput - Zod schema for the output from the P2P delivery request.
+ * @exports type P2PDeliveryRequestInputType - TypeScript type for the input.
+ * @exports type P2PDeliveryRequestOutputType - TypeScript type for the output.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
+/**
+ * @description Zod schema for the input of a P2P delivery request.
+ * Defines all necessary details for a custom delivery, including addresses, package info,
+ * contact details, and optional shopping instructions.
+ */
 const P2PDeliveryRequestInputSchema = z.object({
   pickupAddress: z.string().min(5, "Pickup address must be at least 5 characters").describe("Full address for package pickup."),
   destinationAddress: z.string().min(5, "Destination address must be at least 5 characters").describe("Full address for package delivery."),
@@ -25,8 +37,15 @@ const P2PDeliveryRequestInputSchema = z.object({
   specialInstructions: z.string().optional().describe("Any special instructions for the courier."),
   requestedPickupTime: z.string().optional().describe("Preferred pickup time (e.g., 'ASAP', specific ISO time)."),
 });
-export type P2PDeliveryRequestInput = z.infer<typeof P2PDeliveryRequestInputSchema>;
+/**
+ * @description TypeScript type for the P2P delivery request input, inferred from P2PDeliveryRequestInputSchema.
+ */
+export type P2PDeliveryRequestInputType = z.infer<typeof P2PDeliveryRequestInputSchema>;
 
+/**
+ * @description Zod schema for the output of a P2P delivery request.
+ * Returns the request ID, status, estimated cost and ETA, and a user message.
+ */
 const P2PDeliveryRequestOutputSchema = z.object({
   requestId: z.string().describe("A unique ID for this delivery request."),
   status: z.enum(['REQUESTED', 'MATCHING_COURIER', 'FAILED_VALIDATION']).describe("Current status of the request."),
@@ -34,9 +53,23 @@ const P2PDeliveryRequestOutputSchema = z.object({
   estimatedPickupEtaMinutes: z.number().optional().describe("Estimated time for a courier to arrive at pickup."),
   message: z.string().describe("A message to the user regarding their request."),
 });
-export type P2PDeliveryRequestOutput = z.infer<typeof P2PDeliveryRequestOutputSchema>;
+/**
+ * @description TypeScript type for the P2P delivery request output, inferred from P2PDeliveryRequestOutputSchema.
+ */
+export type P2PDeliveryRequestOutputType = z.infer<typeof P2PDeliveryRequestOutputSchema>;
 
-export async function requestP2PDelivery(input: P2PDeliveryRequestInput): Promise<P2PDeliveryRequestOutput> {
+/**
+ * Processes a custom Peer-to-Peer (P2P) delivery request.
+ * This is a mock implementation that simulates request validation, cost estimation,
+ * and initiating courier matching.
+ *
+ * @async
+ * @function requestP2PDelivery
+ * @param {P2PDeliveryRequestInputType} input - The details of the P2P delivery request.
+ * @returns {Promise<P2PDeliveryRequestOutputType>} A promise that resolves to the request status and details.
+ * @throws {Error} If there's an issue processing the request.
+ */
+export async function requestP2PDelivery(input: P2PDeliveryRequestInputType): Promise<P2PDeliveryRequestOutputType> {
   // This is a mock implementation.
   // In a real system, this would involve:
   // 1. Validating addresses (e.g., using a geocoding service).
@@ -110,5 +143,3 @@ export async function requestP2PDelivery(input: P2PDeliveryRequestInput): Promis
 
   return p2pDeliveryFlow(input);
 }
-
-    

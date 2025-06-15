@@ -1,16 +1,29 @@
 
 'use server';
 /**
- * @fileOverview An AI flow for identifying a dish from an image, with a focus on social media trends, and providing suggestions, including actionable business insights.
+ * @fileOverview An AI flow for identifying a dish from an image, with a focus on social media trends,
+ * and providing suggestions, including actionable business insights for LivePick.
  *
- * - identifyDishFromImage - A function that identifies a dish/trend and suggests similar items or business opportunities.
- * - IdentifyDishInput - The input type for the identifyDishFromImage function.
- * - IdentifyDishOutput - The return type for the identifyDishFromImage function.
+ * This module uses Genkit to define a flow that takes an image (as a data URI) and an optional
+ * user query. It then attempts to identify the dish, determine if it's a trend, provide
+ * user-facing suggestions, and optionally, offer business opportunities for restaurants
+ * on the LivePick platform based on the identified trend.
+ *
+ * @module ai/flows/identify-dish-flow
+ * @exports identifyDishFromImage - The main function to trigger the dish identification flow.
+ * @exports IdentifyDishInput - Zod schema for the input to the flow.
+ * @exports IdentifyDishOutput - Zod schema for the output from the flow.
+ * @exports type IdentifyDishInputType - TypeScript type for the input.
+ * @exports type IdentifyDishOutputType - TypeScript type for the output.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
+/**
+ * @description Zod schema for the input to the "Identify Dish from Image" flow.
+ * It expects image data as a URI and an optional user query.
+ */
 const IdentifyDishInputSchema = z.object({
   imageDataUri: z
     .string()
@@ -19,8 +32,15 @@ const IdentifyDishInputSchema = z.object({
     ),
   userQuery: z.string().optional().describe('Optional user query related to the image, e.g., "Is this spicy?" or "Where can I find this trend?".'),
 });
-export type IdentifyDishInput = z.infer<typeof IdentifyDishInputSchema>;
+/**
+ * @description TypeScript type for the input of the dish identification flow, inferred from IdentifyDishInputSchema.
+ */
+export type IdentifyDishInputType = z.infer<typeof IdentifyDishInputSchema>;
 
+/**
+ * @description Zod schema for a business suggestion derived from an identified food trend.
+ * This is used within the IdentifyDishOutputSchema.
+ */
 const BusinessSuggestionSchema = z.object({
     suggestedItemName: z.string().describe("A catchy, menu-ready name for a new item based on the trend."),
     suggestedPriceRange: z.string().describe("A suggested price range, e.g., '₪30-₪40', '$8-$12'."),
@@ -29,6 +49,10 @@ const BusinessSuggestionSchema = z.object({
     rationale: z.string().describe("A short reason why this trend might be a good opportunity for a local business."),
 });
 
+/**
+ * @description Zod schema for the output of the "Identify Dish from Image" flow.
+ * It includes the identified dish name, trend status, user suggestions, and potential business opportunities.
+ */
 const IdentifyDishOutputSchema = z.object({
   identifiedDishName: z.string().describe("The name of the dish/trend identified in the image. If unsure, state 'Food item detected' or similar."),
   isTrend: z.boolean().describe("Indicates if the identified item is considered a significant social media trend."),
@@ -36,9 +60,22 @@ const IdentifyDishOutputSchema = z.object({
   generalSuggestion: z.string().describe("A helpful response for the user (e.g., how to find similar items on LivePick, or context about the dish)."),
   businessOpportunity: BusinessSuggestionSchema.optional().describe("If a strong trend is identified, provide a structured suggestion for businesses on LivePick."),
 });
-export type IdentifyDishOutput = z.infer<typeof IdentifyDishOutputSchema>;
+/**
+ * @description TypeScript type for the output of the dish identification flow, inferred from IdentifyDishOutputSchema.
+ */
+export type IdentifyDishOutputType = z.infer<typeof IdentifyDishOutputSchema>;
 
-export async function identifyDishFromImage(input: IdentifyDishInput): Promise<IdentifyDishOutput> {
+/**
+ * Identifies a dish from an image and provides related suggestions and insights.
+ * This function wraps the Genkit flow `identifyDishFlow`.
+ *
+ * @async
+ * @function identifyDishFromImage
+ * @param {IdentifyDishInputType} input - The image data URI and optional user query.
+ * @returns {Promise<IdentifyDishOutputType>} A promise that resolves to the identification results.
+ * @throws {Error} If the AI flow fails to process the image or generate insights.
+ */
+export async function identifyDishFromImage(input: IdentifyDishInputType): Promise<IdentifyDishOutputType> {
   return identifyDishFlow(input);
 }
 
@@ -109,7 +146,7 @@ const identifyDishFlow = ai.defineFlow(
       return {
         identifiedDishName: "לא זוהתה מנה",
         isTrend: false,
-        generalSuggestion: "מצטערים, לא הצלחתי לנתח את התמונה כרגע. אנא נסה/י תמונה אחרת או חפש/י ידנית."
+        generalSuggestion: "מצטערים, לא הצלחתי לנתח את התמונה כרגע. אנא נסה/י תמונה אחרת או חפש/י ידנית ב-LivePick."
       }
     }
     return output;
