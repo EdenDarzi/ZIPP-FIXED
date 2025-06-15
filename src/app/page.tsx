@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Utensils, ShoppingCart, Brain, ArrowLeft, MapPin, Search, Sparkles, Heart, History, Award, Flame } from "lucide-react"; // ArrowRight becomes ArrowLeft for RTL
+import { Utensils, ShoppingCart, Brain, ArrowLeft, MapPin, Search, Sparkles, Heart, History, Award, Flame, Gift } from "lucide-react"; // ArrowRight becomes ArrowLeft for RTL
 import Image from "next/image";
 import Link from "next/link";
 import RestaurantCard from "@/components/restaurants/restaurant-card";
@@ -12,6 +12,7 @@ import type { Restaurant } from "@/types";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { getCulinarySuggestion, CulinaryAssistantInput } from "@/ai/flows/culinary-assistant-flow"; 
+import SurpriseFeatureCard from "@/components/surprise/surprise-feature-card"; // Added
 
 export default function HomePage() {
   const allRestaurants: Restaurant[] = mockRestaurants;
@@ -100,6 +101,11 @@ export default function HomePage() {
             </Button>
           </CardContent>
         </Card>
+      </section>
+
+      {/* Surprise Meal Feature Card - Added New Section */}
+      <section className="animate-fadeInUp animation-delay-700">
+        <SurpriseFeatureCard />
       </section>
 
       {recommendedForYou.length > 0 && (
@@ -223,6 +229,7 @@ export default function HomePage() {
         .animation-delay-200 { animation-delay: 0.2s; }
         .animation-delay-400 { animation-delay: 0.4s; }
         .animation-delay-600 { animation-delay: 0.6s; }
+        .animation-delay-700 { animation-delay: 0.7s; } /* Added for surprise card */
         .animation-delay-800 { animation-delay: 0.8s; }
         .animation-delay-1000 { animation-delay: 1s; }
         .animation-delay-1200 { animation-delay: 1.2s; }

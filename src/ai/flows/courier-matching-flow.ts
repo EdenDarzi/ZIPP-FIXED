@@ -69,14 +69,14 @@ const OrderDetailsForBiddingSchema = z.object({
 });
 
 
-export const CourierMatchingInputSchema = z.object({
+const CourierMatchingInputSchema = z.object({
   orderDetails: OrderDetailsForBiddingSchema.describe("Details of the order needing a courier."),
   bids: z.array(CourierBidSchema).min(0).describe('A list of bids received from couriers for this order. Can be empty.'),
   // Future: could include real-time traffic conditions, weather, etc.
 });
 export type CourierMatchingInput = z.infer<typeof CourierMatchingInputSchema>;
 
-export const CourierMatchingOutputSchema = z.object({
+const CourierMatchingOutputSchema = z.object({
   selectedBid: CourierBidSchema.optional().describe('The winning courier bid. Undefined if no suitable bid was found.'),
   reasoning: z.string().optional().describe('Explanation for the selection or why no bid was selected, considering all factors.'),
   fallbackRequired: z.boolean().describe('True if no bids were provided or no suitable bid was found, indicating a fallback mechanism should be used.'),
