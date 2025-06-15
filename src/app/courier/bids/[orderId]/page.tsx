@@ -9,23 +9,25 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, CheckCircle, DollarSign, Zap, XCircle, Info, Timer, MapPin, Navigation, Package, Edit3, Clock, AlertTriangle, Bike, Car, Footprints } from 'lucide-react';
+import { ArrowLeft, CheckCircle, DollarSign, Zap, XCircle, Info, Timer, MapPin, Navigation, Package, Edit3, Clock, AlertTriangle, Bike, Car, Footprints, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { notFound, useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { selectBestCourierBid, CourierMatchingInput, CourierMatchingOutput } from '@/ai/flows/courier-matching-flow'; // AI Matching
+import { cn } from '@/lib/utils';
 
 // Mock current courier (replace with actual auth)
 const MOCK_CURRENT_COURIER_ID = 'courier1'; // Speedy Sam
 
 // Helper to get vehicle icon
-const VehicleIcon = ({ type }: { type: DeliveryVehicle | undefined }) => {
-  if (type === 'motorcycle') return <Bike className="inline h-4 w-4 mr-1" />;
-  if (type === 'scooter') return <Bike className="inline h-4 w-4 mr-1" />; // Using Bike for scooter too for now
-  if (type === 'car') return <Car className="inline h-4 w-4 mr-1" />;
-  if (type === 'bicycle') return <Bike className="inline h-4 w-4 mr-1" />;
-  if (type === 'foot') return <Footprints className="inline h-4 w-4 mr-1" />;
+const VehicleIcon = ({ type, className }: { type: DeliveryVehicle | undefined, className?: string }) => {
+  const iconProps = { className: cn("inline h-4 w-4 mr-1", className) };
+  if (type === 'motorcycle') return <Bike {...iconProps} title="Motorcycle" />;
+  if (type === 'scooter') return <Bike {...iconProps} title="Scooter" />;
+  if (type === 'car') return <Car {...iconProps} title="Car" />;
+  if (type === 'bicycle') return <Bike {...iconProps} title="Bicycle"/>;
+  if (type === 'foot') return <Footprints {...iconProps} title="Foot"/>;
   return null;
 };
 
@@ -40,14 +42,13 @@ export default function CourierBidPage() {
   const [courier, setCourier] = useState<CourierProfile | null>(null);
   const [restaurantDetails, setRestaurantDetails] = useState<{ name: string, location: string } | null>(null);
 
-  const [bidAmount, setBidAmount] = useState<number>(0);
   const [customBid, setCustomBid] = useState<string>('');
   const [isFastPickup, setIsFastPickup] = useState<boolean>(false);
-  const [timeLeft, setTimeLeft] = useState<number>(20); // 20 seconds bidding window for courier to act
+  const [timeLeft, setTimeLeft] = useState<number>(20); // 20 seconds bidding window
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [bidPlaced, setBidPlaced] = useState<boolean>(false);
+  const [evaluationTriggered, setEvaluationTriggered] = useState(false);
 
-  // Mock: Simulate other bids coming in for context, and AI selection
   const [otherBids, setOtherBids] = useState<CourierBid[]>([]);
   const [winningBidInfo, setWinningBidInfo] = useState<CourierMatchingOutput | null>(null);
 
@@ -67,33 +68,33 @@ export default function CourierBidPage() {
     }
     setOrder(fetchedOrder);
     setCourier(fetchedCourier);
-    setBidAmount(fetchedOrder.baseCommission);
     setCustomBid(fetchedOrder.baseCommission.toString());
 
     const restDetails = getRestaurantById(fetchedOrder.restaurantName === 'Pizza Palace' ? 'restaurant1' : 'restaurant2'); // Simplified
     if(restDetails) {
       setRestaurantDetails({name: restDetails.name, location: restDetails.location});
     }
-
-    // Simulate other bids for AI selection demo
     setOtherBids(mockBidsForOrder(orderId).filter(b => b.courierId !== MOCK_CURRENT_COURIER_ID));
 
   }, [orderId, router, toast]);
 
-  useEffect(() => {
-    if (timeLeft <= 0 || !order || bidPlaced) return;
+ useEffect(() => {
+    if (timeLeft <= 0 || !order || bidPlaced || evaluationTriggered) {
+        if (timeLeft <= 0 && !bidPlaced && !evaluationTriggered && order) {
+            // Time's up, courier didn't bid, trigger evaluation with other bids only
+            toast({ title: "Bidding Time Expired", description: "Evaluating existing bids...", variant: "default" });
+            handleBidEvaluation(otherBids);
+            setEvaluationTriggered(true);
+        }
+        return;
+    }
 
     const timer = setInterval(() => {
       setTimeLeft(prevTime => prevTime - 1);
     }, 1000);
 
-    // Simulate bid evaluation when time is up (or slightly before for demo)
-    if (timeLeft === 1 && !bidPlaced) { // Trigger evaluation if no bid placed by current courier
-        handleBidEvaluation([]); // Pass empty array if current courier didn't bid
-    }
-
     return () => clearInterval(timer);
-  }, [timeLeft, order, bidPlaced]);
+  }, [timeLeft, order, bidPlaced, evaluationTriggered, otherBids]);
 
 
   const handleBidAction = async (actionType: 'accept' | 'bid' | 'speed' | 'skip') => {
@@ -103,50 +104,44 @@ export default function CourierBidPage() {
     }
 
     setIsSubmitting(true);
-    let finalBidAmount = order.baseCommission;
-    let finalFastPickup = isFastPickup; // Use the state of isFastPickup
+    let finalBidAmount = parseFloat(customBid) || order.baseCommission;
+    let finalFastPickup = isFastPickup;
     let message = "";
 
     if (actionType === 'skip') {
       router.push('/courier/open-bids');
       toast({ title: "Order Skipped", description: "You have skipped this bidding opportunity." });
       setIsSubmitting(false);
-      setBidPlaced(true); // Mark as action taken
+      setBidPlaced(true); 
+      // Courier skipped, evaluate other bids
+      handleBidEvaluation(otherBids);
+      setEvaluationTriggered(true);
       return;
     }
 
     switch (actionType) {
       case 'accept':
         finalBidAmount = order.baseCommission;
-        // isFastPickup state already reflects if speed was chosen prior to accept
         message = `Accepted base commission of ₪${finalBidAmount.toFixed(2)}${finalFastPickup ? ' with Speed Pickup.' : '.'}`;
         break;
       case 'bid':
         const newBid = parseFloat(customBid);
-        if (isNaN(newBid) || newBid < order.baseCommission * 0.8) { // Allow slightly lower for negotiation
-          toast({ title: "Invalid Bid", description: `Bid must be reasonable (e.g. at least ₪${(order.baseCommission * 0.8).toFixed(2)}).`, variant: "destructive" });
+        if (isNaN(newBid) || newBid < order.baseCommission * 0.8 || newBid > order.baseCommission * 2.5) {
+          toast({ title: "Invalid Bid", description: `Bid must be between ₪${(order.baseCommission * 0.8).toFixed(2)} and ₪${(order.baseCommission * 2.5).toFixed(2)}.`, variant: "destructive" });
           setIsSubmitting(false);
           return;
-        }
-        if (newBid > order.baseCommission * 2.5) { // Cap high bids
-            toast({ title: "Bid Too High", description: `Maximum bid allowed is ₪${(order.baseCommission * 2.5).toFixed(2)}.`, variant: "destructive" });
-            setIsSubmitting(false);
-            return;
         }
         finalBidAmount = newBid;
         message = `Bid ₪${finalBidAmount.toFixed(2)} submitted${finalFastPickup ? ' with Speed Pickup.' : '.'}`;
         break;
-      case 'speed': // This action now primarily toggles isFastPickup, bid amount is from input or base.
-        // This specific button action primarily submits with current state, assuming Speed is now active
-        finalFastPickup = true; // Ensure it's true if this button is clicked
-        setIsFastPickup(true); // Update UI state as well
+      case 'speed':
+        finalFastPickup = true;
+        setIsFastPickup(true);
         finalBidAmount = parseFloat(customBid) || order.baseCommission;
-        if (finalBidAmount < order.baseCommission * 0.8) finalBidAmount = order.baseCommission * 0.8;
-         if (finalBidAmount > order.baseCommission * 2.5) finalBidAmount = order.baseCommission * 2.5;
-
+         if (isNaN(finalBidAmount) || finalBidAmount < order.baseCommission * 0.8 || finalBidAmount > order.baseCommission * 2.5) {
+            finalBidAmount = order.baseCommission; // Default to base if custom invalid with speed
+         }
         message = `Speed Pickup offered with current bid of ₪${finalBidAmount.toFixed(2)}.`;
-        // This button can also just update the state, and a general "Submit Bid" can be used.
-        // For this flow, let's make "Speed Bid" button also a submit action.
         break;
     }
 
@@ -157,7 +152,7 @@ export default function CourierBidPage() {
         courierName: courier.name,
         distanceToRestaurantKm: Math.random() * 3 + 0.5, // Mock
         bidAmount: finalBidAmount,
-        proposedEtaMinutes: Math.round((order.estimatedRouteDistanceKm || order.estimatedDistanceKm) * (finalFastPickup ? 3 : 5) + (Math.random() * 3 + 0.5)*3), // Mock ETA calculation
+        proposedEtaMinutes: Math.round((order.estimatedRouteDistanceKm || order.estimatedDistanceKm) * (finalFastPickup ? 3 : 5) + (Math.random() * 3 + 0.5)*3), // Mock
         courierRating: courier.rating,
         courierTrustScore: courier.trustScore,
         vehicleType: courier.vehicleType,
@@ -168,10 +163,10 @@ export default function CourierBidPage() {
     };
 
     toast({ title: "Bid Submitted!", description: message });
-    setBidPlaced(true); // Mark bid as placed
+    setBidPlaced(true); 
     
-    // Now evaluate bids (including the current courier's bid)
     await handleBidEvaluation([currentCourierBid, ...otherBids]);
+    setEvaluationTriggered(true);
     setIsSubmitting(false);
   };
 
@@ -182,20 +177,11 @@ export default function CourierBidPage() {
         const input: CourierMatchingInput = { orderDetails: order, bids: allSubmittedBids };
         const result = await selectBestCourierBid(input);
         setWinningBidInfo(result);
-
-        if (result.selectedBid) {
-            if (result.selectedBid.courierId === MOCK_CURRENT_COURIER_ID) {
-                toast({ title: "🎉 You Won the Bid!", description: `Order ${order.orderId} assigned to you. ${result.reasoning || ''}`, duration: 7000, variant: 'default' });
-            } else {
-                toast({ title: "Bid Not Won", description: `Order ${order.orderId} was assigned to ${result.selectedBid.courierName}. ${result.reasoning || ''}`, duration: 7000, variant: "default" });
-            }
-        } else if (result.fallbackRequired) {
-            toast({ title: "No Suitable Bid", description: `No bid was selected. ${result.reasoning || 'Fallback may be initiated.'}`, variant: "destructive" });
-        }
-         //setTimeLeft(0); // Stop timer explicitly after evaluation
+        setTimeLeft(0); // Stop timer
     } catch (error) {
         console.error("Error evaluating bids:", error);
         toast({ title: "Evaluation Error", description: "Could not determine winning bid.", variant: "destructive" });
+        setWinningBidInfo({ fallbackRequired: true, reasoning: "An error occurred during bid evaluation."});
     }
   }
 
@@ -209,42 +195,39 @@ export default function CourierBidPage() {
     );
   }
 
-  // Mocked data for display based on new structure
-  const distanceToRestaurant = parseFloat((Math.random() * 2 + 0.2).toFixed(1)); // Mock distance to restaurant more realistically
-  const estTimeFromCourierToRest = Math.round(distanceToRestaurant * (courier.vehicleType === 'bicycle' ? 6 : courier.vehicleType === 'foot' ? 10 : 3)); // Time based on vehicle
+  const distanceToRestaurant = parseFloat((Math.random() * 2 + 0.2).toFixed(1));
+  const estTimeFromCourierToRest = Math.round(distanceToRestaurant * (courier.vehicleType === 'bicycle' ? 6 : courier.vehicleType === 'foot' ? 10 : 3));
   const estTimeFromRestToCust = Math.round((order.estimatedRouteDistanceKm || order.estimatedDistanceKm) * (courier.vehicleType === 'bicycle' ? 7 : courier.vehicleType === 'foot' ? 12 : 4));
   const totalEstimatedTime = estTimeFromCourierToRest + parseInt(order.expectedPickupTime.match(/\d+/)?.[0] || '10') + estTimeFromRestToCust;
+  const bonusRequested = (parseFloat(customBid) || order.baseCommission) - order.baseCommission;
+
+  const courierVehicleMatchesRequirement = !order.requiredVehicleType || order.requiredVehicleType.length === 0 || order.requiredVehicleType.includes(courier.vehicleType);
 
 
   if (winningBidInfo) {
+    const isWinner = winningBidInfo.selectedBid?.courierId === MOCK_CURRENT_COURIER_ID;
     return (
-        <Card className="shadow-xl animate-fadeIn mt-6">
-            <CardHeader>
-                <CardTitle className="text-2xl font-headline text-primary">Bid Result for Order {order.orderId}</CardTitle>
+        <Card className="shadow-xl animate-fadeIn mt-6 max-w-lg mx-auto">
+            <CardHeader className="text-center">
+                <CardTitle className={cn("text-3xl font-headline", isWinner ? "text-green-600" : winningBidInfo.selectedBid ? "text-yellow-600" : "text-red-600")}>
+                    {isWinner ? "🎉 You Won the Bid!" : winningBidInfo.selectedBid ? "Bid Not Won" : "No Suitable Bid Selected"}
+                </CardTitle>
+                <CardDescription>For Order ID: {order.orderId}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3 text-center">
                 {winningBidInfo.selectedBid ? (
-                    winningBidInfo.selectedBid.courierId === MOCK_CURRENT_COURIER_ID ? (
-                        <div className="p-4 bg-green-50 border border-green-300 rounded-md">
-                            <h3 className="text-xl font-semibold text-green-700">🎉 Congratulations! You won the bid!</h3>
-                            <p className="text-green-600 mt-1">Reasoning: {winningBidInfo.reasoning}</p>
-                            <p className="mt-2">Proceed to pick up the order from {order.restaurantName}.</p>
-                        </div>
-                    ) : (
-                        <div className="p-4 bg-yellow-50 border border-yellow-300 rounded-md">
-                            <h3 className="text-xl font-semibold text-yellow-700">Bid Not Won</h3>
-                            <p className="text-yellow-600 mt-1">Order was assigned to {winningBidInfo.selectedBid.courierName}.</p>
-                            <p className="text-yellow-600 mt-1">Reasoning: {winningBidInfo.reasoning}</p>
-                        </div>
-                    )
+                    <>
+                        <p>The order was assigned to <span className="font-semibold">{winningBidInfo.selectedBid.courierName}</span>.</p>
+                        <p className="text-sm text-muted-foreground">AI Reasoning: {winningBidInfo.reasoning || "Based on overall score."}</p>
+                        {isWinner && <p className="mt-2 font-medium">Please proceed to pick up the order from {order.restaurantName}.</p>}
+                    </>
                 ) : (
-                     <div className="p-4 bg-red-50 border border-red-300 rounded-md">
-                        <h3 className="text-xl font-semibold text-red-700">No Bid Selected</h3>
-                        <p className="text-red-600 mt-1">{winningBidInfo.reasoning || "A suitable bid was not found or fallback initiated."}</p>
-                    </div>
+                     <p className="text-muted-foreground">{winningBidInfo.reasoning || "A suitable bid was not found, or fallback procedures are being initiated."}</p>
                 )}
-                <Button onClick={() => router.push('/courier/open-bids')} className="w-full mt-4">Back to Open Bids</Button>
             </CardContent>
+            <CardFooter>
+                <Button onClick={() => router.push('/courier/open-bids')} className="w-full mt-4">Back to Open Bids</Button>
+            </CardFooter>
         </Card>
     )
   }
@@ -260,8 +243,10 @@ export default function CourierBidPage() {
         <CardHeader className="bg-gradient-to-br from-primary/10 to-accent/10 p-6">
           <div className="flex justify-between items-center">
             <CardTitle className="text-3xl font-headline text-primary">Delivery Opportunity</CardTitle>
-             <Badge variant={timeLeft > 10 ? "default" : timeLeft > 5 ? "secondary" : "destructive"} className={`text-lg px-3 py-1 ${timeLeft <=5 ? 'animate-pulse' : ''}`}>
-                <Timer className="inline mr-2 h-5 w-5" /> {timeLeft}s
+             <Badge 
+                variant={timeLeft > 10 ? "default" : timeLeft > 5 ? "secondary" : "destructive"} 
+                className={cn("text-lg px-3 py-1 transition-all", timeLeft <= 5 && timeLeft > 0 && 'animate-pulse ring-2 ring-offset-2 ring-destructive/70', timeLeft === 0 && 'opacity-50')}>
+                <Timer className="inline mr-2 h-5 w-5" /> {timeLeft > 0 ? `${timeLeft}s Left` : "Time Up!"}
             </Badge>
           </div>
           <CardDescription className="text-base">
@@ -276,7 +261,7 @@ export default function CourierBidPage() {
               <Package className="h-5 w-5 mr-3 mt-1 text-accent flex-shrink-0" />
               <div>
                 <p className="font-medium">Items: {order.itemsDescription}</p>
-                <p className="text-sm text-muted-foreground">Order Value: ~₪{order.orderValue?.toFixed(2) || 'N/A'}</p>
+                <p className="text-sm text-muted-foreground">Value: ~₪{order.orderValue?.toFixed(2) || 'N/A'}</p>
               </div>
             </div>
             <div className="flex items-start">
@@ -295,9 +280,7 @@ export default function CourierBidPage() {
             </div>
             <div className="flex items-center">
                 <Clock className="h-5 w-5 mr-3 text-accent" />
-                <div>
-                    <p className="font-medium">Expected Pickup: {order.expectedPickupTime}</p>
-                </div>
+                <p className="font-medium">Expected Pickup: {order.expectedPickupTime}</p>
             </div>
             {order.customerNotes && (
               <div className="flex items-start p-2 bg-blue-50 border border-blue-200 rounded-md">
@@ -309,9 +292,11 @@ export default function CourierBidPage() {
               </div>
             )}
             {order.requiredVehicleType && order.requiredVehicleType.length > 0 && (
-                 <div className="flex items-center text-sm">
-                    <AlertTriangle className="h-4 w-4 mr-2 text-yellow-600" />
-                    Required Vehicles: {order.requiredVehicleType.map(v => <VehicleIcon key={v} type={v as DeliveryVehicle} />).reduce((prev, curr) => <>{prev} {curr}</>)}
+                 <div className={cn("flex items-center text-sm p-2 rounded-md border", courierVehicleMatchesRequirement ? "bg-green-50 border-green-200 text-green-700" : "bg-red-50 border-red-200 text-red-700")}>
+                    <AlertTriangle className="h-4 w-4 mr-2 flex-shrink-0" />
+                    <span>Required: {order.requiredVehicleType.map(v => <VehicleIcon key={v} type={v as DeliveryVehicle} />).reduce((prev, curr, idx) => <>{prev}{idx > 0 ? ', ' : ''}{curr}</>, <></>)}
+                    {!courierVehicleMatchesRequirement && " (Your vehicle doesn't match)"}
+                    </span>
                 </div>
             )}
           </div>
@@ -327,20 +312,21 @@ export default function CourierBidPage() {
             </div>
 
              <div className="space-y-2">
-              <Label htmlFor="customBidAmount" className="text-base">Adjust Your Bid (₪)</Label>
+              <Label htmlFor="customBidAmount" className="text-base">Your Bid Amount (₪)</Label>
               <Input
                 id="customBidAmount"
                 type="number"
                 value={customBid}
                 onChange={(e) => setCustomBid(e.target.value)}
-                min={order.baseCommission * 0.8} // Allow slightly lower
+                min={(order.baseCommission * 0.8).toFixed(2)}
+                max={(order.baseCommission * 2.5).toFixed(2)}
                 step="0.50"
                 className="text-lg p-2 h-12"
-                placeholder={`Min ₪${(order.baseCommission * 0.8).toFixed(2)}`}
-                disabled={isSubmitting || bidPlaced}
+                placeholder={`e.g., ${order.baseCommission.toFixed(2)}`}
+                disabled={isSubmitting || bidPlaced || timeLeft <=0}
               />
-              <p className="text-xs text-muted-foreground">
-                Bonus requested: ₪{(parseFloat(customBid) - order.baseCommission > 0 ? parseFloat(customBid) - order.baseCommission : 0).toFixed(2)}
+              <p className={cn("text-xs", bonusRequested > 0 ? "text-green-600" : bonusRequested < 0 ? "text-orange-600" : "text-muted-foreground")}>
+                {bonusRequested > 0 ? `Bonus Requested: ₪${bonusRequested.toFixed(2)}` : bonusRequested < 0 ? `Offering Discount: ₪${Math.abs(bonusRequested).toFixed(2)}` : "No bonus/discount"}
               </p>
             </div>
 
@@ -348,18 +334,18 @@ export default function CourierBidPage() {
                 <Button
                     variant={isFastPickup ? "default" : "outline"}
                     onClick={() => setIsFastPickup(!isFastPickup)}
-                    className={`w-full ${isFastPickup ? 'bg-blue-600 hover:bg-blue-700 text-white' : ''}`}
-                    disabled={isSubmitting || bidPlaced}
+                    className={cn("w-full", isFastPickup && 'bg-blue-600 hover:bg-blue-700 text-white')}
+                    disabled={isSubmitting || bidPlaced || timeLeft <=0}
                 >
                     <Zap className="mr-2 h-4 w-4" />
-                    {isFastPickup ? "Speed Pickup Active (e.g. <4min to restaurant)" : "Offer Speed Pickup"}
+                    {isFastPickup ? "Speed Pickup Active (<4min to restaurant)" : "Offer Speed Pickup"}
                 </Button>
             </div>
             <Separator className="my-4" />
             <div className="text-sm text-muted-foreground space-y-1">
                 <p><Info className="inline h-4 w-4 mr-1 text-accent" /> Your distance to restaurant: ~{distanceToRestaurant.toFixed(1)} km</p>
                 <p><Timer className="inline h-4 w-4 mr-1 text-accent" /> Est. total time for you: ~{totalEstimatedTime} min</p>
-                <p><VehicleIcon type={courier.vehicleType} /> Your vehicle: {courier.vehicleType} ({courier.transportationModeDetails || 'N/A'})</p>
+                <p><VehicleIcon type={courier.vehicleType} className="text-accent" /> Your vehicle: {courier.vehicleType} ({courier.transportationModeDetails || 'N/A'})</p>
                 <p>Rating: {courier.rating.toFixed(1)} | Trust: {courier.trustScore}% {courier.batteryPercent ? `| Batt: ${courier.batteryPercent}%` : ''}</p>
             </div>
           </div>
@@ -370,11 +356,15 @@ export default function CourierBidPage() {
             <Button onClick={() => handleBidAction('accept')} className="w-full bg-green-600 hover:bg-green-700 text-white" disabled={isSubmitting || timeLeft <= 0 || bidPlaced}>
               <CheckCircle className="mr-2 h-4 w-4" /> Accept Base (₪{order.baseCommission.toFixed(2)})
             </Button>
-            <Button onClick={() => handleBidAction('bid')} className="w-full bg-yellow-500 hover:bg-yellow-600 text-black" disabled={isSubmitting || timeLeft <= 0 || parseFloat(customBid) <= order.baseCommission || bidPlaced}>
+             <Button 
+                onClick={() => handleBidAction('bid')} 
+                className={cn("w-full", parseFloat(customBid) > order.baseCommission ? "bg-yellow-500 hover:bg-yellow-600 text-black" : "bg-orange-500 hover:bg-orange-600 text-white")}
+                disabled={isSubmitting || timeLeft <= 0 || bidPlaced || parseFloat(customBid) === order.baseCommission || isNaN(parseFloat(customBid))}
+            >
               <Edit3 className="mr-2 h-4 w-4" /> Submit Bid (₪{parseFloat(customBid) || 0})
             </Button>
              <Button onClick={() => handleBidAction('speed')} className="w-full bg-blue-500 hover:bg-blue-600 text-white" disabled={isSubmitting || timeLeft <= 0 || bidPlaced}>
-              <Zap className="mr-2 h-4 w-4" /> {isFastPickup ? 'Update Speed Bid' : 'Offer Speed Bid'}
+              <Zap className="mr-2 h-4 w-4" /> {isFastPickup ? 'Submit Speed Bid' : 'Offer Speed Bid'}
             </Button>
             <Button variant="destructive" onClick={() => handleBidAction('skip')} className="w-full" disabled={isSubmitting || timeLeft <= 0 || bidPlaced}>
               <XCircle className="mr-2 h-4 w-4" /> Skip
@@ -383,10 +373,11 @@ export default function CourierBidPage() {
         </CardFooter>
       </Card>
        {isSubmitting && <p className="text-center text-primary mt-2"><Loader2 className="inline mr-2 h-4 w-4 animate-spin"/>Submitting your offer...</p>}
-       {bidPlaced && !winningBidInfo && <p className="text-center text-primary mt-2"><Loader2 className="inline mr-2 h-4 w-4 animate-spin"/>Bid placed, awaiting results...</p>}
+       {bidPlaced && !winningBidInfo && <p className="text-center text-primary mt-2"><Loader2 className="inline mr-2 h-4 w-4 animate-spin"/>Bid placed, AI is evaluating all offers...</p>}
       <p className="text-sm text-center text-muted-foreground mt-4">
         Your bid is evaluated on price, ETA, rating, trust score, and fast pickup. The AI Matching Engine will select the best offer.
       </p>
     </div>
   );
 }
+
