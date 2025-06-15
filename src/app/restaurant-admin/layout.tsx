@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { LayoutDashboard, Settings, ListChecks, Palette, ShoppingBasket, BarChart3, ChefHat, LogOut } from 'lucide-react';
+import { LayoutDashboard, Settings, ListChecks, Palette, ShoppingBasket, BarChart3, ChefHat, LogOut, Users as CourierIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const adminNavItems = [
@@ -14,6 +14,7 @@ const adminNavItems = [
   { href: '/restaurant-admin/design', label: 'Store Design', icon: Palette },
   { href: '/restaurant-admin/orders', label: 'Order Management', icon: ShoppingBasket },
   { href: '/restaurant-admin/analytics', label: 'Analytics', icon: BarChart3 },
+  { href: '/restaurant-admin/courier-management', label: 'Courier Management', icon: CourierIcon },
 ];
 
 export default function RestaurantAdminLayout({ children }: { children: ReactNode }) {
