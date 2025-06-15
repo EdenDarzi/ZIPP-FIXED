@@ -19,7 +19,7 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import type { RestaurantSettings, OperatingHour, DayOfWeek } from '@/types';
-import { mockExistingSettings } from '@/lib/mock-data'; // Assuming this is correctly exported
+import { mockExistingSettings } from '@/lib/mock-data';
 import { UploadCloud, Info } from 'lucide-react';
 import Image from 'next/image';
 
@@ -78,7 +78,7 @@ export default function RestaurantSettingsPage() {
   const { toast } = useToast();
   const form = useForm<z.infer<typeof settingsFormSchema>>({
     resolver: zodResolver(settingsFormSchema),
-    defaultValues: { // Ensure default values are correctly structured
+    defaultValues: {
         businessName: typedMockExistingSettings.businessName,
         logoUrl: typedMockExistingSettings.logoUrl || '',
         coverImageUrl: typedMockExistingSettings.coverImageUrl || '',

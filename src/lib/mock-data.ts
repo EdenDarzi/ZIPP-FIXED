@@ -1,6 +1,5 @@
 
-
-import type { Restaurant, MenuItem, OrderDetailsForBidding, CourierProfile, CourierBid, Order, DeliveryPreference, RestaurantTag, Location, DeliveryVehicle, LivePickSaleItem, SecondHandItem, SecondHandItemCategory } from '@/types';
+import type { Restaurant, MenuItem, OrderDetailsForBidding, CourierProfile, CourierBid, Order, DeliveryPreference, RestaurantTag, Location, DeliveryVehicle, LivePickSaleItem, SecondHandItem, SecondHandItemCategory, RestaurantSettings, OperatingHour, DayOfWeek } from '@/types';
 
 const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
   {
@@ -11,6 +10,11 @@ const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'pizza margherita',
     category: 'Pizza',
+    isAvailable: true,
+    addons: [
+      { id: 'addon-group-pizza-size', title: 'בחר גודל', type: 'radio', required: true, options: [ {id: 's1', name: 'רגיל', price: 0, selectedByDefault: true}, {id: 's2', name: 'גדול', price: 5} ]},
+      { id: 'addon-group-pizza-toppings', title: 'תוספות (עד 3)', type: 'checkbox', maxSelection: 3, options: [ {id: 't1', name: 'זיתים', price: 2}, {id: 't2', name: 'פטריות', price: 2.5}, {id: 't3', name: 'בצל', price: 1.5}, {id: 't4', name: 'פפרוני', price: 3} ]}
+    ]
   },
   {
     id: 'item2',
@@ -20,6 +24,7 @@ const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'pizza pepperoni',
     category: 'Pizza',
+    isAvailable: true,
   },
   {
     id: 'item3',
@@ -29,6 +34,11 @@ const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'burger classic',
     category: 'Burgers',
+    isAvailable: false,
+    addons: [
+        { id: 'addon-group-burger-cheese', title: 'תוספת גבינה', type: 'radio', options: [ {id: 'c0', name: 'ללא גבינה', price: 0, selectedByDefault: true}, {id: 'c1', name: 'צ׳דר', price: 3}, {id: 'c2', name: 'אמנטל', price: 3.5} ]},
+        { id: 'addon-group-burger-extras', title: 'תוספות נוספות', type: 'checkbox', options: [ {id: 'e1', name: 'בצל מטוגן', price: 2}, {id: 'e2', name: 'פטריות מוקפצות', price: 2.5}, {id: 'e3', name: 'ביצת עין', price: 4} ]}
+    ]
   },
   {
     id: 'item4',
@@ -38,6 +48,7 @@ const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'salad caesar',
     category: 'Salads',
+    isAvailable: true,
   },
   {
     id: 'item5',
@@ -47,6 +58,7 @@ const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'pasta carbonara',
     category: 'Pasta',
+    isAvailable: true,
   },
   {
     id: 'item6',
@@ -56,6 +68,7 @@ const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
     imageUrl: 'https://placehold.co/600x400.png',
     dataAiHint: 'soda drink',
     category: 'Drinks',
+    isAvailable: true,
   },
 ];
 
@@ -65,7 +78,7 @@ export const mockRestaurants: Restaurant[] = [
     name: 'פיצה פאלאס', // Translated
     description: 'פיצות איטלקיות אותנטיות שנאפות לשלמות עם המרכיבים הטריים ביותר.', // Translated
     imageUrl: 'https://placehold.co/800x600.png',
-    dataAiHint: 'pizza italian', 
+    dataAiHint: 'pizza italian',
     location: 'רחוב ראשי 123, אבן יהודה', // Translated
     cuisineType: 'איטלקי', // Translated
     rating: 4.5,
@@ -79,7 +92,7 @@ export const mockRestaurants: Restaurant[] = [
     name: 'בורגר בוננזה', // Translated
     description: 'ההמבורגרים הטובים בעיר, צלויים בדיוק כמו שצריך. טעמו את ההבדל!', // Translated
     imageUrl: 'https://placehold.co/800x600.png',
-    dataAiHint: 'burger american', 
+    dataAiHint: 'burger american',
     location: 'שדרות האלון 456, אבן יהודה', // Translated
     cuisineType: 'אמריקאי', // Translated
     rating: 4.2,
@@ -93,7 +106,7 @@ export const mockRestaurants: Restaurant[] = [
     name: 'פסטה פרפקשן', // Translated
     description: 'מנות פסטה טעימות שנעשו באהבה ומתכונים מסורתיים.', // Translated
     imageUrl: 'https://placehold.co/800x600.png',
-    dataAiHint: 'pasta authentic', 
+    dataAiHint: 'pasta authentic',
     location: 'סמטת האורן 789, אבן יהודה', // Translated
     cuisineType: 'איטלקי', // Translated
     rating: 4.8,
@@ -107,7 +120,7 @@ export const mockRestaurants: Restaurant[] = [
     name: 'סלט סנסיישנס', // Translated
     description: 'סלטים טריים ובריאים לארוחה טעימה וללא רגשות אשם.', // Translated
     imageUrl: 'https://placehold.co/800x600.png',
-    dataAiHint: 'salad healthy', 
+    dataAiHint: 'salad healthy',
     location: 'דרך המייפל 101, אבן יהודה', // Translated
     cuisineType: 'בריא', // Translated
     rating: 4.0,
@@ -123,12 +136,12 @@ export const mockRestaurants: Restaurant[] = [
     imageUrl: 'https://placehold.co/800x600.png',
     dataAiHint: 'flowers bouquets',
     location: 'שדרות הפרחים 5, עיר הגנים',
-    cuisineType: 'חנות פרחים', 
+    cuisineType: 'חנות פרחים',
     rating: 4.9,
     deliveryTimeEstimate: 'שעה - שעתיים',
-    menu: [ 
-        { id: 'flower1', name: 'זר ורדים אדומים קלאסי', description: '12 ורדים אדומים טריים באריזת מתנה.', price: 120.00, imageUrl: 'https://placehold.co/600x400.png', dataAiHint: 'red roses', category: 'זרים', restaurantId: 'florist1' },
-        { id: 'flower2', name: 'סידור סחלבים לבנים', description: 'סחלב לבן מרשים בכלי דקורטיבי.', price: 180.00, imageUrl: 'https://placehold.co/600x400.png', dataAiHint: 'white orchid', category: 'עציצים', restaurantId: 'florist1' },
+    menu: [
+        { id: 'flower1', name: 'זר ורדים אדומים קלאסי', description: '12 ורדים אדומים טריים באריזת מתנה.', price: 120.00, imageUrl: 'https://placehold.co/600x400.png', dataAiHint: 'red roses', category: 'זרים', restaurantId: 'florist1', isAvailable: true },
+        { id: 'flower2', name: 'סידור סחלבים לבנים', description: 'סחלב לבן מרשים בכלי דקורטיבי.', price: 180.00, imageUrl: 'https://placehold.co/600x400.png', dataAiHint: 'white orchid', category: 'עציצים', restaurantId: 'florist1', isAvailable: true },
     ],
     hasDeliveryArena: true,
     tags: ['Recommended', 'New'],
@@ -144,8 +157,8 @@ export const mockRestaurants: Restaurant[] = [
     rating: 4.7,
     deliveryTimeEstimate: '30-45 דקות',
     menu: [
-        { id: 'bake1', name: 'קרואסון חמאה', description: 'קרואסון צרפתי קלאסי, פריך ועשיר בחמאה.', price: 12.00, imageUrl: 'https://placehold.co/600x400.png', dataAiHint: 'croissant pastry', category: 'מאפים', restaurantId: 'bakery1' },
-        { id: 'bake2', name: 'עוגת גבינה פירורים', description: 'עוגת גבינה קרה עם בסיס פריך וציפוי פירורים.', price: 85.00, imageUrl: 'https://placehold.co/600x400.png', dataAiHint: 'cheesecake cake', category: 'עוגות', restaurantId: 'bakery1' },
+        { id: 'bake1', name: 'קרואסון חמאה', description: 'קרואסון צרפתי קלאסי, פריך ועשיר בחמאה.', price: 12.00, imageUrl: 'https://placehold.co/600x400.png', dataAiHint: 'croissant pastry', category: 'מאפים', restaurantId: 'bakery1', isAvailable: true },
+        { id: 'bake2', name: 'עוגת גבינה פירורים', description: 'עוגת גבינה קרה עם בסיס פריך וציפוי פירורים.', price: 85.00, imageUrl: 'https://placehold.co/600x400.png', dataAiHint: 'cheesecake cake', category: 'עוגות', restaurantId: 'bakery1', isAvailable: true },
     ],
     hasDeliveryArena: true,
     tags: ['Popular', 'Fast Delivery'],
@@ -201,9 +214,9 @@ export const getOrderForBiddingById = (orderId: string): OrderDetailsForBidding 
 
 export const mockBidsForOrder: (orderId: string) => CourierBid[] = (orderId) => {
   const now = Date.now();
-  const allCouriers = [...mockCourierProfiles]; 
+  const allCouriers = [...mockCourierProfiles];
   const selectedCouriers: CourierProfile[] = [];
-  
+
   while(selectedCouriers.length < 3 && allCouriers.length > 0) {
     const randomIndex = Math.floor(Math.random() * allCouriers.length);
     selectedCouriers.push(allCouriers.splice(randomIndex, 1)[0]);
@@ -215,9 +228,9 @@ export const mockBidsForOrder: (orderId: string) => CourierBid[] = (orderId) => 
 
   selectedCouriers.forEach((courier, index) => {
     if (orderDetails.requiredVehicleType && orderDetails.requiredVehicleType.length > 0 && !orderDetails.requiredVehicleType.includes(courier.vehicleType)) { return; }
-    const bidAmountVariance = (Math.random() - 0.3) * 2; 
+    const bidAmountVariance = (Math.random() - 0.3) * 2;
     const bidAmount = parseFloat((orderDetails.baseCommission + bidAmountVariance).toFixed(2));
-    const etaVariance = Math.floor(Math.random() * 10) - 3; 
+    const etaVariance = Math.floor(Math.random() * 10) - 3;
     const baseEta = (orderDetails.estimatedRouteDistanceKm || orderDetails.estimatedDistanceKm) * (courier.vehicleType === 'bicycle' ? 7 : courier.vehicleType === 'foot' ? 12 : 4);
     const proposedEtaMinutes = Math.max(5, Math.round(baseEta + etaVariance + (Math.random() * 3 + 0.5)*3));
 
@@ -231,9 +244,17 @@ export const mockBidsForOrder: (orderId: string) => CourierBid[] = (orderId) => 
 export const getMockOrderById = (orderId: string, scheduledDeliveryTime?: string): Order | undefined => {
   const baseOrderId = orderId.split('_scheduled_')[0];
   if (baseOrderId.startsWith('mockOrder_')) {
-    const restaurant = mockRestaurants[0]; 
-    const items = [ { ...restaurant.menu[0], quantity: 1 }, { ...restaurant.menu.find(m => m.category === 'Drinks')!, quantity: 2 } ].map(item => ({ menuItemId: item.id, name: item.name, price: item.price, quantity: item.quantity, imageUrl: item.imageUrl, dataAiHint: item.dataAiHint, selectedAddons: [] }));
-    const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const restaurant = mockRestaurants[0];
+    const items = [ { ...restaurant.menu[0], quantity: 1, selectedAddons: restaurant.menu[0].addons?.[0].options.filter(o => o.selectedByDefault).map(o => ({groupId: restaurant.menu[0].addons![0].id!, groupTitle: restaurant.menu[0].addons![0].title, optionId: o.id!, optionName: o.name, optionPrice: o.price })) || [] }, { ...restaurant.menu.find(m => m.category === 'Drinks')!, quantity: 2, selectedAddons: [] } ].map(item => ({ id: `cartItem_${item.id}_${Date.now()}`, menuItemId: item.id, name: item.name, price: item.price, quantity: item.quantity, imageUrl: item.imageUrl, dataAiHint: item.dataAiHint, selectedAddons: item.selectedAddons }));
+    let totalAmount = 0;
+    items.forEach(item => {
+        let itemPrice = item.price;
+        item.selectedAddons?.forEach(addon => {
+            itemPrice += addon.optionPrice;
+        });
+        totalAmount += itemPrice * item.quantity;
+    });
+
     const initialStatus = scheduledDeliveryTime ? 'SCHEDULED' : 'MATCHING_COURIER';
     const initialTimelineNote = scheduledDeliveryTime ? `ההזמנה תוכננה ל: ${scheduledDeliveryTime}.` : "התשלום התקבל. מחפש שליח.";
 
@@ -267,9 +288,9 @@ export const mockOrderHistoryForAdmin: Order[] = [
 ];
 
 
-export const mockLivePickSaleItems: LivePickSaleItem[] = [ // Renamed from mockSwiftSaleItems
+export const mockLivePickSaleItems: LivePickSaleItem[] = [
     {
-        id: 'livepick-sale-item1', // Renamed ID
+        id: 'livepick-sale-item1',
         restaurantId: 'bakery1',
         restaurantName: 'מאפיית הבוקר',
         name: 'שקית מאפים מסוף יום',
@@ -278,11 +299,11 @@ export const mockLivePickSaleItems: LivePickSaleItem[] = [ // Renamed from mockS
         originalPrice: 45.00,
         quantityAvailable: 5,
         imageUrl: 'https://placehold.co/600x400.png',
-        dataAiHint: 'bakery surprise bag pastries',
+        dataAiHint: 'bakery surprise pastries',
         isActive: true,
     },
     {
-        id: 'livepick-sale-item2', // Renamed ID
+        id: 'livepick-sale-item2',
         restaurantId: 'restaurant4',
         restaurantName: 'סלט סנסיישנס',
         name: 'שקית סלטים טריים',
@@ -291,11 +312,11 @@ export const mockLivePickSaleItems: LivePickSaleItem[] = [ // Renamed from mockS
         originalPrice: 38.00,
         quantityAvailable: 3,
         imageUrl: 'https://placehold.co/600x400.png',
-        dataAiHint: 'fresh salads surprise bag healthy',
+        dataAiHint: 'fresh salads healthy',
         isActive: true,
     },
     {
-        id: 'livepick-sale-item3', // Renamed ID
+        id: 'livepick-sale-item3',
         restaurantId: 'florist1',
         restaurantName: 'פרחי העונה',
         name: 'זר הפתעה מסוף שבוע',
@@ -304,12 +325,12 @@ export const mockLivePickSaleItems: LivePickSaleItem[] = [ // Renamed from mockS
         originalPrice: 70.00,
         quantityAvailable: 2,
         imageUrl: 'https://placehold.co/600x400.png',
-        dataAiHint: 'flowers surprise bouquet end of day',
+        dataAiHint: 'flowers surprise bouquet',
         isActive: true,
     }
 ];
 
-export const getLivePickSaleItemById = (id: string): LivePickSaleItem | undefined => { // Renamed function
+export const getLivePickSaleItemById = (id: string): LivePickSaleItem | undefined => {
     return mockLivePickSaleItems.find(item => item.id === id);
 };
 
@@ -390,3 +411,29 @@ export const getSecondHandItemById = (id: string): SecondHandItem | undefined =>
 
 export const secondHandCategories: SecondHandItemCategory[] = ['טלפונים', 'מחשבים', 'בגדים', 'אוזניות', 'אחר'];
 
+const daysOfWeek: DayOfWeek[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+export const mockExistingSettings: RestaurantSettings = {
+  id: 'restaurant1', // Assuming settings for restaurant1
+  businessName: 'פיצה פאלאס',
+  logoUrl: 'https://placehold.co/200x100.png?text=Pizza+Palace+Logo',
+  coverImageUrl: 'https://placehold.co/1200x300.png?text=Pizza+Palace+Cover',
+  category: 'איטלקי',
+  address: 'רחוב ראשי 123, אבן יהודה',
+  operatingHours: daysOfWeek.map(day => ({
+    day,
+    openTime: (day === 'Friday' || day === 'Saturday') ? '12:00' : '10:00',
+    closeTime: (day === 'Friday' || day === 'Saturday') ? '23:00' : '22:00',
+    isClosed: false, // For simplicity, all open. Adjust as needed.
+  })),
+  isOpenNow: true,
+  specialsStatus: 'מבצע: 2 מגשים משפחתיים ב-100₪!',
+  // Optional visual settings, if managed here instead of the "Design" page
+  primaryColor: '#E53935', // Example red for pizza
+  accentColor: '#FFB300', // Example yellow/orange
+  dishDisplayStlye: 'grid',
+  storeFont: 'sans',
+  bannerLayout: 'textOverImage',
+  showRatingsOnStore: true,
+  showDeliveryTimeOnStore: true,
+};
