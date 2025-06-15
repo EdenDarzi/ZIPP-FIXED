@@ -13,7 +13,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription, // Added missing import
+  FormDescription,
 } from '@/components/ui/form';
 import {
   Select,
@@ -23,11 +23,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription as PageCardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'; // Aliased CardDescription to avoid conflict
+import { Card, CardContent, CardDescription as PageCardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import type { NutritionalGoal, DishRecommendation } from '@/types';
 import { getNutritionalAdvice, NutritionalAdvisorInput, NutritionalAdvisorOutput } from '@/ai/flows/nutritional-advisor-flow';
-import { Loader2, Sparkles, Utensils, Lightbulb, HeartPulse, Share2 } from 'lucide-react'; // Added Share2
+import { Loader2, Sparkles, Utensils, Lightbulb, HeartPulse, Share2, CalendarDays, Info } from 'lucide-react';
 
 const nutritionalGoals: { value: NutritionalGoal; label: string }[] = [
   { value: 'TONING', label: 'חיטוב ובניית שריר' },
@@ -86,8 +86,6 @@ export default function NutritionalAdvisorPage() {
 
   const handleShareRecommendations = () => {
     if (!advisorResponse || !advisorResponse.recommendations || advisorResponse.recommendations.length === 0) return;
-    // const shareText = `My SwiftServe Nutritional Advisor recommended these dishes: ${advisorResponse.recommendations.map(r => r.dishName).join(', ')}. Goal: ${form.getValues('goal')}`;
-    // const shareUrl = window.location.href;
     toast({
       title: "שיתוף המלצות (דמו)",
       description: "המלצות התזונה שלך שותפו!",
@@ -155,7 +153,7 @@ export default function NutritionalAdvisorPage() {
                 {isLoading ? (
                   <><Loader2 className="ml-2 h-5 w-5 animate-spin" /> מקבל המלצות...</>
                 ) : (
-                  <><Sparkles className="ml-2 h-5 w-5" /> קבל המלצות AI</>
+                  <><Sparkles className="ml-2 h-5 w-5" /> קבל המלצות AI למנות</>
                 )}
               </Button>
             </form>
@@ -168,9 +166,8 @@ export default function NutritionalAdvisorPage() {
           <CardHeader className="flex flex-row justify-between items-center">
             <CardTitle className="text-2xl font-headline text-accent flex items-center">
                 <Utensils className="ml-3 h-7 w-7"/>המלצות השף התזונתי שלנו עבורך:</CardTitle>
-            <Button variant="outline" size="icon" onClick={handleShareRecommendations}>
+            <Button variant="outline" size="icon" onClick={handleShareRecommendations} aria-label="שתף המלצות">
                 <Share2 className="h-5 w-5" />
-                <span className="sr-only">שתף המלצות</span>
             </Button>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -190,7 +187,7 @@ export default function NutritionalAdvisorPage() {
             ))}
             {advisorResponse.generalAdvice && (
                 <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-md text-blue-700">
-                    <p className="font-semibold flex items-center"><HeartPulse className="ml-2 h-5 w-5"/>טיפ כללי מהיועץ:</p>
+                    <p className="font-semibold flex items-center"><Info className="ml-2 h-5 w-5"/>טיפ כללי מהיועץ:</p>
                     <p>{advisorResponse.generalAdvice}</p>
                 </div>
             )}
@@ -211,6 +208,26 @@ export default function NutritionalAdvisorPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Placeholder for Weekly Menu Planning */}
+      <Card className="shadow-lg border-dashed border-primary/50">
+        <CardHeader className="text-center items-center">
+          <CalendarDays className="h-10 w-10 text-primary/70 mx-auto mb-3" />
+          <CardTitle className="text-2xl font-headline text-primary/80">תכנון תפריט שבועי (בקרוב!)</CardTitle>
+          <PageCardDescription className="text-muted-foreground">
+            בקרוב תוכל/י לקבל הצעות לתפריט שבועי מלא המותאם למטרות הקלוריות והתזונה שלך.
+          </PageCardDescription>
+        </CardHeader>
+        <CardContent className="text-center">
+            <Button disabled variant="outline">תכנן תפריט שבועי לפי קלוריות (בקרוב)</Button>
+        </CardContent>
+         <CardFooter>
+            <p className="text-xs text-muted-foreground text-center w-full">
+                אנו עובדים על פיצ'ר זה כדי להביא לך חווית תזונה מקיפה עוד יותר.
+            </p>
+        </CardFooter>
+      </Card>
     </div>
   );
 }
+

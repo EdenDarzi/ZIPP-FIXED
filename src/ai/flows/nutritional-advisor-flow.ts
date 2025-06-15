@@ -73,6 +73,7 @@ Also, provide one short piece of 'generalAdvice' (1-2 sentences) related to the 
 Ensure your response strictly follows the output schema, providing an array for 'recommendations'.
 If no preferences are given, make generally suitable suggestions for the goal.
 If preferences are given (e.g., "vegetarian", "no nuts"), ensure your recommendations respect these.
+Be creative and helpful!
 `,
 });
 
@@ -101,3 +102,4 @@ const nutritionalAdvisorFlow = ai.defineFlow(
     return output;
   }
 );
+
