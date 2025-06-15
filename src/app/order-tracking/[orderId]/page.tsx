@@ -9,6 +9,7 @@ import { getMockOrderById, mockCourierProfiles } from '@/lib/mock-data'; // We'l
 import { MatchingCourierView } from '@/components/order/matching-courier-view';
 import { CourierAssignedView } from '@/components/order/courier-assigned-view';
 import { DeliveryCompleteView } from '@/components/order/delivery-complete-view';
+import { TriviaChallengeCard } from '@/components/order/trivia-challenge-card'; // Added
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, AlertTriangle, Info } from 'lucide-react';
@@ -41,6 +42,7 @@ export default function OrderTrackingPage() {
 
   const [order, setOrder] = useState<Order | null | undefined>(undefined); // undefined for loading, null for not found
   const [error, setError] = useState<string | null>(null);
+  const [triviaAnswered, setTriviaAnswered] = useState(false); // Added for trivia state
 
   // Simulate order status changes for demo purposes
   const simulateStatusProgression = useCallback(() => {
@@ -57,26 +59,26 @@ export default function OrderTrackingPage() {
         // Pick a random courier from mock data for simulation
         const randomCourierProfile = mockCourierProfiles[Math.floor(Math.random() * mockCourierProfiles.length)];
         newCourierInfo = getAssignedCourierDetails(randomCourierProfile.id);
-        newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: `Courier ${newCourierInfo?.name} assigned.` };
+        newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: `שליח ${newCourierInfo?.name} שובץ.` };
         delay = 8000; // Longer for matching
         break;
       case 'COURIER_ASSIGNED':
         nextStatus = 'PREPARING_AT_RESTAURANT';
-        newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: `${order.restaurantName} is preparing your order.` };
+        newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: `${order.restaurantName} מכין/ה את ההזמנה שלך.` };
         break;
       case 'PREPARING_AT_RESTAURANT':
         nextStatus = 'AWAITING_PICKUP';
-        newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: `Order ready. Courier ${order.assignedCourier?.name || 'N/A'} is en route to ${order.restaurantName}.` };
+        newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: `ההזמנה מוכנה. שליח ${order.assignedCourier?.name || 'לא ידוע'} בדרך אל ${order.restaurantName}.` };
         delay = 7000;
         break;
       case 'AWAITING_PICKUP':
         nextStatus = 'OUT_FOR_DELIVERY';
-        newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: `Courier ${order.assignedCourier?.name || 'N/A'} has picked up your order.` };
+        newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: `שליח ${order.assignedCourier?.name || 'לא ידוע'} אסף את ההזמנה.` };
         delay = 10000; // Simulate travel time
         break;
       case 'OUT_FOR_DELIVERY':
         nextStatus = 'DELIVERED';
-        newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: "Order delivered. Enjoy!" };
+        newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: "ההזמנה נמסרה. בתאבון!" };
         delay = 15000 + ((order.assignedCourier?.currentEtaMinutes || 1) * 1000 * 0.5); // Shorter for demo
         break;
     }
@@ -111,6 +113,14 @@ export default function OrderTrackingPage() {
       return;
     }
     setOrder(fetchedOrder);
+    // Reset trivia state for new order
+    const storedTriviaState = localStorage.getItem(`triviaAnswered_${orderId}`);
+    if (storedTriviaState === 'true') {
+        setTriviaAnswered(true);
+    } else {
+        setTriviaAnswered(false);
+    }
+
   }, [orderId]);
 
   useEffect(() => {
@@ -132,7 +142,7 @@ export default function OrderTrackingPage() {
                 ...prev.assignedCourier,
                 currentEtaMinutes: newEta,
               },
-              estimatedDeliveryTime: `${newEta}-${newEta + 5} min`, // Update user-facing string too
+              estimatedDeliveryTime: `${newEta}-${newEta + 5} דק'`, // Update user-facing string too
               updatedAt: new Date().toISOString(),
             };
           } else if (prev && prev.assignedCourier && (prev.assignedCourier.currentEtaMinutes || 0) <= 1 && prev.status === 'OUT_FOR_DELIVERY') {
@@ -162,12 +172,12 @@ export default function OrderTrackingPage() {
      return (
       <div className="text-center py-20 max-w-xl mx-auto">
         <AlertTriangle className="h-24 w-24 mx-auto text-destructive mb-6" />
-        <h1 className="text-3xl font-bold font-headline text-destructive mb-4">Order Not Found</h1>
+        <h1 className="text-3xl font-bold font-headline text-destructive mb-4">הזמנה לא נמצאה</h1>
         <p className="text-lg text-muted-foreground mb-8">
-          {error || "We couldn't find the order you're looking for. It might have been an issue with a mock order ID or it hasn't been created yet."}
+          {error || "לא הצלחנו למצוא את ההזמנה שאתה מחפש. ייתכן שהייתה בעיה עם מזהה הזמנה מדומיין או שהיא עדיין לא נוצרה."}
         </p>
         <Button asChild>
-          <Link href="/"><span>Go to Homepage</span></Link>
+          <Link href="/"><span>חזרה לדף הבית</span></Link>
         </Button>
       </div>
     );
@@ -188,11 +198,11 @@ export default function OrderTrackingPage() {
          return (
             <Card className="shadow-xl text-center py-10">
                 <CardHeader>
-                    <CardTitle className="text-2xl font-semibold text-destructive">Order Pending Payment</CardTitle>
+                    <CardTitle className="text-2xl font-semibold text-destructive">הזמנה ממתינה לתשלום</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-muted-foreground">Please complete your payment to proceed with the order.</p>
-                    <Button onClick={() => router.push('/checkout')} className="mt-6">Go to Checkout</Button>
+                    <p className="text-muted-foreground">אנא השלם את התשלום כדי להמשיך עם ההזמנה.</p>
+                    <Button onClick={() => router.push('/checkout')} className="mt-6">לתשלום</Button>
                 </CardContent>
             </Card>
         );
@@ -200,46 +210,66 @@ export default function OrderTrackingPage() {
         return (
             <Card className="shadow-xl text-center py-10">
                 <CardHeader>
-                    <CardTitle className="text-2xl font-semibold text-destructive">Order Cancelled</CardTitle>
+                    <CardTitle className="text-2xl font-semibold text-destructive">הזמנה בוטלה</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-muted-foreground">This order has been cancelled.</p>
+                    <p className="text-muted-foreground">הזמנה זו בוטלה.</p>
                     {order.orderTimeline?.find(t => t.status === 'CANCELLED')?.notes && (
-                        <p className="text-sm mt-2">Reason: {order.orderTimeline?.find(t => t.status === 'CANCELLED')?.notes}</p>
+                        <p className="text-sm mt-2">סיבה: {order.orderTimeline?.find(t => t.status === 'CANCELLED')?.notes}</p>
                     )}
                 </CardContent>
             </Card>
         );
       default:
-        return <p>Unknown order status: {order.status}</p>;
+        return <p>סטטוס הזמנה לא ידוע: {order.status}</p>;
     }
   };
+
+  const showTriviaForStatus: OrderStatus[] = ['COURIER_ASSIGNED', 'PREPARING_AT_RESTAURANT', 'AWAITING_PICKUP', 'OUT_FOR_DELIVERY'];
+  const shouldShowTrivia = showTriviaForStatus.includes(order.status) && !triviaAnswered;
+
+  const handleTriviaComplete = () => {
+    setTriviaAnswered(true);
+    localStorage.setItem(`triviaAnswered_${orderId}`, 'true');
+  };
+
 
   return (
     <div className="max-w-3xl mx-auto py-8 space-y-6">
       <Button variant="outline" onClick={() => router.push('/')} className="mb-0">
-        <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
+        <ArrowLeft className="mr-2 h-4 w-4" /> חזרה לדף הבית
       </Button>
 
       {renderOrderStatusView()}
 
+      {shouldShowTrivia && (
+        <TriviaChallengeCard
+          imageUrl="https://placehold.co/600x400.png"
+          imageHint="פיצה פפרוני חריפה"
+          questionText="מה המנה שבתמונה?"
+          options={["פיצה פפרוני", "המבורגר קלאסי", "סלט קיסר עשיר"]}
+          correctAnswer="פיצה פפרוני"
+          onTriviaComplete={handleTriviaComplete}
+        />
+      )}
+
       <Card>
         <CardHeader>
-            <CardTitle className="text-lg font-semibold">Order Timeline</CardTitle>
+            <CardTitle className="text-lg font-semibold">ציר זמן הזמנה</CardTitle>
         </CardHeader>
         <CardContent>
             <ul className="space-y-3">
                 {order.orderTimeline?.slice().reverse().map((event, index) => (
-                    <li key={index} className="flex items-start space-x-3">
+                    <li key={index} className="flex items-start space-x-3 rtl:space-x-reverse">
                         <Info className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                         <div>
                             <p className="font-medium capitalize">{event.status.replace(/_/g, ' ').toLowerCase()}</p>
-                            <p className="text-xs text-muted-foreground">{new Date(event.timestamp).toLocaleString()}</p>
+                            <p className="text-xs text-muted-foreground">{new Date(event.timestamp).toLocaleString('he-IL')}</p>
                             {event.notes && <p className="text-sm text-muted-foreground italic">{event.notes}</p>}
                         </div>
                     </li>
                 ))}
-                 {!order.orderTimeline?.length && <p className="text-muted-foreground">No timeline events yet.</p>}
+                 {!order.orderTimeline?.length && <p className="text-muted-foreground">אין עדיין אירועים בציר הזמן.</p>}
             </ul>
         </CardContent>
       </Card>
