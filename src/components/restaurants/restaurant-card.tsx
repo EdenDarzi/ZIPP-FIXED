@@ -4,7 +4,7 @@ import Link from 'next/link';
 import type { Restaurant } from '@/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Star, Clock, Tag, MapPin, Zap } from 'lucide-react'; // Added Zap for arena
+import { Star, Clock, Tag, MapPin, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface RestaurantCardProps {
@@ -13,16 +13,16 @@ interface RestaurantCardProps {
 
 export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
   return (
-    <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
+    <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full bg-card text-card-foreground rounded-lg">
       <Link href={`/restaurants/${restaurant.id}`} className="block group">
         <div className="relative w-full h-48">
           <Image
-            src={restaurant.imageUrl}
+            src={restaurant.imageUrl} // This will be a placehold.co URL from mockData
             alt={restaurant.name}
             layout="fill"
             objectFit="cover"
             className="group-hover:scale-105 transition-transform duration-300"
-            data-ai-hint={restaurant.dataAiHint || "restaurant food"}
+            data-ai-hint={restaurant.dataAiHint || "restaurant exterior food"} // Ensure hint is descriptive
           />
            {restaurant.hasDeliveryArena && (
             <Badge variant="default" className="absolute top-2 right-2 bg-accent text-accent-foreground">

@@ -1,3 +1,4 @@
+
 import RestaurantCard from '@/components/restaurants/restaurant-card';
 import { mockRestaurants } from '@/lib/mock-data';
 import type { Restaurant } from '@/types';
@@ -23,6 +24,7 @@ export default function RestaurantsPage() {
       </header>
 
       {restaurants.length > 0 ? (
+        // Responsive grid for restaurant cards
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {restaurants.map((restaurant) => (
             <RestaurantCard key={restaurant.id} restaurant={restaurant} />

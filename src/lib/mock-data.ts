@@ -64,7 +64,7 @@ export const mockRestaurants: Restaurant[] = [
     name: 'Pizza Palace',
     description: 'Authentic Italian pizzas baked to perfection.',
     imageUrl: 'https://placehold.co/800x600.png',
-    dataAiHint: 'restaurant pizza',
+    dataAiHint: 'pizza restaurant', // Updated hint
     location: '123 Main St, Anytown',
     cuisineType: 'Italian',
     rating: 4.5,
@@ -77,7 +77,7 @@ export const mockRestaurants: Restaurant[] = [
     name: 'Burger Bonanza',
     description: 'The best burgers in town, grilled just right.',
     imageUrl: 'https://placehold.co/800x600.png',
-    dataAiHint: 'restaurant burger',
+    dataAiHint: 'burger joint', // Updated hint
     location: '456 Oak Ave, Anytown',
     cuisineType: 'American',
     rating: 4.2,
@@ -90,7 +90,7 @@ export const mockRestaurants: Restaurant[] = [
     name: 'Pasta Perfection',
     description: 'Delicious pasta dishes made with fresh ingredients.',
     imageUrl: 'https://placehold.co/800x600.png',
-    dataAiHint: 'restaurant pasta',
+    dataAiHint: 'pasta place', // Updated hint
     location: '789 Pine Ln, Anytown',
     cuisineType: 'Italian',
     rating: 4.8,
@@ -103,7 +103,7 @@ export const mockRestaurants: Restaurant[] = [
     name: 'Salad Sensations',
     description: 'Fresh and healthy salads for a guilt-free meal.',
     imageUrl: 'https://placehold.co/800x600.png',
-    dataAiHint: 'restaurant salad',
+    dataAiHint: 'salad bar', // Updated hint
     location: '101 Maple Dr, Anytown',
     cuisineType: 'Healthy',
     rating: 4.0,
@@ -303,3 +303,4 @@ export const getMockOrderById = (orderId: string): Order | undefined => {
   }
   return undefined;
 };
+
