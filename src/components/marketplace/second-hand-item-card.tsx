@@ -6,9 +6,20 @@ import type { SecondHandItem } from '@/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { DollarSign, MapPin, Tag, MessageSquare, Phone, Star, Eye } from 'lucide-react';
+import { DollarSign, MapPin, Tag, MessageSquare, Phone, Star, Eye, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link'; // Potential for item details page
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function SecondHandItemCard({ item }: { item: SecondHandItem }) {
   const { toast } = useToast();
@@ -18,7 +29,15 @@ export default function SecondHandItemCard({ item }: { item: SecondHandItem }) {
       title: 'צור קשר עם המוכר (דמו)',
       description: `פרטי יצירת הקשר של ${item.sellerName}: ${item.contactDetails || 'לא סופקו פרטים נוספים'}. לחצן WhatsApp/טלפון יתווסף בקרוב.`,
     });
-    // In a real app, this might open a chat, show a phone number, or link to WhatsApp
+  };
+
+  const handleRequestDelivery = () => {
+    toast({
+      title: "מחפש שליחים...",
+      description: `הבקשה למשלוח הפריט "${item.title}" נשלחה. תקבל/י עדכון למעקב בקרוב. (מזהה בקשה לדוגמה: MP-${item.id})`,
+    });
+    // In a real app, this would trigger the courier matching process
+    // and potentially redirect to an order tracking page.
   };
 
   return (
@@ -65,20 +84,40 @@ export default function SecondHandItemCard({ item }: { item: SecondHandItem }) {
         <CardDescription className="text-xs h-8 overflow-hidden text-ellipsis mt-1">{item.description}</CardDescription>
 
       </CardContent>
-      <CardFooter className="p-3 border-t mt-auto">
-        <Button onClick={handleContactSeller} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" disabled={item.isSold}>
+      <CardFooter className="p-3 border-t mt-auto flex flex-col sm:flex-row gap-2">
+        <Button onClick={handleContactSeller} className="w-full sm:flex-1 bg-accent hover:bg-accent/90 text-accent-foreground" disabled={item.isSold}>
             {item.isSold ? "פריט זה נמכר" : 
                 <>
                     <MessageSquare className="mr-2 h-4 w-4" /> צור קשר עם המוכר
                 </>
             }
         </Button>
-         {/* 
-         Future: Item details page
-         <Button variant="outline" asChild className="w-1/3">
-          <Link href={`/marketplace/${item.id}`}><Eye className="mr-1 h-4 w-4" /> פרטים</Link>
-         </Button> 
-         */}
+        {!item.isSold && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline" className="w-full sm:flex-1">
+                <Send className="mr-2 h-4 w-4 text-primary" /> קנה עם שליחות LivePick
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>הזמן שליחות LivePick עבור "{item.title}"</AlertDialogTitle>
+                <AlertDialogDescription className="space-y-2 pt-2">
+                  <p><strong>מאיפה?</strong> {item.location}</p>
+                  <p><strong>לאן?</strong> כתובתך (תוזן אוטומטית או תתבקש בהמשך - דמו)</p>
+                  <p><strong>עלות משלוח מוערכת:</strong> ₪25 - ₪45 (דמו, תחושב סופית בעת ההזמנה)</p>
+                  <p className="text-xs text-muted-foreground pt-2">בלחיצה על "מצא לי שליח", נתחיל לחפש שליח זמין לאיסוף הפריט והבאתו אליך. תקבל/י עדכונים על התקדמות המשלוח.</p>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>ביטול</AlertDialogCancel>
+                <AlertDialogAction onClick={handleRequestDelivery} className="bg-primary hover:bg-primary/80 text-primary-foreground">
+                  מצא לי שליח
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
       </CardFooter>
     </Card>
   );
