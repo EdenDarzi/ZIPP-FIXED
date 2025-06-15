@@ -1,8 +1,9 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, ListOrdered, ShoppingCart, Users, AlertTriangle, Settings, LayoutList, Palette, BarChart3, Video } from "lucide-react"; // Added Video for LiveKitchen
+import { DollarSign, ListOrdered, ShoppingCart, Users, AlertTriangle, Settings, LayoutList, Palette, BarChart3, Video } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image"; // Added import for Image
 
 export default function RestaurantAdminDashboard() {
   const stats = {
