@@ -1,4 +1,5 @@
-import type { Restaurant, MenuItem } from '@/types';
+
+import type { Restaurant, MenuItem, OrderDetailsForBidding, CourierProfile, CourierBid, DeliveryVehicle } from '@/types';
 
 const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
   {
@@ -119,4 +120,104 @@ export const getItemById = (restaurantId: string, itemId: string): MenuItem | un
 
 export const getAllItems = (): MenuItem[] => {
   return mockRestaurants.reduce((acc, curr) => acc.concat(curr.menu), [] as MenuItem[]);
+};
+
+// Mock Data for Courier Bidding System
+export const mockCourierProfiles: CourierProfile[] = [
+  {
+    id: 'courier1',
+    name: 'Speedy Sam',
+    rating: 4.8,
+    trustScore: 92,
+    vehicleType: 'motorcycle',
+    areaCoverageRadiusKm: 5,
+    currentLocation: { lat: 34.0522, lng: -118.2437 }, // Downtown LA
+  },
+  {
+    id: 'courier2',
+    name: 'Reliable Rita',
+    rating: 4.6,
+    trustScore: 95,
+    vehicleType: 'car',
+    areaCoverageRadiusKm: 7,
+    currentLocation: { lat: 34.0550, lng: -118.2500 }, // Near Downtown LA
+  },
+  {
+    id: 'courier3',
+    name: 'Quick Quinn',
+    rating: 4.3,
+    trustScore: 85,
+    vehicleType: 'bicycle',
+    areaCoverageRadiusKm: 3,
+    currentLocation: { lat: 34.0500, lng: -118.2400 }, // Close to restaurants
+  },
+];
+
+export const mockOpenOrdersForBidding: OrderDetailsForBidding[] = [
+  {
+    orderId: 'orderBid1',
+    restaurantName: 'Pizza Palace',
+    restaurantLocation: { lat: 34.052235, lng: -118.243683 }, // Restaurant's location
+    deliveryAddress: '123 Customer Way, Anytown',
+    deliveryLocation: { lat: 34.0600, lng: -118.2500 }, // Customer's location
+    estimatedDistanceKm: 2.5,
+    baseCommission: 10,
+    itemsDescription: '1 Margherita Pizza, 2 Cokes',
+    expectedPickupTime: 'ASAP',
+    requiredVehicleType: ['motorcycle', 'car', 'bicycle'],
+  },
+  {
+    orderId: 'orderBid2',
+    restaurantName: 'Burger Bonanza',
+    restaurantLocation: { lat: 34.050000, lng: -118.240000 },
+    deliveryAddress: '456 Client Ave, Anytown',
+    deliveryLocation: { lat: 34.0450, lng: -118.2350 },
+    estimatedDistanceKm: 1.2,
+    baseCommission: 8,
+    itemsDescription: '2 Classic Burgers, 1 Fries',
+    expectedPickupTime: 'ASAP',
+  },
+];
+
+export const getOrderForBiddingById = (orderId: string): OrderDetailsForBidding | undefined => {
+  return mockOpenOrdersForBidding.find(order => order.orderId === orderId);
+};
+
+// Mock bids for a specific order (e.g., orderBid1)
+export const mockBidsForOrder: (orderId: string) => CourierBid[] = (orderId) => {
+  if (orderId === 'orderBid1') {
+    return [
+      {
+        bidId: 'bid1-1',
+        orderId: 'orderBid1',
+        courierId: 'courier1',
+        courierName: 'Speedy Sam',
+        distanceToRestaurantKm: 0.5,
+        bidAmount: 10, // Base
+        proposedEtaMinutes: 15, // 5 min to restaurant + 10 min to customer
+        courierRating: 4.8,
+        courierTrustScore: 92,
+        vehicleType: 'motorcycle',
+        timestamp: new Date(Date.now() - 60000 * 2).toISOString(), // 2 minutes ago
+        isFastPickup: false,
+        status: 'pending',
+      },
+      {
+        bidId: 'bid1-2',
+        orderId: 'orderBid1',
+        courierId: 'courier2',
+        courierName: 'Reliable Rita',
+        distanceToRestaurantKm: 1.2,
+        bidAmount: 12, // +₪2
+        proposedEtaMinutes: 18,
+        courierRating: 4.6,
+        courierTrustScore: 95,
+        vehicleType: 'car',
+        timestamp: new Date(Date.now() - 60000 * 1).toISOString(), // 1 minute ago
+        isFastPickup: false,
+        status: 'pending',
+      },
+    ];
+  }
+  return [];
 };
