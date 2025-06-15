@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Utensils, ShoppingCart, Brain, ArrowLeft, MapPin, Search, Sparkles, Heart, History, Award, Flame, Gift, Gem, UsersIcon, MapIcon as FoodRadarIcon } from "lucide-react";
+import { Utensils, ShoppingCart, Brain, ArrowLeft, MapPin, Search, Sparkles, Heart, History, Award, Flame, Gift, Gem, UsersIcon, MapIcon as FoodRadarIcon, ShoppingBag as SwiftSaleIcon, TrendingUp as LiveTrendIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import RestaurantCard from "@/components/restaurants/restaurant-card";
@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { getCulinarySuggestion, CulinaryAssistantInput } from "@/ai/flows/culinary-assistant-flow"; 
 import SurpriseFeatureCard from "@/components/surprise/surprise-feature-card";
+import { Badge } from "@/components/ui/badge";
 
 export default function HomePage() {
   const allRestaurants: Restaurant[] = mockRestaurants;
@@ -22,6 +23,7 @@ export default function HomePage() {
 
   const [culinarySuggestion, setCulinarySuggestion] = useState<string | null>(null);
   const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(true);
+  const [showSwiftSaleBanner, setShowSwiftSaleBanner] = useState(false); // Mock logic for banner
 
   useEffect(() => {
     async function fetchSuggestion() {
@@ -38,6 +40,13 @@ export default function HomePage() {
       }
     }
     fetchSuggestion();
+
+    // Mock logic to show SwiftSale banner sometimes
+    const currentHour = new Date().getHours();
+    if (currentHour >= 19 && currentHour <= 23) { // Example: Show between 7 PM and 11 PM
+        setShowSwiftSaleBanner(true);
+    }
+
   }, []);
 
   return (
@@ -48,7 +57,7 @@ export default function HomePage() {
             ברוכים הבאים ל-SwiftServe
           </h1>
           <p className="text-xl text-foreground/80 max-w-2xl mx-auto mb-10">
-            הפתרון האחד שלכם למשלוח מהיר ואמין מהעסקים המקומיים האהובים עליכם.
+            הפתרון האחד שלכם למשלוח מהיר ואמין מהעסקים המקומיים האהובים עליכם, עם טוויסט חכם וקהילתי!
           </p>
         </div>
         <div className="max-w-xl mx-auto mb-10 animate-fadeInUp animation-delay-200">
@@ -56,7 +65,7 @@ export default function HomePage() {
             <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="מה מתחשק לכם היום? (למשל, פיצה, פרחים, ייעוץ)"
+              placeholder="מה מתחשק לכם היום? (למשל, פיצה, פרחים, טרנד חם)"
               className="w-full pr-12 pl-4 py-3 text-lg rounded-full shadow-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
               aria-label="Search for food, products, or services"
             />
@@ -82,6 +91,22 @@ export default function HomePage() {
         </div>
       </section>
 
+      {showSwiftSaleBanner && (
+        <section className="animate-fadeInUp animation-delay-500">
+            <Card className="bg-red-500 text-white shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
+                <Link href="/swiftsale">
+                    <CardContent className="p-6 flex items-center justify-center text-center">
+                        <SwiftSaleIcon className="h-10 w-10 mr-4 animate-bounce" />
+                        <div>
+                            <CardTitle className="text-2xl font-headline">🔥 SwiftSale פעיל!</CardTitle>
+                            <CardDescription className="text-red-100">שקיות הפתעה מסוף היום זמינות עכשיו במחירים מיוחדים! לחץ לפרטים.</CardDescription>
+                        </div>
+                    </CardContent>
+                </Link>
+            </Card>
+        </section>
+      )}
+
       <section className="animate-fadeInUp animation-delay-600">
         <Card className="bg-primary/5 border-primary/20 shadow-lg hover:shadow-xl transition-shadow">
           <CardHeader>
@@ -105,13 +130,12 @@ export default function HomePage() {
       
       <SurpriseFeatureCard />
 
-      {/* New Feature Links Section */}
       <section className="grid md:grid-cols-3 gap-4 animate-fadeInUp animation-delay-700">
         <Link href="/food-radar" passHref>
           <Card className="hover:shadow-lg hover:border-primary/50 transition-all cursor-pointer h-full flex flex-col items-center justify-center text-center p-4">
-            <FoodRadarIcon className="h-10 w-10 text-primary mb-2" />
-            <CardTitle className="text-lg font-semibold">Food Radar</CardTitle>
-            <CardDescription className="text-xs">גלה מה חם סביבך!</CardDescription>
+            <LiveTrendIcon className="h-10 w-10 text-primary mb-2" />
+            <CardTitle className="text-lg font-semibold">Food Radar & Live Trends</CardTitle>
+            <CardDescription className="text-xs">גלה מה חם סביבך בזמן אמת!</CardDescription>
           </Card>
         </Link>
         <Link href="/vip" passHref>
@@ -128,6 +152,20 @@ export default function HomePage() {
             <CardDescription className="text-xs">הרווח כסף על המלצות!</CardDescription>
           </Card>
         </Link>
+      </section>
+      
+       <section className="animate-fadeInUp animation-delay-750">
+        <Card className="border-orange-500/30 bg-orange-500/5">
+          <CardHeader>
+            <CardTitle className="text-xl font-headline text-orange-600 flex items-center">
+              <Flame className="h-6 w-6 ml-2" /> שותפויות ודילים חמים (דמו)
+            </CardTitle>
+            <CardDescription className="text-orange-700/80">מבצעים בלעדיים בשיתוף עם מותגים מובילים, בהשראת הטרנדים החמים ביותר!</CardDescription>
+          </CardHeader>
+          <CardContent className="text-center text-orange-700/90">
+            <p>"קבל 15% הנחה על קולקציית הקיץ של 'FashionForward' בהשראת טרנד ה-Y2K שזוהה לאחרונה!" (בקרוב)</p>
+          </CardContent>
+        </Card>
       </section>
 
 
@@ -244,15 +282,17 @@ export default function HomePage() {
         />
         <div className="absolute inset-0 bg-gradient-to-l from-black/60 via-black/30 to-transparent flex items-center">
           <h3 className="text-3xl md:text-5xl font-bold text-white font-headline p-8 md:p-12 max-w-lg leading-tight">
-            מהיר, טרי, במשלוח. <br/> חוו את <span className="text-accent">זירת השליחים</span>.
+            מהיר, טרי, במשלוח. <br/> חוו את <span className="text-accent">זירת השליחים</span> החכמה.
           </h3>
         </div>
       </section>
       <style jsx global>{`
         .animation-delay-200 { animation-delay: 0.2s; }
         .animation-delay-400 { animation-delay: 0.4s; }
+        .animation-delay-500 { animation-delay: 0.5s; }
         .animation-delay-600 { animation-delay: 0.6s; }
         .animation-delay-700 { animation-delay: 0.7s; }
+        .animation-delay-750 { animation-delay: 0.75s; }
         .animation-delay-800 { animation-delay: 0.8s; }
         .animation-delay-1000 { animation-delay: 1s; }
         .animation-delay-1200 { animation-delay: 1.2s; }

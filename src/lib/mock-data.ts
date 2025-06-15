@@ -1,5 +1,5 @@
 
-import type { Restaurant, MenuItem, OrderDetailsForBidding, CourierProfile, CourierBid, Order, DeliveryPreference, RestaurantTag, Location, DeliveryVehicle } from '@/types';
+import type { Restaurant, MenuItem, OrderDetailsForBidding, CourierProfile, CourierBid, Order, DeliveryPreference, RestaurantTag, Location, DeliveryVehicle, SwiftSaleItem } from '@/types';
 
 const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
   {
@@ -115,6 +115,40 @@ export const mockRestaurants: Restaurant[] = [
     hasDeliveryArena: true,
     tags: ['Fast Delivery', 'Delivery Arena'],
   },
+  {
+    id: 'florist1',
+    name: 'פרחי העונה',
+    description: 'זרים טריים וסידורי פרחים מרהיבים לכל אירוע.',
+    imageUrl: 'https://placehold.co/800x600.png',
+    dataAiHint: 'flowers florist bouquets',
+    location: 'שדרות הפרחים 5, עיר הגנים',
+    cuisineType: 'חנות פרחים', // Using cuisineType as a generic business type field
+    rating: 4.9,
+    deliveryTimeEstimate: 'שעה - שעתיים',
+    menu: [ // Example items for a florist
+        { id: 'flower1', name: 'זר ורדים אדומים קלאסי', description: '12 ורדים אדומים טריים באריזת מתנה.', price: 120.00, imageUrl: 'https://placehold.co/600x400.png', dataAiHint: 'red roses bouquet', category: 'זרים', restaurantId: 'florist1' },
+        { id: 'flower2', name: 'סידור סחלבים לבנים', description: 'סחלב לבן מרשים בכלי דקורטיבי.', price: 180.00, imageUrl: 'https://placehold.co/600x400.png', dataAiHint: 'white orchid arrangement', category: 'עציצים', restaurantId: 'florist1' },
+    ],
+    hasDeliveryArena: true,
+    tags: ['Recommended', 'New'],
+  },
+   {
+    id: 'bakery1',
+    name: 'מאפיית הבוקר',
+    description: 'לחמים טריים, מאפים מתוקים ומלוחים, ועוגות מיוחדות.',
+    imageUrl: 'https://placehold.co/800x600.png',
+    dataAiHint: 'bakery pastries bread',
+    location: 'רחוב הקונדיטוריה 10, קרית מאפה',
+    cuisineType: 'מאפייה',
+    rating: 4.7,
+    deliveryTimeEstimate: '30-45 דקות',
+    menu: [
+        { id: 'bake1', name: 'קרואסון חמאה', description: 'קרואסון צרפתי קלאסי, פריך ועשיר בחמאה.', price: 12.00, imageUrl: 'https://placehold.co/600x400.png', dataAiHint: 'croissant butter flaky', category: 'מאפים', restaurantId: 'bakery1' },
+        { id: 'bake2', name: 'עוגת גבינה פירורים', description: 'עוגת גבינה קרה עם בסיס פריך וציפוי פירורים.', price: 85.00, imageUrl: 'https://placehold.co/600x400.png', dataAiHint: 'cheesecake crumb cake', category: 'עוגות', restaurantId: 'bakery1' },
+    ],
+    hasDeliveryArena: true,
+    tags: ['Popular', 'Fast Delivery'],
+  }
 ];
 
 export const getRestaurantById = (id: string): Restaurant | undefined => {
@@ -132,113 +166,31 @@ export const getAllItems = (): MenuItem[] => {
 
 export const mockCourierProfiles: CourierProfile[] = [
   {
-    id: 'courier1',
-    name: 'Speedy Sam',
-    rating: 4.8,
-    trustScore: 92,
-    vehicleType: 'motorcycle',
-    areaCoverageRadiusKm: 5,
-    currentLocation: { lat: 34.0522, lng: -118.2437 }, // Downtown LA
-    currentSpeedKmh: 35,
-    batteryPercent: undefined, // N/A for motorcycle
-    isActive: true,
-    transportationModeDetails: "Yamaha NMAX 155"
+    id: 'courier1', name: 'Speedy Sam', rating: 4.8, trustScore: 92, vehicleType: 'motorcycle', areaCoverageRadiusKm: 5, currentLocation: { lat: 34.0522, lng: -118.2437 }, currentSpeedKmh: 35, batteryPercent: undefined, isActive: true, transportationModeDetails: "Yamaha NMAX 155"
   },
   {
-    id: 'courier2',
-    name: 'Reliable Rita',
-    rating: 4.6,
-    trustScore: 95,
-    vehicleType: 'car',
-    areaCoverageRadiusKm: 7,
-    currentLocation: { lat: 34.0550, lng: -118.2500 }, // Near Downtown LA
-    currentSpeedKmh: 45,
-    batteryPercent: undefined,
-    isActive: true,
-    transportationModeDetails: "Toyota Prius"
+    id: 'courier2', name: 'Reliable Rita', rating: 4.6, trustScore: 95, vehicleType: 'car', areaCoverageRadiusKm: 7, currentLocation: { lat: 34.0550, lng: -118.2500 }, currentSpeedKmh: 45, batteryPercent: undefined, isActive: true, transportationModeDetails: "Toyota Prius"
   },
   {
-    id: 'courier3',
-    name: 'Eco Ethan',
-    rating: 4.3,
-    trustScore: 85,
-    vehicleType: 'bicycle', 
-    areaCoverageRadiusKm: 3,
-    currentLocation: { lat: 34.0500, lng: -118.2400 }, // Close to restaurants
-    currentSpeedKmh: 15,
-    batteryPercent: 75, // E-bike
-    isActive: true,
-    transportationModeDetails: "Specialized Turbo Vado (e-bike)"
+    id: 'courier3', name: 'Eco Ethan', rating: 4.3, trustScore: 85, vehicleType: 'bicycle',  areaCoverageRadiusKm: 3, currentLocation: { lat: 34.0500, lng: -118.2400 }, currentSpeedKmh: 15, batteryPercent: 75, isActive: true, transportationModeDetails: "Specialized Turbo Vado (e-bike)"
   },
   {
-    id: 'courier4',
-    name: 'Swift Sarah',
-    rating: 4.9,
-    trustScore: 90,
-    vehicleType: 'scooter',
-    areaCoverageRadiusKm: 4,
-    currentLocation: { lat: 34.0480, lng: -118.2450 },
-    currentSpeedKmh: 22,
-    batteryPercent: 88,
-    isActive: true,
-    transportationModeDetails: "Xiaomi Mi Electric Scooter Pro 2"
+    id: 'courier4', name: 'Swift Sarah', rating: 4.9, trustScore: 90, vehicleType: 'scooter', areaCoverageRadiusKm: 4, currentLocation: { lat: 34.0480, lng: -118.2450 }, currentSpeedKmh: 22, batteryPercent: 88, isActive: true, transportationModeDetails: "Xiaomi Mi Electric Scooter Pro 2"
   },
    {
-    id: 'courier5',
-    name: 'Walker Wally',
-    rating: 4.1,
-    trustScore: 80,
-    vehicleType: 'foot',
-    areaCoverageRadiusKm: 1.5,
-    currentLocation: { lat: 34.0510, lng: -118.2420 },
-    isActive: true,
-    transportationModeDetails: "Comfortable Sneakers"
+    id: 'courier5', name: 'Walker Wally', rating: 4.1, trustScore: 80, vehicleType: 'foot', areaCoverageRadiusKm: 1.5, currentLocation: { lat: 34.0510, lng: -118.2420 }, isActive: true, transportationModeDetails: "Comfortable Sneakers"
   }
 ];
 
 export const mockOpenOrdersForBidding: OrderDetailsForBidding[] = [
   {
-    orderId: 'orderBid1',
-    restaurantName: 'Pizza Palace',
-    restaurantLocation: { lat: 34.052235, lng: -118.243683 },
-    deliveryAddress: '123 Customer Way, Anytown',
-    deliveryLocation: { lat: 34.0600, lng: -118.2500 },
-    estimatedDistanceKm: 2.5, // as the crow flies
-    estimatedRouteDistanceKm: 3.1, // from mapping service
-    baseCommission: 10.00,
-    itemsDescription: '1 Margherita Pizza, 2 Cokes',
-    expectedPickupTime: 'ASAP (~10 min prep)',
-    requiredVehicleType: ['motorcycle', 'car', 'scooter', 'bicycle'],
-    orderValue: 17.99,
-    customerNotes: "Please ring the bell twice."
+    orderId: 'orderBid1', restaurantName: 'Pizza Palace', restaurantLocation: { lat: 34.052235, lng: -118.243683 }, deliveryAddress: '123 Customer Way, Anytown', deliveryLocation: { lat: 34.0600, lng: -118.2500 }, estimatedDistanceKm: 2.5, estimatedRouteDistanceKm: 3.1, baseCommission: 10.00, itemsDescription: '1 Margherita Pizza, 2 Cokes', expectedPickupTime: 'ASAP (~10 min prep)', requiredVehicleType: ['motorcycle', 'car', 'scooter', 'bicycle'], orderValue: 17.99, customerNotes: "Please ring the bell twice."
   },
   {
-    orderId: 'orderBid2',
-    restaurantName: 'Burger Bonanza',
-    restaurantLocation: { lat: 34.050000, lng: -118.240000 },
-    deliveryAddress: '456 Client Ave, Anytown',
-    deliveryLocation: { lat: 34.0450, lng: -118.2350 },
-    estimatedDistanceKm: 1.2,
-    estimatedRouteDistanceKm: 1.5,
-    baseCommission: 8.50,
-    itemsDescription: '2 Classic Burgers, 1 Fries',
-    expectedPickupTime: 'ASAP (~8 min prep)',
-    orderValue: 22.48,
-    customerNotes: "Leave at front porch if no answer."
+    orderId: 'orderBid2', restaurantName: 'Burger Bonanza', restaurantLocation: { lat: 34.050000, lng: -118.240000 }, deliveryAddress: '456 Client Ave, Anytown', deliveryLocation: { lat: 34.0450, lng: -118.2350 }, estimatedDistanceKm: 1.2, estimatedRouteDistanceKm: 1.5, baseCommission: 8.50, itemsDescription: '2 Classic Burgers, 1 Fries', expectedPickupTime: 'ASAP (~8 min prep)', orderValue: 22.48, customerNotes: "Leave at front porch if no answer."
   },
   {
-    orderId: 'orderBid3',
-    restaurantName: 'Pasta Perfection',
-    restaurantLocation: { lat: 34.0580, lng: -118.2490 },
-    deliveryAddress: '789 Gourmet St, Anytown',
-    deliveryLocation: { lat: 34.0550, lng: -118.2550 },
-    estimatedDistanceKm: 0.8,
-    estimatedRouteDistanceKm: 1.0,
-    baseCommission: 7.00,
-    itemsDescription: '1 Spaghetti Carbonara',
-    expectedPickupTime: 'Ready in 15 mins',
-    requiredVehicleType: ['bicycle', 'foot', 'scooter'], // Suitable for short distance
-    orderValue: 13.50,
+    orderId: 'orderBid3', restaurantName: 'Pasta Perfection', restaurantLocation: { lat: 34.0580, lng: -118.2490 }, deliveryAddress: '789 Gourmet St, Anytown', deliveryLocation: { lat: 34.0550, lng: -118.2550 }, estimatedDistanceKm: 0.8, estimatedRouteDistanceKm: 1.0, baseCommission: 7.00, itemsDescription: '1 Spaghetti Carbonara', expectedPickupTime: 'Ready in 15 mins', requiredVehicleType: ['bicycle', 'foot', 'scooter'], orderValue: 13.50,
   }
 ];
 
@@ -258,143 +210,105 @@ export const mockBidsForOrder: (orderId: string) => CourierBid[] = (orderId) => 
 
   const orderDetails = getOrderForBiddingById(orderId);
   if (!orderDetails) return [];
-
   const bids: CourierBid[] = [];
 
   selectedCouriers.forEach((courier, index) => {
-    if (orderDetails.requiredVehicleType && orderDetails.requiredVehicleType.length > 0 && !orderDetails.requiredVehicleType.includes(courier.vehicleType)) {
-        return; 
-    }
+    if (orderDetails.requiredVehicleType && orderDetails.requiredVehicleType.length > 0 && !orderDetails.requiredVehicleType.includes(courier.vehicleType)) { return; }
     const bidAmountVariance = (Math.random() - 0.3) * 2; 
     const bidAmount = parseFloat((orderDetails.baseCommission + bidAmountVariance).toFixed(2));
-    
     const etaVariance = Math.floor(Math.random() * 10) - 3; 
     const baseEta = (orderDetails.estimatedRouteDistanceKm || orderDetails.estimatedDistanceKm) * (courier.vehicleType === 'bicycle' ? 7 : courier.vehicleType === 'foot' ? 12 : 4);
     const proposedEtaMinutes = Math.max(5, Math.round(baseEta + etaVariance + (Math.random() * 3 + 0.5)*3));
 
     bids.push({
-      bidId: `bid-${orderId}-${courier.id}-${index}`,
-      orderId,
-      courierId: courier.id,
-      courierName: courier.name,
-      distanceToRestaurantKm: parseFloat((Math.random() * 3 + 0.2).toFixed(1)), 
-      bidAmount: Math.max(5.00, bidAmount), 
-      proposedEtaMinutes,
-      courierRating: courier.rating,
-      courierTrustScore: courier.trustScore,
-      vehicleType: courier.vehicleType,
-      timestamp: new Date(now - (index + 1) * 30000).toISOString(), 
-      isFastPickup: Math.random() > 0.6, 
-      status: 'pending',
-      courierProfileSnapshot: { ...courier }
+      bidId: `bid-${orderId}-${courier.id}-${index}`, orderId, courierId: courier.id, courierName: courier.name, distanceToRestaurantKm: parseFloat((Math.random() * 3 + 0.2).toFixed(1)), bidAmount: Math.max(5.00, bidAmount), proposedEtaMinutes, courierRating: courier.rating, courierTrustScore: courier.trustScore, vehicleType: courier.vehicleType, timestamp: new Date(now - (index + 1) * 30000).toISOString(), isFastPickup: Math.random() > 0.6, status: 'pending', courierProfileSnapshot: { ...courier }
     });
   });
-  
   return bids;
 };
 
-
 export const getMockOrderById = (orderId: string, scheduledDeliveryTime?: string): Order | undefined => {
-  // Use only the base part of orderId for matching if it's a scheduled order ID
   const baseOrderId = orderId.split('_scheduled_')[0];
-
   if (baseOrderId.startsWith('mockOrder_')) {
     const restaurant = mockRestaurants[0]; 
-    const items = [
-        { ...restaurant.menu[0], quantity: 1 }, 
-        { ...restaurant.menu.find(m => m.category === 'Drinks')!, quantity: 2 } 
-    ].map(item => ({
-        menuItemId: item.id,
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity,
-        imageUrl: item.imageUrl,
-        dataAiHint: item.dataAiHint
-    }));
+    const items = [ { ...restaurant.menu[0], quantity: 1 }, { ...restaurant.menu.find(m => m.category === 'Drinks')!, quantity: 2 } ].map(item => ({ menuItemId: item.id, name: item.name, price: item.price, quantity: item.quantity, imageUrl: item.imageUrl, dataAiHint: item.dataAiHint }));
     const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
     const initialStatus = scheduledDeliveryTime ? 'SCHEDULED' : 'MATCHING_COURIER';
-    const initialTimelineNote = scheduledDeliveryTime 
-        ? `ההזמנה תוכננה ל: ${scheduledDeliveryTime}.`
-        : "התשלום התקבל. מחפש שליח.";
+    const initialTimelineNote = scheduledDeliveryTime ? `ההזמנה תוכננה ל: ${scheduledDeliveryTime}.` : "התשלום התקבל. מחפש שליח.";
 
     const baseOrder: Order = {
-      id: orderId, // Use the full orderId which might contain schedule info
-      userId: 'userTest1',
-      items,
-      totalAmount,
-      deliveryPreference: 'arena' as DeliveryPreference,
-      deliveryFee: 0,
-      discountAmount: 0,
-      finalAmount: totalAmount,
-      status: initialStatus,
-      deliveryAddress: '123 Delivery St, Foodtown, CA 90210',
-      restaurantId: restaurant.id,
-      restaurantName: restaurant.name,
-      createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-      updatedAt: new Date().toISOString(),
-      scheduledDeliveryTime: scheduledDeliveryTime, // Store the user-friendly string
-      scheduledDeliveryTimestamp: scheduledDeliveryTime ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() : undefined, // Mock: 24h from now if scheduled
-      orderTimeline: [
-        { status: 'PENDING_PAYMENT', timestamp: new Date(Date.now() - 6 * 60 * 1000).toISOString(), notes: "מעבד תשלום..." },
-        { status: initialStatus, timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(), notes: initialTimelineNote }
-      ]
+      id: orderId, userId: 'userTest1', items, totalAmount, deliveryPreference: 'arena' as DeliveryPreference, deliveryFee: 0, discountAmount: 0, finalAmount: totalAmount, status: initialStatus, deliveryAddress: '123 Delivery St, Foodtown, CA 90210', restaurantId: restaurant.id, restaurantName: restaurant.name, createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(), updatedAt: new Date().toISOString(), scheduledDeliveryTime: scheduledDeliveryTime, scheduledDeliveryTimestamp: scheduledDeliveryTime ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() : undefined, orderTimeline: [ { status: 'PENDING_PAYMENT', timestamp: new Date(Date.now() - 6 * 60 * 1000).toISOString(), notes: "מעבד תשלום..." }, { status: initialStatus, timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(), notes: initialTimelineNote } ]
     };
     return baseOrder;
   }
   return undefined;
 };
 
-// For Restaurant Admin Orders Page
 export const mockLiveOrdersForAdmin: Order[] = [
   {
-    id: 'adminOrder1', userId: 'userABC', items: [{ menuItemId: 'item1', name: 'מוצר אקספרס', price: 12.99, quantity: 1 }],
-    totalAmount: 12.99, deliveryPreference: 'arena', deliveryFee: 0, discountAmount: 0, finalAmount: 12.99,
-    status: 'PREPARING_AT_RESTAURANT', deliveryAddress: 'רחוב ראשי 123', restaurantId: 'business1', restaurantName: 'העסק שלי',
-    createdAt: new Date(Date.now() - 5 * 60000).toISOString(), updatedAt: new Date().toISOString(),
-    estimatedDeliveryTime: '15-20 דקות',
-    orderTimeline: [{ status: 'PREPARING_AT_RESTAURANT', timestamp: new Date().toISOString(), notes: "ההזמנה התקבלה במערכת."}]
+    id: 'adminOrder1', userId: 'userABC', items: [{ menuItemId: 'item1', name: 'מוצר אקספרס', price: 12.99, quantity: 1 }], totalAmount: 12.99, deliveryPreference: 'arena', deliveryFee: 0, discountAmount: 0, finalAmount: 12.99, status: 'PREPARING_AT_RESTAURANT', deliveryAddress: 'רחוב ראשי 123', restaurantId: 'business1', restaurantName: 'העסק שלי', createdAt: new Date(Date.now() - 5 * 60000).toISOString(), updatedAt: new Date().toISOString(), estimatedDeliveryTime: '15-20 דקות', orderTimeline: [{ status: 'PREPARING_AT_RESTAURANT', timestamp: new Date().toISOString(), notes: "ההזמנה התקבלה במערכת."}]
   },
   {
-    id: 'adminOrder2', userId: 'userDEF', items: [{ menuItemId: 'item3', name: 'שירות פרימיום', price: 9.99, quantity: 2 }, { menuItemId: 'item6', name: 'מוצר נלווה', price: 2.50, quantity: 2 }],
-    totalAmount: 24.98, deliveryPreference: 'fastest', deliveryFee: 5, discountAmount: 0, finalAmount: 29.98,
-    status: 'AWAITING_PICKUP', deliveryAddress: 'שדרות העצמאות 456', restaurantId: 'business1', restaurantName: 'העסק שלי',
-    createdAt: new Date(Date.now() - 15 * 60000).toISOString(), updatedAt: new Date().toISOString(),
-    estimatedDeliveryTime: '5-10 דקות לאיסוף',
-    assignedCourier: { id: 'courier1', name: 'שליח זריז', rating: 4.8, vehicleType: 'motorcycle', currentEtaMinutes: 7 },
-    orderTimeline: [
-        { status: 'PREPARING_AT_RESTAURANT', timestamp: new Date(Date.now() - 10 * 60000).toISOString()},
-        { status: 'AWAITING_PICKUP', timestamp: new Date().toISOString(), notes: "המוצר מוכן. השליח עודכן."}
-    ]
+    id: 'adminOrder2', userId: 'userDEF', items: [{ menuItemId: 'item3', name: 'שירות פרימיום', price: 9.99, quantity: 2 }, { menuItemId: 'item6', name: 'מוצר נלווה', price: 2.50, quantity: 2 }], totalAmount: 24.98, deliveryPreference: 'fastest', deliveryFee: 5, discountAmount: 0, finalAmount: 29.98, status: 'AWAITING_PICKUP', deliveryAddress: 'שדרות העצמאות 456', restaurantId: 'business1', restaurantName: 'העסק שלי', createdAt: new Date(Date.now() - 15 * 60000).toISOString(), updatedAt: new Date().toISOString(), estimatedDeliveryTime: '5-10 דקות לאיסוף', assignedCourier: { id: 'courier1', name: 'שליח זריז', rating: 4.8, vehicleType: 'motorcycle', currentEtaMinutes: 7 }, orderTimeline: [ { status: 'PREPARING_AT_RESTAURANT', timestamp: new Date(Date.now() - 10 * 60000).toISOString()}, { status: 'AWAITING_PICKUP', timestamp: new Date().toISOString(), notes: "המוצר מוכן. השליח עודכן."} ]
   },
   {
-    id: 'adminOrderScheduled1', userId: 'userGHI', items: [{ menuItemId: 'item4', name: 'סלט בריאות', price: 10.50, quantity: 1 }],
-    totalAmount: 10.50, deliveryPreference: 'arena', deliveryFee: 0, discountAmount: 0, finalAmount: 10.50,
-    status: 'SCHEDULED', deliveryAddress: 'דרך העתיד 1', restaurantId: 'business1', restaurantName: 'העסק שלי',
-    createdAt: new Date(Date.now() - 2 * 60 * 60000).toISOString(), updatedAt: new Date().toISOString(),
-    scheduledDeliveryTime: 'מחר, 12:00-12:30',
-    scheduledDeliveryTimestamp: new Date(Date.now() + 22 * 60 * 60000).toISOString(),
-    orderTimeline: [{ status: 'SCHEDULED', timestamp: new Date().toISOString(), notes: "הזמנה מתוכננת התקבלה."}]
+    id: 'adminOrderScheduled1', userId: 'userGHI', items: [{ menuItemId: 'item4', name: 'סלט בריאות', price: 10.50, quantity: 1 }], totalAmount: 10.50, deliveryPreference: 'arena', deliveryFee: 0, discountAmount: 0, finalAmount: 10.50, status: 'SCHEDULED', deliveryAddress: 'דרך העתיד 1', restaurantId: 'business1', restaurantName: 'העסק שלי', createdAt: new Date(Date.now() - 2 * 60 * 60000).toISOString(), updatedAt: new Date().toISOString(), scheduledDeliveryTime: 'מחר, 12:00-12:30', scheduledDeliveryTimestamp: new Date(Date.now() + 22 * 60 * 60000).toISOString(), orderTimeline: [{ status: 'SCHEDULED', timestamp: new Date().toISOString(), notes: "הזמנה מתוכננת התקבלה."}]
   },
 ];
 
 export const mockOrderHistoryForAdmin: Order[] = [
  {
-    id: 'adminOrderHist1', userId: 'userXYZ', items: [{ menuItemId: 'item2', name: 'מוצר פופולרי', price: 14.99, quantity: 1 }],
-    totalAmount: 14.99, deliveryPreference: 'arena', deliveryFee: 0, discountAmount: 0, finalAmount: 14.99,
-    status: 'DELIVERED', deliveryAddress: 'סמטת האורנים 789', restaurantId: 'business1', restaurantName: 'העסק שלי',
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60000).toISOString(), updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60000 + 30 * 60000).toISOString(),
-    actualDeliveryTime: new Date(Date.now() - 2 * 24 * 60 * 60000 + 30 * 60000).toISOString(),
-    orderTimeline: [{ status: 'DELIVERED', timestamp: new Date(Date.now() - 2 * 24 * 60 * 60000 + 30 * 60000).toISOString()}]
+    id: 'adminOrderHist1', userId: 'userXYZ', items: [{ menuItemId: 'item2', name: 'מוצר פופולרי', price: 14.99, quantity: 1 }], totalAmount: 14.99, deliveryPreference: 'arena', deliveryFee: 0, discountAmount: 0, finalAmount: 14.99, status: 'DELIVERED', deliveryAddress: 'סמטת האורנים 789', restaurantId: 'business1', restaurantName: 'העסק שלי', createdAt: new Date(Date.now() - 2 * 24 * 60 * 60000).toISOString(), updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60000 + 30 * 60000).toISOString(), actualDeliveryTime: new Date(Date.now() - 2 * 24 * 60 * 60000 + 30 * 60000).toISOString(), orderTimeline: [{ status: 'DELIVERED', timestamp: new Date(Date.now() - 2 * 24 * 60 * 60000 + 30 * 60000).toISOString()}]
   },
    {
-    id: 'adminOrderScheduledDelivered', userId: 'userJKL', items: [{ menuItemId: 'item5', name: 'פסטה מפנקת', price: 18.00, quantity: 1 }],
-    totalAmount: 18.00, deliveryPreference: 'smartSaver', deliveryFee: 0, discountAmount: 3.00, finalAmount: 15.00,
-    status: 'DELIVERED', deliveryAddress: 'כיכר החלומות 2', restaurantId: 'business1', restaurantName: 'העסק שלי',
-    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60000).toISOString(), updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60000 + 45 * 60000).toISOString(),
-    scheduledDeliveryTime: 'לפני יומיים, 19:00-19:30',
-    scheduledDeliveryTimestamp: new Date(Date.now() - 3 * 24 * 60 * 60000 + 40 * 60000).toISOString(), // Simulating it was scheduled
-    actualDeliveryTime: new Date(Date.now() - 3 * 24 * 60 * 60000 + 45 * 60000).toISOString(),
-    orderTimeline: [{ status: 'DELIVERED', timestamp: new Date(Date.now() - 3 * 24 * 60 * 60000 + 45 * 60000).toISOString()}]
+    id: 'adminOrderScheduledDelivered', userId: 'userJKL', items: [{ menuItemId: 'item5', name: 'פסטה מפנקת', price: 18.00, quantity: 1 }], totalAmount: 18.00, deliveryPreference: 'smartSaver', deliveryFee: 0, discountAmount: 3.00, finalAmount: 15.00, status: 'DELIVERED', deliveryAddress: 'כיכר החלומות 2', restaurantId: 'business1', restaurantName: 'העסק שלי', createdAt: new Date(Date.now() - 3 * 24 * 60 * 60000).toISOString(), updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60000 + 45 * 60000).toISOString(), scheduledDeliveryTime: 'לפני יומיים, 19:00-19:30', scheduledDeliveryTimestamp: new Date(Date.now() - 3 * 24 * 60 * 60000 + 40 * 60000).toISOString(), actualDeliveryTime: new Date(Date.now() - 3 * 24 * 60 * 60000 + 45 * 60000).toISOString(), orderTimeline: [{ status: 'DELIVERED', timestamp: new Date(Date.now() - 3 * 24 * 60 * 60000 + 45 * 60000).toISOString()}]
   },
 ];
+
+
+// SwiftSale Mock Data
+export const mockSwiftSaleItems: SwiftSaleItem[] = [
+    {
+        id: 'swiftsale-item1',
+        restaurantId: 'bakery1',
+        restaurantName: 'מאפיית הבוקר',
+        name: 'שקית מאפים מסוף יום',
+        description: 'מבחר מאפים טריים שנשארו מסוף היום - קרואסונים, בורקסים ועוד הפתעות!',
+        price: 15.00,
+        originalPrice: 45.00,
+        quantityAvailable: 5,
+        imageUrl: 'https://placehold.co/600x400.png',
+        dataAiHint: 'bakery surprise bag pastries',
+        isActive: true,
+    },
+    {
+        id: 'swiftsale-item2',
+        restaurantId: 'restaurant4',
+        restaurantName: 'Salad Sensations',
+        name: 'שקית סלטים טריים',
+        description: 'סלטים טריים שהוכנו היום ולא נמכרו. הזדמנות לבריאות במחיר מנצח!',
+        price: 12.00,
+        originalPrice: 38.00,
+        quantityAvailable: 3,
+        imageUrl: 'https://placehold.co/600x400.png',
+        dataAiHint: 'fresh salads surprise bag healthy',
+        isActive: true,
+    },
+    {
+        id: 'swiftsale-item3',
+        restaurantId: 'florist1',
+        restaurantName: 'פרחי העונה',
+        name: 'זר הפתעה מסוף שבוע',
+        description: 'פרחים יפים שאולי לא נמכרו במהלך סוף השבוע, אבל עדיין יכולים להאיר למישהו את היום!',
+        price: 25.00,
+        originalPrice: 70.00,
+        quantityAvailable: 2,
+        imageUrl: 'https://placehold.co/600x400.png',
+        dataAiHint: 'flowers surprise bouquet end of day',
+        isActive: true,
+    }
+];
+
+export const getSwiftSaleItemById = (id: string): SwiftSaleItem | undefined => {
+    return mockSwiftSaleItems.find(item => item.id === id);
+};

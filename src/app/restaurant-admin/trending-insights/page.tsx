@@ -6,11 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Lightbulb, TrendingUp, ThumbsUp, Search, PlusCircle, AlertTriangle, Info } from 'lucide-react';
+import { Lightbulb, TrendingUp, ThumbsUp, Search, PlusCircle, AlertTriangle, Info, DollarSign } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import type { IdentifyDishOutput } from '@/ai/flows/identify-dish-flow';
-
 
 const mockTrendingInsights: IdentifyDishOutput[] = [
   {
@@ -56,16 +55,13 @@ const mockTrendingInsights: IdentifyDishOutput[] = [
     identifiedDishName: "טוסט אבוקדו (ארטיזנלי)",
     isTrend: false, 
     generalSuggestion: "מועדף תמידי. SwiftServe מציעה בתי קפה רבים עם אפשרויות טוסט אבוקדו מעולות. משתמשים יכולים לסנן לפי 'ארוחת בוקר' או 'בית קפה'.",
-    // No businessOpportunity as it's common
   }
 ];
-
 
 export default function TrendingInsightsPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [insights, setInsights] = useState<IdentifyDishOutput[]>(mockTrendingInsights);
-
 
   const handleQuickAddToMenu = (suggestion: IdentifyDishOutput['businessOpportunity']) => {
     if (!suggestion) return;
@@ -81,6 +77,13 @@ export default function TrendingInsightsPage() {
     (insight.businessOpportunity?.suggestedItemName?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
     (insight.trendSource?.toLowerCase() || '').includes(searchTerm.toLowerCase())
   );
+
+  const handleExplorePartnership = (trendName: string) => {
+    toast({
+        title: "חקירת שותפות (בקרוב!)",
+        description: `נשלחה בקשה לבדיקת אפשרויות שותפות עבור הטרנד: ${trendName}. נציג יחזור אליך בקרוב.`,
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -134,6 +137,11 @@ export default function TrendingInsightsPage() {
               </div>
               {insight.trendSource && <CardDescription className="text-xs">מקור טרנד (משוער): {insight.trendSource}</CardDescription>}
               <p className="text-sm text-muted-foreground mt-1">{insight.generalSuggestion}</p>
+               {/* Mock Statistics */}
+              <div className="text-xs text-muted-foreground mt-2 space-x-2 rtl:space-x-reverse">
+                <span>אזכורי משתמשים: {Math.floor(Math.random() * 100) + 10}+</span>
+                <span>חיפושים אחרונים: {Math.floor(Math.random() * 50) + 5}+</span>
+              </div>
             </CardHeader>
             
             {insight.businessOpportunity ? (
@@ -165,12 +173,15 @@ export default function TrendingInsightsPage() {
                      <p className="text-xs text-muted-foreground mt-2"><strong>נימוק:</strong> {insight.businessOpportunity.rationale}</p>
                   </div>
                 </CardContent>
-                <CardFooter className="border-t pt-3">
+                <CardFooter className="border-t pt-3 flex flex-col sm:flex-row gap-2">
                   <Button 
                     onClick={() => handleQuickAddToMenu(insight.businessOpportunity)} 
-                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white"
                   >
-                    <PlusCircle className="mr-2 h-4 w-4"/> הוסף לתפריט (הוספה מהירה - דמו)
+                    <PlusCircle className="mr-2 h-4 w-4"/> הוסף לתפריט (מהיר)
+                  </Button>
+                  <Button variant="outline" onClick={() => handleExplorePartnership(insight.identifiedDishName)} className="w-full sm:flex-1">
+                    <DollarSign className="mr-2 h-4 w-4" /> חקור שותפות מותג (בקרוב)
                   </Button>
                 </CardFooter>
               </>

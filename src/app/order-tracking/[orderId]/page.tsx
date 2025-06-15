@@ -4,17 +4,18 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, notFound, useRouter } from 'next/navigation';
 import type { Order, OrderStatus, CourierProfile, DeliveryVehicle } from '@/types';
-import { getMockOrderById, mockCourierProfiles } from '@/lib/mock-data'; // We'll use mock data for now
+import { getMockOrderById, mockCourierProfiles } from '@/lib/mock-data'; 
 
 import { MatchingCourierView } from '@/components/order/matching-courier-view';
 import { CourierAssignedView } from '@/components/order/courier-assigned-view';
 import { DeliveryCompleteView } from '@/components/order/delivery-complete-view';
-import { TriviaChallengeCard } from '@/components/order/trivia-challenge-card'; // Added
+import { TriviaChallengeCard } from '@/components/order/trivia-challenge-card'; 
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, AlertTriangle, Info, Clock } from 'lucide-react'; // Added Clock
+import { ArrowLeft, AlertTriangle, Info, Clock, Award, Gamepad2 } from 'lucide-react'; 
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast'; // Added useToast
 
 const getOrderStatusHebrew = (status: OrderStatus): string => {
     const map: Record<OrderStatus, string> = {
@@ -31,39 +32,30 @@ const getOrderStatusHebrew = (status: OrderStatus): string => {
     return map[status] || status.replace(/_/g, ' ').toLowerCase();
 }
 
-// Mock courier for CourierAssignedView - choose one from mock data
 const getAssignedCourierDetails = (courierId: string): Order['assignedCourier'] => {
     const profile = mockCourierProfiles.find(c => c.id === courierId);
     if (!profile) return undefined;
     return {
-        id: profile.id,
-        name: profile.name,
-        photoUrl: `https://placehold.co/100x100.png`, // Generic placeholder
-        dataAiHint: "courier person",
-        rating: profile.rating,
-        vehicleType: profile.vehicleType,
-        currentEtaMinutes: 12 + Math.floor(Math.random() * 8), // Random ETA
-        vehicleDetails: profile.transportationModeDetails || `${profile.vehicleType}`,
-        liveLocation: profile.currentLocation,
+        id: profile.id, name: profile.name, photoUrl: `https://placehold.co/100x100.png`, dataAiHint: "courier person", rating: profile.rating, vehicleType: profile.vehicleType, currentEtaMinutes: 12 + Math.floor(Math.random() * 8), vehicleDetails: profile.transportationModeDetails || `${profile.vehicleType}`, liveLocation: profile.currentLocation,
     };
 };
-
 
 export default function OrderTrackingPage() {
   const params = useParams();
   const orderId = params.orderId as string;
   const router = useRouter();
+  const { toast } = useToast(); // Added toast hook
 
-  const [order, setOrder] = useState<Order | null | undefined>(undefined); // undefined for loading, null for not found
+  const [order, setOrder] = useState<Order | null | undefined>(undefined); 
   const [error, setError] = useState<string | null>(null);
-  const [triviaAnswered, setTriviaAnswered] = useState(false); // Added for trivia state
+  const [triviaAnswered, setTriviaAnswered] = useState(false); 
+  const [showGamificationHint, setShowGamificationHint] = useState(false);
 
-  // Simulate order status changes for demo purposes
   const simulateStatusProgression = useCallback(() => {
     if (!order || order.status === 'DELIVERED' || order.status === 'CANCELLED' || order.status === 'SCHEDULED') return;
 
     let nextStatus: OrderStatus | null = null;
-    let delay = 5000 + Math.random() * 5000; // Base delay
+    let delay = 5000 + Math.random() * 5000; 
     let newCourierInfo: Order['assignedCourier'] | undefined = order.assignedCourier;
     let newTimelineEvent: Order['orderTimeline'][0] | undefined;
 
@@ -74,6 +66,7 @@ export default function OrderTrackingPage() {
         newCourierInfo = getAssignedCourierDetails(randomCourierProfile.id);
         newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: `שליח ${newCourierInfo?.name} שובץ.` };
         delay = 8000; 
+        setShowGamificationHint(true); // Show gamification hint when courier is assigned
         break;
       case 'COURIER_ASSIGNED':
         nextStatus = 'PREPARING_AT_RESTAURANT';
@@ -93,6 +86,7 @@ export default function OrderTrackingPage() {
         nextStatus = 'DELIVERED';
         newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: "ההזמנה נמסרה. בתאבון!" };
         delay = 15000 + ((order.assignedCourier?.currentEtaMinutes || 1) * 1000 * 0.5); 
+        setShowGamificationHint(false); // Hide gamification hint on delivery
         break;
     }
 
@@ -101,11 +95,7 @@ export default function OrderTrackingPage() {
         setOrder(prev => {
           if (!prev || prev.status !== order.status) return prev; 
           const updatedOrder: Order = {
-            ...prev,
-            status: nextStatus!,
-            assignedCourier: newCourierInfo || prev.assignedCourier,
-            updatedAt: new Date().toISOString(),
-            orderTimeline: newTimelineEvent ? [...(prev.orderTimeline || []), newTimelineEvent] : prev.orderTimeline,
+            ...prev, status: nextStatus!, assignedCourier: newCourierInfo || prev.assignedCourier, updatedAt: new Date().toISOString(), orderTimeline: newTimelineEvent ? [...(prev.orderTimeline || []), newTimelineEvent] : prev.orderTimeline,
           };
           if (nextStatus === 'OUT_FOR_DELIVERY' && updatedOrder.assignedCourier) {
             updatedOrder.assignedCourier.currentEtaMinutes = Math.max(5, (updatedOrder.assignedCourier.currentEtaMinutes || 15) - 5); 
@@ -117,11 +107,8 @@ export default function OrderTrackingPage() {
     }
   }, [order]);
 
-
   useEffect(() => {
     if (!orderId) return;
-    
-    // Extract scheduled time from orderId if present (mocking this info passing)
     let extractedScheduledTime: string | undefined = undefined;
     if (orderId.includes('_scheduled_')) {
         const parts = orderId.split('_scheduled_');
@@ -129,7 +116,6 @@ export default function OrderTrackingPage() {
             extractedScheduledTime = decodeURIComponent(parts[1]);
         }
     }
-
     const fetchedOrder = getMockOrderById(orderId, extractedScheduledTime);
     if (!fetchedOrder) {
       setOrder(null); 
@@ -137,11 +123,15 @@ export default function OrderTrackingPage() {
     }
     setOrder(fetchedOrder);
     
-    const storedTriviaState = localStorage.getItem(`triviaAnswered_${orderId.split('_scheduled_')[0]}`); // Use base ID for trivia
+    const storedTriviaState = localStorage.getItem(`triviaAnswered_${orderId.split('_scheduled_')[0]}`); 
     if (storedTriviaState === 'true') {
         setTriviaAnswered(true);
     } else {
         setTriviaAnswered(false);
+    }
+    // Decide if gamification hint should be shown initially
+    if (fetchedOrder.status === 'COURIER_ASSIGNED' || fetchedOrder.status === 'PREPARING_AT_RESTAURANT' || fetchedOrder.status === 'AWAITING_PICKUP' || fetchedOrder.status === 'OUT_FOR_DELIVERY') {
+        setShowGamificationHint(true);
     }
 
   }, [orderId]);
@@ -151,7 +141,6 @@ export default function OrderTrackingPage() {
     return cleanup;
   }, [order, simulateStatusProgression]);
 
-
   useEffect(() => {
     if (order && (order.status === 'OUT_FOR_DELIVERY' || order.status === 'AWAITING_PICKUP') && order.assignedCourier && (order.assignedCourier.currentEtaMinutes || 0) > 0) {
       const etaInterval = setInterval(() => {
@@ -159,13 +148,7 @@ export default function OrderTrackingPage() {
           if (prev && (prev.status === 'OUT_FOR_DELIVERY' || prev.status === 'AWAITING_PICKUP') && prev.assignedCourier && (prev.assignedCourier.currentEtaMinutes || 0) > 1) {
             const newEta = (prev.assignedCourier.currentEtaMinutes || 0) - 1;
             return {
-              ...prev,
-              assignedCourier: {
-                ...prev.assignedCourier,
-                currentEtaMinutes: newEta,
-              },
-              estimatedDeliveryTime: `${newEta}-${newEta + 5} דק'`, 
-              updatedAt: new Date().toISOString(),
+              ...prev, assignedCourier: { ...prev.assignedCourier, currentEtaMinutes: newEta, }, estimatedDeliveryTime: `${newEta}-${newEta + 5} דק'`, updatedAt: new Date().toISOString(),
             };
           }
           return prev;
@@ -174,7 +157,6 @@ export default function OrderTrackingPage() {
       return () => clearInterval(etaInterval);
     }
   }, [order?.status, order?.assignedCourier?.currentEtaMinutes]);
-
 
   if (order === undefined) { 
     return (
@@ -260,15 +242,20 @@ export default function OrderTrackingPage() {
   };
 
   const showTriviaForStatus: OrderStatus[] = ['COURIER_ASSIGNED', 'PREPARING_AT_RESTAURANT', 'AWAITING_PICKUP', 'OUT_FOR_DELIVERY'];
-  // Only show trivia if order is not scheduled or if it's actively being processed (not in 'SCHEDULED' status)
   const shouldShowTrivia = showTriviaForStatus.includes(order.status) && !triviaAnswered && order.status !== 'SCHEDULED';
-
 
   const handleTriviaComplete = () => {
     setTriviaAnswered(true);
     localStorage.setItem(`triviaAnswered_${orderId.split('_scheduled_')[0]}`, 'true');
   };
 
+  const handleGamificationTask = () => {
+    toast({
+        title: "משימת בונוס! (דמו)",
+        description: "שתף תמונה של הטרנד שהזמנת עם #SwiftServeLive וצבור עוד כוכבים! (משימה תופיע כאן)",
+        action: <Award className="text-yellow-500" />
+    });
+  }
 
   return (
     <div className="max-w-3xl mx-auto py-8 space-y-6">
@@ -277,6 +264,20 @@ export default function OrderTrackingPage() {
       </Button>
 
       {renderOrderStatusView()}
+
+      {showGamificationHint && !triviaAnswered && (
+        <Card className="bg-purple-50 border-purple-200 text-purple-700 animate-fadeIn">
+            <CardHeader>
+                <CardTitle className="flex items-center"><Gamepad2 className="mr-2 h-5 w-5"/> הרווח פרסים בזמן ההמתנה!</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+                <p>פתור את חידון הטריוויה שלנו או השלם משימת בונוס קטנה כדי לצבור נקודות וכוכבים!</p>
+                <Button variant="link" onClick={handleGamificationTask} className="p-0 text-purple-700">
+                    בדוק משימת בונוס (דמו)
+                </Button>
+            </CardContent>
+        </Card>
+      )}
 
       {shouldShowTrivia && (
         <TriviaChallengeCard

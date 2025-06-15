@@ -3,11 +3,11 @@
 
 import { useState } from 'react';
 import type { MenuItem as MenuItemType, Restaurant, MenuItemAddonGroup } from '@/types';
-import { mockRestaurants } from '@/lib/mock-data'; // Assuming mockRestaurants includes menu items with addons
+import { mockRestaurants } from '@/lib/mock-data'; 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { PlusCircle, Edit3, Trash2, Copy, GripVertical, PackageSearch, Image as ImageIcon, Tag, DollarSign, CheckCircle, XCircle } from 'lucide-react';
+import { PlusCircle, Edit3, Trash2, Copy, GripVertical, PackageSearch, Image as ImageIcon, Tag, DollarSign, CheckCircle, XCircle, ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
@@ -19,18 +19,17 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label'; // Correct import for Label
+import { Label } from '@/components/ui/label'; 
 
-// Enhanced Zod schema for MenuItem including addons
 const menuItemAddonChoiceSchema = z.object({
-  id: z.string().uuid().optional(), // Optional for new items
+  id: z.string().uuid().optional(), 
   name: z.string().min(1, "שם האפשרות הוא שדה חובה"),
   price: z.preprocess(val => Number(val), z.number().min(0, "מחיר לא יכול להיות שלילי")),
   selectedByDefault: z.boolean().optional(),
 });
 
 const menuItemAddonGroupSchema = z.object({
-  id: z.string().uuid().optional(), // Optional for new items
+  id: z.string().uuid().optional(), 
   title: z.string().min(1, "כותרת קבוצת תוספות היא שדה חובה"),
   type: z.enum(['radio', 'checkbox']),
   minSelection: z.preprocess(
@@ -66,38 +65,52 @@ const menuItemFormSchema = z.object({
   path: ['newCategoryName'],
 });
 
-
 type MenuItemFormValues = z.infer<typeof menuItemFormSchema>;
 
-// Assume restaurantId 'restaurant1' is the one being managed
-const managedRestaurantId = 'restaurant1'; // This ID might need to be more generic or dynamically set for a "Business Admin"
+const swiftSaleFormSchema = z.object({
+    swiftSaleEnabled: z.boolean().default(false),
+    swiftSaleStartTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "פורמט זמן לא תקין (HH:MM)").optional(),
+    swiftSaleBagCount: z.preprocess(val => Number(val), z.number().int().min(0, "מספר שקיות חייב להיות חיובי או אפס").optional()),
+    swiftSaleBagPrice: z.preprocess(val => Number(val), z.number().positive("מחיר שקית חייב להיות חיובי").optional()),
+}).refine(data => {
+    if (data.swiftSaleEnabled) {
+        return !!data.swiftSaleStartTime && data.swiftSaleBagCount !== undefined && data.swiftSaleBagPrice !== undefined;
+    }
+    return true;
+}, {
+    message: "אם SwiftSale מופעל, יש למלא שעת התחלה, כמות שקיות ומחיר.",
+    path: ['swiftSaleEnabled'],
+});
+
+type SwiftSaleFormValues = z.infer<typeof swiftSaleFormSchema>;
+
+const managedRestaurantId = 'restaurant1'; 
 const initialRestaurant = mockRestaurants.find(r => r.id === managedRestaurantId);
 
 
 export default function MenuManagementPage() {
   const { toast } = useToast();
-  const [restaurant, setRestaurant] = useState<Restaurant | undefined>(initialRestaurant); // Restaurant type might need generalization
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [restaurant, setRestaurant] = useState<Restaurant | undefined>(initialRestaurant); 
+  const [isItemFormOpen, setIsItemFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItemType | null>(null);
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
 
-  const form = useForm<MenuItemFormValues>({
+  const itemForm = useForm<MenuItemFormValues>({
     resolver: zodResolver(menuItemFormSchema),
     defaultValues: {
-      name: '',
-      description: '',
-      price: 0,
-      imageUrl: '',
-      dataAiHint: '',
-      category: '',
-      newCategoryName: '',
-      isAvailable: true,
-      addons: [],
+      name: '', description: '', price: 0, imageUrl: '', dataAiHint: '', category: '', newCategoryName: '', isAvailable: true, addons: [],
     },
   });
 
+  const swiftSaleForm = useForm<SwiftSaleFormValues>({
+    resolver: zodResolver(swiftSaleFormSchema),
+    defaultValues: {
+        swiftSaleEnabled: false, swiftSaleStartTime: "20:00", swiftSaleBagCount: 5, swiftSaleBagPrice: 15,
+    }
+  });
+
   const { fields: addonGroups, append: appendAddonGroup, remove: removeAddonGroup } = useFieldArray({
-    control: form.control,
+    control: itemForm.control,
     name: "addons",
   });
 
@@ -105,49 +118,24 @@ export default function MenuManagementPage() {
 
   const handleEditItem = (item: MenuItemType) => {
     setEditingItem(item);
-    setShowNewCategoryInput(false); // Reset new category input visibility
-    form.reset({
-      id: item.id,
-      name: item.name,
-      description: item.description,
-      price: item.price,
-      imageUrl: item.imageUrl,
-      dataAiHint: item.dataAiHint,
-      category: item.category,
-      newCategoryName: '',
-      isAvailable: item.isAvailable === undefined ? true : item.isAvailable,
-      addons: item.addons?.map(ag => ({
-        ...ag,
-        options: ag.options.map(opt => ({...opt})) // Ensure deep copy
-      })) || [],
+    setShowNewCategoryInput(false); 
+    itemForm.reset({
+      id: item.id, name: item.name, description: item.description, price: item.price, imageUrl: item.imageUrl, dataAiHint: item.dataAiHint, category: item.category, newCategoryName: '', isAvailable: item.isAvailable === undefined ? true : item.isAvailable, addons: item.addons?.map(ag => ({ ...ag, options: ag.options.map(opt => ({...opt})) })) || [],
     });
-    setIsFormOpen(true);
+    setIsItemFormOpen(true);
   };
 
   const handleAddNewItem = () => {
     setEditingItem(null);
-    setShowNewCategoryInput(false); // Reset
-    form.reset({ // Reset to default values for a new item
-      name: '',
-      description: '',
-      price: 0,
-      imageUrl: '',
-      dataAiHint: '',
-      category: categories.length > 0 ? categories[0] : '',
-      newCategoryName: '',
-      isAvailable: true,
-      addons: [],
-    });
-    setIsFormOpen(true);
+    setShowNewCategoryInput(false); 
+    itemForm.reset({ name: '', description: '', price: 0, imageUrl: '', dataAiHint: '', category: categories.length > 0 ? categories[0] : '', newCategoryName: '', isAvailable: true, addons: [], });
+    setIsItemFormOpen(true);
   };
 
   const handleDuplicateItem = (itemToDuplicate: MenuItemType) => {
     if (!restaurant) return;
     const newItem: MenuItemType = {
-      ...itemToDuplicate,
-      id: `item-${Date.now()}-${Math.random().toString(36).substring(2,7)}`, // Ensure new ID
-      name: `${itemToDuplicate.name} (עותק)`,
-      restaurantId: restaurant.id, // This might need to be businessId
+      ...itemToDuplicate, id: `item-${Date.now()}-${Math.random().toString(36).substring(2,7)}`, name: `${itemToDuplicate.name} (עותק)`, restaurantId: restaurant.id, 
     };
     setRestaurant(prev => prev ? ({ ...prev, menu: [...prev.menu, newItem] }) : undefined);
     toast({ title: "פריט שוכפל", description: `${newItem.name} נוסף לרשימה שלך.` });
@@ -161,64 +149,40 @@ export default function MenuManagementPage() {
 
   const toggleItemAvailability = (itemId: string) => {
     if (!restaurant) return;
-    setRestaurant(prev => prev ? ({
-      ...prev,
-      menu: prev.menu.map(item =>
-        item.id === itemId ? { ...item, isAvailable: !(item.isAvailable === undefined ? true : item.isAvailable) } : item
-      )
-    }) : undefined);
+    setRestaurant(prev => prev ? ({ ...prev, menu: prev.menu.map(item => item.id === itemId ? { ...item, isAvailable: !(item.isAvailable === undefined ? true : item.isAvailable) } : item ) }) : undefined);
   };
 
-  function onSubmit(values: MenuItemFormValues) {
+  function onItemSubmit(values: MenuItemFormValues) {
     if (!restaurant) return;
-
     let finalCategory = values.category;
     if (values.category === 'NEW_CATEGORY_INPUT' && values.newCategoryName && values.newCategoryName.trim() !== '') {
       finalCategory = values.newCategoryName.trim();
     } else if (values.category === 'NEW_CATEGORY_INPUT') {
-        form.setError("newCategoryName", { type: "manual", message: "שם קטגוריה חדשה הוא שדה חובה."});
-        return; // Stop submission if new category selected but name is empty
+        itemForm.setError("newCategoryName", { type: "manual", message: "שם קטגוריה חדשה הוא שדה חובה."});
+        return; 
     }
 
-
     const submittedItem: MenuItemType = {
-      id: editingItem?.id || `item-${Date.now()}`, // Use existing ID if editing, else generate
-      restaurantId: restaurant.id, // businessId
-      name: values.name,
-      description: values.description,
-      price: Number(values.price), // Ensure price is number
-      imageUrl: values.imageUrl,
-      dataAiHint: values.dataAiHint,
-      category: finalCategory,
-      isAvailable: values.isAvailable,
-      addons: values.addons?.map(ag => ({
-        ...ag,
-        id: ag.id || `addon-group-${Date.now()}-${Math.random().toString(36).substring(2,7)}`,
-        minSelection: ag.minSelection ? Number(ag.minSelection) : undefined,
-        maxSelection: ag.maxSelection ? Number(ag.maxSelection) : undefined,
-        options: ag.options.map(opt => ({
-          ...opt,
-          id: opt.id || `addon-choice-${Date.now()}-${Math.random().toString(36).substring(2,7)}`,
-          price: Number(opt.price)
-        }))
-      }))
+      id: editingItem?.id || `item-${Date.now()}`, 
+      restaurantId: restaurant.id, 
+      name: values.name, description: values.description, price: Number(values.price), imageUrl: values.imageUrl, dataAiHint: values.dataAiHint, category: finalCategory, isAvailable: values.isAvailable, addons: values.addons?.map(ag => ({ ...ag, id: ag.id || `addon-group-${Date.now()}-${Math.random().toString(36).substring(2,7)}`, minSelection: ag.minSelection ? Number(ag.minSelection) : undefined, maxSelection: ag.maxSelection ? Number(ag.maxSelection) : undefined, options: ag.options.map(opt => ({ ...opt, id: opt.id || `addon-choice-${Date.now()}-${Math.random().toString(36).substring(2,7)}`, price: Number(opt.price) })) }))
     };
 
     if (editingItem) {
-      // Update existing item
-      setRestaurant(prev => prev ? ({
-        ...prev,
-        menu: prev.menu.map(item => item.id === editingItem.id ? submittedItem : item)
-      }) : undefined);
+      setRestaurant(prev => prev ? ({ ...prev, menu: prev.menu.map(item => item.id === editingItem.id ? submittedItem : item) }) : undefined);
       toast({ title: "פריט עודכן", description: `${submittedItem.name} עודכן.` });
     } else {
-      // Add new item
       setRestaurant(prev => prev ? ({ ...prev, menu: [...prev.menu, submittedItem] }) : undefined);
       toast({ title: "פריט נוסף", description: `${submittedItem.name} נוסף לרשימה שלך.` });
     }
-    setIsFormOpen(false);
+    setIsItemFormOpen(false);
     setShowNewCategoryInput(false);
-    form.reset(); // Reset form after submission
+    itemForm.reset(); 
+  }
+
+  function onSwiftSaleSubmit(values: SwiftSaleFormValues) {
+    console.log("SwiftSale Settings Updated (Demo):", values);
+    toast({ title: "הגדרות SwiftSale עודכנו (דמו)", description: `SwiftSale ${values.swiftSaleEnabled ? 'מופעל' : 'כבוי'}.` });
   }
 
   if (!restaurant) {
@@ -227,9 +191,8 @@ export default function MenuManagementPage() {
   
   const currentCategories = restaurant ? Array.from(new Set(restaurant.menu.map(item => item.category))) : [];
 
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <CardHeader className="p-0">
             <CardTitle className="text-2xl font-headline">ניהול מוצרים/שירותים</CardTitle>
@@ -240,7 +203,6 @@ export default function MenuManagementPage() {
         </Button>
       </div>
 
-      {/* Category Sections */}
       {currentCategories.length === 0 && restaurant.menu.length === 0 && (
          <Card className="text-center py-12">
             <CardContent className="flex flex-col items-center gap-4">
@@ -300,7 +262,6 @@ export default function MenuManagementPage() {
         </section>
       ))}
 
-      {/* Fallback for items without category */}
        {restaurant.menu.filter(item => !item.category || item.category.trim() === "").length > 0 && (
          <section>
           <h2 className="text-xl font-semibold mb-3 sticky top-0 bg-muted/80 backdrop-blur-sm py-2 px-3 rounded-md z-10 -mx-3 text-orange-600">פריטים ללא קטגוריה</h2>
@@ -347,9 +308,7 @@ export default function MenuManagementPage() {
          </section>
        )}
 
-
-      {/* Add/Edit Item Dialog */}
-      <Dialog open={isFormOpen} onOpenChange={(open) => { setIsFormOpen(open); if (!open) setShowNewCategoryInput(false); }}>
+      <Dialog open={isItemFormOpen} onOpenChange={(open) => { setIsItemFormOpen(open); if (!open) setShowNewCategoryInput(false); }}>
         <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>{editingItem ? 'ערוך מוצר/שירות' : 'הוסף מוצר/שירות חדש'}</DialogTitle>
@@ -357,19 +316,19 @@ export default function MenuManagementPage() {
               {editingItem ? 'עדכן את פרטי המוצר/שירות הזה.' : 'מלא את הפרטים עבור המוצר/שירות החדש.'}
             </DialogDescription>
           </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 overflow-y-auto flex-grow pr-2">
-              <FormField control={form.control} name="name" render={({ field }) => (
+          <Form {...itemForm}>
+            <form onSubmit={itemForm.handleSubmit(onItemSubmit)} className="space-y-4 overflow-y-auto flex-grow pr-2">
+              <FormField control={itemForm.control} name="name" render={({ field }) => (
                 <FormItem><FormLabel>שם המוצר/שירות</FormLabel><FormControl><Input {...field} placeholder="לדוגמה: חולצת טי-שירט, ייעוץ עסקי" /></FormControl><FormMessage /></FormItem>
               )}/>
-              <FormField control={form.control} name="description" render={({ field }) => (
+              <FormField control={itemForm.control} name="description" render={({ field }) => (
                 <FormItem><FormLabel>תיאור קצר</FormLabel><FormControl><Textarea {...field} placeholder="לדוגמה: 100% כותנה, שעת ייעוץ אסטרטגי" /></FormControl><FormMessage /></FormItem>
               )}/>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <FormField control={form.control} name="price" render={({ field }) => (
+                <FormField control={itemForm.control} name="price" render={({ field }) => (
                     <FormItem><FormLabel>מחיר (₪)</FormLabel><FormControl><Input type="number" step="0.01" {...field} placeholder="לדוגמה: 99.90" /></FormControl><FormMessage /></FormItem>
                 )}/>
-                 <FormField control={form.control} name="category" render={({ field }) => (
+                 <FormField control={itemForm.control} name="category" render={({ field }) => (
                   <FormItem>
                     <FormLabel>קטגוריה</FormLabel>
                     <Select
@@ -393,7 +352,7 @@ export default function MenuManagementPage() {
               </div>
               {showNewCategoryInput && (
                 <FormField
-                  control={form.control}
+                  control={itemForm.control}
                   name="newCategoryName"
                   render={({ field }) => (
                     <FormItem className="mt-2">
@@ -406,23 +365,21 @@ export default function MenuManagementPage() {
                   )}
                 />
               )}
-              <FormField control={form.control} name="imageUrl" render={({ field }) => (
+              <FormField control={itemForm.control} name="imageUrl" render={({ field }) => (
                 <FormItem><FormLabel>כתובת URL של תמונה</FormLabel><FormControl><Input {...field} placeholder="https://example.com/image.jpg" /></FormControl>
                 <FormDescription>כתובת URL של תמונת המוצר/שירות. השתמש בשירותים כמו Placehold.co לתמונות זמניות.</FormDescription><FormMessage /></FormItem>
               )}/>
-               <FormField control={form.control} name="dataAiHint" render={({ field }) => (
+               <FormField control={itemForm.control} name="dataAiHint" render={({ field }) => (
                 <FormItem><FormLabel>רמז AI לתמונה (אופציונלי)</FormLabel><FormControl><Input {...field} placeholder="לדוגמה: חולצה כחולה, טלפון נייד" /></FormControl>
                 <FormDescription>מילת מפתח או שתיים לחיפוש תמונות AI אם זו תמונת Placeholder.</FormDescription><FormMessage /></FormItem>
               )}/>
-              <FormField control={form.control} name="isAvailable" render={({ field }) => (
+              <FormField control={itemForm.control} name="isAvailable" render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                     <div className="space-y-0.5"><FormLabel>זמין להזמנה</FormLabel>
                     <FormDescription>האם מוצר/שירות זה זמין כעת ללקוחות?</FormDescription></div>
                     <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                 </FormItem>
               )}/>
-
-              {/* Addon Groups */}
               <Card>
                 <CardHeader className="p-4 border-b">
                     <div className="flex justify-between items-center">
@@ -436,13 +393,13 @@ export default function MenuManagementPage() {
                     {addonGroups.map((groupField, groupIndex) => (
                         <Card key={groupField.id} className="p-3 bg-muted/50">
                             <div className="flex justify-between items-center mb-2">
-                                <FormField control={form.control} name={`addons.${groupIndex}.title`} render={({ field }) => (
+                                <FormField control={itemForm.control} name={`addons.${groupIndex}.title`} render={({ field }) => (
                                     <FormItem className="flex-grow mr-2"><FormLabel className="text-xs">כותרת קבוצה</FormLabel><FormControl><Input {...field} placeholder="לדוגמה: מידות, צבעים" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
                                 )}/>
                                 <Button type="button" variant="ghost" size="icon" onClick={() => removeAddonGroup(groupIndex)} className="text-destructive h-8 w-8"><Trash2 className="h-4 w-4"/></Button>
                             </div>
                              <div className="grid grid-cols-2 gap-2 mb-2">
-                                 <FormField control={form.control} name={`addons.${groupIndex}.type`} render={({ field }) => (
+                                 <FormField control={itemForm.control} name={`addons.${groupIndex}.type`} render={({ field }) => (
                                     <FormItem><FormLabel className="text-xs">סוג בחירה</FormLabel>
                                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl><SelectTrigger className="h-8"><SelectValue /></SelectTrigger></FormControl>
@@ -453,41 +410,117 @@ export default function MenuManagementPage() {
                                       </Select>
                                     <FormMessage className="text-xs"/></FormItem>
                                 )}/>
-                                 <FormField control={form.control} name={`addons.${groupIndex}.required`} render={({ field }) => (
+                                 <FormField control={itemForm.control} name={`addons.${groupIndex}.required`} render={({ field }) => (
                                     <FormItem className="flex flex-row items-center space-x-2 pt-5"><FormControl><Switch checked={field.value} onCheckedChange={field.onChange}/></FormControl><FormLabel className="text-xs !mt-0">קבוצת חובה</FormLabel><FormMessage className="text-xs"/></FormItem>
                                 )}/>
                              </div>
                              <div className="grid grid-cols-2 gap-2 mb-2">
-                                 <FormField control={form.control} name={`addons.${groupIndex}.minSelection`} render={({ field }) => (
+                                 <FormField control={itemForm.control} name={`addons.${groupIndex}.minSelection`} render={({ field }) => (
                                      <FormItem><FormLabel className="text-xs">מינימום בחירות (אופציונלי)</FormLabel><FormControl><Input type="number" {...field} placeholder="לדוגמה: 1" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
                                  )}/>
-                                  <FormField control={form.control} name={`addons.${groupIndex}.maxSelection`} render={({ field }) => (
+                                  <FormField control={itemForm.control} name={`addons.${groupIndex}.maxSelection`} render={({ field }) => (
                                      <FormItem><FormLabel className="text-xs">מקסימום בחירות (אופציונלי)</FormLabel><FormControl><Input type="number" {...field} placeholder="לדוגמה: 3" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
                                  )}/>
                              </div>
-
                             <p className="text-xs font-medium mb-1">אפשרויות:</p>
-                            <AddonOptionsArray groupIndex={groupIndex} control={form.control} />
+                            <AddonOptionsArray groupIndex={groupIndex} control={itemForm.control} />
                         </Card>
                     ))}
                      {addonGroups.length === 0 && <p className="text-xs text-muted-foreground text-center py-2">לא הוגדרו קבוצות תוספות.</p>}
                 </CardContent>
               </Card>
-
             </form>
           </Form>
           <DialogFooter className="pt-4 border-t">
             <DialogClose asChild><Button type="button" variant="outline">ביטול</Button></DialogClose>
-            <Button type="submit" onClick={form.handleSubmit(onSubmit)} disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ? "שומר..." : (editingItem ? 'שמור שינויים' : 'הוסף פריט')}
+            <Button type="submit" onClick={itemForm.handleSubmit(onItemSubmit)} disabled={itemForm.formState.isSubmitting}>
+              {itemForm.formState.isSubmitting ? "שומר..." : (editingItem ? 'שמור שינויים' : 'הוסף פריט')}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* SwiftSale Management Card */}
+      <Card>
+        <CardHeader>
+            <CardTitle className="text-xl font-headline flex items-center">
+                <ShoppingBag className="mr-2 h-5 w-5 text-red-500" /> ניהול SwiftSale - שקיות סוף יום
+            </CardTitle>
+            <CardDescription>הגדר את שקיות ההפתעה המוזלות לסוף היום עבור העסק שלך.</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <Form {...swiftSaleForm}>
+                <form onSubmit={swiftSaleForm.handleSubmit(onSwiftSaleSubmit)} className="space-y-6">
+                    <FormField
+                        control={swiftSaleForm.control}
+                        name="swiftSaleEnabled"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm">
+                                <div className="space-y-0.5">
+                                    <FormLabel className="text-base">הפעל SwiftSale עבור העסק שלך</FormLabel>
+                                    <FormDescription>מאפשר למכור שקיות הפתעה מוזלות בסוף היום.</FormDescription>
+                                </div>
+                                <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                            </FormItem>
+                        )}
+                    />
+                    {swiftSaleForm.watch('swiftSaleEnabled') && (
+                        <div className="space-y-4 p-4 border-t animate-fadeIn">
+                            <FormField
+                                control={swiftSaleForm.control}
+                                name="swiftSaleStartTime"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>שעת התחלת SwiftSale</FormLabel>
+                                        <FormControl><Input type="time" {...field} /></FormControl>
+                                        <FormDescription>השעה שבה שקיות ההפתעה יהפכו זמינות.</FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <FormField
+                                    control={swiftSaleForm.control}
+                                    name="swiftSaleBagCount"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>כמות שקיות הפתעה זמינות</FormLabel>
+                                            <FormControl><Input type="number" placeholder="לדוגמה: 10" {...field} /></FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={swiftSaleForm.control}
+                                    name="swiftSaleBagPrice"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>מחיר לשקית הפתעה (₪)</FormLabel>
+                                            <FormControl><Input type="number" step="0.5" placeholder="לדוגמה: 15" {...field} /></FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                             {swiftSaleForm.formState.errors.swiftSaleEnabled && (
+                                <p className="text-sm font-medium text-destructive">{swiftSaleForm.formState.errors.swiftSaleEnabled.message}</p>
+                            )}
+                        </div>
+                    )}
+                     <Button type="submit" className="w-full sm:w-auto" disabled={swiftSaleForm.formState.isSubmitting}>
+                        {swiftSaleForm.formState.isSubmitting ? "שומר הגדרות SwiftSale..." : "שמור הגדרות SwiftSale"}
+                    </Button>
+                </form>
+            </Form>
+        </CardContent>
+         <CardFooter>
+            <p className="text-xs text-muted-foreground">סטטיסטיקות SwiftSale (כמה נמכרו / נותרו) יוצגו כאן (בקרוב).</p>
+         </CardFooter>
+      </Card>
+
     </div>
   );
 }
-
 
 function AddonOptionsArray({ groupIndex, control }: { groupIndex: number, control: any }) {
   const { fields, append, remove } = useFieldArray({

@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { identifyDishFromImage, IdentifyDishInput, IdentifyDishOutput } from '@/ai/flows/identify-dish-flow';
-import { Camera, ImageUp, Loader2, Sparkles, Utensils, Share2, TrendingUp, Info } from 'lucide-react';
+import { Camera, ImageUp, Loader2, Sparkles, Utensils, Share2, TrendingUp, Info, Star } from 'lucide-react';
 import Image from 'next/image';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
@@ -74,6 +74,15 @@ export default function AiTrendScannerPage() {
     });
   };
 
+  const handlePostToMyCorner = () => {
+    if(!aiResponse) return;
+    toast({
+        title: "פרסום ב'פינה שלי' (בקרוב!)",
+        description: `התגלית שלך "${aiResponse.identifiedDishName}" תשותף ב'פינה' האישית שלך. צבור עוקבים וזכה בקופונים!`,
+        action: <Star className="text-yellow-500"/>
+    });
+  };
+
   return (
     <div className="max-w-2xl mx-auto py-8 space-y-8">
       <Card className="shadow-xl">
@@ -81,7 +90,7 @@ export default function AiTrendScannerPage() {
           <TrendingUp className="h-12 w-12 text-primary mx-auto mb-3" />
           <CardTitle className="text-3xl font-headline text-primary">AI TrendScanner - מנוע הטרנדים</CardTitle>
           <CardDescription>
-            ראית טרנד קולינרי בטיקטוק או באינסטגרם? העלה/י תמונה, וה-AI שלנו ינסה לזהות אותו, להציע איפה למצוא משהו דומה, או אפילו לתת רעיונות לעסקים! תמונות שאתה מעלה עוזרות למערכת לזהות טרנדים לכל הקהילה.
+            ראית טרנד קולינרי בטיקטוק או באינסטגרם? העלה/י תמונה, וה-AI שלנו ינסה לזהות אותו, להציע איפה למצוא משהו דומה, או אפילו לתת רעיונות לעסקים! תמונות שאתה מעלה עוזרות למערכת לזהות טרנדים לכל הקהילה ומקדמות אותך ב'פינה' האישית שלך.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -165,6 +174,11 @@ export default function AiTrendScannerPage() {
                 טיפ: השתמש/י בשם המנה או במילות מפתח מההצעה כדי לחפש ב-SwiftServe.
             </p>
           </CardContent>
+           <CardFooter className="pt-3 border-t">
+              <Button onClick={handlePostToMyCorner} variant="outline" className="w-full">
+                <Camera className="ml-2 h-4 w-4" /> הוסף ל'פינה שלי' ושתף (בקרוב)
+              </Button>
+            </CardFooter>
         </Card>
       )}
     </div>
