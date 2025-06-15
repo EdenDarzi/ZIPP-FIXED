@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
-import { Shield, Edit3, LogOut, Bike, Car, Footprints, AlertTriangle, Users, Camera, Award } from 'lucide-react';
+import { Shield, Edit3, LogOut, Bike, Car, Footprints, AlertTriangle, Users, Camera, Award, MessageSquare, Star, Lightbulb, Banknote, FileText, CalendarDays, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { mockCourierProfiles } from '@/lib/mock-data'; 
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -21,9 +21,16 @@ export default function CourierProfilePage() {
   const { toast } = useToast();
   const courier = mockCourierProfiles.find(c => c.id === MOCK_CURRENT_COURIER_ID);
   const [followers, setFollowers] = useState<number | null>(null);
+  const [mockFeedbacks, setMockFeedbacks] = useState<string[]>([]);
 
   useEffect(() => {
     setFollowers(Math.floor(Math.random() * 500 + 50));
+    setMockFeedbacks([
+        "השליח הגיע מהר וחייך, תודה רבה!",
+        "תקשורת מעולה, עדכן אותי כשהיה בדרך.",
+        "קצת איחר, אבל היה אדיב מאוד.",
+        "הכל הגיע חם ובדיוק כמו שצריך, שירות מעולה!"
+    ]);
   }, []);
 
   if (!courier) {
@@ -45,17 +52,17 @@ export default function CourierProfilePage() {
   };
 
   const VehicleIcon = ({ type }: { type: typeof courier.vehicleType }) => {
-    if (type === 'motorcycle') return <Bike className="h-5 w-5 text-primary" />;
-    if (type === 'car') return <Car className="h-5 w-5 text-primary" />;
-    if (type === 'bicycle') return <Bike className="h-5 w-5 text-primary" />;
-    if (type === 'foot') return <Footprints className="h-5 w-5 text-primary" />;
-    if (type === 'scooter') return <Bike className="h-5 w-5 text-primary" />;
+    if (type === 'motorcycle') return <Bike className="h-5 w-5 text-primary" title="אופנוע"/>;
+    if (type === 'car') return <Car className="h-5 w-5 text-primary" title="רכב"/>;
+    if (type === 'bicycle') return <Bike className="h-5 w-5 text-primary" title="אופניים"/>;
+    if (type === 'foot') return <Footprints className="h-5 w-5 text-primary" title="הולך רגל"/>;
+    if (type === 'scooter') return <Bike className="h-5 w-5 text-primary" title="קטנוע"/>;
     return null;
   };
 
 
   return (
-    <div className="max-w-2xl mx-auto py-8 space-y-6">
+    <div className="max-w-3xl mx-auto py-8 space-y-6">
       <Card className="shadow-xl">
         <CardHeader className="items-center text-center">
           <Avatar className="h-24 w-24 mb-4 border-4 border-primary shadow-lg">
@@ -77,7 +84,7 @@ export default function CourierProfilePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1">
               <Label htmlFor="email">אימייל (לקריאה בלבד)</Label>
-              <Input id="email" defaultValue={`${courier.id}@example.com`} readOnly />
+              <Input id="email" defaultValue={`${courier.id}@livepick.com`} readOnly />
               <p className="text-xs text-muted-foreground">לא ניתן לשנות אימייל.</p>
             </div>
             <div className="space-y-1">
@@ -92,7 +99,7 @@ export default function CourierProfilePage() {
             <h3 className="text-lg font-semibold">הגדרות תפעוליות</h3>
             <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
               <div className="space-y-0.5">
-                <Label htmlFor="isActive" className="text-base">פעיל למשלוחים</Label>
+                <Label htmlFor="isActive" className="text-base">פעיל/ה למשלוחים</Label>
                 <p className="text-sm text-muted-foreground">
                   הפעל/כבה כדי להתחיל או להפסיק לקבל הצעות משלוח חדשות.
                 </p>
@@ -112,12 +119,12 @@ export default function CourierProfilePage() {
                 </div>
             }
           </div>
-
+          
           <Separator />
           
-          <div className="space-y-2">
-             <h3 className="text-lg font-semibold">ביצועים</h3>
-             <div className="flex justify-around p-2 bg-muted/50 rounded-md">
+          <div className="space-y-4">
+             <h3 className="text-lg font-semibold flex items-center"><Star className="mr-2 h-5 w-5 text-yellow-400"/> ביצועים ודירוגים</h3>
+             <div className="flex justify-around p-3 bg-muted/30 rounded-md">
                 <div className="text-center">
                     <p className="text-2xl font-bold text-primary">{courier.rating.toFixed(1)}</p>
                     <p className="text-xs text-muted-foreground">דירוג ממוצע</p>
@@ -127,9 +134,50 @@ export default function CourierProfilePage() {
                     <p className="text-xs text-muted-foreground">ציון אמון</p>
                 </div>
              </div>
+             <Card>
+                <CardHeader className="pb-2 pt-3 px-4">
+                    <CardTitle className="text-md flex items-center"><MessageSquare className="mr-2 h-4 w-4 text-blue-500"/> משובים אחרונים (דמו)</CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 pb-3 space-y-2 max-h-40 overflow-y-auto">
+                    {mockFeedbacks.map((fb, i) => (
+                        <div key={i} className="text-xs p-2 border rounded-md bg-background">
+                            <ThumbsUp className="inline h-3 w-3 mr-1 text-green-500"/> {fb}
+                        </div>
+                    ))}
+                </CardContent>
+             </Card>
+             <Card className="bg-blue-50 border-blue-200">
+                <CardHeader className="pb-2 pt-3 px-4">
+                    <CardTitle className="text-md text-blue-700 flex items-center"><Lightbulb className="mr-2 h-4 w-4"/> טיפ AI לשיפור (בקרוב)</CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 pb-3 text-sm text-blue-600">
+                   <p>"לקוחות מעריכים מאוד תקשורת יזומה. נסה לשלוח הודעה קצרה ללקוח כשהאיסוף בוצע." (דמו)</p>
+                </CardContent>
+             </Card>
           </div>
 
            <Separator />
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">ניהול אישי</h3>
+            <Card className="p-4 bg-muted/30 text-center">
+                <Banknote className="h-8 w-8 mx-auto text-muted-foreground mb-2"/>
+                <p className="text-sm text-muted-foreground">פרטי קבלת תשלום</p>
+                <Button variant="outline" size="sm" className="mt-2" disabled>הגדר (בקרוב)</Button>
+            </Card>
+            <Card className="p-4 bg-muted/30 text-center">
+                <FileText className="h-8 w-8 mx-auto text-muted-foreground mb-2"/>
+                <p className="text-sm text-muted-foreground">אימות מסמכים (רישיון, ביטוח)</p>
+                <Button variant="outline" size="sm" className="mt-2" disabled>העלה מסמכים (בקרוב)</Button>
+            </Card>
+             <Card className="p-4 bg-muted/30 text-center">
+                <CalendarDays className="h-8 w-8 mx-auto text-muted-foreground mb-2"/>
+                <p className="text-sm text-muted-foreground">הגדרות זמינות שבועית</p>
+                <Button variant="outline" size="sm" className="mt-2" disabled>נהל זמינות (בקרוב)</Button>
+            </Card>
+          </div>
+          
+          <Separator />
 
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">המלצות מקומיות ופעילות חברתית (בקרוב)</h3>
@@ -151,8 +199,8 @@ export default function CourierProfilePage() {
           </Button>
         </CardContent>
          <CardFooter className="border-t pt-4 flex flex-col gap-2">
-            <Button variant="outline" className="w-full"><Shield className="mr-2 h-4 w-4" /> הגדרות אבטחה (בקרוב)</Button>
-            <Button variant="destructive-outline" className="w-full" onClick={() => router.push('/')}><LogOut className="mr-2 h-4 w-4"/> התנתק (דמו)</Button>
+            <Button variant="outline" className="w-full"><Shield className="mr-2 h-4 w-4" /> הגדרות אבטחה (כולל 2FA - בקרוב)</Button>
+            <Button variant="destructive" className="w-full" onClick={() => router.push('/')}><LogOut className="mr-2 h-4 w-4"/> התנתק (דמו)</Button>
          </CardFooter>
       </Card>
     </div>

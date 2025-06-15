@@ -1,11 +1,16 @@
 
+'use client';
+
 import { mockOpenOrdersForBidding, getRestaurantById } from '@/lib/mock-data';
 import type { OrderDetailsForBidding, DeliveryVehicle } from '@/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { MapPin, Clock, Package, DollarSign, ArrowRight, AlertTriangle, Bike, Car, Footprints, Info } from 'lucide-react';
+import { MapPin, Clock, Package, DollarSign, ArrowRight, AlertTriangle, Bike, Car, Footprints, Info, ListFilter, SlidersHorizontal } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { useState } from 'react';
 
 // Helper to get vehicle icon
 const VehicleIcon = ({ type }: { type: DeliveryVehicle | undefined }) => {
@@ -19,6 +24,16 @@ const VehicleIcon = ({ type }: { type: DeliveryVehicle | undefined }) => {
 
 export default function OpenBidsPage() {
   const openOrders: OrderDetailsForBidding[] = mockOpenOrdersForBidding;
+  const [sortBy, setSortBy] = useState('reward'); // 'reward', 'distance', 'time'
+  // Add more state for filtering if needed
+
+  const sortedOrders = [...openOrders].sort((a, b) => {
+    if (sortBy === 'reward') return b.baseCommission - a.baseCommission;
+    if (sortBy === 'distance') return (a.estimatedRouteDistanceKm || a.estimatedDistanceKm) - (b.estimatedRouteDistanceKm || b.estimatedDistanceKm);
+    // Add time sort logic if available in data
+    return 0;
+  });
+
 
   return (
     <div className="space-y-8">
@@ -29,10 +44,41 @@ export default function OpenBidsPage() {
         </p>
       </header>
 
-      {openOrders.length > 0 ? (
+      <Card className="p-4 bg-muted/30">
+        <CardHeader className="p-0 pb-3">
+            <CardTitle className="text-lg flex items-center"><ListFilter className="mr-2 h-5 w-5"/> סינון ומיון הצעות</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 items-end">
+                <div className="space-y-1">
+                    <label htmlFor="sortBy" className="text-xs font-medium text-muted-foreground">מיין לפי</label>
+                    <Select value={sortBy} onValueChange={setSortBy}>
+                        <SelectTrigger id="sortBy" className="w-full bg-background shadow-sm">
+                            <SelectValue placeholder="בחר מיון..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="reward">תגמול (גבוה לנמוך)</SelectItem>
+                            <SelectItem value="distance">מרחק (קצר לארוך)</SelectItem>
+                            <SelectItem value="time" disabled>זמן (בקרוב)</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="space-y-1">
+                     <label htmlFor="filterDistance" className="text-xs font-medium text-muted-foreground">מרחק מקסימלי (ק"מ)</label>
+                    <Input type="number" id="filterDistance" placeholder="לדוגמה: 5" className="bg-background shadow-sm" disabled />
+                </div>
+                 <Button variant="outline" className="w-full sm:w-auto bg-background shadow-sm" disabled>
+                    <SlidersHorizontal className="mr-2 h-4 w-4" /> עוד פילטרים (בקרוב)
+                </Button>
+            </div>
+        </CardContent>
+      </Card>
+
+
+      {sortedOrders.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {openOrders.map((order) => {
-            const restaurant = getRestaurantById(order.restaurantName === 'Pizza Palace' ? 'restaurant1' : 'restaurant2'); // Simplified mapping
+          {sortedOrders.map((order) => {
+            const restaurant = getRestaurantById(order.restaurantName === 'פיצה פאלאס' ? 'restaurant1' : order.restaurantName === 'בורגר בוננזה' ? 'restaurant2' : 'restaurant3'); 
             return (
             <Card key={order.orderId} className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col">
               <CardHeader>
