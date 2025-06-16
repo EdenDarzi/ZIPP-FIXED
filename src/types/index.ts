@@ -160,6 +160,7 @@ export interface Order {
   deliveryAddress: string; 
   restaurantId: string;
   restaurantName: string;
+  customerNotes?: string; // Added customer notes
   estimatedDeliveryTime?: string; 
   actualDeliveryTime?: string; 
   scheduledDeliveryTime?: string; 

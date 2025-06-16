@@ -6,16 +6,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Package, Navigation, MessageSquare, PhoneCall, Clock, AlertCircle, Filter, CheckCircle } from 'lucide-react';
+import { Package, Navigation, MessageSquare, PhoneCall, Clock, AlertCircle, Filter, CheckCircle, Edit } from 'lucide-react';
 import type { Order, OrderStatus } from '@/types'; // Assuming Order type includes enough details
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 
 // Mock data for active orders - replace with actual data fetching
 const mockActiveOrders: Partial<Order>[] = [
-  { id: 'active123', restaurantName: 'פיצה האט', deliveryAddress: 'רחוב הרצל 1, תל אביב', status: 'OUT_FOR_DELIVERY', estimatedDeliveryTime: '10-15 דק\'' , items: [{menuItemId: 'p1', name: 'פיצה פפרוני', quantity: 1, price: 50}]},
+  { id: 'active123', restaurantName: 'פיצה האט', deliveryAddress: 'רחוב הרצל 1, תל אביב', status: 'OUT_FOR_DELIVERY', estimatedDeliveryTime: '10-15 דק\'' , items: [{menuItemId: 'p1', name: 'פיצה פפרוני', quantity: 1, price: 50}], customerNotes: "נא לצלצל בפעמון חזק, לא שומעים טוב." },
   { id: 'active456', restaurantName: 'בורגר קינג', deliveryAddress: 'שדרות רוטשילד 22, חיפה', status: 'AWAITING_PICKUP', estimatedDeliveryTime: '~5 דק\' לאיסוף', items: [{menuItemId: 'b1', name: 'וופר כפול', quantity:1, price:45}] },
-  { id: 'active789', restaurantName: 'סושי בר המקומי', deliveryAddress: 'סמטת הפרחים 5, ירושלים', status: 'PREPARING_AT_RESTAURANT', estimatedDeliveryTime: 'מוכן בעוד ~12 דק\'', items: [{menuItemId: 's1', name: 'קומבינציית סלמון', quantity:1, price:70}]},
+  { id: 'active789', restaurantName: 'סושי בר המקומי', deliveryAddress: 'סמטת הפרחים 5, ירושלים', status: 'PREPARING_AT_RESTAURANT', estimatedDeliveryTime: 'מוכן בעוד ~12 דק\'', items: [{menuItemId: 's1', name: 'קומבינציית סלמון', quantity:1, price:70}], customerNotes: "בלי וואסבי בבקשה." },
 ];
 
 
@@ -130,6 +130,12 @@ export default function ActiveOrdersPage() {
                 <CardContent className="text-sm space-y-2">
                     <p><span className="font-medium">פריטים:</span> {order.items?.map(i => `${i.name} (x${i.quantity})`).join(', ') || 'לא זמין'}</p>
                     <p className="flex items-center"><Clock className="h-4 w-4 mr-1 text-accent"/> <span className="font-medium">זמן הגעה/סטטוס משוער:</span> {order.estimatedDeliveryTime || 'לא זמין'}</p>
+                    {order.customerNotes && (
+                        <p className="flex items-start text-xs text-muted-foreground bg-blue-50 p-2 rounded-md border border-blue-200">
+                            <Edit className="h-3 w-3 mr-1.5 mt-0.5 text-blue-600 flex-shrink-0"/>
+                            <span className="font-medium mr-1">הערות לקוח:</span> {order.customerNotes}
+                        </p>
+                    )}
                 </CardContent>
                 <CardFooter className="grid grid-cols-2 sm:grid-cols-4 gap-2 border-t pt-3">
                     <Button variant="default" size="sm" onClick={() => handleNavigate(order.deliveryAddress)} className="bg-blue-600 hover:bg-blue-700">

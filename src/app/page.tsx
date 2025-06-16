@@ -50,6 +50,14 @@ export default function HomePage() {
 
   }, []);
 
+  const handleSpinWheelClick = () => {
+    toast({
+      title: "גלגל ההפתעות של LivePick! 🎡",
+      description: "זכית ב-10% הנחה על ההזמנה הבאה שלך! (קוד: SPINWIN10 - משחק יתווסף בקרוב).",
+      duration: 5000,
+    });
+  };
+
   return (
     <div className="space-y-16">
       <section className="text-center py-16 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl shadow-xl overflow-hidden">
@@ -72,7 +80,7 @@ export default function HomePage() {
             />
           </div>
         </div>
-        <div className="space-x-4 animate-fadeInUp animation-delay-400">
+        <div className="mt-10 flex flex-wrap justify-center gap-4 animate-fadeInUp animation-delay-400">
           <Button size="lg" asChild className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg transition-transform hover:scale-105 px-8 py-6 text-lg">
             <Link href="/restaurants">
               <span className="flex items-center justify-center w-full">

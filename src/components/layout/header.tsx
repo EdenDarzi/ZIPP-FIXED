@@ -3,7 +3,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, TrendingUp, Languages, Send, HeartPulse, MapIcon, Briefcase, Gem, Users, Store } from 'lucide-react'; 
+import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, TrendingUp, Languages, Send, HeartPulse, MapIcon, Briefcase, Gem, Users, Store, Bell, Heart } from 'lucide-react'; 
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
 import { Badge } from '@/components/ui/badge';
@@ -56,6 +56,9 @@ const Header = () => {
           <Button variant="ghost" asChild size="sm" className="hidden md:inline-flex" title="המלצות AI">
             <Link href="/recommendations"><span className="flex items-center"><Brain className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">המלצות AI</span></span></Link>
           </Button>
+           <Button variant="ghost" asChild size="sm" className="hidden md:inline-flex" title="מועדפים">
+            <Link href="/favorites"><span className="flex items-center"><Heart className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">מועדפים</span></span></Link>
+          </Button>
           <Button variant="ghost" asChild size="sm" className="hidden md:inline-flex" title="תוכנית שותפים">
             <Link href="/affiliate"><span className="flex items-center"><Users className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">שותפים</span></span></Link>
           </Button>
@@ -74,6 +77,14 @@ const Header = () => {
             <span className="hidden lg:inline text-xs">מצב נסיעות</span> 
           </Button>
 
+           <Button variant="ghost" asChild size="icon" className="relative" title="התראות">
+            <Link href="/notifications" aria-label="התראות"><span className="relative flex items-center justify-center w-full h-full">
+              <Bell className="h-5 w-5" />
+              {/* Placeholder for notification count badge */}
+              {/* <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-xs">3</Badge> */}
+            </span></Link>
+          </Button>
+
           <Button variant="ghost" asChild size="icon" className="relative" title="עגלת קניות">
             <Link href="/cart" aria-label={`עגלת קניות, ${itemCount} פריטים`}><span className="relative flex items-center justify-center w-full h-full">
               <ShoppingCart className="h-5 w-5" />
@@ -84,8 +95,8 @@ const Header = () => {
               )}
             </span></Link>
           </Button>
-          <Button variant="outline" size="sm" asChild title="כניסה או הרשמה">
-            <Link href="/auth/login"><span className="flex items-center"><UserCircle className="h-4 w-4 mr-0 sm:mr-2" /><span className="hidden sm:inline">כניסה</span></span></Link>
+          <Button variant="outline" size="sm" asChild title="החשבון שלי / כניסה">
+            <Link href="/account/profile"><span className="flex items-center"><UserCircle className="h-4 w-4 mr-0 sm:mr-2" /><span className="hidden sm:inline">החשבון שלי</span></span></Link>
           </Button>
           <Button variant="ghost" size="sm" onClick={handleLanguageToggle} className="flex items-center" aria-label="החלף שפה (בקרוב)" title="החלף שפה (בקרוב)">
             <span className="flex items-center">

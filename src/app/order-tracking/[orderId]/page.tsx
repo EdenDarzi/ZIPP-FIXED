@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { useParams, notFound, useRouter } from 'next/navigation';
+import { useParams, notFound, useRouter, useSearchParams } from 'next/navigation';
 import type { Order, OrderStatus, CourierProfile, DeliveryVehicle } from '@/types';
 import { getMockOrderById, mockCourierProfiles } from '@/lib/mock-data'; 
 
@@ -12,10 +12,10 @@ import { DeliveryCompleteView } from '@/components/order/delivery-complete-view'
 import { TriviaChallengeCard } from '@/components/order/trivia-challenge-card'; 
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, AlertTriangle, Info, Clock, Award, Gamepad2 } from 'lucide-react'; 
+import { ArrowLeft, AlertTriangle, Info, Clock, Award, Gamepad2, Edit } from 'lucide-react'; 
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast'; // Added useToast
+import { useToast } from '@/hooks/use-toast'; 
 
 const getOrderStatusHebrew = (status: OrderStatus): string => {
     const map: Record<OrderStatus, string> = {
@@ -42,11 +42,13 @@ const getAssignedCourierDetails = (courierId: string): Order['assignedCourier'] 
 
 export default function OrderTrackingPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const orderId = params.orderId as string;
   const router = useRouter();
-  const { toast } = useToast(); // Added toast hook
+  const { toast } = useToast(); 
 
   const [order, setOrder] = useState<Order | null | undefined>(undefined); 
+  const [customerNotes, setCustomerNotes] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [triviaAnswered, setTriviaAnswered] = useState(false); 
   const [showGamificationHint, setShowGamificationHint] = useState(false);
@@ -66,7 +68,7 @@ export default function OrderTrackingPage() {
         newCourierInfo = getAssignedCourierDetails(randomCourierProfile.id);
         newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: `שליח ${newCourierInfo?.name} שובץ.` };
         delay = 8000; 
-        setShowGamificationHint(true); // Show gamification hint when courier is assigned
+        setShowGamificationHint(true); 
         break;
       case 'COURIER_ASSIGNED':
         nextStatus = 'PREPARING_AT_RESTAURANT';
@@ -86,7 +88,7 @@ export default function OrderTrackingPage() {
         nextStatus = 'DELIVERED';
         newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: "ההזמנה נמסרה. בתאבון!" };
         delay = 15000 + ((order.assignedCourier?.currentEtaMinutes || 1) * 1000 * 0.5); 
-        setShowGamificationHint(false); // Hide gamification hint on delivery
+        setShowGamificationHint(false); 
         break;
     }
 
@@ -109,6 +111,11 @@ export default function OrderTrackingPage() {
 
   useEffect(() => {
     if (!orderId) return;
+    const notesFromQuery = searchParams.get('notes');
+    if (notesFromQuery) {
+      setCustomerNotes(decodeURIComponent(notesFromQuery));
+    }
+
     let extractedScheduledTime: string | undefined = undefined;
     if (orderId.includes('_scheduled_')) {
         const parts = orderId.split('_scheduled_');
@@ -121,6 +128,10 @@ export default function OrderTrackingPage() {
       setOrder(null); 
       return;
     }
+    // Simulate adding notes to the fetched order for display purposes
+    if (notesFromQuery) {
+        fetchedOrder.customerNotes = decodeURIComponent(notesFromQuery);
+    }
     setOrder(fetchedOrder);
     
     const storedTriviaState = localStorage.getItem(`triviaAnswered_${orderId.split('_scheduled_')[0]}`); 
@@ -129,12 +140,11 @@ export default function OrderTrackingPage() {
     } else {
         setTriviaAnswered(false);
     }
-    // Decide if gamification hint should be shown initially
     if (fetchedOrder.status === 'COURIER_ASSIGNED' || fetchedOrder.status === 'PREPARING_AT_RESTAURANT' || fetchedOrder.status === 'AWAITING_PICKUP' || fetchedOrder.status === 'OUT_FOR_DELIVERY') {
         setShowGamificationHint(true);
     }
 
-  }, [orderId]);
+  }, [orderId, searchParams]);
 
   useEffect(() => {
     const cleanup = simulateStatusProgression();
@@ -264,6 +274,17 @@ export default function OrderTrackingPage() {
       </Button>
 
       {renderOrderStatusView()}
+
+      {customerNotes && (
+        <Card className="bg-blue-50 border-blue-200">
+            <CardHeader className="pb-2 pt-3">
+                <CardTitle className="text-md text-blue-700 flex items-center"><Edit className="mr-2 h-4 w-4"/>הערות שהוספת להזמנה:</CardTitle>
+            </CardHeader>
+            <CardContent className="pb-3">
+                <p className="text-sm text-blue-600 whitespace-pre-line">{customerNotes}</p>
+            </CardContent>
+        </Card>
+      )}
 
       {showGamificationHint && !triviaAnswered && (
         <Card className="bg-purple-50 border-purple-200 text-purple-700 animate-fadeIn">

@@ -5,7 +5,7 @@ import { useCart } from '@/context/cart-context';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, Zap, CheckCircle, ShieldQuestion, Sparkles, DollarSign, Clock, Gift, Users, Navigation } from 'lucide-react'; // Added Gift, Users, Navigation
+import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, Zap, CheckCircle, ShieldQuestion, Sparkles, DollarSign, Clock, Gift, Users, Navigation, Edit } from 'lucide-react'; // Added Gift, Users, Navigation, Edit
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label"
 import type { DeliveryPreference } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input'; 
+import { Textarea } from '@/components/ui/textarea'; // Added Textarea
 import { useState } from 'react'; 
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
@@ -38,6 +39,7 @@ export default function CartPage() {
 
   const [manualScheduledTime, setManualScheduledTime] = useState(scheduledDeliveryTime || '');
   const [isGift, setIsGift] = useState(false);
+  const [customerNotes, setCustomerNotes] = useState(''); // State for customer notes
   const { toast } = useToast();
 
   const handleSetManualScheduledTime = () => {
@@ -196,6 +198,25 @@ export default function CartPage() {
               </p>
             </CardContent>
           </Card>
+          
+          <Card className="shadow-md">
+            <CardHeader>
+              <CardTitle className="text-xl font-headline text-primary flex items-center">
+                <Edit className="h-5 w-5 ml-2" /> הערות להזמנה (אופציונלי)
+              </CardTitle>
+              <CardDescription>הוסף הוראות מיוחדות למסעדה או לשליח.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                placeholder="לדוגמה: נא לארוז כל פריט בנפרד, בלי בצל בסלט, נא להתקשר בהגעה..."
+                value={customerNotes}
+                onChange={(e) => setCustomerNotes(e.target.value)}
+                className="min-h-[100px]"
+                aria-label="הערות להזמנה"
+              />
+            </CardContent>
+          </Card>
+
 
           <Card className="shadow-md">
             <CardHeader>
@@ -305,6 +326,11 @@ export default function CartPage() {
                         <Gift className="h-4 w-4 ml-1"/> ההזמנה תסומן כמתנה!
                     </Badge>
                 )}
+                {customerNotes && (
+                     <Badge variant="outline" className="w-full justify-start text-left py-1.5 mt-1">
+                        <Edit className="h-3 w-3 mr-1 text-muted-foreground"/> <strong className="ml-1">הערות:</strong> <span className="truncate text-xs">{customerNotes}</span>
+                    </Badge>
+                )}
               <Separator />
               <div className="flex justify-between text-xl font-bold text-primary">
                 <span>סה"כ</span>
@@ -313,7 +339,7 @@ export default function CartPage() {
             </CardContent>
             <CardFooter className="flex flex-col gap-3">
               <Button size="lg" asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg">
-                <Link href="/checkout" aria-label="המשך לתשלום">
+                <Link href={{ pathname: "/checkout", query: { notes: customerNotes } }} aria-label="המשך לתשלום">
                   <span className="flex items-center justify-center w-full">
                     <ArrowLeft className="mr-2 h-5 w-5" /> 
                     המשך לתשלום 

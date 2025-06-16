@@ -3,22 +3,32 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { CreditCard, Lock, ShoppingBag, AlertTriangle, Zap, Sparkles, DollarSign, Clock, Gift } from "lucide-react"; 
+import { CreditCard, Lock, ShoppingBag, AlertTriangle, Zap, Sparkles, DollarSign, Clock, Gift, Edit } from "lucide-react"; 
 import Link from "next/link";
 import { useCart } from "@/context/cart-context";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react"; 
+import { useState, useEffect } from "react"; 
 import { Label } from "@/components/ui/label"; 
 import { Checkbox } from "@/components/ui/checkbox";
 
 export default function CheckoutPage() {
   const { cart, itemCount, totalPrice, deliveryPreference, deliveryFee, discountAmount, finalPriceWithDelivery, smartCouponApplied, clearCart, scheduledDeliveryTime, getItemPriceWithAddons } = useCart();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const [discreetDelivery, setDiscreetDelivery] = useState(false);
+  const [customerNotes, setCustomerNotes] = useState('');
+
+  useEffect(() => {
+    const notes = searchParams.get('notes');
+    if (notes) {
+      setCustomerNotes(notes);
+    }
+  }, [searchParams]);
+
 
   const handleDiscreetToggle = (checked: boolean) => {
     setDiscreetDelivery(checked);
@@ -57,10 +67,12 @@ export default function CheckoutPage() {
 
     const mockOrderId = `mockOrder_${Date.now()}_${scheduledDeliveryTime ? 'scheduled' : 'asap'}`; 
     
-    // It's generally better to clear cart *after* successful navigation or API call in a real app
-    // For demo purposes, clearing it here is fine.
-    // clearCart(); 
-    router.push(`/order-tracking/${mockOrderId}`);
+    // Pass customerNotes to the order tracking page via query params (mock)
+    const trackingUrl = customerNotes 
+      ? `/order-tracking/${mockOrderId}?notes=${encodeURIComponent(customerNotes)}`
+      : `/order-tracking/${mockOrderId}`;
+    
+    router.push(trackingUrl);
   };
 
 
@@ -132,6 +144,12 @@ export default function CheckoutPage() {
                         <span className="font-medium flex items-center"><Gift className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/>נשלח כמתנה</span>
                         <span className="font-medium">(פרטים בקרוב)</span>
                     </div>
+                )}
+                {customerNotes && (
+                   <div className="text-sm text-muted-foreground">
+                     <p className="font-medium flex items-center"><Edit className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/>הערות להזמנה:</p>
+                     <p className="text-xs whitespace-pre-line bg-muted p-2 rounded-md mt-1">{customerNotes}</p>
+                   </div>
                 )}
                 <div className="flex justify-between font-bold text-lg text-primary pt-1">
                   <span>סה"כ</span>

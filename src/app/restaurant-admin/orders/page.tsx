@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Printer, MessageSquare, CheckCircle, Package, Clock, AlertCircle, Search, Filter, CalendarClock } from 'lucide-react'; // Added CalendarClock
+import { Printer, MessageSquare, CheckCircle, Package, Clock, AlertCircle, Search, Filter, CalendarClock, Edit } from 'lucide-react'; // Added CalendarClock, Edit
 import type { Order, OrderStatus } from '@/types'; 
 import { Input } from '@/components/ui/input';
 import { DatePickerWithRange } from '@/components/ui/date-range-picker';
@@ -130,6 +130,7 @@ export default function OrderManagementPage() {
                   <TableRow>
                     <TableHead>מזהה הזמנה</TableHead>
                     <TableHead>פריטים</TableHead>
+                    <TableHead>הערות לקוח</TableHead>
                     <TableHead>סטטוס</TableHead>
                     <TableHead>זמן/מתוכנן</TableHead>
                     <TableHead className="text-right">סך הכל</TableHead>
@@ -141,6 +142,13 @@ export default function OrderManagementPage() {
                     <TableRow key={order.id}>
                       <TableCell className="font-medium">#{order.id.substring(order.id.length - 6)}</TableCell>
                       <TableCell>{order.items.map(i => `${i.name} (x${i.quantity})`).join(', ').substring(0,30)}...</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {order.customerNotes ? (
+                            <span title={order.customerNotes} className="cursor-help truncate block max-w-[100px]">{order.customerNotes}</span>
+                        ) : (
+                            '-'
+                        )}
+                      </TableCell>
                       <TableCell>
                         <Badge variant={getStatusBadgeVariant(order.status)} className="capitalize">
                           {getStatusText(order.status)}
@@ -166,7 +174,7 @@ export default function OrderManagementPage() {
                           </Button>
                         )}
                          {order.status === 'OUT_FOR_DELIVERY' && (
-                          <Button variant="default" size="sm" onClick={() => updateOrderStatus(order.id, 'DELIVERED')} className="bg-green-600 hover:bg-green-700 text-white">
+                          <Button variant="default" size="sm" onClick={() => updateOrderStatus(order.id, 'DELIVERED')} className="bg-green-600 hover:bg-green-600 text-white">
                             <CheckCircle className="mr-1 h-3 w-3"/> נמסר
                           </Button>
                         )}
@@ -203,6 +211,7 @@ export default function OrderManagementPage() {
                     <TableHead>מזהה הזמנה</TableHead>
                     <TableHead>תאריך</TableHead>
                     <TableHead>לקוח (דמו)</TableHead>
+                     <TableHead>הערות</TableHead>
                     <TableHead>סטטוס</TableHead>
                     <TableHead>שעת מסירה/תכנון</TableHead>
                     <TableHead className="text-right">סך הכל</TableHead>
@@ -215,6 +224,13 @@ export default function OrderManagementPage() {
                       <TableCell className="font-medium">#{order.id.substring(order.id.length-6)}</TableCell>
                       <TableCell>{new Date(order.createdAt).toLocaleDateString('he-IL')}</TableCell>
                       <TableCell>משתמש {order.userId.substring(0,5)}...</TableCell>
+                       <TableCell className="text-xs text-muted-foreground">
+                        {order.customerNotes ? (
+                            <span title={order.customerNotes} className="cursor-help truncate block max-w-[100px]">{order.customerNotes}</span>
+                        ) : (
+                            '-'
+                        )}
+                      </TableCell>
                       <TableCell>
                         <Badge variant={getStatusBadgeVariant(order.status)} className="capitalize">
                           {getStatusText(order.status)}
