@@ -5,24 +5,17 @@ import { getRestaurantById } from '@/lib/mock-data';
 import type { Restaurant, MenuItem } from '@/types';
 import ItemCard from '@/components/items/item-card';
 import Image from 'next/image';
-import { useParams, notFound } from 'next/navigation'; // Import useParams
+import { useParams, notFound } from 'next/navigation'; 
 import { Star, Clock, MapPin, Utensils, Share2, Award, MessageCircle, Edit, Send } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Added useEffect
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-
-// This interface might not be strictly needed for this component anymore if not used elsewhere
-// interface RestaurantPageParams {
-//   params: {
-//     restaurantId: string;
-//   };
-// }
 
 interface MockReview {
   id: string;
@@ -41,14 +34,19 @@ const mockReviews: MockReview[] = [
 
 
 export default function RestaurantPage() {
-  const params = useParams<{ restaurantId: string }>(); // Use the useParams hook
+  const params = useParams<{ restaurantId: string }>(); 
   const restaurant: Restaurant | undefined = getRestaurantById(params.restaurantId);
   const { toast } = useToast();
 
   const [newReviewText, setNewReviewText] = useState('');
   const [newReviewRating, setNewReviewRating] = useState(0);
   const [hoverReviewRating, setHoverReviewRating] = useState(0);
+  const [pageReviewCount, setPageReviewCount] = useState<number | null>(null); // State for review count
 
+  useEffect(() => {
+    // Generate random review count only on the client side after hydration
+    setPageReviewCount(Math.floor(Math.random() * 200 + 50));
+  }, []); // Empty dependency array ensures this runs once on mount
 
   if (!restaurant) {
     notFound();
@@ -117,7 +115,7 @@ export default function RestaurantPage() {
         </div>
         <div className="flex items-center">
           <Star className="h-5 w-5 mr-2 text-yellow-500 fill-yellow-500" />
-          <span className="text-foreground">{restaurant.rating.toFixed(1)} ({Math.floor(Math.random() * 200 + 50)} ratings)</span>
+          <span className="text-foreground">{restaurant.rating.toFixed(1)} ({pageReviewCount === null ? 'טוען...' : `${pageReviewCount} ratings`})</span>
         </div>
         <div className="flex items-center">
           <Clock className="h-5 w-5 mr-2 text-primary" />
