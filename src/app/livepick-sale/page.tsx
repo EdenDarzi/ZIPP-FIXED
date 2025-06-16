@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { ShoppingBag, AlertTriangle, Clock, ArrowLeft, PlusCircle, Store } from 'lucide-react';
 import Image from 'next/image';
 import { mockLivePickSaleItems } from '@/lib/mock-data';
-import type { LivePickSaleItem as SwiftSaleItem } from '@/types'; // Use correct type name
+import type { LivePickSaleItem as SwiftSaleItem } from '@/types'; 
 import { useCart } from '@/context/cart-context'; 
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
@@ -18,10 +18,13 @@ export default function LivePickSalePage() {
   const { addToCart } = useCart(); 
   const { toast } = useToast();
   const [isSaleActiveNow, setIsSaleActiveNow] = useState(false);
+  const SALE_START_HOUR = 19; // 7 PM
+  const SALE_END_HOUR = 23; // 11 PM (exclusive for end, active until 22:59)
 
   useEffect(() => {
     const currentHour = new Date().getHours();
-    const saleActive = currentHour >= 0 && currentHour <= 23; // Mock: Sale active from 7 PM (19:00) to 11 PM (23:00) - currently 0-23 for demo
+    // const saleActive = currentHour >= SALE_START_HOUR && currentHour < SALE_END_HOUR; // Original logic
+    const saleActive = currentHour >= 0 && currentHour <= 23; // For demo: always active
     setIsSaleActiveNow(saleActive);
     if (saleActive) { 
         setActiveItems(mockLivePickSaleItems.filter(item => item.isActive && item.quantityAvailable > 0));
@@ -72,7 +75,7 @@ export default function LivePickSalePage() {
           <CardContent className="flex flex-col items-center gap-4">
             <Clock className="h-16 w-16 text-muted-foreground" />
             <p className="text-xl text-muted-foreground">מבצעי LivePick Sale סגורים כעת.</p>
-            <p className="text-sm">הצטרפו אלינו בין השעות 19:00-23:00 (זמן דמו) כדי למצוא דילים חמים, או בדקו עסקים אחרים.</p>
+            <p className="text-sm">הצטרפו אלינו בין השעות {String(SALE_START_HOUR).padStart(2, '0')}:00 - {String(SALE_END_HOUR).padStart(2, '0')}:00 כדי למצוא דילים חמים, או בדקו עסקים אחרים.</p>
           </CardContent>
         </Card>
       )}

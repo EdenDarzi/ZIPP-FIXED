@@ -170,13 +170,13 @@ export default function CourierBidPage() {
     if (!order) return;
     setIsSubmitting(true); 
     setBidPlaced(true); 
+    setTimeLeft(0); // Ensure timer stops visually
     toast({ title: "מעבד הצעות...", description: "ה-AI בוחר את השליח המתאים ביותר." });
     try {
         const input: CourierMatchingInputType = { orderDetails: order, bids: allSubmittedBids };
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API call delay
         const result = await selectBestCourierBid(input);
         setWinningBidInfo(result);
-        setTimeLeft(0); 
     } catch (error) {
         console.error("שגיאה בעיבוד הצעות:", error);
         toast({ title: "שגיאת עיבוד", description: "לא ניתן היה לקבוע את ההצעה הזוכה.", variant: "destructive" });
@@ -191,7 +191,7 @@ export default function CourierBidPage() {
     return (
       <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="ml-4 text-lg">טוען הזדמנות הצעה...</p>
+        <p className="ml-4 rtl:mr-4 text-lg">טוען הזדמנות הצעה...</p>
       </div>
     );
   }
@@ -242,7 +242,7 @@ export default function CourierBidPage() {
      return (
       <div className="flex flex-col justify-center items-center min-h-[calc(100vh-300px)] space-y-4">
         <Loader2 className="h-16 w-16 animate-spin text-primary" />
-        <p className="text-xl text-primary">{isSubmitting && !bidPlaced ? "שולח את הצעתך..." : "מעבד את כל ההצעות..."}</p>
+        <p className="text-xl text-primary">{isSubmitting && !bidPlaced && !winningBidInfo ? "שולח את הצעתך..." : "מעבד את כל ההצעות..."}</p>
         <p className="text-muted-foreground">ה-AI שלנו בוחן כעת את כל ההצעות שהוגשו. מייד נעדכן אותך!</p>
       </div>
     );
@@ -261,7 +261,7 @@ export default function CourierBidPage() {
             <CardTitle className="text-3xl font-headline text-primary">הזדמנות משלוח</CardTitle>
              <Badge 
                 variant={timeLeft > 10 ? "default" : timeLeft > 5 ? "secondary" : "destructive"} 
-                className={cn("text-lg px-3 py-1 transition-all", timeLeft <= 5 && timeLeft > 0 && 'animate-pulse ring-2 ring-offset-2 ring-destructive/70', timeLeft === 0 && 'opacity-50')}
+                className={cn("text-lg px-3 py-1 transition-all", timeLeft <= 5 && timeLeft > 0 && 'timer-pulse ring-2 ring-offset-2 ring-destructive/70', timeLeft === 0 && 'opacity-50')}
                 aria-label={`נותרו ${timeLeft} שניות להגיש הצעה`}
                 role="timer"
                 aria-live="polite"
@@ -351,7 +351,7 @@ export default function CourierBidPage() {
               </p>
             </div>
 
-            <div className="flex items-center space-x-2 pt-2">
+            <div className="flex items-center space-x-2 pt-2 rtl:space-x-reverse">
                 <Button
                     variant={isFastPickup ? "default" : "outline"}
                     onClick={() => setIsFastPickup(!isFastPickup)}
@@ -400,12 +400,12 @@ export default function CourierBidPage() {
         הצעתך מוערכת לפי מחיר, זמן הגעה משוער, דירוג, ציון אמון והצעת איסוף מהיר. מנוע ההתאמה החכם יבחר את ההצעה הטובה ביותר.
       </p>
        <style jsx global>{`
-        .animate-pulse {
-            animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        .timer-pulse {
+            animation: pulse-timer 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: .5; }
+        @keyframes pulse-timer {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: .7; transform: scale(1.05); }
         }
         `}</style>
     </div>

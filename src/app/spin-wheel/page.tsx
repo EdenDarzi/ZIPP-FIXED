@@ -92,7 +92,6 @@ export default function SpinWheelPage() {
     const randomSpins = Math.floor(Math.random() * 3) + 5; // 5-8 full spins
     const randomStopSegment = Math.floor(Math.random() * WHEEL_SEGMENTS);
     const segmentAngle = 360 / WHEEL_SEGMENTS;
-    // Calculate a slight offset so the pointer doesn't land exactly on the line between segments
     const offsetForPointer = segmentAngle / 2; 
     const finalRotation = (randomSpins * 360) + (randomStopSegment * segmentAngle) + offsetForPointer;
     
@@ -114,6 +113,7 @@ export default function SpinWheelPage() {
           title: `🎉 זכית ב: ${result.name}! 🎉`,
           description: result.description || 'ההטבה נוספה לחשבונך (דמו).',
           duration: 7000,
+          className: cn(result.colorClass, result.textColorClass || 'text-white', 'border-2', result.textColorClass ? result.textColorClass.replace('text-','border-') : 'border-white/50' ),
         });
       } else {
          toast({
@@ -158,7 +158,6 @@ export default function SpinWheelPage() {
         </CardHeader>
         <CardContent className="space-y-8 flex flex-col items-center px-4 sm:px-6 py-8">
           <div className="relative w-64 h-64 sm:w-80 sm:h-80 rounded-full border-8 border-primary/30 shadow-2xl overflow-hidden bg-card my-6">
-            {/* Pointer (Needle) - Stays fixed at the top center */}
             <div 
                 className="absolute top-[-14px] left-1/2 -translate-x-1/2 w-0 h-0 z-20"
                 style={{
@@ -169,39 +168,33 @@ export default function SpinWheelPage() {
                 }}
                 title="מחט"
             />
-            {/* The Wheel itself */}
             <div 
                 className={cn(
                     "absolute inset-0 rounded-full transition-transform ease-out",
-                    isSpinning && `duration-[${SPIN_DURATION_MS}ms]` // Apply duration only when spinning
+                    isSpinning && `duration-[${SPIN_DURATION_MS}ms]` 
                   )}
-                style={{ transform: `rotate(${rotationDegree}deg)`}} // CSS variable for spin duration
+                style={{ transform: `rotate(${rotationDegree}deg)`}}
             >
               {segments.map((segment, index) => (
                 <div
                   key={index}
                   className={cn(
-                    "absolute w-1/2 h-1/2 origin-bottom-right flex items-center justify-start pl-3 sm:pl-5", // Adjusted padding
+                    "absolute w-1/2 h-1/2 origin-bottom-right flex items-center justify-start pl-3 sm:pl-5", 
                     segment.colorClass
                   )}
                   style={{
                     transform: `rotate(${segment.rotation}deg) skewY(${90 - segment.angle}deg)`,
                   }}
                 >
-                  {/* Icon and Text within the segment, counter-rotated to be upright */}
                   <div
-                    style={{ transform: `skewY(-${90 - segment.angle}deg) rotate(-${segment.angle / 2}deg) translateX(5%) translateY(-50%)` }} // Adjust positioning
+                    style={{ transform: `skewY(-${90 - segment.angle}deg) rotate(-${segment.angle / 2}deg) translateX(5%) translateY(-50%)` }} 
                     className="transform-origin-center text-center"
                   >
-                    <segment.icon className={cn("h-5 w-5 sm:h-7 sm:h-7 inline-block drop-shadow-md", segment.textColorClass || 'text-white')} />
-                    {/* Optional: Add text if space allows, though icons are clearer for small segments
-                    <p className={cn("text-xs sm:text-sm font-semibold mt-1", segment.textColorClass || 'text-white')}>{segment.name.split(' ')[0]}</p> 
-                    */}
+                    <segment.icon className={cn("h-5 w-5 sm:h-7 sm:w-7 inline-block drop-shadow-md", segment.textColorClass || 'text-white')} />
                   </div>
                 </div>
               ))}
             </div>
-            {/* Center button placeholder / decorative element */}
              <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-card border-4 border-primary/70 shadow-lg flex items-center justify-center">
                      <Gamepad2 className={cn("h-8 w-8 sm:h-10 sm:w-10 text-primary/80", isSpinning && "opacity-50")} />
@@ -222,7 +215,7 @@ export default function SpinWheelPage() {
                 spinResult.colorClass
             )}>
               <CardHeader className={cn("p-0 pb-2 sm:pb-3 items-center", spinResult.textColorClass || (spinResult.isWin ? 'text-white' : 'text-foreground'))}>
-                {spinResult.isWin ? <Sparkles className="h-12 w-12 text-yellow-400 mb-2 animate-ping once" /> : <AlertTriangle className="h-12 w-12 text-muted-foreground mb-2"/>}
+                {spinResult.isWin ? <Sparkles className="h-12 w-12 text-yellow-400 mb-2 animate-ping-once" /> : <AlertTriangle className="h-12 w-12 text-muted-foreground mb-2"/>}
                 <CardTitle className={cn("text-xl sm:text-2xl font-semibold", spinResult.textColorClass || (spinResult.isWin ? 'text-white' : 'text-foreground'))}>
                   {spinResult.name}
                 </CardTitle>
@@ -261,7 +254,8 @@ export default function SpinWheelPage() {
           {!isSpinning && !canSpin && (
             <div className="mt-3 space-y-1 p-3 bg-card/80 rounded-md shadow">
                 {timeLeftForNextSpin ? (
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-muted-foreground flex flex-col items-center">
+                    <CalendarClock className="h-5 w-5 mb-1 text-primary"/>
                     אפשר סיבוב אחד ביום. נסה שוב בעוד: <strong className="text-primary block text-lg font-mono">{timeLeftForNextSpin}</strong>
                     </p>
                 ) : (
@@ -288,7 +282,7 @@ export default function SpinWheelPage() {
           0%, 100% { transform: scale(1); opacity: 1; }
           50% { transform: scale(1.5); opacity: 0.7; }
         }
-        .animate-ping.once {
+        .animate-ping-once {
           animation: ping-once 1s cubic-bezier(0, 0, 0.2, 1);
         }
         .transform-origin-center {
@@ -298,4 +292,3 @@ export default function SpinWheelPage() {
     </div>
   );
 }
-

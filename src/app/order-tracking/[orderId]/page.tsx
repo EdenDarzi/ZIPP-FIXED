@@ -287,10 +287,10 @@ export default function OrderTrackingPage() {
 
       {showGamificationHint && !triviaAnswered && order.status !== 'SCHEDULED' && (
         <Card className="bg-purple-50 border-purple-200 text-purple-700 animate-fadeIn">
-            <CardHeader>
+            <CardHeader className="pb-2 pt-3">
                 <CardTitle className="flex items-center"><Gamepad2 className="mr-2 h-5 w-5"/> הרווח פרסים בזמן ההמתנה!</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-2 pb-3">
                 <p>פתור את חידון הטריוויה שלנו (בהמשך העמוד אם זמין) או השלם משימת בונוס קטנה כדי לצבור נקודות וכוכבים!</p>
                 <Button variant="link" onClick={handleGamificationTask} className="p-0 text-purple-700">
                     בדוק משימת בונוס (דמו)
@@ -301,7 +301,7 @@ export default function OrderTrackingPage() {
 
       {shouldShowTrivia && (
         <TriviaChallengeCard
-          imageUrl="https://placehold.co/600x400.png"
+          imageUrl={order.items[0]?.imageUrl || "https://placehold.co/600x400.png"}
           imageHint={order.items[0]?.dataAiHint || order.items[0]?.name || "food item"}
           questionText={`מהי המנה הראשונה בהזמנה זו מ-${order.restaurantName}?`}
           options={order.items.length > 0 ? [order.items[0].name, "פיצה פטריות", "סלט יווני"] : ["לא ידוע", "צ'יפס", "שתייה קלה"]}

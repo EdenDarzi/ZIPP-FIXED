@@ -91,7 +91,7 @@ export default function AiChatAssistant() {
             {chatHistory.map((msg, index) => (
               <div
                 key={index}
-                className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
               >
                 <div
                   className={`max-w-[80%] p-3 rounded-lg text-sm ${
@@ -100,11 +100,11 @@ export default function AiChatAssistant() {
                       : 'bg-muted text-muted-foreground'
                   }`}
                 >
-                  <p>{msg.text}</p>
-                   <p className={`text-xs mt-1 ${msg.sender === 'user' ? 'text-primary-foreground/70 text-right' : 'text-muted-foreground/70 text-left'}`}>
-                      {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                   </p>
+                  <p className="whitespace-pre-wrap">{msg.text}</p>
                 </div>
+                 <p className={`text-xs mt-1 ${msg.sender === 'user' ? 'text-primary/70 text-right' : 'text-muted-foreground/70 text-left'}`}>
+                    {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                 </p>
               </div>
             ))}
             {isLoading && (
@@ -117,7 +117,7 @@ export default function AiChatAssistant() {
           </ScrollArea>
 
           <SheetFooter className="p-4 border-t bg-background">
-            <div className="flex w-full items-center space-x-2">
+            <div className="flex w-full items-center space-x-2 rtl:space-x-reverse">
               <Input
                 type="text"
                 placeholder="למשל: 'משהו קליל, מתחת ל-50₪'"

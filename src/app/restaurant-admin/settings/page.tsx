@@ -20,7 +20,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import type { RestaurantSettings, OperatingHour, DayOfWeek } from '@/types';
 import { mockExistingSettings } from '@/lib/mock-data';
-import { UploadCloud, Info } from 'lucide-react';
+import { UploadCloud, Info, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 
 const operatingHourSchema = z.object({
@@ -55,9 +55,8 @@ const daysOfWeekHebrew: { [key in DayOfWeek]: string } = {
     Thursday: 'יום חמישי', Friday: 'יום שישי', Saturday: 'יום שבת',
 };
 
-// Ensure mockExistingSettings is properly typed and initialized
 const typedMockExistingSettings: RestaurantSettings = mockExistingSettings || {
-    id: 'temp-id', // Provide a default ID if necessary
+    id: 'temp-id', 
     businessName: '',
     logoUrl: '',
     coverImageUrl: '',
@@ -176,7 +175,7 @@ export default function RestaurantSettingsPage() {
                 )}
               />
                <div className="text-xs text-muted-foreground p-2 bg-blue-50 border border-blue-200 rounded-md flex items-start">
-                <Info className="h-4 w-4 mr-2 mt-0.5 text-blue-600 flex-shrink-0" />
+                <Info className="h-4 w-4 mr-2 mt-0.5 text-blue-600 flex-shrink-0"/>
                 <span>עבור עסקים חדשים, במיוחד עסקים קטנים (מאפיות, פרחים, חנויות פופ-אפ), LivePick AI יכול לעזור לבנות תפריט/קטלוג ראשוני, עיצוב בסיסי והצעות מחיר - תוך דקות (בקרוב!).</span>
               </div>
             </CardContent>
@@ -195,8 +194,8 @@ export default function RestaurantSettingsPage() {
                   <FormItem>
                     <FormLabel>כתובת URL של לוגו</FormLabel>
                      {watchedLogoUrl && (
-                        <div className="my-2 p-2 border rounded-md inline-block">
-                            <Image src={watchedLogoUrl} alt="תצוגה מקדימה של לוגו" width={150} height={75} className="rounded object-contain data-ai-hint='business logo'"/>
+                        <div className="my-2 p-2 border rounded-md inline-block bg-muted/20">
+                            <Image src={watchedLogoUrl} alt="תצוגה מקדימה של לוגו" width={150} height={75} className="rounded object-contain data-ai-hint='business logo'" />
                         </div>
                      )}
                     <FormControl>
@@ -217,8 +216,8 @@ export default function RestaurantSettingsPage() {
                   <FormItem>
                     <FormLabel>כתובת URL של תמונת נושא (באנר)</FormLabel>
                     {watchedCoverImageUrl && (
-                         <div className="my-2 p-2 border rounded-md inline-block">
-                            <Image src={watchedCoverImageUrl} alt="תצוגה מקדימה של תמונת נושא" width={600} height={150} className="rounded object-cover data-ai-hint='business cover'"/>
+                         <div className="my-2 p-2 border rounded-md inline-block bg-muted/20">
+                            <Image src={watchedCoverImageUrl} alt="תצוגה מקדימה של תמונת נושא" width={600} height={150} className="rounded object-cover data-ai-hint='business cover'" />
                         </div>
                     )}
                     <FormControl>
@@ -283,12 +282,13 @@ export default function RestaurantSettingsPage() {
                         <FormItem className="flex flex-col items-start sm:items-center sm:flex-row sm:justify-end gap-2 pt-7">
                            <FormControl>
                             <Switch
+                              id={`operatingHours.${index}.isClosedSwitch`}
                               checked={field.value}
                               onCheckedChange={field.onChange}
                               aria-label={`העסק סגור ב${daysOfWeekHebrew[form.getValues(`operatingHours.${index}.day`)]}`}
                             />
                           </FormControl>
-                          <FormLabel className="text-sm mt-0 sm:ml-2 whitespace-nowrap">סגור ביום זה</FormLabel>
+                          <FormLabel htmlFor={`operatingHours.${index}.isClosedSwitch`} className="text-sm mt-0 sm:ml-2 rtl:sm:ml-0 rtl:sm:mr-2 whitespace-nowrap cursor-pointer">סגור ביום זה</FormLabel>
                         </FormItem>
                       )}
                     />
@@ -313,13 +313,14 @@ export default function RestaurantSettingsPage() {
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">העסק פתוח כעת</FormLabel>
+                      <FormLabel htmlFor="isOpenNowSwitch" className="text-base cursor-pointer">העסק פתוח כעת</FormLabel>
                       <FormDescription>
                         קבע ידנית אם העסק פתוח או סגור להזמנות חדשות. הגדרה זו עוקפת את השעות המתוזמנות.
                       </FormDescription>
                     </div>
                     <FormControl>
                       <Switch
+                        id="isOpenNowSwitch"
                         checked={field.value}
                         onCheckedChange={field.onChange}
                         aria-label="סטטוס פתיחת העסק"
@@ -346,7 +347,7 @@ export default function RestaurantSettingsPage() {
           </Card>
 
           <Button type="submit" className="w-full sm:w-auto" disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting ? "שומר..." : "שמור הגדרות"}
+            {form.formState.isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> שומר...</> : "שמור הגדרות"}
           </Button>
         </form>
       </Form>

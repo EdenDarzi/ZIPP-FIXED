@@ -101,7 +101,7 @@ export default function AiTrendScannerPage() {
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className="file:ml-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+              className="file:mr-4 rtl:file:ml-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
               aria-label="העלה תמונת טרנד אוכל"
             />
              <p className="text-xs text-muted-foreground mt-1">גודל קובץ מקסימלי: 4MB.</p>
@@ -128,11 +128,11 @@ export default function AiTrendScannerPage() {
           <Button onClick={handleSubmit} disabled={isLoading || !imageDataUri} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg" aria-label="זהה טרנד והצע לי">
             {isLoading ? (
               <>
-                <Loader2 className="ml-2 h-5 w-5 animate-spin" /> סורק טרנדים...
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" /> סורק טרנדים...
               </>
             ) : (
               <>
-                <Sparkles className="ml-2 h-5 w-5" /> זהה טרנד והצע לי
+                <Sparkles className="mr-2 h-5 w-5" /> זהה טרנד והצע לי
               </>
             )}
           </Button>
@@ -143,7 +143,7 @@ export default function AiTrendScannerPage() {
         <Card className="shadow-lg animate-fadeInUp bg-muted/30">
           <CardHeader className="flex flex-row justify-between items-center">
             <CardTitle className="flex items-center text-xl text-primary font-headline">
-              <Utensils className="ml-2 h-6 w-6" /> ממצאי TrendScanner:
+              <Utensils className="mr-2 h-6 w-6" /> ממצאי TrendScanner:
             </CardTitle>
              <Button variant="outline" size="icon" onClick={handleShareResults} aria-label="שתף ממצאים">
                 <Share2 className="h-5 w-5" />
@@ -188,7 +188,7 @@ export default function AiTrendScannerPage() {
           </CardContent>
            <CardFooter className="pt-3 border-t">
               <Button onClick={handlePostToMyCorner} variant="outline" className="w-full" aria-label="הוסף לפינה שלי ושתף (בקרוב)">
-                <Camera className="ml-2 h-4 w-4" /> הוסף ל'פינה שלי' ושתף (בקרוב)
+                <Camera className="mr-2 h-4 w-4" /> הוסף ל'פינה שלי' ושתף (בקרוב)
               </Button>
             </CardFooter>
         </Card>

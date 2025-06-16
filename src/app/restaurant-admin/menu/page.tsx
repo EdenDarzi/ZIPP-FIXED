@@ -7,7 +7,7 @@ import { mockRestaurants } from '@/lib/mock-data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { PlusCircle, Edit3, Trash2, Copy, GripVertical, PackageSearch, Image as ImageIcon, Tag, DollarSign, CheckCircle, XCircle, ShoppingBag, Info } from 'lucide-react'; 
+import { PlusCircle, Edit3, Trash2, Copy, GripVertical, PackageSearch, Image as ImageIcon, Tag, DollarSign, CheckCircle, XCircle, ShoppingBag, Info, Loader2 } from 'lucide-react'; 
 import Image from 'next/image';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
@@ -49,8 +49,6 @@ const menuItemAddonGroupSchema = z.object({
     if (data.type === 'checkbox' && data.minSelection !== undefined && data.minSelection > data.options.length) {
         return false;
     }
-    // Max selection validation against options length can be tricky, depends on intent.
-    // Example: if maxSelection is a global limit or per-group.
     return true;
 }, {
   message: "מספר בחירות מינימלי לא יכול להיות גדול ממספר בחירות מקסימלי, או גדול ממספר האפשרויות הזמינות.",
@@ -95,7 +93,7 @@ const livePickSaleFormSchema = z.object({
     return true;
 }, {
     message: "אם LivePick Sale מופעל, יש למלא שעת התחלה חוקית, כמות שקיות (0 ומעלה) ומחיר חיובי.",
-    path: ['livePickSaleEnabled'], // General path, specific field error messages better handled per field
+    path: ['livePickSaleEnabled'], 
 });
 
 
@@ -201,13 +199,30 @@ export default function MenuManagementPage() {
   }
 
   function onLivePickSaleSubmit(values: LivePickSaleFormValues) {
+    livePickSaleForm.clearErrors(); // Clear previous errors
+    if (values.livePickSaleEnabled) {
+        if (!values.livePickSaleStartTime) {
+            livePickSaleForm.setError("livePickSaleStartTime", {type: "manual", message: "שעת התחלה היא שדה חובה."});
+        }
+        if (values.livePickSaleBagCount === undefined || values.livePickSaleBagCount < 0) {
+            livePickSaleForm.setError("livePickSaleBagCount", {type: "manual", message: "כמות שקיות חייבת להיות 0 או יותר."});
+        }
+        if (values.livePickSaleBagPrice === undefined || values.livePickSaleBagPrice <= 0) {
+             livePickSaleForm.setError("livePickSaleBagPrice", {type: "manual", message: "מחיר חייב להיות חיובי."});
+        }
+        if (livePickSaleForm.formState.errors && Object.keys(livePickSaleForm.formState.errors).length > 0) {
+            toast({ title: "שגיאה בנתונים", description: "אנא תקן את השגיאות המסומנות בטופס.", variant: "destructive"});
+            return;
+        }
+    }
+
     setRestaurant(prev => prev ? ({
         ...prev,
         livePickSaleConfig: {
             enabled: values.livePickSaleEnabled,
-            startTime: values.livePickSaleStartTime,
-            bagCount: values.livePickSaleBagCount,
-            bagPrice: values.livePickSaleBagPrice,
+            startTime: values.livePickSaleEnabled ? values.livePickSaleStartTime : undefined,
+            bagCount: values.livePickSaleEnabled ? values.livePickSaleBagCount : undefined,
+            bagPrice: values.livePickSaleEnabled ? values.livePickSaleBagPrice : undefined,
         }
     }) : undefined);
     console.log("LivePick Sale Settings Updated (Demo):", values);
@@ -275,7 +290,7 @@ export default function MenuManagementPage() {
                     <Button variant="outline" size="sm" onClick={() => handleEditItem(item)}><Edit3 className="mr-1 h-3 w-3"/> ערוך</Button>
                     <Button variant="outline" size="sm" onClick={() => handleDuplicateItem(item)}><Copy className="mr-1 h-3 w-3"/> שכפל</Button>
                     <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive col-span-1" onClick={() => handleDeleteItem(item.id)}><Trash2 className="mr-1 h-3 w-3"/> מחק</Button>
-                     <div className="flex items-center justify-end space-x-2 col-span-1">
+                     <div className="flex items-center justify-end space-x-2 rtl:space-x-reverse col-span-1">
                         <Switch
                             id={`available-${item.id}`}
                             checked={item.isAvailable === undefined ? true : item.isAvailable}
@@ -321,7 +336,7 @@ export default function MenuManagementPage() {
                     <Button variant="outline" size="sm" onClick={() => handleEditItem(item)}><Edit3 className="mr-1 h-3 w-3"/> ערוך</Button>
                     <Button variant="outline" size="sm" onClick={() => handleDuplicateItem(item)}><Copy className="mr-1 h-3 w-3"/> שכפל</Button>
                     <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive col-span-1" onClick={() => handleDeleteItem(item.id)}><Trash2 className="mr-1 h-3 w-3"/> מחק</Button>
-                     <div className="flex items-center justify-end space-x-2 col-span-1">
+                     <div className="flex items-center justify-end space-x-2 rtl:space-x-reverse col-span-1">
                         <Switch
                             id={`available-${item.id}`}
                             checked={item.isAvailable === undefined ? true : item.isAvailable}
@@ -423,7 +438,7 @@ export default function MenuManagementPage() {
                         <Card key={groupField.id} className="p-3 bg-muted/50">
                             <div className="flex justify-between items-center mb-2">
                                 <FormField control={itemForm.control} name={`addons.${groupIndex}.title`} render={({ field }) => (
-                                    <FormItem className="flex-grow mr-2"><FormLabel className="text-xs">כותרת קבוצה</FormLabel><FormControl><Input {...field} placeholder="לדוגמה: מידות, צבעים" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
+                                    <FormItem className="flex-grow mr-2 rtl:mr-0 rtl:ml-2"><FormLabel className="text-xs">כותרת קבוצה</FormLabel><FormControl><Input {...field} placeholder="לדוגמה: מידות, צבעים" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
                                 )}/>
                                 <Button type="button" variant="ghost" size="icon" onClick={() => removeAddonGroup(groupIndex)} className="text-destructive h-8 w-8"><Trash2 className="h-4 w-4"/></Button>
                             </div>
@@ -440,7 +455,11 @@ export default function MenuManagementPage() {
                                     <FormMessage className="text-xs"/></FormItem>
                                 )}/>
                                  <FormField control={itemForm.control} name={`addons.${groupIndex}.required`} render={({ field }) => (
-                                    <FormItem className="flex flex-row items-center space-x-2 rtl:space-x-reverse pt-5"><FormControl><Switch checked={field.value} onCheckedChange={field.onChange}/></FormControl><FormLabel className="text-xs !mt-0">קבוצת חובה</FormLabel><FormMessage className="text-xs"/></FormItem>
+                                    <FormItem className="flex flex-row items-center space-x-2 rtl:space-x-reverse pt-5">
+                                        <FormControl><Switch id={`addons.${groupIndex}.required`} checked={field.value} onCheckedChange={field.onChange}/></FormControl>
+                                        <FormLabel htmlFor={`addons.${groupIndex}.required`} className="text-xs !mt-0 cursor-pointer">קבוצת חובה</FormLabel>
+                                        <FormMessage className="text-xs"/>
+                                    </FormItem>
                                 )}/>
                              </div>
                              <div className="grid grid-cols-2 gap-2 mb-2">
@@ -463,7 +482,7 @@ export default function MenuManagementPage() {
           <DialogFooter className="pt-4 border-t">
             <DialogClose asChild><Button type="button" variant="outline">ביטול</Button></DialogClose>
             <Button type="submit" onClick={itemForm.handleSubmit(onItemSubmit)} disabled={itemForm.formState.isSubmitting}>
-              {itemForm.formState.isSubmitting ? "שומר..." : (editingItem ? 'שמור שינויים' : 'הוסף פריט')}
+              {itemForm.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : (editingItem ? 'שמור שינויים' : 'הוסף פריט')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -485,10 +504,10 @@ export default function MenuManagementPage() {
                         render={({ field }) => (
                             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm">
                                 <div className="space-y-0.5">
-                                    <FormLabel className="text-base">הפעל LivePick Sale / Flash Sale עבור העסק שלך</FormLabel>
+                                    <FormLabel htmlFor="livePickSaleEnabledSwitch" className="text-base cursor-pointer">הפעל LivePick Sale / Flash Sale עבור העסק שלך</FormLabel>
                                     <FormDescription>מאפשר למכור שקיות הפתעה מוזלות או פריטים במבצע בזק.</FormDescription>
                                 </div>
-                                <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                                <FormControl><Switch id="livePickSaleEnabledSwitch" checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                             </FormItem>
                         )}
                     />
@@ -536,7 +555,7 @@ export default function MenuManagementPage() {
                         </div>
                     )}
                      <Button type="submit" className="w-full sm:w-auto" disabled={livePickSaleForm.formState.isSubmitting}>
-                        {livePickSaleForm.formState.isSubmitting ? "שומר הגדרות LivePick Sale..." : "שמור הגדרות LivePick Sale"}
+                        {livePickSaleForm.formState.isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> שומר...</> : "שמור הגדרות LivePick Sale"}
                     </Button>
                 </form>
             </Form>
@@ -570,7 +589,11 @@ function AddonOptionsArray({ groupIndex, control }: { groupIndex: number, contro
             <FormItem className="w-24"><FormLabel className="text-xs">מחיר (₪)</FormLabel><FormControl><Input type="number" step="0.01" {...field} placeholder="0.00" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
           )}/>
           <FormField control={control} name={`addons.${groupIndex}.options.${optionIndex}.selectedByDefault`} render={({ field }) => (
-            <FormItem className="flex flex-col items-center pt-5"><FormControl><Switch checked={field.value} onCheckedChange={field.onChange} className="h-4 w-7 data-[state=checked]:translate-x-3 data-[state=unchecked]:translate-x-0"/></FormControl><FormLabel className="text-xs whitespace-nowrap">ברירת מחדל</FormLabel><FormMessage className="text-xs"/></FormItem>
+            <FormItem className="flex flex-col items-center pt-5">
+                <FormControl><Switch id={`addons.${groupIndex}.options.${optionIndex}.selectedByDefault`} checked={field.value} onCheckedChange={field.onChange} className="h-4 w-7 data-[state=checked]:translate-x-3 data-[state=unchecked]:translate-x-0"/></FormControl>
+                <FormLabel htmlFor={`addons.${groupIndex}.options.${optionIndex}.selectedByDefault`} className="text-xs whitespace-nowrap cursor-pointer">ברירת מחדל</FormLabel>
+                <FormMessage className="text-xs"/>
+            </FormItem>
           )}/>
           <Button type="button" variant="ghost" size="icon" onClick={() => remove(optionIndex)} className="text-destructive h-8 w-8 self-end"><Trash2 className="h-3 w-3"/></Button>
         </div>

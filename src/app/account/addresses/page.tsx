@@ -35,7 +35,6 @@ export default function UserAddressesPage() {
       description: `כתובת ${addressId} "נמחקה".`,
       variant: "destructive"
     });
-    // In a real app, update state to remove the address
   };
 
   return (
