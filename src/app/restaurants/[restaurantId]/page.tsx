@@ -5,23 +5,24 @@ import { getRestaurantById } from '@/lib/mock-data';
 import type { Restaurant, MenuItem } from '@/types';
 import ItemCard from '@/components/items/item-card';
 import Image from 'next/image';
-import { notFound } from 'next/navigation';
-import { Star, Clock, MapPin, Utensils, Share2, Award, MessageCircle, Edit, Send } from 'lucide-react'; // Added Edit, Send
+import { useParams, notFound } from 'next/navigation'; // Import useParams
+import { Star, Clock, MapPin, Utensils, Share2, Award, MessageCircle, Edit, Send } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { useState } from 'react'; // Added useState
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'; // Added Avatar components
-import { Textarea } from '@/components/ui/textarea'; // Added Textarea
-import { Label } from '@/components/ui/label'; // Added Label
-import { cn } from '@/lib/utils'; // Added cn
+import { useState } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 
-interface RestaurantPageParams {
-  params: {
-    restaurantId: string;
-  };
-}
+// This interface might not be strictly needed for this component anymore if not used elsewhere
+// interface RestaurantPageParams {
+//   params: {
+//     restaurantId: string;
+//   };
+// }
 
 interface MockReview {
   id: string;
@@ -39,7 +40,8 @@ const mockReviews: MockReview[] = [
 ];
 
 
-export default function RestaurantPage({ params }: RestaurantPageParams) {
+export default function RestaurantPage() {
+  const params = useParams<{ restaurantId: string }>(); // Use the useParams hook
   const restaurant: Restaurant | undefined = getRestaurantById(params.restaurantId);
   const { toast } = useToast();
 
