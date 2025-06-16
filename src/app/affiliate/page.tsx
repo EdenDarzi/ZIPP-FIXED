@@ -20,8 +20,8 @@ export default function AffiliateProgramPage() {
 
   const handleStartNowClick = () => {
     toast({
-      title: "הצטרפות לתוכנית השותפים (הדמיה)",
-      description: "בקשת ההצטרפות שלך התקבלה! נציג ייצור איתך קשר בקרוב עם פרטים נוספים. (זהו דמו).",
+      title: "הצטרפות לתוכנית השותפים",
+      description: "בקשת ההצטרפות שלך התקבלה! נציג ייצור איתך קשר בקרוב עם פרטים נוספים. (זהו דמו של תהליך ההרשמה).",
     });
   };
 
@@ -82,7 +82,7 @@ export default function AffiliateProgramPage() {
                הצטרפו עוד היום לתוכנית השותפים והתחילו להרוויח על ידי המלצה על LivePick!
             </p>
             <Button size="lg" onClick={handleStartNowClick} className="bg-accent hover:bg-accent/90 text-accent-foreground text-lg shadow-md">
-                הצטרף כשותף עכשיו <ArrowRight className="ml-2 h-5 w-5"/>
+                הפוך לשותף LivePick <ArrowRight className="ml-2 h-5 w-5"/>
             </Button>
         </CardContent>
          <CardFooter className="justify-center">

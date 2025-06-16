@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Utensils, ShoppingCart, Brain, ArrowLeft, MapPin, Search, Sparkles, Heart, History, Award, Flame, Gift, Gem, UsersIcon, MapIcon as FoodRadarIcon, ShoppingBag as LivePickSaleIcon, TrendingUp as LiveTrendIcon, MessageCircle, ExternalLink, Info, ShoppingBasket, Gamepad2, Library, ListChecks, Route, Send, PackagePlus } from "lucide-react";
+import { Utensils, ShoppingCart, Brain, ArrowLeft, MapPin, Search, Sparkles, Heart, History, Award, Flame, Gift, Gem, UsersIcon, MapIcon as FoodRadarIcon, ShoppingBag as LivePickSaleIcon, TrendingUp as LiveTrendIcon, MessageCircle, ExternalLink, Info, ShoppingBasket, Gamepad2, Library, ListChecks, Route, Send, PackagePlus, AlertTriangle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import RestaurantCard from "@/components/restaurants/restaurant-card";
@@ -44,7 +44,13 @@ export default function HomePage() {
     }
     fetchSuggestion();
 
-    setShowLivePickSaleBanner(true); 
+    const currentHour = new Date().getHours();
+    // For demo purposes, sale is active between 7 PM and 11 PM
+    // if (currentHour >= 19 && currentHour < 23) {
+    // setShowLivePickSaleBanner(true);
+    // }
+    setShowLivePickSaleBanner(true); // Demo: always show banner
+
     setAvailableCouriers(Math.floor(Math.random() * 20) + 5); 
 
   }, []);
@@ -52,7 +58,7 @@ export default function HomePage() {
   const handlePartnershipsClick = () => {
     toast({
         title: "שיתופי פעולה",
-        description: "גלה מבצעים משתלמים בשיתוף עם מותגים מובילים! (פרטים נוספים והצעות יפורסמו כאן בקרוב - הדמיה).",
+        description: "הנה דוגמאות לשיתופי פעולה אפשריים. פרטים נוספים והצעות יפורסמו בקרוב.",
     });
   };
 
@@ -142,13 +148,15 @@ export default function HomePage() {
            <Route className="h-12 w-12 text-green-600 mb-3" />
            <CardTitle className="text-xl font-semibold text-green-700">שליחים בקרבתך</CardTitle>
            {availableCouriers !== null ? (
-             <CardDescription className="text-md text-green-600/90 mt-1">
-               כרגע יש <strong className="text-2xl">{availableCouriers}</strong> שליחים זמינים באזורך!
-             </CardDescription>
+             <>
+               <CardDescription className="text-md text-green-600/90 mt-1">
+                 כרגע יש <strong className="text-2xl">{availableCouriers}</strong> שליחים זמינים באזורך!
+               </CardDescription>
+               <p className="text-xs text-muted-foreground/70 mt-1">(הנתון המוצג הוא להדגמה בלבד ומשתנה)</p>
+             </>
            ) : (
              <CardDescription className="text-md text-green-600/90 mt-1 animate-pulse">בודק זמינות שליחים...</CardDescription>
            )}
-           <p className="text-xs text-muted-foreground mt-2">הנתון המוצג הוא להדגמה ומשתנה.</p>
         </Card>
         <Card className="hover:shadow-lg hover:border-blue-500/50 transition-all cursor-pointer h-full flex flex-col items-center justify-center text-center p-6 bg-blue-500/5 border-blue-500/20">
            <PackagePlus className="h-12 w-12 text-blue-600 mb-3" />
@@ -175,14 +183,14 @@ export default function HomePage() {
            <Card className="hover:shadow-lg hover:border-primary/50 transition-all cursor-pointer h-full flex flex-col items-center justify-center text-center p-4">
             <Gem className="h-10 w-10 text-purple-500 mb-2" />
             <CardTitle className="text-lg font-semibold">LivePick VIP</CardTitle>
-            <CardDescription className="text-xs">הטבות פרימיום בלעדיות. גלה עוד!</CardDescription>
+            <CardDescription className="text-xs">חווית פרימיום והטבות בלעדיות. גלה עוד!</CardDescription>
           </Card>
         </Link>
         <Link href="/affiliate" passHref>
           <Card className="hover:shadow-lg hover:border-primary/50 transition-all cursor-pointer h-full flex flex-col items-center justify-center text-center p-4">
             <UsersIcon className="h-10 w-10 text-green-500 mb-2" />
             <CardTitle className="text-lg font-semibold">תוכנית שותפים</CardTitle>
-            <CardDescription className="text-xs">הרווח כסף על המלצות. הצטרף עכשיו!</CardDescription>
+            <CardDescription className="text-xs">הרווח כסף והטבות על המלצות. הצטרף עכשיו!</CardDescription>
           </Card>
         </Link>
       </section>
@@ -196,8 +204,7 @@ export default function HomePage() {
             <CardDescription className="text-orange-700/80">מבצעים בלעדיים בשיתוף עם מותגים מובילים, בהשראת הטרנדים החמים ביותר!</CardDescription>
           </CardHeader>
           <CardContent className="text-center text-orange-700/90 space-y-2">
-            <p>"קבל 15% הנחה על קולקציית הקיץ של 'FashionForward' בהשראת טרנד ה-Y2K שזוהה לאחרונה ב-LivePick!"</p>
-            <p className="text-xs">(הפרטים המלאים על השותפות יפורסמו בהמשך).</p>
+            <p>"קבל 15% הנחה על קולקציית הקיץ של 'FashionForward' בהשראת טרנד ה-Y2K שזוהה לאחרונה ב-LivePick!" (דוגמה)</p>
             <Button variant="link" size="sm" className="text-orange-600 hover:text-orange-700 p-0 h-auto mt-1" onClick={handlePartnershipsClick}>
                 גלה שיתופי פעולה <ExternalLink className="h-3 w-3 mr-1"/>
             </Button>
@@ -276,7 +283,12 @@ export default function HomePage() {
             ))}
           </div>
         ) : (
-          <p className="text-muted-foreground">מחפש המלצות בקרבתך...</p>
+           <Card className="text-center py-10">
+            <CardContent>
+                <AlertTriangle className="h-12 w-12 mx-auto text-muted-foreground mb-3 opacity-50"/>
+                <p className="text-muted-foreground">לא נמצאו עסקים להצגה כרגע. אנא נסה מאוחר יותר.</p>
+            </CardContent>
+           </Card>
         )}
         <div className="text-center mt-8">
             <Button variant="link" asChild className="text-lg text-primary hover:text-accent transition-colors">

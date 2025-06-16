@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { notFound, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
-import { Minus, Plus, ShoppingCart, ArrowLeft, Star, Share2, Award, Heart, Info } from 'lucide-react'; // Added Info
+import { Minus, Plus, ShoppingCart, ArrowLeft, Star, Share2, Award, Heart, Info } from 'lucide-react'; 
 import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -46,6 +46,7 @@ export default function ItemPage({ params }: ItemPageParams) {
           if (defaultOption) {
             defaultSelections[group.id!] = defaultOption.id!;
           } else if (group.required && group.options.length > 0) {
+            // If required and no default, select the first one (can be adjusted)
             defaultSelections[group.id!] = group.options[0].id!;
           }
         } else if (group.type === 'checkbox') {
@@ -113,17 +114,17 @@ export default function ItemPage({ params }: ItemPageParams) {
       const selectedCount = Array.isArray(currentSelection) ? currentSelection.length : (currentSelection ? 1 : 0);
 
       if (group.required && selectedCount === 0) {
-        toast({ title: "בחירה חסרה", description: `אנא בחר/י אפשרות מקבוצת החובה "${group.title}".`, variant: "destructive" });
+        toast({ title: "בחירה חסרה", description: `קבוצת "${group.title}" היא חובה. אנא בחר/י לפחות אפשרות אחת.`, variant: "destructive" });
         return null;
       }
 
       if (group.type === 'checkbox') {
         if (group.minSelection && selectedCount < group.minSelection) {
-          toast({ title: "בחירה לא מספקת", description: `עליך לבחור לפחות ${group.minSelection} אפשרויות מקבוצת "${group.title}". נבחרו ${selectedCount}.`, variant: "destructive" });
+          toast({ title: "בחירה לא מספקת", description: `עליך לבחור לפחות ${group.minSelection} אפשרויות מקבוצת "${group.title}". בחרת ${selectedCount}.`, variant: "destructive" });
           return null;
         }
         if (group.maxSelection && selectedCount > group.maxSelection) {
-          toast({ title: "יותר מדי בחירות", description: `ניתן לבחור עד ${group.maxSelection} אפשרויות מקבוצת "${group.title}". נבחרו ${selectedCount}.`, variant: "destructive" });
+          toast({ title: "יותר מדי בחירות", description: `ניתן לבחור עד ${group.maxSelection} אפשרויות מקבוצת "${group.title}". בחרת ${selectedCount}.`, variant: "destructive" });
           return null;
         }
       }
@@ -167,16 +168,16 @@ export default function ItemPage({ params }: ItemPageParams) {
 
   const handleShareItem = () => {
     toast({
-      title: "שיתוף פריט (דמו)",
-      description: `שיתפת את "${item.name}"! +5 כוכבים התווספו לחשבונך (דמו).`,
+      title: "שיתוף פריט (הדגמה)",
+      description: `שיתפת את "${item.name}"! +5 כוכבים התווספו לחשבונך (הדמיה).`,
       action: <Award className="h-5 w-5 text-yellow-400" aria-label="פרס כוכבים"/>
     });
   };
 
   const handleAddToFavorites = () => {
     toast({
-        title: "נוסף למועדפים (בקרוב!)",
-        description: `"${item.name}" נוסף לספריית הטעמים שלך. תוכל למצוא אותו שם בפעם הבאה!`,
+        title: "נוסף למועדפים",
+        description: `"${item.name}" נוסף לספריית הטעמים שלך. תוכל למצוא אותו שם בפעם הבאה! (הדמיה)`,
     });
   };
 
@@ -187,7 +188,7 @@ export default function ItemPage({ params }: ItemPageParams) {
           <ArrowLeft className="mr-2 h-4 w-4" /> חזור לתפריט
         </Button>
         <div className="flex items-center space-x-2 rtl:space-x-reverse">
-            <Button variant="ghost" size="icon" onClick={handleAddToFavorites} title="הוסף למועדפים (בקרוב)" aria-label="הוסף למועדפים (בקרוב)">
+            <Button variant="ghost" size="icon" onClick={handleAddToFavorites} title="הוסף למועדפים" aria-label="הוסף למועדפים">
                 <Heart className="h-5 w-5 text-pink-500" />
                 <span className="sr-only">הוסף למועדפים</span>
             </Button>

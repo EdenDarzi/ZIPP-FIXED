@@ -20,8 +20,8 @@ export default function VipProgramPage() {
 
   const handleJoinClick = () => {
     toast({
-      title: "ברוכים הבאים ל-LivePick VIP (הדמיה)",
-      description: "תהליך ההצטרפות ל-VIP יוצג כאן. לעת עתה, אנא דמיין שהצטרפת למועדון האקסקלוסיבי שלנו!",
+      title: "ברוכים הבאים ל-LivePick VIP!",
+      description: "בקשתך להצטרפות ל-VIP התקבלה ותעובד בקרוב. כרגע, זוהי הדמיה של תהליך ההצטרפות.",
     });
   };
 

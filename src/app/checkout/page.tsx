@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { CreditCard, Lock, ShoppingBag, AlertTriangle, Zap, Sparkles, DollarSign, Clock, Gift, Edit, Check } from "lucide-react"; 
+import { CreditCard, Lock, ShoppingBag, AlertTriangle, Zap, Sparkles, DollarSign, Clock, Gift, Edit, Check, ShieldCheck } from "lucide-react"; 
 import Link from "next/link";
 import { useCart } from "@/context/cart-context";
 import Image from "next/image";
@@ -34,8 +34,8 @@ export default function CheckoutPage() {
     setDiscreetDelivery(checked);
     if (checked) {
         toast({
-            title: "משלוח דיסקרטי",
-            description: "אפשרויות למשלוח אנונימי (למשל, ללא שם שולח, אינטראקציה גנרית של שליח) יתווספו בקרוב.",
+            title: "משלוח דיסקרטי הופעל (דמו)",
+            description: "אפשרויות למשלוח אנונימי (ללא שם שולח, אינטראקציה גנרית של שליח) יתווספו בקרוב.",
             duration: 5000,
         });
     }
@@ -59,19 +59,21 @@ export default function CheckoutPage() {
 
   const handleMockPayment = () => {
     toast({
-      title: "התשלום עבר בהצלחה (דמו)",
+      title: "התשלום עבר בהצלחה!",
       description: scheduledDeliveryTime 
         ? `ההזמנה שלך מתוכננת ל: ${scheduledDeliveryTime} ובעיבוד!` 
         : "ההזמנה שלך בעיבוד!",
       action: <Check className="text-green-500" />
     });
 
-    const mockOrderId = `mockOrder_${Date.now()}_${scheduledDeliveryTime ? 'scheduled' : 'asap'}`; 
+    const mockOrderId = `livepick_${Date.now()}_${scheduledDeliveryTime ? 'scheduled' : 'asap'}`; 
     
     const trackingUrl = customerNotes 
       ? `/order-tracking/${mockOrderId}?notes=${encodeURIComponent(customerNotes)}`
       : `/order-tracking/${mockOrderId}`;
     
+    // Simulate clearing cart after successful payment
+    // clearCart(); // In a real app, clear cart after server confirmation
     router.push(trackingUrl);
   };
 
@@ -139,10 +141,9 @@ export default function CheckoutPage() {
                     <span className="font-medium">{scheduledDeliveryTime}</span>
                   </div>
                 )}
-                {cart.some(item => item.name.toLowerCase().includes("gift") || item.selectedAddons?.some(sa => sa.optionName.toLowerCase().includes("gift"))) && ( 
+                {cart.some(item => item.name.toLowerCase().includes("gift") || item.selectedAddons?.some(sa => sa.optionName.toLowerCase().includes("gift")) || searchParams.get('isGift') === 'true') && ( 
                     <div className="flex justify-between text-sm text-pink-600">
                         <span className="font-medium flex items-center"><Gift className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/>נשלח כמתנה</span>
-                        <span className="font-medium">(פרטים בקרוב)</span>
                     </div>
                 )}
                 {customerNotes && (
@@ -162,11 +163,11 @@ export default function CheckoutPage() {
           <div>
             <h3 className="text-xl font-semibold mb-3">פרטי תשלום</h3>
             <p className="text-muted-foreground mb-4 text-sm">
-              זהו מציין מקום לשילוב תשלומים. לחץ על "שלם עכשיו" כדי לדמות תשלום מוצלח.
+              זהו מקטע הדגמה לשילוב תשלומים. לחץ על "שלם עכשיו" כדי לדמות תשלום מוצלח.
             </p>
             <div className="p-6 border border-dashed rounded-md text-center bg-muted/20">
               <CreditCard className="h-12 w-12 text-primary mx-auto mb-4" />
-              <p className="font-semibold text-lg">שער תשלומים (דמו)</p>
+              <p className="font-semibold text-lg">שער תשלומים (הדגמה)</p>
               <p className="text-sm text-muted-foreground">עבד את התשלום שלך באופן מאובטח.</p>
             </div>
           </div>
@@ -174,7 +175,7 @@ export default function CheckoutPage() {
           <div className="flex items-center space-x-2 rtl:space-x-reverse p-3 border rounded-md bg-muted/50">
             <Checkbox id="discreetDelivery" checked={discreetDelivery} onCheckedChange={handleDiscreetToggle} aria-labelledby="discreetDeliveryLabel" />
             <Label htmlFor="discreetDelivery" id="discreetDeliveryLabel" className="cursor-pointer text-sm flex items-center">
-              <ShieldCheck className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1 text-blue-500"/> משלוח דיסקרטי (אפשרויות אנונימיות בקרוב)
+              <ShieldCheck className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1 text-blue-500"/> משלוח דיסקרטי (אפשרויות נוספות בפיתוח)
             </Label>
           </div>
 
@@ -200,8 +201,8 @@ export default function CheckoutPage() {
             </Badge>
           )}
 
-          <Button size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg" onClick={handleMockPayment} aria-label={`שלם ${finalPriceWithDelivery.toFixed(2)} שקלים (דמו)`}>
-            <Lock className="ml-2 rtl:ml-0 rtl:mr-2 h-5 w-5" /> שלם {finalPriceWithDelivery.toFixed(2)}₪ (דמו) 
+          <Button size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg" onClick={handleMockPayment} aria-label={`שלם ${finalPriceWithDelivery.toFixed(2)} שקלים`}>
+            <Lock className="ml-2 rtl:ml-0 rtl:mr-2 h-5 w-5" /> שלם {finalPriceWithDelivery.toFixed(2)}₪
           </Button>
           <p className="text-xs text-muted-foreground text-center">
             בלחיצה על "שלם עכשיו", אתה מסכים לתנאי השירות ומדיניות הפרטיות שלנו.

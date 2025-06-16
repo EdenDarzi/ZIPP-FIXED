@@ -18,6 +18,9 @@ const ptSans = PT_Sans({
 export const metadata: Metadata = {
   title: 'LivePick - פלטפורמת המשלוחים החכמה שלך',
   description: 'הזמינו משלוח ממסעדות, חנויות ובתי קפה עם LivePick. גלו טרנדים, שתפו וזכו בפרסים!',
+  icons: {
+    icon: '/favicon.ico', // Assuming you might add a favicon later
+  }
 };
 
 export default function RootLayout({
@@ -32,7 +35,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
       </head>
-      <body className={cn('font-body antialiased min-h-screen flex flex-col', ptSans.variable)}>
+      <body className={cn('font-body antialiased min-h-screen flex flex-col bg-background text-foreground', ptSans.variable)}>
         <CartProvider>
           <Header />
           <main className="flex-grow container mx-auto px-4 py-8">

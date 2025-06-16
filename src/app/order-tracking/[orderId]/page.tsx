@@ -16,6 +16,7 @@ import { ArrowLeft, AlertTriangle, Info, Clock, Award, Gamepad2, Edit } from 'lu
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast'; 
+import { cn } from '@/lib/utils';
 
 const getOrderStatusHebrew = (status: OrderStatus): string => {
     const map: Record<OrderStatus, string> = {
@@ -162,10 +163,10 @@ export default function OrderTrackingPage() {
           }
           return prev;
         });
-      }, 60 * 1000); 
+      }, 60 * 1000 * (Math.random() * 0.5 + 0.5)); // Randomize update slightly for realism, average 1 min
       return () => clearInterval(etaInterval);
     }
-  }, [order?.status, order?.assignedCourier?.currentEtaMinutes]);
+  }, [order]); // Removed order.assignedCourier.currentEtaMinutes, effect will re-run if order object changes.
 
   if (order === undefined) { 
     return (
@@ -183,7 +184,7 @@ export default function OrderTrackingPage() {
         <AlertTriangle className="h-24 w-24 mx-auto text-destructive mb-6" />
         <h1 className="text-3xl font-bold font-headline text-destructive mb-4">הזמנה לא נמצאה</h1>
         <p className="text-lg text-muted-foreground mb-8">
-          {error || "לא הצלחנו למצוא את ההזמנה שאתה מחפש. ייתכן שהייתה בעיה עם מזהה הזמנה מדומיין או שהיא עדיין לא נוצרה."}
+          {error || "לא הצלחנו למצוא את ההזמנה שאתה מחפש. ייתכן שהייתה בעיה עם מזהה ההזמנה או שהיא עדיין לא נוצרה."}
         </p>
         <Button asChild>
           <Link href="/"><span>חזרה לדף הבית</span></Link>
@@ -196,7 +197,7 @@ export default function OrderTrackingPage() {
     switch (order.status) {
       case 'SCHEDULED':
         return (
-            <Card className="shadow-xl text-center py-10 bg-blue-50 border-blue-200">
+            <Card className="shadow-xl text-center py-10 bg-blue-50 border-blue-200 animate-fadeIn">
                 <CardHeader className="items-center">
                     <Clock className="h-12 w-12 text-blue-600 mb-3" />
                     <CardTitle className="text-2xl font-semibold text-blue-700">הזמנה מתוכננת</CardTitle>
@@ -206,7 +207,7 @@ export default function OrderTrackingPage() {
                         ההזמנה שלך מ<strong className="text-blue-700">{order.restaurantName}</strong> מתוכננת ל:
                     </p>
                     <p className="text-xl font-bold text-blue-700 mt-2">{order.scheduledDeliveryTime}</p>
-                    <p className="text-sm text-blue-600/80 mt-4">אנו נתחיל לעבד אותה לקראת מועד זה.</p>
+                    <p className="text-sm text-blue-600/80 mt-4">אנו נתחיל לעבד אותה לקראת מועד זה. תקבל/י עדכון כאשר ההכנה תתחיל.</p>
                 </CardContent>
             </Card>
         );
@@ -221,7 +222,7 @@ export default function OrderTrackingPage() {
         return <DeliveryCompleteView order={order} />;
       case 'PENDING_PAYMENT':
          return (
-            <Card className="shadow-xl text-center py-10">
+            <Card className="shadow-xl text-center py-10 animate-fadeIn">
                 <CardHeader>
                     <CardTitle className="text-2xl font-semibold text-destructive">הזמנה ממתינה לתשלום</CardTitle>
                 </CardHeader>
@@ -233,7 +234,7 @@ export default function OrderTrackingPage() {
         );
       case 'CANCELLED':
         return (
-            <Card className="shadow-xl text-center py-10">
+            <Card className="shadow-xl text-center py-10 animate-fadeIn">
                 <CardHeader>
                     <CardTitle className="text-2xl font-semibold text-destructive">הזמנה בוטלה</CardTitle>
                 </CardHeader>
@@ -260,7 +261,7 @@ export default function OrderTrackingPage() {
 
   const handleGamificationTask = () => {
     toast({
-        title: "משימת בונוס! (דמו)",
+        title: "משימת בונוס! (הדגמה)",
         description: "שתף תמונה של הטרנד שהזמנת עם #LivePick וצבור עוד כוכבים! (משימה תופיע כאן)",
         action: <Award className="text-yellow-500" />
     });
@@ -275,7 +276,7 @@ export default function OrderTrackingPage() {
       {renderOrderStatusView()}
 
       {customerNotes && (
-        <Card className="bg-blue-50 border-blue-200">
+        <Card className="bg-blue-50 border-blue-200 animate-fadeIn">
             <CardHeader className="pb-2 pt-3">
                 <CardTitle className="text-md text-blue-700 flex items-center"><Edit className="mr-2 h-4 w-4"/>הערות שהוספת להזמנה:</CardTitle>
             </CardHeader>
@@ -286,14 +287,14 @@ export default function OrderTrackingPage() {
       )}
 
       {showGamificationHint && !triviaAnswered && order.status !== 'SCHEDULED' && (
-        <Card className="bg-purple-50 border-purple-200 text-purple-700 animate-fadeIn">
+        <Card className="bg-purple-50 border-purple-200 text-purple-700 animate-fadeInUp">
             <CardHeader className="pb-2 pt-3">
                 <CardTitle className="flex items-center"><Gamepad2 className="mr-2 h-5 w-5"/> הרווח פרסים בזמן ההמתנה!</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 pb-3">
                 <p>פתור את חידון הטריוויה שלנו (בהמשך העמוד אם זמין) או השלם משימת בונוס קטנה כדי לצבור נקודות וכוכבים!</p>
                 <Button variant="link" onClick={handleGamificationTask} className="p-0 text-purple-700">
-                    בדוק משימת בונוס (דמו)
+                    בדוק משימת בונוס (הדגמה)
                 </Button>
             </CardContent>
         </Card>
@@ -310,7 +311,7 @@ export default function OrderTrackingPage() {
         />
       )}
 
-      <Card>
+      <Card className="animate-fadeInUp animation-delay-200">
         <CardHeader>
             <CardTitle className="text-lg font-semibold">ציר זמן הזמנה</CardTitle>
         </CardHeader>
@@ -318,7 +319,12 @@ export default function OrderTrackingPage() {
             <ul className="space-y-3">
                 {order.orderTimeline?.slice().reverse().map((event, index) => (
                     <li key={index} className="flex items-start space-x-3 rtl:space-x-reverse">
-                        <Info className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                        <Info className={cn("h-5 w-5 mt-1 flex-shrink-0", 
+                            event.status === 'DELIVERED' ? 'text-green-500' : 
+                            event.status === 'OUT_FOR_DELIVERY' ? 'text-blue-500' :
+                            event.status === 'CANCELLED' ? 'text-red-500' :
+                            'text-primary'
+                        )} />
                         <div>
                             <p className="font-medium capitalize">{getOrderStatusHebrew(event.status)}</p>
                             <p className="text-xs text-muted-foreground">{new Date(event.timestamp).toLocaleString('he-IL')}</p>
@@ -330,6 +336,31 @@ export default function OrderTrackingPage() {
             </ul>
         </CardContent>
       </Card>
+       <style jsx global>{`
+        .animation-delay-200 { animation-delay: 0.2s; }
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fadeInUp {
+          animation: fadeInUp 0.5s ease-out forwards;
+          opacity: 0; 
+        }
+         @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.5s ease-out forwards;
+          opacity: 0; 
+        }
+      `}</style>
     </div>
   );
 }

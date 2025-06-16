@@ -17,6 +17,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useState } from 'react'; 
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 export default function CartPage() {
   const {
@@ -58,23 +59,23 @@ export default function CartPage() {
     if (checked) {
         toast({
             title: "משלוח מתנה!",
-            description: "אפשרויות להוספת נמען ופתק אישי יופיעו בקרוב בתהליך התשלום.",
+            description: "ההזמנה תסומן כמתנה. אפשרויות נוספות יופיעו בתשלום.",
         });
     }
   };
 
   const handleDynamicLocationClick = () => {
     toast({
-        title: "משלוח למיקום דינמי (בטא)",
-        description: "המשלוח יעקוב אחר מיקומך! אידיאלי כשאתה בתנועה. פיצ'ר בפיתוח.",
+        title: "משלוח למיקום דינמי",
+        description: "השליח יעקוב אחר מיקומך בזמן אמת! (תכונה בפיתוח).",
         duration: 5000,
     });
   };
   
   const handleGroupOrderClick = () => {
     toast({
-        title: "הזמנה קבוצתית (בקרוב!)",
-        description: "הזמן חברים להוסיף פריטים לעגלה זו ולחלק את החשבון! פונקציונליות בפיתוח.",
+        title: "הזמנה קבוצתית",
+        description: "הזמן חברים להוסיף פריטים ולחלק את החשבון! (תכונה בפיתוח).",
         duration: 5000,
     });
   };
@@ -163,7 +164,7 @@ export default function CartPage() {
                 dir="rtl" 
                 aria-label="אפשרויות משלוח"
               >
-                <Label htmlFor="arena-delivery" className="flex items-center p-4 border rounded-md cursor-pointer hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all">
+                <Label htmlFor="arena-delivery" className={cn("flex items-center p-4 border rounded-md cursor-pointer hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all", {"has-[:checked]:ring-2 has-[:checked]:ring-primary has-[:checked]:ring-offset-1": deliveryPreference === 'arena'})}>
                   <RadioGroupItem value="arena" id="arena-delivery" className="ml-3 rtl:ml-0 rtl:mr-3" aria-label="זירת המשלוחים החכמה" /> 
                   <div className="flex-grow">
                     <div className="font-semibold flex items-center">
@@ -173,7 +174,7 @@ export default function CartPage() {
                   </div>
                   <span className="font-semibold text-green-600 mr-2 rtl:mr-0 rtl:ml-2">חינם</span> 
                 </Label>
-                <Label htmlFor="fastest-delivery" className="flex items-center p-4 border rounded-md cursor-pointer hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all">
+                <Label htmlFor="fastest-delivery" className={cn("flex items-center p-4 border rounded-md cursor-pointer hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all", {"has-[:checked]:ring-2 has-[:checked]:ring-primary has-[:checked]:ring-offset-1": deliveryPreference === 'fastest'})}>
                   <RadioGroupItem value="fastest" id="fastest-delivery" className="ml-3 rtl:ml-0 rtl:mr-3" aria-label="משלוח מהיר ביותר" />
                   <div className="flex-grow">
                     <div className="font-semibold flex items-center">
@@ -183,7 +184,7 @@ export default function CartPage() {
                   </div>
                   <span className="font-semibold text-primary mr-2 rtl:mr-0 rtl:ml-2">+5.00₪</span>
                 </Label>
-                <Label htmlFor="smart-saver-delivery" className="flex items-center p-4 border rounded-md cursor-pointer hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all">
+                <Label htmlFor="smart-saver-delivery" className={cn("flex items-center p-4 border rounded-md cursor-pointer hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all", {"has-[:checked]:ring-2 has-[:checked]:ring-primary has-[:checked]:ring-offset-1": deliveryPreference === 'smartSaver'})}>
                   <RadioGroupItem value="smartSaver" id="smart-saver-delivery" className="ml-3 rtl:ml-0 rtl:mr-3" aria-label="משלוח חסכוני חכם"/>
                   <div className="flex-grow">
                     <div className="font-semibold flex items-center">
@@ -253,8 +254,8 @@ export default function CartPage() {
                 </div>
               )}
                <p className="text-xs text-muted-foreground">שימו לב: זמינות המשלוח המתוכנן תלויה בשעות הפעילות של המסעדה והשליחים.</p>
-                 <Button onClick={handleDynamicLocationClick} variant="outline" className="w-full mt-2" aria-label="משלוח למיקום דינמי (בטא)">
-                    <Navigation className="h-4 w-4 ml-2 rtl:ml-0 rtl:mr-2 text-blue-500" /> משלוח למיקום דינמי (בטא - בקרוב)
+                 <Button onClick={handleDynamicLocationClick} variant="outline" className="w-full mt-2" aria-label="משלוח למיקום דינמי">
+                    <Navigation className="h-4 w-4 ml-2 rtl:ml-0 rtl:mr-2 text-blue-500" /> משלוח למיקום דינמי (תכונה בפיתוח)
                  </Button>
             </CardContent>
           </Card>
@@ -267,11 +268,11 @@ export default function CartPage() {
                 <div className="flex items-center space-x-2 rtl:space-x-reverse p-3 border rounded-md">
                     <Checkbox id="isGift" checked={isGift} onCheckedChange={handleGiftToggle} aria-labelledby="giftLabel" />
                     <Label htmlFor="isGift" id="giftLabel" className="flex items-center cursor-pointer">
-                        <Gift className="h-5 w-5 ml-2 rtl:ml-0 rtl:mr-2 text-pink-500" /> זו מתנה? (פתק אישי בקרוב)
+                        <Gift className="h-5 w-5 ml-2 rtl:ml-0 rtl:mr-2 text-pink-500" /> זו מתנה? (אפשרויות נוספות בתשלום)
                     </Label>
                 </div>
-                <Button onClick={handleGroupOrderClick} variant="outline" className="w-full" aria-label="התחל הזמנה קבוצתית (בקרוב)">
-                    <Users className="h-4 w-4 ml-2 rtl:ml-0 rtl:mr-2 text-purple-500" /> התחל הזמנה קבוצתית (בקרוב)
+                <Button onClick={handleGroupOrderClick} variant="outline" className="w-full" aria-label="התחל הזמנה קבוצתית">
+                    <Users className="h-4 w-4 ml-2 rtl:ml-0 rtl:mr-2 text-purple-500" /> התחל הזמנה קבוצתית (תכונה בפיתוח)
                  </Button>
             </CardContent>
           </Card>

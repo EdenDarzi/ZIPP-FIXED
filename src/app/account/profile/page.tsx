@@ -23,17 +23,15 @@ export default function UserProfilePage() {
   const handleUpdateProfile = (e: React.FormEvent) => {
     e.preventDefault();
     toast({
-      title: "הפרופיל עודכן (דמו)",
+      title: "הפרופיל עודכן",
       description: "פרטי הפרופיל שלך נשמרו (הדמיה בלבד).",
     });
   };
 
-   const handlePlaceholderClick = (featureName: string, dedicatedPage?: string) => {
+   const handleChangePasswordClick = () => {
     toast({
-      title: `${featureName}`,
-      description: dedicatedPage 
-        ? `תוכל לנהל ${featureName.toLowerCase()} בעמוד הייעודי אליו ניתן להגיע מתפריט החשבון.`
-        : `ניהול ${featureName.toLowerCase()} יתאפשר כאן או בעמוד ייעודי בקרוב.`,
+      title: "שינוי סיסמה",
+      description: "תוכל לשנות את סיסמתך בעמוד 'אבטחה והתראות', אליו ניתן להגיע מתפריט החשבון.",
     });
   };
 
@@ -67,7 +65,7 @@ export default function UserProfilePage() {
                 <Button type="submit" className="bg-primary hover:bg-primary/90">
                     <Edit3 className="mr-2 h-4 w-4" /> שמור שינויים
                 </Button>
-                <Button type="button" variant="outline" onClick={() => handlePlaceholderClick("שינוי סיסמה", "/account/security")}>
+                <Button type="button" variant="outline" onClick={handleChangePasswordClick}>
                     <KeyRound className="mr-2 h-4 w-4" /> שנה סיסמה
                 </Button>
             </div>

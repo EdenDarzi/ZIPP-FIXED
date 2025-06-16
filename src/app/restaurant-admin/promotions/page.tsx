@@ -5,9 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { PlusCircle, Edit3, Trash2, Megaphone, Percent, Tag, CalendarDays, Zap } from 'lucide-react';
+import { PlusCircle, Edit3, Trash2, Megaphone, Percent, Tag, CalendarDays, Zap, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 // Mock data for existing promotions
 const mockPromotions = [
@@ -22,15 +23,15 @@ export default function PromotionsManagementPage() {
 
   const handleCreatePromotion = () => {
     toast({
-      title: 'יצירת מבצע חדש (דמו)',
-      description: 'יוצג טופס ליצירת מבצע חדש (אחוז הנחה, קנה-קבל, קופון, וכו\').',
+      title: 'יצירת מבצע חדש (הדגמה)',
+      description: 'טופס ליצירת מבצע חדש (אחוז הנחה, קנה-קבל, קופון, וכו\') יופיע כאן.',
     });
   };
 
   const handleEditPromotion = (promoId: string) => {
     toast({
-      title: `עריכת מבצע ${promoId} (דמו)`,
-      description: 'יוצג טופס לעריכת פרטי המבצע.',
+      title: `עריכת מבצע ${promoId} (הדגמה)`,
+      description: 'טופס לעריכת פרטי המבצע יופיע כאן.',
     });
   };
 
@@ -38,14 +39,14 @@ export default function PromotionsManagementPage() {
     // Mock deletion
     setPromotions(prev => prev.filter(p => p.id !== promoId));
     toast({
-      title: `מבצע ${promoId} נמחק (דמו)`,
+      title: `מבצע ${promoId} נמחק (הדגמה)`,
       variant: 'destructive',
     });
   };
   
   const getStatusBadgeVariant = (status: string): "default" | "secondary" | "outline" | "destructive" => {
-    if (status === 'Active') return 'default';
-    if (status === 'Scheduled') return 'secondary';
+    if (status === 'Active') return 'default'; // Will be styled green below
+    if (status === 'Scheduled') return 'secondary'; // Will be styled blue below
     if (status === 'Expired') return 'destructive';
     return 'outline';
   };
@@ -98,7 +99,14 @@ export default function PromotionsManagementPage() {
                     <TableCell>{promo.type}</TableCell>
                     <TableCell>{promo.value}</TableCell>
                     <TableCell>
-                      <Badge variant={getStatusBadgeVariant(promo.status)} className="capitalize">
+                      <Badge 
+                        variant={getStatusBadgeVariant(promo.status)} 
+                        className={cn(
+                            "capitalize",
+                            promo.status === 'Active' && 'bg-green-500 text-white hover:bg-green-600',
+                            promo.status === 'Scheduled' && 'bg-blue-500 text-white hover:bg-blue-600'
+                        )}
+                      >
                         {promo.status === 'Active' && <Zap className="inline h-3 w-3 mr-1"/>}
                         {promo.status}
                       </Badge>
@@ -120,13 +128,16 @@ export default function PromotionsManagementPage() {
           )}
         </CardContent>
         <CardFooter>
-            <p className="text-xs text-muted-foreground">מערכת מבצעים מלאה תכלול הגדרת תנאים, קופונים ייחודיים, מעקב שימוש ועוד.</p>
+            <p className="text-xs text-muted-foreground flex items-center">
+                <Info className="h-4 w-4 mr-2 text-blue-500 flex-shrink-0"/>
+                מערכת מבצעים מלאה תכלול הגדרת תנאים, קופונים ייחודיים, מעקב שימוש ועוד.
+            </p>
         </CardFooter>
       </Card>
       
        <Card className="bg-blue-50 border-blue-200">
-            <CardHeader className="pb-2">
-                <CardTitle className="text-lg text-blue-700">טיפ AI לקידום (דמו)</CardTitle>
+            <CardHeader className="pb-2 pt-3">
+                <CardTitle className="text-lg text-blue-700 flex items-center"><Lightbulb className="mr-2 h-4 w-4"/>טיפ AI לקידום (הדגמה)</CardTitle>
             </CardHeader>
             <CardContent>
                 <p className="text-sm text-blue-600">

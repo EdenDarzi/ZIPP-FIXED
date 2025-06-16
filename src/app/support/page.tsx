@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { LifeBuoy, MessageSquare, HelpCircle, BookOpen, Search, FileText, Video } from "lucide-react";
+import { LifeBuoy, MessageSquare, HelpCircle, BookOpen, Search, FileText, Video, Phone, Mail } from "lucide-react";
 import Link from "next/link";
 import {
   Accordion,
@@ -9,6 +9,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { Input } from "@/components/ui/input";
 
 export default function SupportPage() {
   return (
@@ -22,17 +23,25 @@ export default function SupportPage() {
         <CardContent className="space-y-8">
           
           <Card className="p-4 bg-muted/30">
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-2 mb-1">
               <Search className="h-5 w-5 text-primary" />
-              <input type="search" placeholder="חפש במאגר הידע שלנו (לדוגמה: איך לעקוב אחרי הזמנה)..." className="w-full p-2 border rounded-md text-sm focus:ring-primary focus:border-primary" disabled />
+              <label htmlFor="knowledgeBaseSearch" className="sr-only">חפש במאגר הידע</label>
+              <Input 
+                id="knowledgeBaseSearch"
+                type="search" 
+                placeholder="חפש במאגר הידע שלנו (לדוגמה: איך לעקוב אחרי הזמנה)..." 
+                className="w-full p-2 border rounded-md text-sm focus:ring-primary focus:border-primary" 
+                disabled 
+              />
             </div>
+            <p className="text-xs text-muted-foreground text-center">חיפוש במאגר הידע יופעל בקרוב.</p>
           </Card>
 
           <div className="grid md:grid-cols-2 gap-6">
-            <Card className="text-center p-6 hover:shadow-md transition-shadow">
+            <Card className="text-center p-6 hover:shadow-md transition-shadow flex flex-col">
               <HelpCircle className="mx-auto h-10 w-10 text-accent mb-3" />
               <h3 className="text-lg font-semibold mb-2">שאלות נפוצות (FAQ)</h3>
-              <p className="text-sm text-muted-foreground mb-4">מצא תשובות מהירות לשאלות נפוצות על הפלטפורמה, הזמנות, תשלומים ועוד.</p>
+              <p className="text-sm text-muted-foreground mb-4 flex-grow">מצא תשובות מהירות לשאלות נפוצות על הפלטפורמה, הזמנות, תשלומים ועוד.</p>
               <Accordion type="single" collapsible className="w-full text-left">
                 <AccordionItem value="item-1">
                   <AccordionTrigger>איך אני עוקב אחרי ההזמנה שלי?</AccordionTrigger>
@@ -56,13 +65,14 @@ export default function SupportPage() {
               <Button variant="outline" className="mt-4" disabled>עיין בכל השאלות (בקרוב)</Button>
             </Card>
             
-            <Card className="text-center p-6 hover:shadow-md transition-shadow">
+            <Card className="text-center p-6 hover:shadow-md transition-shadow flex flex-col">
               <BookOpen className="mx-auto h-10 w-10 text-accent mb-3" />
               <h3 className="text-lg font-semibold mb-2">מדריכים ומאמרים</h3>
-              <p className="text-sm text-muted-foreground mb-4">למד כיצד להפיק את המרב מ-LivePick עם מדריכים מפורטים על כל הפיצ'רים.</p>
+              <p className="text-sm text-muted-foreground mb-4 flex-grow">למד כיצד להפיק את המרב מ-LivePick עם מדריכים מפורטים על כל הפיצ'רים.</p>
               <ul className="text-sm text-left space-y-1 list-none">
                 <li className="flex items-center"><FileText className="h-4 w-4 mr-2 text-primary/70"/> <Link href="#" className="hover:underline text-primary">מדריך למשתמש חדש (בקרוב)</Link></li>
                 <li className="flex items-center"><Video className="h-4 w-4 mr-2 text-primary/70"/> <Link href="#" className="hover:underline text-primary">סרטון: איך להשתמש ב-TrendScanner (בקרוב)</Link></li>
+                 <li className="flex items-center"><FileText className="h-4 w-4 mr-2 text-primary/70"/> <Link href="#" className="hover:underline text-primary">מדריך: הגדרת העסק שלך (בקרוב)</Link></li>
               </ul>
               <Button variant="outline" className="mt-4" disabled>עיין בכל המדריכים (בקרוב)</Button>
             </Card>
@@ -75,17 +85,25 @@ export default function SupportPage() {
             <p className="text-sm text-muted-foreground text-center mb-4">
               לא מצאת את מה שחיפשת? צוות התמיכה שלנו זמין לסייע לך.
             </p>
-            <div className="text-center">
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Button 
                     size="lg" 
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                    onClick={() => alert("יופנה לצ'אט תמיכה / טופס יצירת קשר (בקרוב)")}
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1"
+                    onClick={() => alert("יופנה לצ'אט תמיכה (ממשק דמו יטען כאן).")}
                 >
-                    פתח פניית תמיכה (בקרוב)
+                    <MessageSquare className="ml-2 h-5 w-5"/> התחל צ'אט תמיכה
+                </Button>
+                 <Button 
+                    size="lg" 
+                    variant="outline"
+                    className="border-primary text-primary hover:bg-primary/5 flex-1"
+                    onClick={() => alert("יופנה לטופס פנייה במייל (ממשק דמו יטען כאן).")}
+                >
+                    <Mail className="ml-2 h-5 w-5"/> שלח פנייה במייל
                 </Button>
             </div>
-            <p className="text-xs text-muted-foreground text-center mt-3">
-                שעות פעילות התמיכה: ימים א'-ה', 09:00-18:00.
+            <p className="text-xs text-muted-foreground text-center mt-4">
+                <Phone className="inline h-3 w-3 mr-1"/> ניתן גם ליצור קשר טלפוני במספר: 1-800-LIVE-PICK (שעות פעילות: ימים א'-ה', 09:00-18:00).
             </p>
           </Card>
         </CardContent>

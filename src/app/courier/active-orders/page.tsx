@@ -6,16 +6,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Package, Navigation, MessageSquare, PhoneCall, Clock, AlertCircle, Filter, CheckCircle, Edit, Search } from 'lucide-react'; // Added Search
+import { Package, Navigation, MessageSquare, PhoneCall, Clock, AlertCircle, Filter, CheckCircle, Edit, Search, Loader2 } from 'lucide-react';
 import type { Order, OrderStatus } from '@/types'; 
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 
 const mockActiveOrders: Partial<Order>[] = [
-  { id: 'active123', restaurantName: 'פיצה האט', deliveryAddress: 'רחוב הרצל 1, תל אביב', status: 'OUT_FOR_DELIVERY', estimatedDeliveryTime: '10-15 דק\'' , items: [{menuItemId: 'p1', name: 'פיצה פפרוני', quantity: 1, price: 50}], customerNotes: "נא לצלצל בפעמון חזק, לא שומעים טוב." },
-  { id: 'active456', restaurantName: 'בורגר קינג', deliveryAddress: 'שדרות רוטשילד 22, חיפה', status: 'AWAITING_PICKUP', estimatedDeliveryTime: '~5 דק\' לאיסוף', items: [{menuItemId: 'b1', name: 'וופר כפול', quantity:1, price:45}] },
-  { id: 'active789', restaurantName: 'סושי בר המקומי', deliveryAddress: 'סמטת הפרחים 5, ירושלים', status: 'PREPARING_AT_RESTAURANT', estimatedDeliveryTime: 'מוכן בעוד ~12 דק\'', items: [{menuItemId: 's1', name: 'קומבינציית סלמון', quantity:1, price:70}], customerNotes: "בלי וואסבי בבקשה." },
+  { id: 'active123', restaurantName: 'פיצה האט', deliveryAddress: 'רחוב הרצל 1, תל אביב', status: 'OUT_FOR_DELIVERY', estimatedDeliveryTime: '10-15 דק\'' , items: [{menuItemId: 'p1', name: 'פיצה פפרוני', quantity: 1, price: 50, id: 'cartItemP1', selectedAddons:[]}], customerNotes: "נא לצלצל בפעמון חזק, לא שומעים טוב." },
+  { id: 'active456', restaurantName: 'בורגר קינג', deliveryAddress: 'שדרות רוטשילד 22, חיפה', status: 'AWAITING_PICKUP', estimatedDeliveryTime: '~5 דק\' לאיסוף', items: [{menuItemId: 'b1', name: 'וופר כפול', quantity:1, price:45, id: 'cartItemB1', selectedAddons:[]}] },
+  { id: 'active789', restaurantName: 'סושי בר המקומי', deliveryAddress: 'סמטת הפרחים 5, ירושלים', status: 'PREPARING_AT_RESTAURANT', estimatedDeliveryTime: 'מוכן בעוד ~12 דק\'', items: [{menuItemId: 's1', name: 'קומבינציית סלמון', quantity:1, price:70, id: 'cartItemS1', selectedAddons:[]}], customerNotes: "בלי וואסבי בבקשה." },
 ];
 
 
@@ -51,10 +52,16 @@ const getStatusBadgeVariant = (status: OrderStatus | undefined): "default" | "se
 export default function ActiveOrdersPage() {
   const [orders, setOrders] = useState<Partial<Order>[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // For mock updates
   const { toast } = useToast();
 
   useEffect(() => {
-    setOrders(mockActiveOrders);
+    // Simulate fetching orders
+    setIsLoading(true);
+    setTimeout(() => {
+        setOrders(mockActiveOrders);
+        setIsLoading(false);
+    }, 700);
   }, []);
   
   const filteredOrders = orders.filter(order => 
@@ -65,21 +72,25 @@ export default function ActiveOrdersPage() {
 
   const handleNavigate = (address: string | undefined) => {
     if (!address) {
-        toast({ title: "כתובת לא זמינה", variant: "destructive"});
+        toast({ title: "כתובת לא זמינה", description: "לא ניתן לנווט ללא כתובת.", variant: "destructive"});
         return;
     }
-    toast({ title: "ניווט (דמו)", description: `פותח אפליקציית ניווט לכתובת: ${address}` });
+    toast({ title: "מנווט...", description: `פותח אפליקציית ניווט לכתובת: ${address} (הדמיה).` });
   };
 
   const handleChat = (orderId: string | undefined, entity: 'customer' | 'support') => {
     if(!orderId) return;
-    toast({ title: `צ'אט עם ${entity === 'customer' ? 'לקוח' : 'מוקד'} (דמו)`, description: `מתחיל צ'אט עבור הזמנה ${orderId}` });
+    toast({ title: `מתחיל צ'אט... (הדמיה)`, description: `פותח צ'אט עם ${entity === 'customer' ? 'הלקוח' : 'מוקד התמיכה'} עבור הזמנה #${orderId.slice(-5)}.` });
   };
   
   const handleUpdateStatus = (orderId: string | undefined, newStatus: OrderStatus) => {
     if(!orderId) return;
-    setOrders(prevOrders => prevOrders.map(o => o.id === orderId ? {...o, status: newStatus, estimatedDeliveryTime: newStatus === 'DELIVERED' ? 'נמסר' : o.estimatedDeliveryTime } : o));
-    toast({ title: "סטטוס עודכן (דמו)", description: `סטטוס הזמנה ${orderId} עודכן ל: ${getStatusText(newStatus)}`});
+    setIsLoading(true); // Simulate loading for status update
+    setTimeout(() => {
+        setOrders(prevOrders => prevOrders.map(o => o.id === orderId ? {...o, status: newStatus, estimatedDeliveryTime: newStatus === 'DELIVERED' ? 'נמסר' : o.estimatedDeliveryTime } : o));
+        toast({ title: "סטטוס עודכן!", description: `סטטוס הזמנה #${orderId.slice(-5)} עודכן ל: ${getStatusText(newStatus)}.`});
+        setIsLoading(false);
+    }, 500);
   };
 
 
@@ -103,12 +114,21 @@ export default function ActiveOrdersPage() {
                 aria-label="חיפוש הזמנות פעילות"
             />
         </div>
-        <Button variant="outline" disabled className="w-full sm:w-auto bg-background">
+        <Button variant="outline" className="w-full sm:w-auto bg-background" disabled>
             <Filter className="mr-2 h-4 w-4"/> פילטרים (בקרוב)
         </Button>
       </div>
 
-      {filteredOrders.length === 0 ? (
+      {isLoading && orders.length === 0 && (
+         <Card className="text-center py-10">
+             <CardContent className="flex flex-col items-center gap-3">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                <p className="text-muted-foreground">טוען הזמנות פעילות...</p>
+             </CardContent>
+        </Card>
+      )}
+
+      {!isLoading && filteredOrders.length === 0 && (
         <Card className="text-center py-10">
              <CardContent>
                 <Package className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
@@ -117,14 +137,24 @@ export default function ActiveOrdersPage() {
                 </p>
              </CardContent>
         </Card>
-      ) : (
+      )}
+      
+      {!isLoading && filteredOrders.length > 0 && (
         <div className="space-y-4">
             {filteredOrders.map((order) => (
             <Card key={order.id} className="shadow-md">
                 <CardHeader className="pb-3">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                         <CardTitle className="text-lg text-primary">הזמנה #{order.id?.substring(order.id.length-5)} מ{order.restaurantName}</CardTitle>
-                        <Badge variant={getStatusBadgeVariant(order.status)} className="text-xs">
+                        <Badge 
+                            variant={getStatusBadgeVariant(order.status)} 
+                            className={cn(
+                                "text-xs",
+                                order.status === 'OUT_FOR_DELIVERY' && 'bg-blue-500 text-white',
+                                order.status === 'AWAITING_PICKUP' && 'bg-yellow-500 text-black',
+                                order.status === 'PREPARING_AT_RESTAURANT' && 'bg-orange-500 text-white'
+                            )}
+                        >
                             {getStatusText(order.status)}
                         </Badge>
                     </div>
@@ -151,7 +181,7 @@ export default function ActiveOrdersPage() {
                         <AlertCircle className="mr-1 h-4 w-4"/> צ'אט עם מוקד
                     </Button>
                     {order.status === 'AWAITING_PICKUP' && 
-                        <Button variant="secondary" size="sm" onClick={() => handleUpdateStatus(order.id, 'OUT_FOR_DELIVERY')}>סמן כ"נאסף"</Button>}
+                        <Button variant="secondary" size="sm" onClick={() => handleUpdateStatus(order.id, 'OUT_FOR_DELIVERY')} className="bg-green-500 hover:bg-green-600 text-white">סמן כ"נאסף"</Button>}
                     {order.status === 'OUT_FOR_DELIVERY' && 
                         <Button variant="secondary" size="sm" onClick={() => handleUpdateStatus(order.id, 'DELIVERED')} className="bg-green-500 hover:bg-green-600 text-white">
                             <CheckCircle className="mr-1 h-4 w-4"/> סמן כ"נמסר"
