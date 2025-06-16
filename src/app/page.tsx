@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Utensils, ShoppingCart, Brain, ArrowLeft, MapPin, Search, Sparkles, Heart, History, Award, Flame, Gift, Gem, UsersIcon, MapIcon as FoodRadarIcon, ShoppingBag as LivePickSaleIcon, TrendingUp as LiveTrendIcon, MessageCircle, ExternalLink, Info, ShoppingBasket, Gamepad2, Library, ListChecks } from "lucide-react";
+import { Utensils, ShoppingCart, Brain, ArrowLeft, MapPin, Search, Sparkles, Heart, History, Award, Flame, Gift, Gem, UsersIcon, MapIcon as FoodRadarIcon, ShoppingBag as LivePickSaleIcon, TrendingUp as LiveTrendIcon, MessageCircle, ExternalLink, Info, ShoppingBasket, Gamepad2, Library, ListChecks, Route, Send, PackagePlus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import RestaurantCard from "@/components/restaurants/restaurant-card";
@@ -25,6 +25,7 @@ export default function HomePage() {
   const [culinarySuggestion, setCulinarySuggestion] = useState<string | null>(null);
   const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(true);
   const [showLivePickSaleBanner, setShowLivePickSaleBanner] = useState(false); 
+  const [availableCouriers, setAvailableCouriers] = useState<number | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -44,12 +45,12 @@ export default function HomePage() {
     fetchSuggestion();
 
     const currentHour = new Date().getHours();
-    // Mock LivePick Sale active hours (e.g., 7 PM to 11 PM)
-    // For demo purposes, let's set it to be always active, or a wider range.
-    // if (currentHour >= 19 && currentHour <= 23) { 
-    if (currentHour >= 0 && currentHour <= 23) { // For easier testing, make it always visible
+    if (currentHour >= 0 && currentHour <= 23) { 
         setShowLivePickSaleBanner(true);
     }
+
+    // Mock available couriers - client side only
+    setAvailableCouriers(Math.floor(Math.random() * 15) + 5);
 
   }, []);
 
@@ -133,6 +134,32 @@ export default function HomePage() {
       </section>
       
       <SurpriseFeatureCard />
+
+      <section className="grid md:grid-cols-2 gap-6 animate-fadeInUp animation-delay-680">
+        <Card className="hover:shadow-lg hover:border-green-500/50 transition-all cursor-pointer h-full flex flex-col items-center justify-center text-center p-6 bg-green-500/5 border-green-500/20">
+           <Route className="h-12 w-12 text-green-600 mb-3" />
+           <CardTitle className="text-xl font-semibold text-green-700">שליחים בקרבתך (דמו)</CardTitle>
+           {availableCouriers !== null ? (
+             <CardDescription className="text-md text-green-600/90 mt-1">
+               כרגע יש <strong className="text-2xl">{availableCouriers}</strong> שליחים זמינים באזורך!
+             </CardDescription>
+           ) : (
+             <CardDescription className="text-md text-green-600/90 mt-1 animate-pulse">בודק זמינות שליחים...</CardDescription>
+           )}
+           <p className="text-xs text-muted-foreground mt-2">נתון זה הוא להדגמה בלבד וישתנה.</p>
+        </Card>
+        <Card className="hover:shadow-lg hover:border-blue-500/50 transition-all cursor-pointer h-full flex flex-col items-center justify-center text-center p-6 bg-blue-500/5 border-blue-500/20">
+           <PackagePlus className="h-12 w-12 text-blue-600 mb-3" />
+           <CardTitle className="text-xl font-semibold text-blue-700">צריך לשלוח משהו?</CardTitle>
+           <CardDescription className="text-md text-blue-600/90 mt-1">שירות משלוחי P2P לשליחת חפצים, מסמכים, או בקשת קניות מהשליח.</CardDescription>
+           <Button asChild className="mt-4 bg-blue-600 hover:bg-blue-700 text-white">
+             <Link href="/send-package">
+               התחל משלוח P2P <ArrowLeft className="mr-2 h-4 w-4" />
+             </Link>
+           </Button>
+        </Card>
+      </section>
+
 
       <section className="grid md:grid-cols-3 gap-4 animate-fadeInUp animation-delay-700">
         <Link href="/food-radar" passHref>
@@ -339,6 +366,7 @@ export default function HomePage() {
         .animation-delay-500 { animation-delay: 0.5s; }
         .animation-delay-600 { animation-delay: 0.6s; }
         .animation-delay-650 { animation-delay: 0.65s; }
+        .animation-delay-680 { animation-delay: 0.68s; }
         .animation-delay-700 { animation-delay: 0.7s; }
         .animation-delay-750 { animation-delay: 0.75s; }
         .animation-delay-800 { animation-delay: 0.8s; }
@@ -375,3 +403,4 @@ export default function HomePage() {
     </div>
   );
 }
+
