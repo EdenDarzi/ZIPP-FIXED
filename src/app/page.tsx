@@ -44,13 +44,15 @@ export default function HomePage() {
     }
     fetchSuggestion();
 
-    const currentHour = new Date().getHours();
-    if (currentHour >= 0 && currentHour <= 23) { 
-        setShowLivePickSaleBanner(true);
-    }
+    // Mock LivePick Sale banner visibility (client-side only for demo)
+    // For demo purposes, let's make it always visible if not explicitly set otherwise
+    // const currentHour = new Date().getHours();
+    // if (currentHour >= 0 && currentHour <= 23) { // Example: always active for demo
+    setShowLivePickSaleBanner(true);
+    // }
 
     // Mock available couriers - client side only
-    setAvailableCouriers(Math.floor(Math.random() * 15) + 5);
+    setAvailableCouriers(Math.floor(Math.random() * 20) + 5); // Random number between 5 and 24
 
   }, []);
 
@@ -104,7 +106,7 @@ export default function HomePage() {
                         <LivePickSaleIcon className="h-10 w-10 mr-4 animate-bounce" />
                         <div>
                             <CardTitle className="text-2xl font-headline">🔥 מבצעי LivePick פעילים!</CardTitle>
-                            <CardDescription className="text-red-100">שקיות הפתעה מסוף היום זמינות עכשיו במחירים מיוחדים! לחץ לפרטים.</CardDescription>
+                            <CardDescription className="text-red-100">שקיות הפתעה מסוף היום זמינות עכשיו במחירים מיוחדים! לחץ לפרטים. (המבצע פעיל תמיד להדגמה)</CardDescription>
                         </div>
                     </CardContent>
                 </Link>
@@ -122,7 +124,7 @@ export default function HomePage() {
           </CardHeader>
           <CardContent>
             {isLoadingSuggestion ? (
-              <p className="text-muted-foreground animate-pulse">חושב על משהו מיוחד בשבילך...</p>
+              <p className="text-muted-foreground animate-pulse">ה-AI שלנו חושב על משהו מיוחד בשבילך...</p>
             ) : (
               <p className="text-lg text-foreground/90">{culinarySuggestion}</p>
             )}
@@ -173,14 +175,14 @@ export default function HomePage() {
            <Card className="hover:shadow-lg hover:border-primary/50 transition-all cursor-pointer h-full flex flex-col items-center justify-center text-center p-4">
             <Gem className="h-10 w-10 text-purple-500 mb-2" />
             <CardTitle className="text-lg font-semibold">LivePick VIP</CardTitle>
-            <CardDescription className="text-xs">הטבות פרימיום בלעדיות</CardDescription>
+            <CardDescription className="text-xs">הטבות פרימיום בלעדיות (בקרוב)</CardDescription>
           </Card>
         </Link>
         <Link href="/affiliate" passHref>
           <Card className="hover:shadow-lg hover:border-primary/50 transition-all cursor-pointer h-full flex flex-col items-center justify-center text-center p-4">
             <UsersIcon className="h-10 w-10 text-green-500 mb-2" />
             <CardTitle className="text-lg font-semibold">תוכנית שותפים</CardTitle>
-            <CardDescription className="text-xs">הרווח כסף על המלצות!</CardDescription>
+            <CardDescription className="text-xs">הרווח כסף על המלצות (בקרוב)</CardDescription>
           </Card>
         </Link>
       </section>
@@ -404,3 +406,4 @@ export default function HomePage() {
   );
 }
 
+    

@@ -37,7 +37,7 @@ export default function AiTrendScannerPage() {
         const dataUri = reader.result as string;
         setImagePreview(dataUri);
         setImageDataUri(dataUri);
-        setAiResponse(null);
+        setAiResponse(null); // Clear previous results when new image is selected
       };
       reader.readAsDataURL(file);
     }
@@ -51,9 +51,14 @@ export default function AiTrendScannerPage() {
     setIsLoading(true);
     setAiResponse(null);
     try {
+      // Simulate API call delay for demo
+      await new Promise(resolve => setTimeout(resolve, 1500));
       const input: IdentifyDishInputType = { imageDataUri, userQuery };
-      const result = await identifyDishFromImage(input);
+      const result = await identifyDishFromImage(input); // This is the mock call
       setAiResponse(result);
+      if (!result.identifiedDishName || result.identifiedDishName === "לא זוהתה מנה") {
+        toast({ title: "לא הצלחנו לזהות", description: "לא הצלחנו לזהות את המנה בתמונה. נסה תמונה ברורה יותר.", variant: "default" });
+      }
     } catch (error) {
       console.error('Error identifying dish trend:', error);
       toast({
@@ -78,7 +83,7 @@ export default function AiTrendScannerPage() {
     if(!aiResponse) return;
     toast({
         title: "פרסום ב'פינה שלי' (בקרוב!)",
-        description: `התגלית שלך "${aiResponse.identifiedDishName}" תשותף ב'פינה' האישית שלך. צבור עוקבים וזכה בקופונים!`,
+        description: `התגלית שלך "${aiResponse.identifiedDishName}" תשותף ב'פינה' האישית שלך. צבור עוקבים וזכה בקופונים! (הדמיה)`,
         action: <Star className="text-yellow-500"/>
     });
   };
@@ -108,7 +113,7 @@ export default function AiTrendScannerPage() {
           </div>
 
           {imagePreview && (
-            <div className="mt-4 border rounded-lg overflow-hidden shadow-inner">
+            <div className="mt-4 border rounded-lg overflow-hidden shadow-inner bg-muted/20">
               <Image src={imagePreview} alt="תצוגה מקדימה של תמונת טרנד" width={500} height={300} objectFit="contain" className="mx-auto max-h-[300px]" data-ai-hint="food trend image preview"/>
             </div>
           )}
@@ -196,3 +201,4 @@ export default function AiTrendScannerPage() {
     </div>
   );
 }
+    

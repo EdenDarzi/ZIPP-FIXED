@@ -1,13 +1,19 @@
 
-
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, TrendingUp, Languages, Send, HeartPulse, MapIcon, Briefcase, Gem, Users, Store, Bell, Heart } from 'lucide-react'; 
+import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, TrendingUp, Languages, Send, HeartPulse, MapIcon, Briefcase, Gem, Users, Store, Bell, Heart, PackageSearch } from 'lucide-react'; 
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+
 
 const Header = () => {
   const { cart } = useCart();
@@ -25,89 +31,128 @@ const Header = () => {
     toast({ title: "מצב נסיעות (בטא)", description: "המלצות מותאמות למיקום ושירותים בינלאומיים יגיעו בקרוב!" });
   };
 
+  const navLinks = [
+    { href: "/", label: "בית", icon: Home, showAlways: true, showSm: true, showMd: true, showLg: true, showXl: true },
+    { href: "/restaurants", label: "עסקים", icon: Utensils, showAlways: true, showSm: true, showMd: true, showLg: true, showXl: true },
+    { href: "/marketplace", label: "יד 2", icon: Store, showAlways: false, showSm: false, showMd: false, showLg: true, showXl: true },
+    { href: "/food-radar", label: "רדאר אוכל", icon: MapIcon, showAlways: false, showSm: false, showMd: false, showLg: true, showXl: true },
+    { href: "/send-package", label: "שלח חבילה", icon: Send, showAlways: false, showSm: false, showMd: false, showLg: true, showXl: true },
+    { href: "/livepick-sale", label: "LivePick Sale", icon: PackageSearch, showAlways: false, showSm: true, showMd: true, showLg: true, showXl: true },
+    { href: "/visual-search", label: "סורק טרנדים", icon: TrendingUp, showAlways: true, showSm: true, showMd: true, showLg: true, showXl: true },
+    { href: "/nutritional-advisor", label: "יועץ תזונה", icon: HeartPulse, showAlways: false, showSm: false, showMd: false, showLg: true, showXl: true },
+    { href: "/recommendations", label: "המלצות AI", icon: Brain, showAlways: false, showSm: false, showMd: true, showLg: true, showXl: true },
+    { href: "/favorites", label: "מועדפים", icon: Heart, showAlways: false, showSm: false, showMd: true, showLg: true, showXl: true },
+    { href: "/affiliate", label: "שותפים", icon: Users, showAlways: false, showSm: false, showMd: true, showLg: true, showXl: true },
+    { href: "/vip", label: "VIP", icon: Gem, showAlways: false, showSm: false, showMd: true, showLg: true, showXl: true },
+    { href: "/courier/dashboard", label: "שליחים", icon: Truck, showAlways: false, showSm: false, showMd: false, showLg: false, showXl: true },
+    { href: "/restaurant-admin", label: "ניהול עסק", icon: ChefHat, showAlways: false, showSm: false, showMd: false, showLg: false, showXl: true },
+  ];
+
+
   return (
     <header className="bg-card border-b border-border shadow-sm sticky top-0 z-50">
+      <TooltipProvider>
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <Link href="/" className="text-2xl font-bold text-primary font-headline" aria-label="LivePick - דף הבית">
           LivePick
         </Link>
-        <nav className="flex items-center space-x-1 sm:space-x-2 flex-wrap justify-end">
-          <Button variant="ghost" asChild size="sm" className="hidden md:inline-flex" title="דף הבית">
-            <Link href="/"><span className="flex items-center"><Home className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">בית</span></span></Link>
-          </Button>
-          <Button variant="ghost" asChild size="sm" title="מסעדות ועסקים">
-            <Link href="/restaurants"><span className="flex items-center"><Utensils className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">עסקים</span></span></Link>
-          </Button>
-           <Button variant="ghost" asChild size="sm" className="hidden lg:inline-flex" title="שוק יד 2">
-            <Link href="/marketplace"><span className="flex items-center"><Store className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">יד 2</span></span></Link>
-          </Button>
-          <Button variant="ghost" asChild size="sm" className="hidden lg:inline-flex" title="רדאר אוכל">
-            <Link href="/food-radar"><span className="flex items-center"><MapIcon className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">רדאר אוכל</span></span></Link>
-          </Button>
-          <Button variant="ghost" asChild size="sm" className="hidden lg:inline-flex" title="שלח חבילה">
-            <Link href="/send-package"><span className="flex items-center"><Send className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">שלח חבילה</span></span></Link>
-          </Button>
-           <Button variant="ghost" asChild size="sm" title="סורק טרנדים">
-            <Link href="/visual-search"><span className="flex items-center"><TrendingUp className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">סורק טרנדים</span></span></Link>
-          </Button>
-          <Button variant="ghost" asChild size="sm" className="hidden lg:inline-flex" title="יועץ תזונה">
-            <Link href="/nutritional-advisor"><span className="flex items-center"><HeartPulse className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">יועץ תזונה</span></span></Link>
-          </Button>
-          <Button variant="ghost" asChild size="sm" className="hidden md:inline-flex" title="המלצות AI">
-            <Link href="/recommendations"><span className="flex items-center"><Brain className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">המלצות AI</span></span></Link>
-          </Button>
-           <Button variant="ghost" asChild size="sm" className="hidden md:inline-flex" title="מועדפים">
-            <Link href="/favorites"><span className="flex items-center"><Heart className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">מועדפים</span></span></Link>
-          </Button>
-          <Button variant="ghost" asChild size="sm" className="hidden md:inline-flex" title="תוכנית שותפים">
-            <Link href="/affiliate"><span className="flex items-center"><Users className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">שותפים</span></span></Link>
-          </Button>
-           <Button variant="ghost" asChild size="sm" className="hidden md:inline-flex" title="LivePick VIP">
-            <Link href="/vip"><span className="flex items-center"><Gem className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">VIP</span></span></Link>
-          </Button>
-           <Button variant="ghost" asChild size="sm" className="hidden xl:inline-flex" title="פורטל שליחים">
-            <Link href="/courier/dashboard"><span className="flex items-center"><Truck className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">שליחים</span></span></Link>
-          </Button>
-           <Button variant="ghost" asChild size="sm" className="hidden xl:inline-flex" title="ניהול עסק">
-            <Link href="/restaurant-admin"><span className="flex items-center"><ChefHat className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">ניהול עסק</span></span></Link>
-          </Button>
+        <nav className="flex items-center space-x-0.5 sm:space-x-1 flex-wrap justify-end">
+          {navLinks.map(link => (
+            <Tooltip key={link.href} delayDuration={300}>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  asChild 
+                  size="sm" 
+                  className={`
+                    ${link.showAlways ? 'inline-flex' : 'hidden'}
+                    ${link.showSm && !link.showAlways ? 'sm:inline-flex' : ''}
+                    ${link.showMd && !link.showSm ? 'md:inline-flex' : ''}
+                    ${link.showLg && !link.showMd ? 'lg:inline-flex' : ''}
+                    ${link.showXl && !link.showLg ? 'xl:inline-flex' : ''}
+                  `}
+                  title={link.label}
+                >
+                  <Link href={link.href}><span className="flex items-center">
+                    <link.icon className="h-4 w-4 sm:mr-1" /> 
+                    <span className="hidden sm:inline">{link.label}</span>
+                  </span></Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent className="sm:hidden p-2 text-xs">
+                <p>{link.label}</p>
+              </TooltipContent>
+            </Tooltip>
+          ))}
           
-          <Button variant="ghost" size="sm" onClick={handleTravelModeToggle} className="hidden lg:inline-flex items-center" title="מצב נסיעות (בטא)">
-            <Briefcase className="h-4 w-4 text-blue-500 sm:mr-1" />
-            <span className="hidden lg:inline text-xs">מצב נסיעות</span> 
-          </Button>
+          <Tooltip delayDuration={300}>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="sm" onClick={handleTravelModeToggle} className="hidden lg:inline-flex items-center" title="מצב נסיעות (בטא)">
+                <Briefcase className="h-4 w-4 text-blue-500 sm:mr-1" />
+                <span className="hidden lg:inline text-xs">מצב נסיעות</span> 
+              </Button>
+            </TooltipTrigger>
+             <TooltipContent className="lg:hidden p-2 text-xs">
+                <p>מצב נסיעות (בטא)</p>
+            </TooltipContent>
+          </Tooltip>
 
-           <Button variant="ghost" asChild size="icon" className="relative" title="התראות">
-            <Link href="/notifications" aria-label="התראות"><span className="relative flex items-center justify-center w-full h-full">
-              <Bell className="h-5 w-5" />
-              {/* Placeholder for notification count badge */}
-              {/* <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-xs">3</Badge> */}
-            </span></Link>
-          </Button>
 
-          <Button variant="ghost" asChild size="icon" className="relative" title="עגלת קניות">
-            <Link href="/cart" aria-label={`עגלת קניות, ${itemCount} פריטים`}><span className="relative flex items-center justify-center w-full h-full">
-              <ShoppingCart className="h-5 w-5" />
-              {itemCount > 0 && (
-                <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-xs" aria-label={`${itemCount} פריטים בעגלה`}>
-                  {itemCount}
-                </Badge>
-              )}
-            </span></Link>
-          </Button>
-          <Button variant="outline" size="sm" asChild title="החשבון שלי / כניסה">
-            <Link href="/account/profile"><span className="flex items-center"><UserCircle className="h-4 w-4 mr-0 sm:mr-2" /><span className="hidden sm:inline">החשבון שלי</span></span></Link>
-          </Button>
-          <Button variant="ghost" size="sm" onClick={handleLanguageToggle} className="flex items-center" aria-label="החלף שפה (בקרוב)" title="החלף שפה (בקרוב)">
-            <span className="flex items-center">
-                <Languages className="h-4 w-4 sm:mr-1" />
-                <span className="hidden sm:inline">EN</span>
-            </span>
-          </Button>
+           <Tooltip delayDuration={300}>
+             <TooltipTrigger asChild>
+                <Button variant="ghost" asChild size="icon" className="relative" title="התראות">
+                  <Link href="/notifications" aria-label="התראות"><span className="relative flex items-center justify-center w-full h-full">
+                    <Bell className="h-5 w-5" />
+                    {/* Placeholder for notification count badge */}
+                    {/* <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-xs">3</Badge> */}
+                  </span></Link>
+                </Button>
+            </TooltipTrigger>
+            <TooltipContent className="p-2 text-xs"><p>התראות</p></TooltipContent>
+          </Tooltip>
+
+          <Tooltip delayDuration={300}>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" asChild size="icon" className="relative" title="עגלת קניות">
+                <Link href="/cart" aria-label={`עגלת קניות, ${itemCount} פריטים`}><span className="relative flex items-center justify-center w-full h-full">
+                  <ShoppingCart className="h-5 w-5" />
+                  {itemCount > 0 && (
+                    <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-xs" aria-label={`${itemCount} פריטים בעגלה`}>
+                      {itemCount}
+                    </Badge>
+                  )}
+                </span></Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className="p-2 text-xs"><p>עגלת קניות ({itemCount})</p></TooltipContent>
+          </Tooltip>
+
+          <Tooltip delayDuration={300}>
+            <TooltipTrigger asChild>
+              <Button variant="outline" size="sm" asChild title="החשבון שלי / כניסה">
+                <Link href="/account/profile"><span className="flex items-center"><UserCircle className="h-4 w-4 mr-0 sm:mr-2" /><span className="hidden sm:inline">החשבון שלי</span></span></Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className="sm:hidden p-2 text-xs"><p>החשבון שלי</p></TooltipContent>
+          </Tooltip>
+          
+          <Tooltip delayDuration={300}>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="sm" onClick={handleLanguageToggle} className="flex items-center" aria-label="החלף שפה (בקרוב)" title="החלף שפה (בקרוב)">
+                <span className="flex items-center">
+                    <Languages className="h-4 w-4 sm:mr-1" />
+                    <span className="hidden sm:inline">EN</span>
+                </span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className="sm:hidden p-2 text-xs"><p>English (בקרוב)</p></TooltipContent>
+          </Tooltip>
         </nav>
       </div>
+      </TooltipProvider>
     </header>
   );
 };
 
 export default Header;
+    
