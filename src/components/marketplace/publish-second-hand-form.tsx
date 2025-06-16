@@ -20,9 +20,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Loader2, UploadCloud, Send } from 'lucide-react';
+import { Loader2, UploadCloud, Send, Image as ImageIcon } from 'lucide-react';
 import type { SecondHandItemCategory } from '@/types';
 import { secondHandCategories } from '@/lib/mock-data';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const formSchema = z.object({
   title: z.string().min(3, { message: 'כותרת המוצר חייבת להכיל לפחות 3 תווים.' }),
@@ -72,7 +73,6 @@ export default function PublishSecondHandForm() {
   function onSubmit(values: FormValues) {
     setIsLoading(true);
     console.log('Second-hand item to publish:', values);
-    // Mock submission
     setTimeout(() => {
       toast({
         title: 'המוצר נשלח לפרסום!',
@@ -118,30 +118,38 @@ export default function PublishSecondHandForm() {
           <FormItem><FormLabel>תיאור המוצר</FormLabel><FormControl><Textarea placeholder="פרט על מצב המוצר, גודל, סיבת מכירה וכו'." className="min-h-[100px]" {...field} /></FormControl><FormMessage /></FormItem>
         )}/>
 
-        <FormLabel className="text-base font-semibold">תמונות המוצר (עד 3, השתמש בקישורי URL)</FormLabel>
-        {[1, 2, 3].map(i => (
-          <div key={`image-group-${i}`} className="space-y-2 p-3 border rounded-md bg-muted/20">
-            <FormField control={form.control} name={`imageUrl${i}` as keyof FormValues} render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-xs">קישור לתמונה {i}</FormLabel>
-                <div className="flex items-center gap-2">
-                    <FormControl><Input placeholder={`https://example.com/image${i}.jpg`} {...field as any} /></FormControl>
-                    <Button type="button" variant="outline" size="icon" onClick={() => handleMockImageUpload(`imageUrl${i}` as any)}><UploadCloud className="h-4 w-4"/></Button>
+        <Card>
+            <CardHeader className="p-4">
+                <CardTitle className="text-base font-semibold flex items-center"><ImageIcon className="mr-2 h-5 w-5 text-primary"/> תמונות המוצר (עד 3)</CardTitle>
+                <FormDescription className="text-xs">השתמש בקישורי URL ישירים לתמונות.</FormDescription>
+            </CardHeader>
+            <CardContent className="p-4 space-y-4">
+                {[1, 2, 3].map(i => (
+                <div key={`image-group-${i}`} className="space-y-3 p-3 border rounded-md bg-muted/30">
+                    <FormField control={form.control} name={`imageUrl${i}` as keyof FormValues} render={({ field }) => (
+                    <FormItem>
+                        <FormLabel className="text-sm">קישור לתמונה {i}</FormLabel>
+                        <div className="flex items-center gap-2">
+                            <FormControl><Input placeholder={`https://example.com/image${i}.jpg`} {...field as any} /></FormControl>
+                            <Button type="button" variant="outline" size="icon" onClick={() => handleMockImageUpload(`imageUrl${i}` as any)} title="העלה קובץ (בקרוב)">
+                                <UploadCloud className="h-4 w-4"/>
+                            </Button>
+                        </div>
+                        <FormMessage />
+                    </FormItem>
+                    )}/>
+                    <FormField control={form.control} name={`dataAiHint${i}` as keyof FormValues} render={({ field }) => (
+                    <FormItem>
+                        <FormLabel className="text-xs">רמז AI לתמונה {i} (אופציונלי)</FormLabel>
+                        <FormControl><Input placeholder="לדוגמה: כיסא עץ, סמארטפון שחור" {...field as any} className="text-xs h-8"/></FormControl>
+                        <FormDescription className="text-xs">אם התמונה היא Placeholder, עזור ל-AI ליצור תמונה מתאימה בעתיד.</FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                    )}/>
                 </div>
-                <FormMessage />
-              </FormItem>
-            )}/>
-             <FormField control={form.control} name={`dataAiHint${i}` as keyof FormValues} render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-xs">רמז AI לתמונה {i} (אופציונלי)</FormLabel>
-                <FormControl><Input placeholder="לדוגמה: כיסא עץ, סמארטפון שחור" {...field as any} /></FormControl>
-                <FormDescription className="text-xs">אם התמונה היא Placeholder, עזור ל-AI ליצור תמונה מתאימה.</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}/>
-          </div>
-        ))}
-        <FormDescription>ניתן להוסיף עד 3 תמונות. השתמש בקישורי URL ישירים לתמונות.</FormDescription>
+                ))}
+            </CardContent>
+        </Card>
 
 
         <FormField control={form.control} name="location" render={({ field }) => (

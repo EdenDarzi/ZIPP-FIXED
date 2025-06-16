@@ -6,12 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Package, Navigation, MessageSquare, PhoneCall, Clock, AlertCircle, Filter, CheckCircle, Edit } from 'lucide-react';
-import type { Order, OrderStatus } from '@/types'; // Assuming Order type includes enough details
+import { Package, Navigation, MessageSquare, PhoneCall, Clock, AlertCircle, Filter, CheckCircle, Edit, Search } from 'lucide-react'; // Added Search
+import type { Order, OrderStatus } from '@/types'; 
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 
-// Mock data for active orders - replace with actual data fetching
+
 const mockActiveOrders: Partial<Order>[] = [
   { id: 'active123', restaurantName: 'פיצה האט', deliveryAddress: 'רחוב הרצל 1, תל אביב', status: 'OUT_FOR_DELIVERY', estimatedDeliveryTime: '10-15 דק\'' , items: [{menuItemId: 'p1', name: 'פיצה פפרוני', quantity: 1, price: 50}], customerNotes: "נא לצלצל בפעמון חזק, לא שומעים טוב." },
   { id: 'active456', restaurantName: 'בורגר קינג', deliveryAddress: 'שדרות רוטשילד 22, חיפה', status: 'AWAITING_PICKUP', estimatedDeliveryTime: '~5 דק\' לאיסוף', items: [{menuItemId: 'b1', name: 'וופר כפול', quantity:1, price:45}] },
@@ -54,7 +54,6 @@ export default function ActiveOrdersPage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Simulate fetching active orders
     setOrders(mockActiveOrders);
   }, []);
   
@@ -70,7 +69,6 @@ export default function ActiveOrdersPage() {
         return;
     }
     toast({ title: "ניווט (דמו)", description: `פותח אפליקציית ניווט לכתובת: ${address}` });
-    // In a real app: window.open(`waze://?q=${encodeURIComponent(address)}`); or similar for Google Maps
   };
 
   const handleChat = (orderId: string | undefined, entity: 'customer' | 'support') => {
@@ -80,7 +78,6 @@ export default function ActiveOrdersPage() {
   
   const handleUpdateStatus = (orderId: string | undefined, newStatus: OrderStatus) => {
     if(!orderId) return;
-    // Mock update
     setOrders(prevOrders => prevOrders.map(o => o.id === orderId ? {...o, status: newStatus, estimatedDeliveryTime: newStatus === 'DELIVERED' ? 'נמסר' : o.estimatedDeliveryTime } : o));
     toast({ title: "סטטוס עודכן (דמו)", description: `סטטוס הזמנה ${orderId} עודכן ל: ${getStatusText(newStatus)}`});
   };
@@ -96,12 +93,16 @@ export default function ActiveOrdersPage() {
       </Card>
 
       <div className="flex flex-col sm:flex-row justify-between items-center gap-3 p-4 bg-muted/30 rounded-lg">
-        <Input 
-            placeholder="חפש לפי מזהה, מסעדה, כתובת..." 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="max-w-xs bg-background"
-        />
+        <div className="relative w-full sm:max-w-xs">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input 
+                placeholder="חפש לפי מזהה, מסעדה, כתובת..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-background pl-10"
+                aria-label="חיפוש הזמנות פעילות"
+            />
+        </div>
         <Button variant="outline" disabled className="w-full sm:w-auto bg-background">
             <Filter className="mr-2 h-4 w-4"/> פילטרים (בקרוב)
         </Button>
@@ -111,7 +112,9 @@ export default function ActiveOrdersPage() {
         <Card className="text-center py-10">
              <CardContent>
                 <Package className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                <p className="text-xl text-muted-foreground">אין כרגע הזמנות פעילות התואמות לחיפוש שלך.</p>
+                <p className="text-xl text-muted-foreground">
+                    {searchTerm ? "לא נמצאו הזמנות פעילות התואמות לחיפוש שלך." : "אין כרגע הזמנות פעילות."}
+                </p>
              </CardContent>
         </Card>
       ) : (
@@ -147,7 +150,6 @@ export default function ActiveOrdersPage() {
                      <Button variant="outline" size="sm" onClick={() => handleChat(order.id, 'support')}>
                         <AlertCircle className="mr-1 h-4 w-4"/> צ'אט עם מוקד
                     </Button>
-                    {/* Mock status update buttons */}
                     {order.status === 'AWAITING_PICKUP' && 
                         <Button variant="secondary" size="sm" onClick={() => handleUpdateStatus(order.id, 'OUT_FOR_DELIVERY')}>סמן כ"נאסף"</Button>}
                     {order.status === 'OUT_FOR_DELIVERY' && 

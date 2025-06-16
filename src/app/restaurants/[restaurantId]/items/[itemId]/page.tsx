@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { notFound, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
-import { Minus, Plus, ShoppingCart, ArrowLeft, Star, Share2, Award, Heart } from 'lucide-react';
+import { Minus, Plus, ShoppingCart, ArrowLeft, Star, Share2, Award, Heart, Info } from 'lucide-react'; // Added Info
 import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -25,7 +25,6 @@ interface ItemPageParams {
   };
 }
 
-// Type for managing selected addons in state
 type SelectedAddonsState = Record<string, string | string[] | undefined>;
 
 
@@ -39,7 +38,6 @@ export default function ItemPage({ params }: ItemPageParams) {
   const [selectedAddons, setSelectedAddons] = useState<SelectedAddonsState>({});
 
   useEffect(() => {
-    // Pre-select default addons
     if (item?.addons) {
       const defaultSelections: SelectedAddonsState = {};
       item.addons.forEach(group => {
@@ -48,16 +46,12 @@ export default function ItemPage({ params }: ItemPageParams) {
           if (defaultOption) {
             defaultSelections[group.id!] = defaultOption.id!;
           } else if (group.required && group.options.length > 0) {
-            // If required and no default, select the first option for radio
             defaultSelections[group.id!] = group.options[0].id!;
           }
         } else if (group.type === 'checkbox') {
           const defaultOptions = group.options.filter(opt => opt.selectedByDefault).map(opt => opt.id!);
           if (defaultOptions.length > 0) {
             defaultSelections[group.id!] = defaultOptions;
-          } else if (group.required && group.options.length > 0 && (group.minSelection === undefined || group.minSelection <= 1 )) {
-            // If required, no defaults, and minSelection allows or is 1, select first
-            // defaultSelections[group.id!] = [group.options[0].id!]; // This might be too aggressive, user should choose
           }
         }
       });
@@ -73,12 +67,12 @@ export default function ItemPage({ params }: ItemPageParams) {
       for (const group of item.addons) {
         const selection = selectedAddons[group.id!];
         if (selection) {
-          if (Array.isArray(selection)) { // Checkbox
+          if (Array.isArray(selection)) { 
             selection.forEach(optionId => {
               const option = group.options.find(opt => opt.id === optionId);
               if (option) addonsPrice += option.price;
             });
-          } else { // Radio
+          } else { 
             const option = group.options.find(opt => opt.id === selection);
             if (option) addonsPrice += option.price;
           }
@@ -98,7 +92,7 @@ export default function ItemPage({ params }: ItemPageParams) {
       const newSelections = { ...prev };
       if (groupType === 'radio') {
         newSelections[groupId] = optionId;
-      } else { // Checkbox
+      } else { 
         const currentGroupSelection = (newSelections[groupId] as string[] | undefined) || [];
         if (currentGroupSelection.includes(optionId)) {
           newSelections[groupId] = currentGroupSelection.filter(id => id !== optionId);
@@ -112,7 +106,6 @@ export default function ItemPage({ params }: ItemPageParams) {
 
   const validateAddonSelections = (): SelectedAddon[] | null => {
     if (!item?.addons) return [];
-
     const finalSelectedAddons: SelectedAddon[] = [];
 
     for (const group of item.addons) {
@@ -120,44 +113,35 @@ export default function ItemPage({ params }: ItemPageParams) {
       const selectedCount = Array.isArray(currentSelection) ? currentSelection.length : (currentSelection ? 1 : 0);
 
       if (group.required && selectedCount === 0) {
-        toast({ title: "בחירה חסרה", description: `אנא בחר/י אפשרות מקבוצת "${group.title}".`, variant: "destructive" });
+        toast({ title: "בחירה חסרה", description: `אנא בחר/י אפשרות מקבוצת החובה "${group.title}".`, variant: "destructive" });
         return null;
       }
 
       if (group.type === 'checkbox') {
         if (group.minSelection && selectedCount < group.minSelection) {
-          toast({ title: "בחירה לא מספקת", description: `עליך לבחור לפחות ${group.minSelection} אפשרויות מקבוצת "${group.title}".`, variant: "destructive" });
+          toast({ title: "בחירה לא מספקת", description: `עליך לבחור לפחות ${group.minSelection} אפשרויות מקבוצת "${group.title}". נבחרו ${selectedCount}.`, variant: "destructive" });
           return null;
         }
         if (group.maxSelection && selectedCount > group.maxSelection) {
-          toast({ title: "יותר מדי בחירות", description: `ניתן לבחור עד ${group.maxSelection} אפשרויות מקבוצת "${group.title}".`, variant: "destructive" });
+          toast({ title: "יותר מדי בחירות", description: `ניתן לבחור עד ${group.maxSelection} אפשרויות מקבוצת "${group.title}". נבחרו ${selectedCount}.`, variant: "destructive" });
           return null;
         }
       }
       
-      // Collect selected addons for cart
-      if (Array.isArray(currentSelection)) { // Checkbox
+      if (Array.isArray(currentSelection)) {
         currentSelection.forEach(optionId => {
           const optionDetails = group.options.find(opt => opt.id === optionId);
           if (optionDetails) {
             finalSelectedAddons.push({
-              groupId: group.id!,
-              groupTitle: group.title,
-              optionId: optionDetails.id!,
-              optionName: optionDetails.name,
-              optionPrice: optionDetails.price
+              groupId: group.id!, groupTitle: group.title, optionId: optionDetails.id!, optionName: optionDetails.name, optionPrice: optionDetails.price
             });
           }
         });
-      } else if (currentSelection) { // Radio
+      } else if (currentSelection) {
          const optionDetails = group.options.find(opt => opt.id === currentSelection);
          if (optionDetails) {
             finalSelectedAddons.push({
-              groupId: group.id!,
-              groupTitle: group.title,
-              optionId: optionDetails.id!,
-              optionName: optionDetails.name,
-              optionPrice: optionDetails.price
+              groupId: group.id!, groupTitle: group.title, optionId: optionDetails.id!, optionName: optionDetails.name, optionPrice: optionDetails.price
             });
           }
       }
@@ -169,7 +153,7 @@ export default function ItemPage({ params }: ItemPageParams) {
   const handleAddToCart = () => {
     const validatedSelectedAddons = validateAddonSelections();
     if (validatedSelectedAddons === null) {
-      return; // Validation failed
+      return; 
     }
     addToCart(item, quantity, validatedSelectedAddons);
      toast({
@@ -200,7 +184,7 @@ export default function ItemPage({ params }: ItemPageParams) {
     <div className="space-y-8">
       <div className="flex justify-between items-center mb-6">
         <Button variant="outline" onClick={() => router.back()} aria-label="חזור לתפריט">
-          <ArrowLeft className="mr-2 h-4 w-4" /> חזרה לתפריט
+          <ArrowLeft className="mr-2 h-4 w-4" /> חזור לתפריט
         </Button>
         <div className="flex items-center space-x-2 rtl:space-x-reverse">
             <Button variant="ghost" size="icon" onClick={handleAddToFavorites} title="הוסף למועדפים (בקרוב)" aria-label="הוסף למועדפים (בקרוב)">
@@ -252,14 +236,15 @@ export default function ItemPage({ params }: ItemPageParams) {
                   <Separator />
                   {item.addons.map((group) => (
                     <div key={group.id} className="space-y-2">
-                      <h4 className="text-md font-semibold text-foreground">
+                      <h4 className="text-md font-semibold text-foreground flex items-center">
                         {group.title}
                         {group.required && <span className="text-destructive ml-1">*</span>}
-                        {group.type === 'checkbox' && (group.minSelection || group.maxSelection) && (
-                            <span className="text-xs text-muted-foreground ml-1">
-                                (בחר/י {group.minSelection ? `לפחות ${group.minSelection}` : ''} {group.minSelection && group.maxSelection ? ' וגם ' : ''} {group.maxSelection ? `עד ${group.maxSelection}` : ''})
-                            </span>
-                        )}
+                         <span className="text-xs text-muted-foreground ml-2">
+                          {group.type === 'radio' ? '(בחר/י 1)' : 
+                           (group.minSelection || group.maxSelection) ? 
+                           `(בחר/י ${group.minSelection ? `לפחות ${group.minSelection}` : ''}${group.minSelection && group.maxSelection ? ' וגם ' : ''}${group.maxSelection ? `עד ${group.maxSelection}` : 'כמה שתרצה/י'})` 
+                           : '(אופציונלי)'}
+                        </span>
                       </h4>
                       {group.type === 'radio' && (
                         <RadioGroup
@@ -301,7 +286,7 @@ export default function ItemPage({ params }: ItemPageParams) {
                 </div>
               )}
              
-              <div className="flex items-center space-x-4 rtl:space-x-reverse">
+              <div className="flex items-center space-x-4 rtl:space-x-reverse pt-2">
                 <p className="text-lg font-semibold">כמות:</p>
                 <div className="flex items-center border rounded-md">
                   <Button variant="ghost" size="icon" onClick={decrementQuantity} aria-label={`הפחת כמות עבור ${item.name}`} disabled={!item.isAvailable}>
@@ -314,7 +299,9 @@ export default function ItemPage({ params }: ItemPageParams) {
                 </div>
               </div>
               {!item.isAvailable && (
-                <p className="text-sm text-destructive font-medium text-center">פריט זה אינו זמין כרגע.</p>
+                 <Card className="mt-3 p-3 bg-destructive/10 border-destructive/30 text-center">
+                    <p className="text-sm text-destructive font-medium flex items-center justify-center"><Info className="h-4 w-4 mr-2"/> פריט זה אינו זמין כרגע.</p>
+                </Card>
               )}
             </CardContent>
 

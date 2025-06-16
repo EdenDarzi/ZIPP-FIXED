@@ -20,6 +20,7 @@ import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label'; 
+import { Separator } from '@/components/ui/separator';
 
 const menuItemAddonChoiceSchema = z.object({
   id: z.string().uuid().optional(), 
@@ -109,6 +110,7 @@ export default function MenuManagementPage() {
   const [isItemFormOpen, setIsItemFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItemType | null>(null);
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
+  const [isAddingAddonGroup, setIsAddingAddonGroup] = useState(false);
 
   const itemForm = useForm<MenuItemFormValues>({
     resolver: zodResolver(menuItemFormSchema),
@@ -199,7 +201,7 @@ export default function MenuManagementPage() {
   }
 
   function onLivePickSaleSubmit(values: LivePickSaleFormValues) {
-    livePickSaleForm.clearErrors(); // Clear previous errors
+    livePickSaleForm.clearErrors(); 
     if (values.livePickSaleEnabled) {
         if (!values.livePickSaleStartTime) {
             livePickSaleForm.setError("livePickSaleStartTime", {type: "manual", message: "שעת התחלה היא שדה חובה."});
@@ -228,6 +230,13 @@ export default function MenuManagementPage() {
     console.log("LivePick Sale Settings Updated (Demo):", values);
     toast({ title: "הגדרות LivePick Sale עודכנו (דמו)", description: `LivePick Sale ${values.livePickSaleEnabled ? 'מופעל' : 'כבוי'}.` });
   }
+  
+  const handleAddAddonGroup = () => {
+    setIsAddingAddonGroup(true);
+    appendAddonGroup({ title: '', type: 'checkbox', minSelection:0, maxSelection: undefined, options: [{ name: '', price: 0, selectedByDefault: false }], required: false });
+    setTimeout(() => setIsAddingAddonGroup(false), 100); // Short delay to allow UI to update
+  };
+
 
   if (!restaurant) {
     return <p>נתוני העסק לא נמצאו. אנא הגדר את פרטי העסק שלך.</p>;
@@ -419,17 +428,17 @@ export default function MenuManagementPage() {
               )}/>
               <FormField control={itemForm.control} name="isAvailable" render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                    <div className="space-y-0.5"><FormLabel>זמין להזמנה</FormLabel>
+                    <div className="space-y-0.5"><FormLabel htmlFor={`isAvailableSwitch-${itemForm.getValues('id') || 'newItem'}`} className="text-base cursor-pointer">זמין להזמנה</FormLabel>
                     <FormDescription>האם מוצר/שירות זה זמין כעת ללקוחות?</FormDescription></div>
-                    <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                    <FormControl><Switch id={`isAvailableSwitch-${itemForm.getValues('id') || 'newItem'}`} checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                 </FormItem>
               )}/>
               <Card>
                 <CardHeader className="p-4 border-b">
                     <div className="flex justify-between items-center">
                         <CardTitle className="text-md">אפשרויות נוספות / תוספות</CardTitle>
-                        <Button type="button" variant="outline" size="sm" onClick={() => appendAddonGroup({ title: '', type: 'checkbox', minSelection:0, maxSelection: undefined, options: [{ name: '', price: 0, selectedByDefault: false }], required: false })}>
-                            <PlusCircle className="mr-2 h-4 w-4"/> הוסף קבוצה
+                        <Button type="button" variant="outline" size="sm" onClick={handleAddAddonGroup} disabled={isAddingAddonGroup}>
+                            {isAddingAddonGroup ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <PlusCircle className="mr-2 h-4 w-4"/>} הוסף קבוצה
                         </Button>
                     </div>
                 </CardHeader>
@@ -442,7 +451,8 @@ export default function MenuManagementPage() {
                                 )}/>
                                 <Button type="button" variant="ghost" size="icon" onClick={() => removeAddonGroup(groupIndex)} className="text-destructive h-8 w-8"><Trash2 className="h-4 w-4"/></Button>
                             </div>
-                             <div className="grid grid-cols-2 gap-2 mb-2">
+                            <Separator className="my-2"/>
+                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 mb-2">
                                  <FormField control={itemForm.control} name={`addons.${groupIndex}.type`} render={({ field }) => (
                                     <FormItem><FormLabel className="text-xs">סוג בחירה</FormLabel>
                                       <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -461,16 +471,19 @@ export default function MenuManagementPage() {
                                         <FormMessage className="text-xs"/>
                                     </FormItem>
                                 )}/>
+                                {itemForm.watch(`addons.${groupIndex}.type`) === 'checkbox' && (
+                                  <>
+                                     <FormField control={itemForm.control} name={`addons.${groupIndex}.minSelection`} render={({ field }) => (
+                                         <FormItem><FormLabel className="text-xs">מינימום בחירות (אופצ')</FormLabel><FormControl><Input type="number" {...field} placeholder="0" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
+                                     )}/>
+                                      <FormField control={itemForm.control} name={`addons.${groupIndex}.maxSelection`} render={({ field }) => (
+                                         <FormItem><FormLabel className="text-xs">מקסימום בחירות (אופצ')</FormLabel><FormControl><Input type="number" {...field} placeholder="ללא הגבלה" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
+                                     )}/>
+                                  </>
+                                )}
                              </div>
-                             <div className="grid grid-cols-2 gap-2 mb-2">
-                                 <FormField control={itemForm.control} name={`addons.${groupIndex}.minSelection`} render={({ field }) => (
-                                     <FormItem><FormLabel className="text-xs">מינימום בחירות (אופציונלי)</FormLabel><FormControl><Input type="number" {...field} placeholder="לדוגמה: 1" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
-                                 )}/>
-                                  <FormField control={itemForm.control} name={`addons.${groupIndex}.maxSelection`} render={({ field }) => (
-                                     <FormItem><FormLabel className="text-xs">מקסימום בחירות (אופציונלי)</FormLabel><FormControl><Input type="number" {...field} placeholder="לדוגמה: 3" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
-                                 )}/>
-                             </div>
-                            <p className="text-xs font-medium mb-1">אפשרויות:</p>
+                             
+                            <p className="text-xs font-medium mb-1 mt-3">אפשרויות בקבוצה:</p>
                             <AddonOptionsArray groupIndex={groupIndex} control={itemForm.control} />
                         </Card>
                     ))}
