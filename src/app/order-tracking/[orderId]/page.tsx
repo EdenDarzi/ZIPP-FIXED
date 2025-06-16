@@ -196,17 +196,17 @@ export default function OrderTrackingPage() {
     switch (order.status) {
       case 'SCHEDULED':
         return (
-            <Card className="shadow-xl text-center py-10">
+            <Card className="shadow-xl text-center py-10 bg-blue-50 border-blue-200">
                 <CardHeader className="items-center">
-                    <Clock className="h-12 w-12 text-primary mb-3" />
-                    <CardTitle className="text-2xl font-semibold text-primary">הזמנה מתוכננת</CardTitle>
+                    <Clock className="h-12 w-12 text-blue-600 mb-3" />
+                    <CardTitle className="text-2xl font-semibold text-blue-700">הזמנה מתוכננת</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-lg text-muted-foreground">
-                        ההזמנה שלך מ-<span className="font-semibold">{order.restaurantName}</span> מתוכננת ל:
+                    <p className="text-lg text-blue-600/90">
+                        ההזמנה שלך מ<strong className="text-blue-700">{order.restaurantName}</strong> מתוכננת ל:
                     </p>
-                    <p className="text-xl font-bold text-accent mt-2">{order.scheduledDeliveryTime}</p>
-                    <p className="text-sm text-muted-foreground mt-4">אנו נתחיל לעבד אותה לקראת מועד זה.</p>
+                    <p className="text-xl font-bold text-blue-700 mt-2">{order.scheduledDeliveryTime}</p>
+                    <p className="text-sm text-blue-600/80 mt-4">אנו נתחיל לעבד אותה לקראת מועד זה.</p>
                 </CardContent>
             </Card>
         );
@@ -285,13 +285,13 @@ export default function OrderTrackingPage() {
         </Card>
       )}
 
-      {showGamificationHint && !triviaAnswered && (
+      {showGamificationHint && !triviaAnswered && order.status !== 'SCHEDULED' && (
         <Card className="bg-purple-50 border-purple-200 text-purple-700 animate-fadeIn">
             <CardHeader>
                 <CardTitle className="flex items-center"><Gamepad2 className="mr-2 h-5 w-5"/> הרווח פרסים בזמן ההמתנה!</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-                <p>פתור את חידון הטריוויה שלנו או השלם משימת בונוס קטנה כדי לצבור נקודות וכוכבים!</p>
+                <p>פתור את חידון הטריוויה שלנו (בהמשך העמוד אם זמין) או השלם משימת בונוס קטנה כדי לצבור נקודות וכוכבים!</p>
                 <Button variant="link" onClick={handleGamificationTask} className="p-0 text-purple-700">
                     בדוק משימת בונוס (דמו)
                 </Button>
