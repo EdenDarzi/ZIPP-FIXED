@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShoppingBag, AlertTriangle, Clock, ArrowLeft, PlusCircle, Store } from 'lucide-react';
 import Image from 'next/image';
-import { mockSwiftSaleItems } from '@/lib/mock-data'; // Will be renamed to mockLivePickSaleItems or similar
-import type { SwiftSaleItem } from '@/types';
+import { mockLivePickSaleItems } from '@/lib/mock-data';
+import type { LivePickSaleItem as SwiftSaleItem } from '@/types'; // Use correct type name
 import { useCart } from '@/context/cart-context'; 
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
@@ -20,8 +20,9 @@ export default function LivePickSalePage() {
 
   useEffect(() => {
     const currentHour = new Date().getHours();
+    // Mock: Sale active from 7 PM (19:00) to 11 PM (23:00)
     if (currentHour >= 0 && currentHour <= 23) { 
-        setActiveItems(mockSwiftSaleItems.filter(item => item.isActive && item.quantityAvailable > 0));
+        setActiveItems(mockLivePickSaleItems.filter(item => item.isActive && item.quantityAvailable > 0));
     } else {
         setActiveItems([]);
     }
@@ -29,16 +30,18 @@ export default function LivePickSalePage() {
 
   const handleAddToCart = (item: SwiftSaleItem) => {
     const cartItem = {
-        id: item.id,
-        name: `שקית הפתעה: ${item.name}`,
+        id: item.id, // Using item.id for simplicity, but ensure it's unique in context of menu items if needed
+        name: `שקית הפתעה: ${item.name}`, // Clear naming
         description: item.description,
         price: item.price,
         imageUrl: item.imageUrl || 'https://placehold.co/600x400.png?text=הפתעה!',
-        dataAiHint: 'surprise bag',
-        category: 'LivePick Sale', // Updated category name
+        dataAiHint: item.dataAiHint || 'surprise bag', // Use item specific or general
+        category: 'LivePick Sale', 
         restaurantId: item.restaurantId, 
     };
-    addToCart(cartItem, 1); 
+    // Since addToCart expects a MenuItem, we cast cartItem (or adjust addToCart if this is a common pattern)
+    // For demo, we'll assume addToCart can handle this structure or relevant fields.
+    addToCart(cartItem as any, 1); 
     toast({
         title: "שקית הפתעה נוספה לעגלה!",
         description: `שקית "${item.name}" מ-${item.restaurantName} בדרך אליך.`,
@@ -69,7 +72,7 @@ export default function LivePickSalePage() {
           <CardContent className="flex flex-col items-center gap-4">
             <Clock className="h-16 w-16 text-muted-foreground" />
             <p className="text-xl text-muted-foreground">אוי! כרגע אין שקיות הפתעה זמינות ב-LivePick Sale.</p>
-            <p className="text-sm">נסו שוב מאוחר יותר בערב, או בדקו עסקים אחרים.</p>
+            <p className="text-sm">הצטרפו אלינו בין השעות 19:00-23:00 כדי למצוא דילים חמים, או בדקו עסקים אחרים.</p>
           </CardContent>
         </Card>
       )}

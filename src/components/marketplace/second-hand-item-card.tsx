@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DollarSign, MapPin, Tag, MessageSquare, Phone, Star, Eye, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import Link from 'next/link'; // Potential for item details page
+import Link from 'next/link';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,36 +36,50 @@ export default function SecondHandItemCard({ item }: { item: SecondHandItem }) {
       title: "מחפש שליחים...",
       description: `הבקשה למשלוח הפריט "${item.title}" נשלחה. תקבל/י עדכון למעקב בקרוב. (מזהה בקשה לדוגמה: MP-${item.id})`,
     });
-    // In a real app, this would trigger the courier matching process
-    // and potentially redirect to an order tracking page.
   };
+
+  const handleViewDetails = (e: React.MouseEvent) => {
+    // Prevent navigation if the click is on a button within the card
+    if ((e.target as HTMLElement).closest('button')) {
+      e.preventDefault();
+      return;
+    }
+    toast({
+      title: "צפייה בפרטי מוצר (בקרוב)",
+      description: `יופנה לדף פרטי המוצר "${item.title}". (תכונה בפיתוח)`,
+    });
+    // In a real app: router.push(`/marketplace/${item.id}`);
+  };
+
 
   return (
     <Card className="overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col h-full group">
-      <div className="relative w-full h-48">
-        <Image
-          src={item.images[0]?.url || 'https://placehold.co/600x400.png?text=Missing+Image'}
-          alt={item.title}
-          layout="fill"
-          objectFit="cover"
-          className="group-hover:scale-105 transition-transform duration-300"
-          data-ai-hint={item.images[0]?.dataAiHint || "second hand item"}
-        />
-        {item.isSold && (
-          <Badge variant="destructive" className="absolute top-2 right-2 text-sm px-3 py-1 shadow-lg">
-            נמכר
-          </Badge>
-        )}
-      </div>
-      <CardHeader className="pb-2 pt-3">
-        <CardTitle className="text-lg font-headline group-hover:text-primary transition-colors truncate">
-          {item.title}
-        </CardTitle>
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>פורסם: {new Date(item.publishedAt).toLocaleDateString('he-IL')}</span>
-          <Badge variant="outline" className="capitalize">{item.category}</Badge>
+      <Link href={`/marketplace`} onClick={handleViewDetails} className="block" aria-label={`הצג פרטים על ${item.title}`}>
+        <div className="relative w-full h-48">
+          <Image
+            src={item.images[0]?.url || 'https://placehold.co/600x400.png?text=Missing+Image'}
+            alt={item.title}
+            layout="fill"
+            objectFit="cover"
+            className="group-hover:scale-105 transition-transform duration-300"
+            data-ai-hint={item.images[0]?.dataAiHint || "second hand item"}
+          />
+          {item.isSold && (
+            <Badge variant="destructive" className="absolute top-2 right-2 text-sm px-3 py-1 shadow-lg">
+              נמכר
+            </Badge>
+          )}
         </div>
-      </CardHeader>
+        <CardHeader className="pb-2 pt-3">
+          <CardTitle className="text-lg font-headline group-hover:text-primary transition-colors truncate">
+            {item.title}
+          </CardTitle>
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span>פורסם: {new Date(item.publishedAt).toLocaleDateString('he-IL')}</span>
+            <Badge variant="outline" className="capitalize">{item.category}</Badge>
+          </div>
+        </CardHeader>
+      </Link>
       <CardContent className="flex-grow pt-0 pb-3 space-y-1.5">
         <p className="text-xl font-semibold text-primary flex items-center">
           <DollarSign className="h-5 w-5 mr-1 text-green-600" /> {item.price.toFixed(2)}₪
@@ -82,7 +96,6 @@ export default function SecondHandItemCard({ item }: { item: SecondHandItem }) {
           )}
         </p>
         <CardDescription className="text-xs h-8 overflow-hidden text-ellipsis mt-1">{item.description}</CardDescription>
-
       </CardContent>
       <CardFooter className="p-3 border-t mt-auto flex flex-col sm:flex-row gap-2">
         <Button onClick={handleContactSeller} className="w-full sm:flex-1 bg-accent hover:bg-accent/90 text-accent-foreground" disabled={item.isSold}>

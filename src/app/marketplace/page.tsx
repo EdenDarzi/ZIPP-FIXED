@@ -12,6 +12,7 @@ import { PlusCircle, Search, Filter, Store, PackageSearch } from 'lucide-react';
 import Link from 'next/link';
 import SecondHandItemCard from '@/components/marketplace/second-hand-item-card';
 import { useToast } from '@/hooks/use-toast';
+import { Label } from '@/components/ui/label';
 
 export default function MarketplacePage() {
   const [items, setItems] = useState<SecondHandItem[]>([]);
@@ -84,7 +85,7 @@ export default function MarketplacePage() {
         <CardContent className="p-0">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 items-end">
                 <div className="space-y-1">
-                    <label htmlFor="searchTerm" className="text-xs font-medium text-muted-foreground">חיפוש חופשי</label>
+                    <Label htmlFor="searchTerm" className="text-xs font-medium text-muted-foreground">חיפוש חופשי</Label>
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
@@ -98,7 +99,7 @@ export default function MarketplacePage() {
                     </div>
                 </div>
                 <div className="space-y-1">
-                    <label htmlFor="categoryFilter" className="text-xs font-medium text-muted-foreground">קטגוריה</label>
+                    <Label htmlFor="categoryFilter" className="text-xs font-medium text-muted-foreground">קטגוריה</Label>
                     <Select value={categoryFilter} onValueChange={(value) => setCategoryFilter(value as SecondHandItemCategory | 'all')}>
                         <SelectTrigger id="categoryFilter" className="w-full bg-background shadow-sm">
                             <SelectValue placeholder="כל הקטגוריות" />
@@ -110,7 +111,7 @@ export default function MarketplacePage() {
                     </Select>
                 </div>
                 <div className="space-y-1">
-                    <label htmlFor="sortBy" className="text-xs font-medium text-muted-foreground">מיין לפי</label>
+                    <Label htmlFor="sortBy" className="text-xs font-medium text-muted-foreground">מיין לפי</Label>
                     <Select value={sortBy} onValueChange={setSortBy}>
                         <SelectTrigger id="sortBy" className="w-full bg-background shadow-sm">
                             <SelectValue placeholder="מיון..." />
@@ -144,7 +145,6 @@ export default function MarketplacePage() {
             </CardContent>
         </Card>
       )}
-      {/* Pagination placeholder - to be implemented if needed */}
       {items.length > 12 && (
          <div className="text-center mt-8">
             <Button variant="outline" disabled>טען עוד (בקרוב)</Button>
