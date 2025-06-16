@@ -3,8 +3,9 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CreditCard, Trash2, PlusCircle, Edit2 } from "lucide-react";
+import { CreditCard, Trash2, PlusCircle, Edit2, Star } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
 
 const mockPaymentMethods = [
   { id: 'pm1', type: 'Visa', last4: '1234', expiry: '12/25', isPrimary: true },
@@ -56,10 +57,12 @@ export default function UserPaymentMethodsPage() {
               <div className="flex items-center">
                 <CreditCard className="mr-3 h-6 w-6 text-primary" />
                 <div>
-                  <p className="font-semibold text-md">
-                    {method.type === 'PayPal' ? `חשבון PayPal` : `${method.type} המסתיים ב-${method.last4}`}
-                    {method.isPrimary && <span className="text-xs text-primary font-normal mr-2">(ראשי)</span>}
-                  </p>
+                  <div className="flex items-center">
+                    <p className="font-semibold text-md">
+                      {method.type === 'PayPal' ? `חשבון PayPal` : `${method.type} המסתיים ב-${method.last4}`}
+                    </p>
+                    {method.isPrimary && <Badge variant="default" className="mr-2 bg-green-500 text-white text-xs px-1.5 py-0.5"><Star className="h-3 w-3 mr-1"/>ראשי</Badge>}
+                  </div>
                   {method.type !== 'PayPal' && <p className="text-xs text-muted-foreground">תוקף: {method.expiry}</p>}
                   {method.type === 'PayPal' && <p className="text-xs text-muted-foreground">מייל: {method.email}</p>}
                 </div>

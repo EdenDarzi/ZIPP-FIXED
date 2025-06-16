@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, Home, Edit2, Trash2, PlusCircle } from "lucide-react";
+import { MapPin, Home, Edit2, Trash2, PlusCircle, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 
@@ -58,7 +58,7 @@ export default function UserAddressesPage() {
                 <div className="flex items-center mb-1">
                   <Home className="mr-2 h-5 w-5 text-primary" />
                   <h3 className="font-semibold text-lg">{addr.label}</h3>
-                  {addr.isPrimary && <Badge variant="secondary" className="mr-2 bg-primary/20 text-primary border-primary/30">ראשית</Badge>}
+                  {addr.isPrimary && <Badge variant="default" className="mr-2 bg-green-500 text-white"><Star className="h-3 w-3 mr-1"/>ראשית</Badge>}
                 </div>
                 <p className="text-sm text-muted-foreground">{addr.street}, {addr.city}</p>
                 <p className="text-xs text-muted-foreground">מיקוד: {addr.zip}</p>

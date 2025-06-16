@@ -44,19 +44,14 @@ export default function HomePage() {
     fetchSuggestion();
 
     const currentHour = new Date().getHours();
-    if (currentHour >= 19 && currentHour <= 23) { 
+    // Mock LivePick Sale active hours (e.g., 7 PM to 11 PM)
+    // For demo purposes, let's set it to be always active, or a wider range.
+    // if (currentHour >= 19 && currentHour <= 23) { 
+    if (currentHour >= 0 && currentHour <= 23) { // For easier testing, make it always visible
         setShowLivePickSaleBanner(true);
     }
 
   }, []);
-
-  const handleSpinWheelClick = () => {
-    toast({
-      title: "גלגל ההפתעות של LivePick! 🎡",
-      description: "זכית ב-10% הנחה על ההזמנה הבאה שלך! (קוד: SPINWIN10 - משחק יתווסף בקרוב).",
-      duration: 5000,
-    });
-  };
 
   return (
     <div className="space-y-16">

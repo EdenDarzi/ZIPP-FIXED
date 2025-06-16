@@ -7,7 +7,7 @@ import { mockRestaurants } from '@/lib/mock-data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { PlusCircle, Edit3, Trash2, Copy, GripVertical, PackageSearch, Image as ImageIcon, Tag, DollarSign, CheckCircle, XCircle, ShoppingBag, Info } from 'lucide-react'; // Added Info
+import { PlusCircle, Edit3, Trash2, Copy, GripVertical, PackageSearch, Image as ImageIcon, Tag, DollarSign, CheckCircle, XCircle, ShoppingBag, Info } from 'lucide-react'; 
 import Image from 'next/image';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
@@ -34,22 +34,38 @@ const menuItemAddonGroupSchema = z.object({
   type: z.enum(['radio', 'checkbox']),
   minSelection: z.preprocess(
     (val) => (val === '' || val === undefined ? undefined : Number(val)),
-    z.number().min(0, "מספר בחירות מינימלי לא יכול להיות שלילי").optional()
+    z.number().int("מספר בחירות מינימלי חייב להיות שלם.").min(0, "מספר בחירות מינימלי לא יכול להיות שלילי").optional()
   ),
   maxSelection: z.preprocess(
     (val) => (val === '' || val === undefined ? undefined : Number(val)),
-    z.number().min(0, "מספר בחירות מקסימלי לא יכול להיות שלילי").optional()
+    z.number().int("מספר בחירות מקסימלי חייב להיות שלם.").min(0, "מספר בחירות מקסימלי לא יכול להיות שלילי").optional()
   ),
   options: z.array(menuItemAddonChoiceSchema).min(1, "נדרשת לפחות אפשרות אחת בקבוצת תוספות"),
   required: z.boolean().optional().default(false),
+}).refine(data => {
+    if (data.type === 'checkbox' && data.minSelection !== undefined && data.maxSelection !== undefined && data.minSelection > data.maxSelection) {
+        return false;
+    }
+    if (data.type === 'checkbox' && data.minSelection !== undefined && data.minSelection > data.options.length) {
+        return false;
+    }
+    if (data.type === 'checkbox' && data.maxSelection !== undefined && data.maxSelection > data.options.length) {
+        // This might be okay if maxSelection is a general limit, not per-group-options-length.
+        // If it's intended to be capped by options length, this refine can be stricter.
+    }
+    return true;
+}, {
+  message: "מספר בחירות מינימלי לא יכול להיות גדול ממספר בחירות מקסימלי, או גדול ממספר האפשרויות הזמינות.",
+  path: ['minSelection'], // Or ['maxSelection'] depending on which makes more sense to highlight
 });
+
 
 const menuItemFormSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(3, "שם המוצר/שירות חייב להכיל לפחות 3 תווים"),
   description: z.string().min(10, "תיאור חייב להכיל לפחות 10 תווים"),
   price: z.preprocess(val => parseFloat(val as string), z.number().positive("מחיר חייב להיות מספר חיובי")),
-  imageUrl: z.string().url("כתובת URL של תמונה לא תקינה").or(z.literal('')),
+  imageUrl: z.string().url("כתובת URL של תמונה לא תקינה").or(z.literal('')).optional(),
   dataAiHint: z.string().optional(),
   category: z.string().min(1, "קטגוריה היא שדה חובה"),
   newCategoryName: z.string().optional(),
@@ -70,7 +86,7 @@ type MenuItemFormValues = z.infer<typeof menuItemFormSchema>;
 const livePickSaleFormSchema = z.object({
     livePickSaleEnabled: z.boolean().default(false),
     livePickSaleStartTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "פורמט זמן לא תקין (HH:MM)").optional(),
-    livePickSaleBagCount: z.preprocess(val => Number(val), z.number().int().min(0, "מספר שקיות חייב להיות חיובי או אפס").optional()),
+    livePickSaleBagCount: z.preprocess(val => Number(val), z.number().int("כמות שקיות חייבת להיות מספר שלם.").min(0, "מספר שקיות חייב להיות חיובי או אפס").optional()),
     livePickSaleBagPrice: z.preprocess(val => Number(val), z.number().positive("מחיר שקית חייב להיות חיובי").optional()),
 }).refine(data => {
     if (data.livePickSaleEnabled) {
@@ -552,4 +568,3 @@ function AddonOptionsArray({ groupIndex, control }: { groupIndex: number, contro
     </div>
   );
 }
-

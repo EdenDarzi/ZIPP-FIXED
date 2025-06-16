@@ -5,7 +5,7 @@ import { useCart } from '@/context/cart-context';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, Zap, CheckCircle, ShieldQuestion, Sparkles, DollarSign, Clock, Gift, Users, Navigation, Edit } from 'lucide-react'; // Added Gift, Users, Navigation, Edit
+import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, Zap, CheckCircle, ShieldQuestion, Sparkles, DollarSign, Clock, Gift, Users, Navigation, Edit } from 'lucide-react'; 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label"
 import type { DeliveryPreference } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input'; 
-import { Textarea } from '@/components/ui/textarea'; // Added Textarea
+import { Textarea } from '@/components/ui/textarea'; 
 import { useState } from 'react'; 
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
@@ -25,7 +25,7 @@ export default function CartPage() {
     updateQuantity,
     clearCart,
     itemCount,
-    totalPrice, // Base total price without delivery/discounts
+    totalPrice, 
     deliveryPreference,
     setDeliveryPreference,
     deliveryFee,
@@ -39,7 +39,7 @@ export default function CartPage() {
 
   const [manualScheduledTime, setManualScheduledTime] = useState(scheduledDeliveryTime || '');
   const [isGift, setIsGift] = useState(false);
-  const [customerNotes, setCustomerNotes] = useState(''); // State for customer notes
+  const [customerNotes, setCustomerNotes] = useState(''); 
   const { toast } = useToast();
 
   const handleSetManualScheduledTime = () => {
@@ -244,7 +244,7 @@ export default function CartPage() {
                 </>
               ) : (
                 <div className="p-3 bg-green-50 border border-green-200 rounded-md">
-                  <p className="font-semibold text-green-700">המשלוח שלך מתוכנן ל: {scheduledDeliveryTime}</p>
+                  <p className="font-semibold text-green-700 flex items-center"><Clock className="h-4 w-4 ml-1"/> המשלוח שלך מתוכנן ל: {scheduledDeliveryTime}</p>
                   <Button onClick={handleClearScheduledTime} variant="link" className="p-0 h-auto text-sm text-destructive" aria-label="נקה זמן מתוכנן למשלוח">
                     נקה זמן מתוכנן
                   </Button>
@@ -259,7 +259,7 @@ export default function CartPage() {
           
           <Card className="shadow-md">
             <CardHeader>
-                <CardTitle className="text-xl font-headline text-primary">אפשרויות נוספות</CardTitle>
+                <CardTitle className="text-xl font-headline text-primary flex items-center"><Plus className="h-5 w-5 ml-2" /> אפשרויות נוספות</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="flex items-center space-x-2 p-3 border rounded-md rtl:space-x-reverse">
@@ -356,4 +356,3 @@ export default function CartPage() {
     </div>
   );
 }
-

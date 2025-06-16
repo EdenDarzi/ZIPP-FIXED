@@ -3,23 +3,34 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ListOrdered, RotateCcw, Eye, PackageSearch } from "lucide-react";
+import { ListOrdered, RotateCcw, Eye, PackageSearch, CalendarClock } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import type { OrderStatus } from "@/types";
+import { cn } from "@/lib/utils";
 
 const mockOrderHistory = [
-  { id: 'hist123', date: '2024-07-15', restaurantName: 'פיצה פאלאס', total: 75.50, status: 'DELIVERED' as OrderStatus },
-  { id: 'hist456', date: '2024-07-10', restaurantName: 'בורגר בוננזה', total: 55.00, status: 'DELIVERED' as OrderStatus },
-  { id: 'hist789', date: '2024-07-01', restaurantName: 'סלט סנסיישנס', total: 42.00, status: 'CANCELLED' as OrderStatus },
-  { id: 'hist101', date: '2024-06-25', restaurantName: 'פסטה פרפקשן', total: 98.00, status: 'DELIVERED' as OrderStatus },
+  { id: 'hist123', date: '2024-07-15', restaurantName: 'פיצה פאלאס', total: 75.50, status: 'DELIVERED' as OrderStatus, scheduled: false },
+  { id: 'hist456', date: '2024-07-10', restaurantName: 'בורגר בוננזה', total: 55.00, status: 'DELIVERED' as OrderStatus, scheduled: true },
+  { id: 'hist789', date: '2024-07-01', restaurantName: 'סלט סנסיישנס', total: 42.00, status: 'CANCELLED' as OrderStatus, scheduled: false },
+  { id: 'hist101', date: '2024-06-25', restaurantName: 'פסטה פרפקשן', total: 98.00, status: 'DELIVERED' as OrderStatus, scheduled: false },
 ];
 
-const getStatusTextAndVariant = (status: OrderStatus): { text: string; variant: "default" | "secondary" | "destructive" | "outline" } => {
+const getStatusBadgeVariant = (status: OrderStatus): "default" | "secondary" | "destructive" | "outline" => {
     switch (status) {
-        case 'DELIVERED': return { text: 'נמסר', variant: 'default' }; // Greenish in some themes
+        case 'DELIVERED': return 'default';
+        case 'CANCELLED': return 'destructive';
+        case 'SCHEDULED': return 'secondary';
+        default: return 'outline';
+    }
+};
+
+const getStatusTextAndIcon = (status: OrderStatus, scheduled: boolean): { text: string; variant: "default" | "secondary" | "destructive" | "outline"; icon?: React.ElementType } => {
+    switch (status) {
+        case 'DELIVERED': return { text: 'נמסר', variant: 'default', icon: scheduled ? CalendarClock : undefined };
         case 'CANCELLED': return { text: 'בוטל', variant: 'destructive' };
+        case 'SCHEDULED': return { text: 'מתוכנן', variant: 'secondary', icon: CalendarClock };
         default: return { text: status, variant: 'outline' };
     }
 };
@@ -68,7 +79,8 @@ export default function UserOrderHistoryPage() {
             </TableHeader>
             <TableBody>
               {mockOrderHistory.map((order) => {
-                const statusInfo = getStatusTextAndVariant(order.status);
+                const statusInfo = getStatusTextAndIcon(order.status, order.scheduled);
+                const Icon = statusInfo.icon;
                 return (
                   <TableRow key={order.id}>
                     <TableCell className="font-medium">#{order.id}</TableCell>
@@ -76,7 +88,10 @@ export default function UserOrderHistoryPage() {
                     <TableCell>{order.restaurantName}</TableCell>
                     <TableCell>₪{order.total.toFixed(2)}</TableCell>
                     <TableCell>
-                      <Badge variant={statusInfo.variant}>{statusInfo.text}</Badge>
+                      <Badge variant={statusInfo.variant} className={cn(statusInfo.variant === 'default' && 'bg-green-500 text-white', statusInfo.variant === 'secondary' && 'bg-blue-500 text-white')}>
+                        {Icon && <Icon className="inline h-3 w-3 mr-1"/>}
+                        {statusInfo.text}
+                      </Badge>
                     </TableCell>
                     <TableCell className="space-x-1 rtl:space-x-reverse">
                       <Button variant="ghost" size="icon" onClick={() => handleViewOrderDetails(order.id)} title="צפה בפרטים">

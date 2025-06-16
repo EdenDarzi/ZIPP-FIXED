@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, CheckCircle, DollarSign, Zap, XCircle, Info, Timer, MapPin, Navigation, Package, Edit3, Clock, AlertTriangle, Bike, Car, Footprints, Loader2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle, DollarSign, Zap, XCircle, Info, Timer, MapPin, Navigation, Package, Edit3, Clock, AlertTriangle, Bike, Car, Footprints, Loader2, Award, ThumbsDown } from 'lucide-react';
 import Link from 'next/link';
 import { notFound, useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -110,7 +110,7 @@ export default function CourierBidPage() {
       toast({ title: "הזמנה דולגה", description: "דילגת על הזדמנות הצעה זו." });
       setIsSubmitting(false);
       setBidPlaced(true); 
-      handleBidEvaluation(otherBids);
+      handleBidEvaluation(otherBids); // Still evaluate other bids if user skips
       setEvaluationTriggered(true);
       return;
     }
@@ -168,9 +168,13 @@ export default function CourierBidPage() {
 
   const handleBidEvaluation = async (allSubmittedBids: CourierBid[]) => {
     if (!order) return;
+    setIsSubmitting(true); // Indicate processing
+    setBidPlaced(true); // Prevent further bids
     toast({ title: "מעבד הצעות...", description: "ה-AI בוחר את השליח המתאים ביותר." });
     try {
         const input: CourierMatchingInputType = { orderDetails: order, bids: allSubmittedBids };
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 2000));
         const result = await selectBestCourierBid(input);
         setWinningBidInfo(result);
         setTimeLeft(0); 
@@ -178,6 +182,8 @@ export default function CourierBidPage() {
         console.error("שגיאה בעיבוד הצעות:", error);
         toast({ title: "שגיאת עיבוד", description: "לא ניתן היה לקבוע את ההצעה הזוכה.", variant: "destructive" });
         setWinningBidInfo({ fallbackRequired: true, reasoning: "אירעה שגיאה במהלך עיבוד ההצעות."});
+    } finally {
+        setIsSubmitting(false);
     }
   }
 
@@ -203,29 +209,44 @@ export default function CourierBidPage() {
   if (winningBidInfo) {
     const isWinner = winningBidInfo.selectedBid?.courierId === MOCK_CURRENT_COURIER_ID;
     return (
-        <Card className="shadow-xl animate-fadeIn mt-6 max-w-lg mx-auto">
-            <CardHeader className="text-center">
-                <CardTitle className={cn("text-3xl font-headline", isWinner ? "text-green-600" : winningBidInfo.selectedBid ? "text-yellow-600" : "text-red-600")}>
-                    {isWinner ? "🎉 זכית בהצעה!" : winningBidInfo.selectedBid ? "ההצעה לא זכתה" : "לא נבחרה הצעה מתאימה"}
+        <Card className={cn("shadow-xl animate-fadeIn mt-6 max-w-lg mx-auto border-2", 
+            isWinner ? "border-green-500 bg-green-50" : winningBidInfo.selectedBid ? "border-yellow-500 bg-yellow-50" : "border-red-500 bg-red-50"
+        )}>
+            <CardHeader className="text-center items-center">
+                {isWinner ? <Award className="h-12 w-12 text-green-600 mb-2"/> : winningBidInfo.selectedBid ? <ThumbsDown className="h-12 w-12 text-yellow-600 mb-2"/> : <XCircle className="h-12 w-12 text-red-600 mb-2"/>}
+                <CardTitle className={cn("text-3xl font-headline", 
+                    isWinner ? "text-green-700" : winningBidInfo.selectedBid ? "text-yellow-700" : "text-red-700"
+                )}>
+                    {isWinner ? "🎉 זכית בהצעה!" : winningBidInfo.selectedBid ? "ההצעה לא זכתה הפעם" : "לא נבחרה הצעה מתאימה"}
                 </CardTitle>
-                <CardDescription>להזמנה מספר: {order.orderId}</CardDescription>
+                <CardDescription className="text-base">עבור הזמנה #{order.orderId.slice(-6)} מ{order.restaurantName}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-center">
                 {winningBidInfo.selectedBid ? (
                     <>
                         <p>ההזמנה הוקצתה ל<span className="font-semibold">{winningBidInfo.selectedBid.courierName}</span>.</p>
-                        <p className="text-sm text-muted-foreground">נימוק AI: {winningBidInfo.reasoning || "מבוסס על ציון כולל."}</p>
-                        {isWinner && <p className="mt-2 font-medium">אנא המשך/י לאיסוף ההזמנה מ{order.restaurantName}.</p>}
+                        <p className="text-sm text-muted-foreground p-2 bg-background/50 rounded-md"><strong>נימוק AI:</strong> {winningBidInfo.reasoning || "מבוסס על ציון כולל."}</p>
+                        {isWinner && <p className="mt-2 font-medium text-green-700">אנא המשך/י לאיסוף ההזמנה מ{order.restaurantName}. פרטים נוספים בהזמנות פעילות.</p>}
                     </>
                 ) : (
                      <p className="text-muted-foreground">{winningBidInfo.reasoning || "לא נמצאה הצעה מתאימה, או שמופעלים נהלי גיבוי."}</p>
                 )}
             </CardContent>
             <CardFooter>
-                <Button onClick={() => router.push('/courier/open-bids')} className="w-full mt-4" aria-label="חזרה להצעות פתוחות">חזרה להצעות פתוחות</Button>
+                <Button onClick={() => router.push('/courier/open-bids')} className="w-full mt-4" variant="outline" aria-label="חזרה להצעות פתוחות">חזרה להצעות פתוחות</Button>
             </CardFooter>
         </Card>
     )
+  }
+
+  if (isSubmitting || (bidPlaced && !winningBidInfo)) {
+     return (
+      <div className="flex flex-col justify-center items-center min-h-[calc(100vh-300px)] space-y-4">
+        <Loader2 className="h-16 w-16 animate-spin text-primary" />
+        <p className="text-xl text-primary">{isSubmitting && !bidPlaced ? "שולח את הצעתך..." : "מעבד את כל ההצעות..."}</p>
+        <p className="text-muted-foreground">ה-AI שלנו בוחן כעת את כל ההצעות שהוגשו. מייד נעדכן אותך!</p>
+      </div>
+    );
   }
 
 
@@ -376,8 +397,6 @@ export default function CourierBidPage() {
           </div>
         </CardFooter>
       </Card>
-       {isSubmitting && <p className="text-center text-primary mt-2"><Loader2 className="inline mr-2 h-4 w-4 animate-spin"/>שולח את הצעתך...</p>}
-       {bidPlaced && !winningBidInfo && <p className="text-center text-primary mt-2"><Loader2 className="inline mr-2 h-4 w-4 animate-spin"/>הצעה הוגשה, ה-AI מעבד את כל ההצעות...</p>}
       <p className="text-sm text-center text-muted-foreground mt-4">
         הצעתך מוערכת לפי מחיר, זמן הגעה משוער, דירוג, ציון אמון והצעת איסוף מהיר. מנוע ההתאמה החכם יבחר את ההצעה הטובה ביותר.
       </p>
