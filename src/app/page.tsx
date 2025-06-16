@@ -44,17 +44,17 @@ export default function HomePage() {
     }
     fetchSuggestion();
 
-    // Mock LivePick Sale banner visibility (client-side only for demo)
-    // For demo purposes, let's make it always visible if not explicitly set otherwise
-    // const currentHour = new Date().getHours();
-    // if (currentHour >= 0 && currentHour <= 23) { // Example: always active for demo
     setShowLivePickSaleBanner(true);
-    // }
-
-    // Mock available couriers - client side only
-    setAvailableCouriers(Math.floor(Math.random() * 20) + 5); // Random number between 5 and 24
+    setAvailableCouriers(Math.floor(Math.random() * 20) + 5); 
 
   }, []);
+
+  const handlePartnershipsClick = () => {
+    toast({
+        title: "שיתופי פעולה (בקרוב)",
+        description: "עמוד שיתופי הפעולה עם מותגים יתווסף כאן בעתיד.",
+    });
+  };
 
   return (
     <div className="space-y-16">
@@ -166,7 +166,7 @@ export default function HomePage() {
       <section className="grid md:grid-cols-3 gap-4 animate-fadeInUp animation-delay-700">
         <Link href="/food-radar" passHref>
           <Card className="hover:shadow-lg hover:border-primary/50 transition-all cursor-pointer h-full flex flex-col items-center justify-center text-center p-4">
-            <LiveTrendIcon className="h-10 w-10 text-primary mb-2" />
+            <FoodRadarIcon className="h-10 w-10 text-primary mb-2" />
             <CardTitle className="text-lg font-semibold">Food Radar & Live Trends</CardTitle>
             <CardDescription className="text-xs">גלה מה חם סביבך בזמן אמת!</CardDescription>
           </Card>
@@ -189,16 +189,17 @@ export default function HomePage() {
       
        <section className="animate-fadeInUp animation-delay-750">
         <Card className="border-orange-500/30 bg-orange-500/5">
-          <CardHeader>
-            <CardTitle className="text-xl font-headline text-orange-600 flex items-center">
+          <CardHeader className="items-center text-center">
+            <CardTitle className="text-xl font-headline text-orange-600 flex items-center justify-center">
               <Flame className="h-6 w-6 ml-2" /> שותפויות ודילים חמים (דמו)
             </CardTitle>
             <CardDescription className="text-orange-700/80">מבצעים בלעדיים בשיתוף עם מותגים מובילים, בהשראת הטרנדים החמים ביותר!</CardDescription>
           </CardHeader>
-          <CardContent className="text-center text-orange-700/90">
-            <p>"קבל 15% הנחה על קולקציית הקיץ של 'FashionForward' בהשראת טרנד ה-Y2K שזוהה לאחרונה ב-LivePick!" (בקרוב)</p>
-            <Button variant="link" size="sm" className="text-orange-600 hover:text-orange-700 p-0 h-auto mt-1" onClick={() => toast({title: "בקרוב!", description: "שיתופי פעולה עם מותגים יתווספו כאן."})}>
-                צפה בכל שיתופי הפעולה <ExternalLink className="h-3 w-3 mr-1"/>
+          <CardContent className="text-center text-orange-700/90 space-y-2">
+            <p>"לדוגמה: קבל 15% הנחה על קולקציית הקיץ של 'FashionForward' בהשראת טרנד ה-Y2K שזוהה לאחרונה ב-LivePick!"</p>
+            <p className="text-xs">(פיצ'ר שיתופי הפעולה בפיתוח)</p>
+            <Button variant="link" size="sm" className="text-orange-600 hover:text-orange-700 p-0 h-auto mt-1" onClick={handlePartnershipsClick}>
+                צפה בכל שיתופי הפעולה (בקרוב) <ExternalLink className="h-3 w-3 mr-1"/>
             </Button>
           </CardContent>
         </Card>

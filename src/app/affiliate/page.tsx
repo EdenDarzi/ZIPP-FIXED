@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Gift, Share2, Store, TrendingUp, DollarSign, Star } from 'lucide-react';
+import { Users, Gift, Share2, Store, TrendingUp, DollarSign, Star, Info, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 
@@ -73,16 +73,26 @@ export default function AffiliateProgramPage() {
         </CardContent>
       </Card>
 
-      <div className="text-center">
-        <Button size="lg" onClick={handleStartNowClick} className="bg-accent hover:bg-accent/90 text-accent-foreground text-lg shadow-md">
-          התחילו להרוויח עכשיו (בקרוב!)
-        </Button>
-      </div>
-       <CardFooter className="justify-center">
+      <Card className="shadow-lg text-center bg-primary/5 border-primary/20">
+        <CardHeader>
+            <CardTitle className="text-2xl font-semibold text-accent">מוכנים להתחיל?</CardTitle>
+        </CardHeader>
+        <CardContent>
+            <p className="text-muted-foreground mb-6">
+                <Info className="inline h-5 w-5 mr-1 text-primary"/>
+                תוכנית השותפים שלנו תושק בקרוב! לחצו למטה כדי להירשם לרשימת המתנה.
+            </p>
+            <Button size="lg" onClick={handleStartNowClick} className="bg-accent hover:bg-accent/90 text-accent-foreground text-lg shadow-md">
+                הצטרפו לרשימת המתנה (בקרוב!) <ArrowRight className="ml-2 h-5 w-5"/>
+            </Button>
+        </CardContent>
+         <CardFooter className="justify-center">
            <p className="text-xs text-muted-foreground text-center">
             פרטים מלאים ותנאי התוכנית יפורסמו עם השקתה.
           </p>
         </CardFooter>
+      </Card>
     </div>
   );
 }
+

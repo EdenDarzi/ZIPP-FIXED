@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Gem, Zap, ShieldCheck, Sparkles, Crown, ArrowRight } from 'lucide-react';
+import { Gem, Zap, ShieldCheck, Sparkles, Crown, ArrowRight, Info } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 
@@ -21,7 +21,7 @@ export default function VipProgramPage() {
   const handleJoinClick = () => {
     toast({
       title: "תוכנית VIP - בקרוב!",
-      description: "פרטים נוספים על הצטרפות למועדון ה-VIP שלנו יפורסמו בקרוב.",
+      description: "פרטים נוספים על הצטרפות למועדון ה-VIP שלנו יפורסמו בקרוב. הישארו מעודכנים!",
     });
   };
 
@@ -58,12 +58,13 @@ export default function VipProgramPage() {
         </CardContent>
       </Card>
       
-      <Card className="shadow-lg text-center">
+      <Card className="shadow-lg text-center bg-primary/5 border-primary/20">
         <CardHeader>
           <CardTitle className="text-2xl font-semibold text-accent">מוכנים לשדרג?</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground mb-6">
+            <Info className="inline h-5 w-5 mr-1 text-primary"/>
             תוכנית ה-VIP שלנו נמצאת כעת בשלבי פיתוח אחרונים ותושק בקרוב מאוד.
             הישארו מעודכנים!
           </p>
@@ -80,3 +81,4 @@ export default function VipProgramPage() {
     </div>
   );
 }
+
