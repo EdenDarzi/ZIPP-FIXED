@@ -64,8 +64,8 @@ export default function StoreDesignPage() {
   function onSubmit(values: z.infer<typeof designFormSchema>) {
     console.log(values);
     toast({
-      title: 'עיצוב החנות עודכן',
-      description: 'הגדרות עיצוב החנות שלך נשמרו.',
+      title: 'עיצוב החנות עודכן (דמו)',
+      description: 'הגדרות עיצוב החנות שלך נשמרו בהצלחה.',
     });
   }
 
@@ -75,7 +75,7 @@ export default function StoreDesignPage() {
       case 'mono': return 'font-mono';
       case 'sans':
       default:
-        return 'font-sans'; // Tailwind's default body font is PT Sans via globals.css
+        return 'font-sans';
     }
   };
 
@@ -102,7 +102,7 @@ export default function StoreDesignPage() {
                         <FormLabel>צבע ראשי (Hex)</FormLabel>
                         <div className="flex items-center gap-2">
                           <FormControl><Input type="text" placeholder="#29ABE2" {...field} className="w-32"/></FormControl>
-                          <div className="w-8 h-8 rounded border" style={{ backgroundColor: field.value || '#29ABE2' }} />
+                          <div className="w-8 h-8 rounded border" style={{ backgroundColor: field.value || mockExistingDesignSettings.primaryColor }} />
                         </div>
                         <FormMessage />
                       </FormItem>
@@ -113,7 +113,7 @@ export default function StoreDesignPage() {
                         <FormLabel>צבע משני (Hex)</FormLabel>
                          <div className="flex items-center gap-2">
                             <FormControl><Input type="text" placeholder="#F2994A" {...field} className="w-32" /></FormControl>
-                             <div className="w-8 h-8 rounded border" style={{ backgroundColor: field.value || '#F2994A' }} />
+                             <div className="w-8 h-8 rounded border" style={{ backgroundColor: field.value || mockExistingDesignSettings.accentColor }} />
                         </div>
                         <FormMessage />
                       </FormItem>
@@ -234,8 +234,8 @@ export default function StoreDesignPage() {
                         className="border rounded-lg p-4 space-y-3 min-h-[400px] transition-all"
                         style={{
                             // @ts-ignore
-                            '--preview-primary': watchedValues.primaryColor || 'hsl(var(--primary))',
-                            '--preview-accent': watchedValues.accentColor || 'hsl(var(--accent))',
+                            '--preview-primary': watchedValues.primaryColor || mockExistingDesignSettings.primaryColor,
+                            '--preview-accent': watchedValues.accentColor || mockExistingDesignSettings.accentColor,
                         }}
                     >
                         <div className={cn(
@@ -283,3 +283,5 @@ export default function StoreDesignPage() {
     </div>
   );
 }
+
+    

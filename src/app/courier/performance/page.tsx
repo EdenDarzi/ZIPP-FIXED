@@ -11,24 +11,13 @@ import { DatePickerWithRange } from '@/components/ui/date-range-picker';
 import type { DateRange } from 'react-day-picker';
 import { Badge } from '@/components/ui/badge';
 
-const mockEarningsData = [
-  { month: 'ינו', total: Math.floor(Math.random() * 2000) + 1000 },
-  { month: 'פבר', total: Math.floor(Math.random() * 2000) + 1200 },
-  { month: 'מרץ', total: Math.floor(Math.random() * 2000) + 1500 },
-  { month: 'אפר', total: Math.floor(Math.random() * 2000) + 1300 },
-  { month: 'מאי', total: Math.floor(Math.random() * 2000) + 1800 },
-  { month: 'יונ', total: Math.floor(Math.random() * 2000) + 2200 },
+const mockEarningsDataDefault = [
+  { month: 'ינו', total: Math.floor(Math.random() * 2000) + 1000 }, { month: 'פבר', total: Math.floor(Math.random() * 2000) + 1200 }, { month: 'מרץ', total: Math.floor(Math.random() * 2000) + 1500 }, { month: 'אפר', total: Math.floor(Math.random() * 2000) + 1300 }, { month: 'מאי', total: Math.floor(Math.random() * 2000) + 1800 }, { month: 'יונ', total: Math.floor(Math.random() * 2000) + 2200 },
 ];
 const chartConfigEarnings: ChartConfig = { total: { label: "הכנסות (₪)", color: "hsl(var(--primary))" } };
 
-const mockDeliveriesData = [
-  { day: 'א\'', deliveries: Math.floor(Math.random() * 10) + 5 },
-  { day: 'ב\'', deliveries: Math.floor(Math.random() * 10) + 7 },
-  { day: 'ג\'', deliveries: Math.floor(Math.random() * 10) + 6 },
-  { day: 'ד\'', deliveries: Math.floor(Math.random() * 10) + 8 },
-  { day: 'ה\'', deliveries: Math.floor(Math.random() * 10) + 10 },
-  { day: 'ו\'', deliveries: Math.floor(Math.random() * 10) + 12 },
-  { day: 'שבת', deliveries: Math.floor(Math.random() * 10) + 9 },
+const mockDeliveriesDataDefault = [
+  { day: 'א\'', deliveries: Math.floor(Math.random() * 10) + 5 }, { day: 'ב\'', deliveries: Math.floor(Math.random() * 10) + 7 }, { day: 'ג\'', deliveries: Math.floor(Math.random() * 10) + 6 }, { day: 'ד\'', deliveries: Math.floor(Math.random() * 10) + 8 }, { day: 'ה\'', deliveries: Math.floor(Math.random() * 10) + 10 }, { day: 'ו\'', deliveries: Math.floor(Math.random() * 10) + 12 }, { day: 'שבת', deliveries: Math.floor(Math.random() * 10) + 9 },
 ];
 const chartConfigDeliveries: ChartConfig = { deliveries: { label: "משלוחים", color: "hsl(var(--accent))" } };
 
@@ -48,20 +37,30 @@ const mockGoals = [
 
 export default function CourierPerformancePage() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
-  // Mock states for KPIs
   const [totalEarnings, setTotalEarnings] = useState(7850.50);
   const [totalDeliveries, setTotalDeliveries] = useState(235);
   const [avgDeliveryTime, setAvgDeliveryTime] = useState(28); // minutes
   const [avgRating, setAvgRating] = useState(4.7);
 
-  // Placeholder for date range change handling
+  const [earningsData, setEarningsData] = useState(mockEarningsDataDefault);
+  const [deliveriesData, setDeliveriesData] = useState(mockDeliveriesDataDefault);
+
+
   const handleDateRangeChange = (newRange: DateRange | undefined) => {
     setDateRange(newRange);
-    // Here you would typically refetch data based on the newRange
-    // For demo, we'll just log it and maybe slightly adjust mock KPIs
-    console.log("Selected date range for performance:", newRange);
-    setTotalEarnings(parseFloat((Math.random() * 5000 + 2000).toFixed(2)));
-    setTotalDeliveries(Math.floor(Math.random() * 150 + 50));
+    // Mock data refresh based on date range
+    const randomFactor = newRange ? (newRange.to && newRange.from ? (newRange.to.getTime() - newRange.from.getTime()) / (1000*60*60*24*30) : 1) : 1; // rough factor based on days
+    const newTotalEarnings = parseFloat((Math.random() * 5000 * Math.max(0.5, randomFactor) + 2000).toFixed(2));
+    const newTotalDeliveries = Math.floor(Math.random() * 150 * Math.max(0.5, randomFactor) + 50);
+    
+    setTotalEarnings(newTotalEarnings);
+    setTotalDeliveries(newTotalDeliveries);
+    setAvgDeliveryTime(Math.floor(Math.random() * 10 + 20)); // 20-30 mins
+    setAvgRating(parseFloat((Math.random() * 0.5 + 4.2).toFixed(1))); // 4.2-4.7
+
+    // Mock chart data update
+    setEarningsData(mockEarningsDataDefault.map(d => ({...d, total: Math.floor(d.total * (0.8 + Math.random() * 0.4))})));
+    setDeliveriesData(mockDeliveriesDataDefault.map(d => ({...d, deliveries: Math.floor(d.deliveries * (0.7 + Math.random() * 0.6))})));
   };
 
   return (
@@ -73,14 +72,14 @@ export default function CourierPerformancePage() {
         </CardHeader>
         <CardContent>
             <DatePickerWithRange onDateChange={handleDateRangeChange} />
-            <p className="text-xs text-muted-foreground mt-1 text-center">בחר/י טווח תאריכים כדי לסנן נתונים (פונקציונליות סינון מלאה בפיתוח).</p>
+            <p className="text-xs text-muted-foreground mt-1 text-center">בחר/י טווח תאריכים כדי לסנן נתונים (הנתונים מתרעננים באופן מדומה).</p>
         </CardContent>
       </Card>
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">סה"כ הכנסות (דמו)</CardTitle>
+            <CardTitle className="text-sm font-medium">סה"כ הכנסות</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -90,7 +89,7 @@ export default function CourierPerformancePage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">סה"כ משלוחים (דמו)</CardTitle>
+            <CardTitle className="text-sm font-medium">סה"כ משלוחים</CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -100,7 +99,7 @@ export default function CourierPerformancePage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">זמן משלוח ממוצע (דמו)</CardTitle>
+            <CardTitle className="text-sm font-medium">זמן משלוח ממוצע</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -110,7 +109,7 @@ export default function CourierPerformancePage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">דירוג ממוצע (דמו)</CardTitle>
+            <CardTitle className="text-sm font-medium">דירוג ממוצע</CardTitle>
             <Star className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -123,12 +122,12 @@ export default function CourierPerformancePage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center"><TrendingUp className="mr-2 h-5 w-5 text-primary"/> התפלגות הכנסות (דמו)</CardTitle>
-             <CardDescription>הכנסות לפי חודש בשנה האחרונה.</CardDescription>
+            <CardTitle className="flex items-center"><TrendingUp className="mr-2 h-5 w-5 text-primary"/> התפלגות הכנסות</CardTitle>
+             <CardDescription>הכנסות לפי חודש (דמו, נתונים משתנים עם בחירת תאריכים).</CardDescription>
           </CardHeader>
           <CardContent className="h-[300px] -ml-4 pr-2">
             <ChartContainer config={chartConfigEarnings} className="h-full w-full">
-                <RechartsBarChart data={mockEarningsData} accessibilityLayer margin={{ top: 5, right: 0, left: -20, bottom: 5 }}>
+                <RechartsBarChart data={earningsData} accessibilityLayer margin={{ top: 5, right: 0, left: -20, bottom: 5 }}>
                     <CartesianGrid vertical={false} strokeDasharray="3 3"/>
                     <XAxis dataKey="month" tickLine={false} tickMargin={10} axisLine={false} />
                     <YAxis tickLine={false} tickMargin={10} axisLine={false} unit="₪" width={55} />
@@ -141,12 +140,12 @@ export default function CourierPerformancePage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center"><BarChartHorizontalBig className="mr-2 h-5 w-5 text-accent"/> התפלגות משלוחים (דמו)</CardTitle>
-             <CardDescription>מספר משלוחים לפי יום בשבוע האחרון.</CardDescription>
+            <CardTitle className="flex items-center"><BarChartHorizontalBig className="mr-2 h-5 w-5 text-accent"/> התפלגות משלוחים</CardTitle>
+             <CardDescription>מספר משלוחים לפי יום (דמו, נתונים משתנים עם בחירת תאריכים).</CardDescription>
           </CardHeader>
           <CardContent className="h-[300px] -ml-4 pr-2">
              <ChartContainer config={chartConfigDeliveries} className="h-full w-full">
-                <RechartsLineChart data={mockDeliveriesData} margin={{ top: 5, right: 0, left: -25, bottom: 5 }}>
+                <RechartsLineChart data={deliveriesData} margin={{ top: 5, right: 0, left: -25, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="day" />
                     <YAxis unit=" משל." width={50}/>
@@ -211,3 +210,5 @@ export default function CourierPerformancePage() {
     </div>
   );
 }
+
+    

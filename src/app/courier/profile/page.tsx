@@ -50,6 +50,15 @@ export default function CourierProfilePage() {
       description: "שינויי הפרופיל שלך נשמרו.",
     });
   };
+  
+  const handleSecuritySettings = () => {
+    toast({ title: "בקרוב!", description: "אפשרות להגדרות אבטחה מתקדמות (כגון אימות דו-שלבי) תתווסף כאן." });
+  };
+
+  const handleLogout = () => {
+    toast({ title: "התנתקת (דמו)", description: "התנתקת בהצלחה ממערכת השליחים." });
+    router.push('/'); // Redirect to homepage after logout
+  };
 
   const VehicleIcon = ({ type }: { type: typeof courier.vehicleType }) => {
     if (type === 'motorcycle') return <Bike className="h-5 w-5 text-primary" title="אופנוע"/>;
@@ -163,17 +172,17 @@ export default function CourierProfilePage() {
             <Card className="p-4 bg-muted/30 text-center">
                 <Banknote className="h-8 w-8 mx-auto text-muted-foreground mb-2"/>
                 <p className="text-sm text-muted-foreground">פרטי קבלת תשלום</p>
-                <Button variant="outline" size="sm" className="mt-2" disabled>הגדר (בקרוב)</Button>
+                <Button variant="outline" size="sm" className="mt-2" onClick={() => toast({title: "בקרוב!", description:"ניהול פרטי תשלום יתווסף כאן."})} disabled>הגדר (בקרוב)</Button>
             </Card>
             <Card className="p-4 bg-muted/30 text-center">
                 <FileText className="h-8 w-8 mx-auto text-muted-foreground mb-2"/>
                 <p className="text-sm text-muted-foreground">אימות מסמכים (רישיון, ביטוח)</p>
-                <Button variant="outline" size="sm" className="mt-2" disabled>העלה מסמכים (בקרוב)</Button>
+                <Button variant="outline" size="sm" className="mt-2" onClick={() => toast({title: "בקרוב!", description:"העלאת מסמכים לאימות תתווסף כאן."})} disabled>העלה מסמכים (בקרוב)</Button>
             </Card>
              <Card className="p-4 bg-muted/30 text-center">
                 <CalendarDays className="h-8 w-8 mx-auto text-muted-foreground mb-2"/>
                 <p className="text-sm text-muted-foreground">הגדרות זמינות שבועית</p>
-                <Button variant="outline" size="sm" className="mt-2" disabled>נהל זמינות (בקרוב)</Button>
+                <Button variant="outline" size="sm" className="mt-2" onClick={() => toast({title: "בקרוב!", description:"הגדרת זמינות שבועית תתווסף כאן."})} disabled>נהל זמינות (בקרוב)</Button>
             </Card>
           </div>
           
@@ -184,7 +193,7 @@ export default function CourierProfilePage() {
             <Card className="p-4 bg-muted/30 text-center">
                 <Camera className="h-8 w-8 mx-auto text-muted-foreground mb-2"/>
                 <p className="text-sm text-muted-foreground">ההמלצות המקומיות שלך וצילומי לקוחות מרוצים יוצגו כאן.</p>
-                <Button variant="outline" size="sm" className="mt-2" disabled>הוסף המלצה (בקרוב)</Button>
+                <Button variant="outline" size="sm" className="mt-2" onClick={() => toast({title: "בקרוב!", description:"הוספת המלצות וצילומים תתווסף כאן."})} disabled>הוסף המלצה (בקרוב)</Button>
             </Card>
              <Card className="p-4 bg-muted/30 text-center">
                 <Award className="h-8 w-8 mx-auto text-muted-foreground mb-2"/>
@@ -199,10 +208,12 @@ export default function CourierProfilePage() {
           </Button>
         </CardContent>
          <CardFooter className="border-t pt-4 flex flex-col gap-2">
-            <Button variant="outline" className="w-full"><Shield className="mr-2 h-4 w-4" /> הגדרות אבטחה (כולל 2FA - בקרוב)</Button>
-            <Button variant="destructive" className="w-full" onClick={() => router.push('/')}><LogOut className="mr-2 h-4 w-4"/> התנתק (דמו)</Button>
+            <Button variant="outline" className="w-full" onClick={handleSecuritySettings}><Shield className="mr-2 h-4 w-4" /> הגדרות אבטחה (כולל 2FA - בקרוב)</Button>
+            <Button variant="destructive" className="w-full" onClick={handleLogout}><LogOut className="mr-2 h-4 w-4"/> התנתק (דמו)</Button>
          </CardFooter>
       </Card>
     </div>
   );
 }
+
+    

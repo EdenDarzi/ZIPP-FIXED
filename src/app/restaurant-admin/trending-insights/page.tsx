@@ -160,7 +160,7 @@ export default function TrendingInsightsPage() {
                         {insight.businessOpportunity.suggestedTags.map(tag => <Badge key={tag} variant="outline">{tag}</Badge>)}
                       </div>
                     </div>
-                    <div className="mt-3 relative aspect-video bg-gray-200 rounded overflow-hidden">
+                     <div className="mt-3 relative aspect-video bg-gray-200 rounded overflow-hidden">
                         <Image 
                             src={`https://placehold.co/300x200.png`} 
                             alt={`AI preview for ${insight.businessOpportunity.suggestedItemName}`}
@@ -199,3 +199,5 @@ export default function TrendingInsightsPage() {
     </div>
   );
 }
+
+    

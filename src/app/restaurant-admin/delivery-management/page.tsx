@@ -8,8 +8,18 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { MapPin, DollarSign, Clock, Edit2, Info, Settings } from 'lucide-react';
 import Image from 'next/image';
+import { useToast } from '@/hooks/use-toast';
 
 export default function DeliveryManagementPage() {
+  const { toast } = useToast();
+
+  const handleSaveSettings = () => {
+    toast({
+      title: "הגדרות נשמרו (דמו)",
+      description: "הגדרות המשלוח שלך נשמרו בהצלחה.",
+    });
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -87,7 +97,7 @@ export default function DeliveryManagementPage() {
       </Card>
 
       <div className="flex justify-end">
-        <Button className="bg-primary hover:bg-primary/90">
+        <Button onClick={handleSaveSettings} className="bg-primary hover:bg-primary/90">
           <Edit2 className="mr-2 h-4 w-4" /> שמור הגדרות משלוח (דמו)
         </Button>
       </div>
@@ -97,3 +107,5 @@ export default function DeliveryManagementPage() {
     </div>
   );
 }
+
+    
