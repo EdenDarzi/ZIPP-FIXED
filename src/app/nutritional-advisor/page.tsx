@@ -27,10 +27,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription as PageCardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useToast } from '@/hooks/use-toast';
-import type { NutritionalGoal, DishRecommendation, WeeklyMenu, DailyMealPlan, Meal } from '@/types';
+import type { NutritionalGoal, DishRecommendation } from '@/types';
 import { getNutritionalAdvice, NutritionalAdvisorInput, NutritionalAdvisorOutput } from '@/ai/flows/nutritional-advisor-flow';
 import { generateWeeklyMenu, WeeklyMenuInput, WeeklyMenuOutput } from '@/ai/flows/weekly-menu-planner-flow';
-import { Loader2, Sparkles, Utensils, Lightbulb, HeartPulse, Share2, CalendarDays, Info, ListChecks, ShoppingBasket } from 'lucide-react'; // Added ShoppingBasket
+import { Loader2, Sparkles, Utensils, Lightbulb, HeartPulse, Share2, CalendarDays, Info, ListChecks, ShoppingBasket, BarChart3, CheckCircle, Apple, Activity as ActivityIcon } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 const nutritionalGoals: { value: NutritionalGoal; label: string }[] = [
@@ -38,10 +38,15 @@ const nutritionalGoals: { value: NutritionalGoal; label: string }[] = [
   { value: 'WEIGHT_LOSS', label: 'ירידה במשקל' },
   { value: 'ENERGY_BOOST', label: 'הגברת אנרגיה' },
   { value: 'GENERAL_HEALTHY', label: 'תזונה בריאה כללית' },
+  { value: 'MUSCLE_GAIN', label: 'עלייה במסת שריר' },
+  { value: 'SUGAR_BALANCE', label: 'איזון רמות סוכר' },
+  { value: 'KETO', label: 'דיאטה קטוגנית' },
+  { value: 'VEGETARIAN', label: 'דיאטה צמחונית' },
+  { value: 'PALEO', label: 'דיאטה פליאו' },
 ];
 
 const dishRecommendFormSchema = z.object({
-  goal: z.enum(['TONING', 'WEIGHT_LOSS', 'ENERGY_BOOST', 'GENERAL_HEALTHY'], {
+  goal: z.enum(['TONING', 'WEIGHT_LOSS', 'ENERGY_BOOST', 'GENERAL_HEALTHY', 'MUSCLE_GAIN', 'SUGAR_BALANCE', 'KETO', 'VEGETARIAN', 'PALEO'], {
     required_error: "חובה לבחור מטרה תזונתית.",
   }),
   preferences: z.string().optional(),
@@ -135,7 +140,7 @@ export default function NutritionalAdvisorPage() {
             variant: 'destructive',
         });
     } finally {
-        setIsLoadingWeeklyMenu(false);
+      setIsLoadingWeeklyMenu(false);
     }
   }
 
@@ -151,17 +156,34 @@ export default function NutritionalAdvisorPage() {
     if (!weeklyMenuResponse || !weeklyMenuResponse.plan || weeklyMenuResponse.plan.length === 0) return;
     toast({
       title: "שיתוף תפריט שבועי (דמו)",
-      description: "התפריט השבועי שלך שותף!",
+      description: "התפריט השבועי שלך שותף! אפשרויות שיתוף עם בן/בת זוג או מאמן יופיעו כאן.",
     });
   };
 
-  const handleSetupRecurringBasket = () => {
+  const handleOrderWeeklyMenu = () => {
+    if (!weeklyMenuResponse || !weeklyMenuResponse.plan || weeklyMenuResponse.plan.length === 0) return;
     toast({
-        title: "הגדרת סל שבועי (בקרוב!)",
-        description: "האפשרות להגדיר סל קבוע שיישלח אליך אוטומטית תתווסף בקרוב.",
-        duration: 5000,
+        title: "הזמנת תפריט שבועי (דמו)",
+        description: "ההזמנה שלך נשלחה! המשלוחים יחולקו בצורה חכמה לפי ימים וארוחות (הדמיה).",
     });
   };
+
+  const handleCreateSmartBasket = () => {
+    if (!weeklyMenuResponse || !weeklyMenuResponse.plan || weeklyMenuResponse.plan.length === 0) return;
+     toast({
+        title: "יצירת סל קניות חכם (דמו)",
+        description: "סל קניות חכם נוצר מהתפריט השבועי. אפשרויות לבחירת מסעדות או קניית מצרכים יופיעו כאן.",
+    });
+  };
+
+  const handleFinishedMeal = () => {
+    toast({ title: "הארוחה עודכנה (דמו)", description: "הארוחה סומנה כאכולה! נתוני המעקב שלך עודכנו (הדמיה)." });
+  };
+  
+  const handleReplaceMenu = () => {
+    toast({ title: "מחליף תפריט... (דמו)", description: "ה-AI שלנו מנסה ליצור עבורך תפריט חלופי. אנא המתן." });
+  };
+
 
   return (
     <div className="max-w-3xl mx-auto py-8 space-y-8">
@@ -245,7 +267,7 @@ export default function NutritionalAdvisorPage() {
             {advisorResponse.recommendations.map((rec, index) => (
               <Card key={index} className="bg-muted/30 p-4">
                 <CardTitle className="text-xl text-primary mb-1">{rec.dishName}</CardTitle>
-                <PageCardDescription className="text-sm text-muted-foreground mb-2">מאת: {rec.restaurantName}</PageCardDescription>
+                <PageCardDescription className="text-sm text-muted-foreground mb-2">מאת: {rec.restaurantName} (הערכה)</PageCardDescription>
                 <p className="text-foreground/90 mb-2">{rec.description}</p>
                 <div className="text-xs text-muted-foreground space-x-3 rtl:space-x-reverse mb-2">
                   {rec.estimatedCalories && <span>כ-{rec.estimatedCalories} קלוריות</span>}
@@ -254,6 +276,7 @@ export default function NutritionalAdvisorPage() {
                 <p className="text-sm italic text-accent-foreground/80 bg-accent/10 p-2 rounded-md">
                   <Lightbulb className="inline h-4 w-4 ml-1 text-accent"/>{rec.reasoning}
                 </p>
+                 <p className="text-xs text-muted-foreground mt-1">המלצה מותאמת לזמינות מסעדות באזורך (דמו).</p>
               </Card>
             ))}
             {advisorResponse.generalAdvice && (
@@ -350,15 +373,22 @@ export default function NutritionalAdvisorPage() {
 
       {weeklyMenuResponse && weeklyMenuResponse.plan && weeklyMenuResponse.plan.length > 0 && (
         <Card className="mt-8 shadow-lg animate-fadeInUp">
-            <CardHeader className="flex flex-row justify-between items-center">
+            <CardHeader className="flex flex-col sm:flex-row justify-between items-center gap-3">
                 <CardTitle className="text-2xl font-headline text-accent flex items-center">
-                    <CalendarDays className="ml-3 h-7 w-7"/>התפריט השבועי שלך:</CardTitle>
-                <Button variant="outline" size="icon" onClick={handleShareWeeklyMenu} aria-label="שתף תפריט שבועי">
-                    <Share2 className="h-5 w-5" />
-                </Button>
+                    <CalendarDays className="ml-3 h-7 w-7"/>התפריט השבועי שלך:
+                </CardTitle>
+                <div className="flex gap-2 flex-wrap justify-center sm:justify-end">
+                    <Button variant="outline" size="sm" onClick={handleReplaceMenu} aria-label="החלף תפריט (דמו)">
+                        <Sparkles className="h-4 w-4 ml-1"/> החלף תפריט (דמו)
+                    </Button>
+                     <Button variant="outline" size="sm" onClick={handleShareWeeklyMenu} aria-label="שתף תפריט שבועי">
+                        <Share2 className="h-4 w-4 ml-1" /> שתף תפריט
+                    </Button>
+                </div>
             </CardHeader>
             <CardContent className="space-y-4">
-                <Accordion type="single" collapsible className="w-full">
+                <p className="text-xs text-muted-foreground text-center">הערה: ההמלצות מותאמות לזמינות מסעדות באזורך (דמו).</p>
+                <Accordion type="single" collapsible className="w-full" defaultValue="day-1">
                     {weeklyMenuResponse.plan.map((dailyPlan, index) => (
                         <AccordionItem value={`day-${index + 1}`} key={index}>
                             <AccordionTrigger className="text-lg font-semibold hover:no-underline">
@@ -387,9 +417,12 @@ export default function NutritionalAdvisorPage() {
                     </div>
                 )}
             </CardContent>
-            <CardFooter>
-                <Button onClick={handleSetupRecurringBasket} variant="default" className="w-full bg-teal-500 hover:bg-teal-600 text-white">
-                    <ShoppingBasket className="ml-2 h-4 w-4" /> הגדר כסל שבועי קבוע (בקרוב)
+            <CardFooter className="flex flex-col sm:flex-row gap-3 border-t pt-4">
+                <Button onClick={handleOrderWeeklyMenu} variant="default" className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white">
+                    <ShoppingBasket className="ml-2 h-4 w-4" /> הזמן את התפריט השבועי (דמו)
+                </Button>
+                 <Button onClick={handleCreateSmartBasket} variant="outline" className="w-full sm:flex-1">
+                    <Sparkles className="ml-2 h-4 w-4" /> צור סל קניות חכם (דמו)
                 </Button>
             </CardFooter>
         </Card>
@@ -404,6 +437,72 @@ export default function NutritionalAdvisorPage() {
         </Card>
       )}
 
+      <Separator className="my-10" />
+
+      <Card className="shadow-md">
+        <CardHeader>
+            <CardTitle className="text-xl font-headline text-primary flex items-center">
+                <BarChart3 className="ml-2 h-5 w-5" /> מעקב התקדמות (דמו)
+            </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4 text-center">
+            <p className="text-muted-foreground">כאן יוצגו גרפים של צריכת קלוריות, חלבון, פחמימות ושומן.</p>
+            <div className="p-4 border border-dashed rounded-md">
+                <p className="text-sm text-muted-foreground">גרף יומי/שבועי (Placeholder)</p>
+            </div>
+            <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md text-yellow-700 text-sm">
+                <Info className="inline h-4 w-4 mr-1"/> התראה לדוגמה: היום צרכת פחות מדי חלבון – להוסיף מנה מומלצת? (לחץ <Button variant="link" size="sm" className="p-0 h-auto text-yellow-700">כאן</Button> להצעה).
+            </div>
+            <Button onClick={handleFinishedMeal} variant="outline">
+                <CheckCircle className="ml-2 h-4 w-4 text-green-500"/> סיימתי את הארוחה (דמו)
+            </Button>
+        </CardContent>
+      </Card>
+
+      <Separator className="my-10" />
+       <div className="space-y-6">
+            <Card className="shadow-md">
+                <CardHeader>
+                    <CardTitle className="text-xl font-headline text-primary flex items-center">
+                         <ActivityIcon className="ml-2 h-5 w-5" /> שילוב עם נתוני בריאות (בקרוב)
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="text-center space-y-3">
+                    <p className="text-muted-foreground">חבר את חשבון LivePick שלך לאפליקציות בריאות לקבלת המלצות מדויקות יותר.</p>
+                    <div className="flex justify-center gap-4">
+                        <Button variant="outline" disabled><Apple className="ml-2 h-4 w-4" /> Apple Health</Button>
+                        <Button variant="outline" disabled><Sparkles className="ml-2 h-4 w-4" /> Google Fit</Button>
+                    </div>
+                </CardContent>
+            </Card>
+            <Card className="shadow-md">
+                <CardHeader>
+                    <CardTitle className="text-xl font-headline text-primary flex items-center">
+                        <CalendarDays className="ml-2 h-5 w-5" /> שגרות חכמות (בקרוב)
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="text-center space-y-2">
+                    <p className="text-muted-foreground">בחר תבניות תזונה מוכנות מראש:</p>
+                    <p className="text-sm">"ימי אכילה קבועים", "שבוע ניקוי רעלים", "שבוע חלבון גבוה", "שבוע ארוחות מהירות".</p>
+                    <Button variant="outline" disabled>בחר שגרה (בקרוב)</Button>
+                </CardContent>
+            </Card>
+             <Card className="shadow-md">
+                <CardHeader>
+                    <CardTitle className="text-xl font-headline text-primary flex items-center">
+                        <Sparkles className="ml-2 h-5 w-5" /> אתגר התזונה שלך (בקרוב)
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="text-center space-y-2">
+                    <p className="text-muted-foreground">צבור נקודות, השג תגים והשלם משימות תזונה כדי לזכות בפרסים!</p>
+                    <p className="text-sm">לדוגמה: "השלמת שבוע זהב" = משלוח מתנה. "אכול 3 ירקות שונים ביום".</p>
+                    <Button variant="outline" disabled>הצג אתגרים (בקרוב)</Button>
+                </CardContent>
+            </Card>
+       </div>
+
     </div>
   );
 }
+
+    

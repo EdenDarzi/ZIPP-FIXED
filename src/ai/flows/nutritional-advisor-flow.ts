@@ -22,7 +22,17 @@ import type { NutritionalGoal, DishRecommendation } from '@/types'; // Assuming 
 /**
  * @description Zod enum for predefined nutritional goals.
  */
-const NutritionalGoalEnum = z.enum(['TONING', 'WEIGHT_LOSS', 'ENERGY_BOOST', 'GENERAL_HEALTHY']);
+const NutritionalGoalEnum = z.enum([
+  'TONING', 
+  'WEIGHT_LOSS', 
+  'ENERGY_BOOST', 
+  'GENERAL_HEALTHY',
+  'MUSCLE_GAIN',
+  'SUGAR_BALANCE',
+  'KETO',
+  'VEGETARIAN',
+  'PALEO'
+]);
 
 /**
  * @description Zod schema for the input to the nutritional advisor flow.
@@ -91,22 +101,25 @@ Nutritional Goal: {{{goal}}}
 Based on the user's goal and preferences, provide 2-3 diverse dish recommendations.
 For each recommendation, include:
 1.  'dishName': A specific and appealing name for the dish.
-2.  'restaurantName': A plausible fictional restaurant name or a type of restaurant that would serve such a dish (e.g., "The Lean Machine", "Salad Bar Supreme", "Energy Fuel Stop").
+2.  'restaurantName': A plausible fictional restaurant name or a type of restaurant that would serve such a dish (e.g., "The Lean Machine", "Salad Bar Supreme", "Energy Fuel Stop", "Keto Kitchen", "Paleo Plate").
 3.  'description': A brief (1-2 sentences) enticing description of the dish, highlighting its key ingredients and how it supports the user's goal.
 4.  'estimatedCalories': A plausible estimate (e.g., 300-600).
 5.  'estimatedProteinGrams': A plausible estimate (e.g., 15-40).
 6.  'reasoning': A short, clear explanation of why this particular dish aligns with the user's goal and any stated preferences/restrictions.
 
 Consider these example dish archetypes and their suitability for different goals when making your recommendations. You can use these as inspiration or recommend variations.
-*   **Grilled Chicken Salad:** (Good for: TONING, WEIGHT_LOSS, GENERAL_HEALTHY) - High protein, low carb.
-*   **Quinoa Bowl with Roasted Vegetables & Chickpeas:** (Good for: ENERGY_BOOST, GENERAL_HEALTHY, WEIGHT_LOSS) - Balanced complex carbs, fiber, protein.
-*   **Lentil Soup:** (Good for: GENERAL_HEALTHY, WEIGHT_LOSS) - High fiber, plant-based protein.
-*   **Baked Salmon with Steamed Asparagus and Brown Rice:** (Good for: TONING, ENERGY_BOOST, GENERAL_HEALTHY) - High protein, omega-3s, complex carbs.
-*   **Fruit Smoothie with Protein Powder & Spinach:** (Good for: ENERGY_BOOST, TONING) - Quick nutrients, protein.
-*   **Tofu Stir-fry with Mixed Vegetables and a light soy-ginger sauce:** (Good for: WEIGHT_LOSS, GENERAL_HEALTHY, VEGAN_OPTION) - Plant-based protein, lots of veggies.
-*   **Greek Yogurt Parfait with Berries and Nuts:** (Good for: ENERGY_BOOST, TONING, GENERAL_HEALTHY) - Protein, fiber, healthy fats.
+*   **Grilled Chicken Salad:** (Good for: TONING, WEIGHT_LOSS, GENERAL_HEALTHY, MUSCLE_GAIN) - High protein, low carb.
+*   **Quinoa Bowl with Roasted Vegetables & Chickpeas:** (Good for: ENERGY_BOOST, GENERAL_HEALTHY, WEIGHT_LOSS, VEGETARIAN) - Balanced complex carbs, fiber, protein.
+*   **Lentil Soup:** (Good for: GENERAL_HEALTHY, WEIGHT_LOSS, VEGETARIAN) - High fiber, plant-based protein.
+*   **Baked Salmon with Steamed Asparagus and Brown Rice:** (Good for: TONING, ENERGY_BOOST, GENERAL_HEALTHY, MUSCLE_GAIN, SUGAR_BALANCE) - High protein, omega-3s, complex carbs.
+*   **Fruit Smoothie with Protein Powder & Spinach:** (Good for: ENERGY_BOOST, TONING, MUSCLE_GAIN) - Quick nutrients, protein.
+*   **Tofu Stir-fry with Mixed Vegetables and a light soy-ginger sauce:** (Good for: WEIGHT_LOSS, GENERAL_HEALTHY, VEGETARIAN) - Plant-based protein, lots of veggies.
+*   **Greek Yogurt Parfait with Berries and Nuts:** (Good for: ENERGY_BOOST, TONING, GENERAL_HEALTHY, SUGAR_BALANCE) - Protein, fiber, healthy fats.
+*   **Avocado and Egg on Whole Wheat Toast:** (Good for: KETO (modify bread), PALEO (no bread), SUGAR_BALANCE, GENERAL_HEALTHY) - Healthy fats, protein.
+*   **Steak with Cauliflower Mash:** (Good for: KETO, PALEO, MUSCLE_GAIN, TONING) - High protein, low carb.
 
 Also, provide one short piece of 'generalAdvice' (1-2 sentences) related to the user's selected nutritional goal that is encouraging and actionable.
+Tailor the advice to the specific goal (e.g., for KETO, mention electrolytes; for MUSCLE_GAIN, mention protein timing).
 
 Ensure your response strictly follows the output schema, providing an array for 'recommendations'.
 If no preferences are given, make generally suitable suggestions for the goal.
@@ -140,3 +153,5 @@ const nutritionalAdvisorFlow = ai.defineFlow(
     return output;
   }
 );
+
+    

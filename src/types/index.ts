@@ -1,5 +1,4 @@
 
-
 export interface MenuItemOption {
   name: string;
   priceModifier: number; // e.g., +1.00 for extra cheese
@@ -51,9 +50,9 @@ export interface Restaurant {
   menu: MenuItem[];
   hasDeliveryArena?: boolean;
   tags?: RestaurantTag[];
-  livePickSaleConfig?: { // Added for Restaurant-specific LivePick Sale settings
+  livePickSaleConfig?: { 
     enabled: boolean;
-    startTime?: string; // e.g., "19:00"
+    startTime?: string; 
     bagCount?: number;
     bagPrice?: number;
   };
@@ -68,16 +67,14 @@ export interface SelectedAddon {
 }
 
 export interface CartItem {
-  id: string; // Unique identifier for this cart entry
-  menuItemId: string; // ID of the original menu item
+  id: string; 
+  menuItemId: string; 
   name: string;
-  price: number; // Base price of the menu item
+  price: number; 
   quantity: number;
   imageUrl?: string;
   dataAiHint?: string;
   selectedAddons?: SelectedAddon[];
-  // restaurantId is needed to group items by restaurant in cart if that's a feature
-  // restaurantId: string; 
 }
 
 export interface User {
@@ -156,7 +153,7 @@ export type OrderStatus =
 export interface Order {
   id: string;
   userId: string;
-  items: CartItem[]; // CartItem now includes selected addons
+  items: CartItem[]; 
   totalAmount: number; 
   deliveryPreference: DeliveryPreference;
   deliveryFee: number;
@@ -258,7 +255,16 @@ export interface P2POrder {
   orderTimeline?: { status: P2POrderStatus, timestamp: string, notes?: string }[];
 }
 
-export type NutritionalGoal = 'TONING' | 'WEIGHT_LOSS' | 'ENERGY_BOOST' | 'GENERAL_HEALTHY';
+export type NutritionalGoal = 
+  | 'TONING' 
+  | 'WEIGHT_LOSS' 
+  | 'ENERGY_BOOST' 
+  | 'GENERAL_HEALTHY'
+  | 'MUSCLE_GAIN'
+  | 'SUGAR_BALANCE'
+  | 'KETO'
+  | 'VEGETARIAN'
+  | 'PALEO';
 
 export interface DishRecommendation {
   dishName: string;
@@ -304,17 +310,19 @@ export type SecondHandItemCategory = 'טלפונים' | 'מחשבים' | 'בגד
 
 export interface SecondHandItem {
   id: string;
-  userId: string; // ID of the seller
-  sellerName: string; // For display
+  userId: string; 
+  sellerName: string; 
   title: string;
   category: SecondHandItemCategory;
   price: number;
   description: string;
-  images: { url: string; dataAiHint?: string }[]; // Array for up to 3 images
-  location: string; // City / Area
-  publishedAt: string; // ISO date string
+  images: { url: string; dataAiHint?: string }[]; 
+  location: string; 
+  publishedAt: string; 
   isSold: boolean;
-  sellerRating?: number; // Optional
-  contactMethod?: 'whatsapp' | 'phone' | 'app-chat'; // Mock for now
-  contactDetails?: string; // Phone number or WhatsApp link
+  sellerRating?: number; 
+  contactMethod?: 'whatsapp' | 'phone' | 'app-chat'; 
+  contactDetails?: string; 
 }
+
+    
