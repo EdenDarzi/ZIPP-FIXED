@@ -2,12 +2,12 @@
 'use client';
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { User, Edit3, KeyRound, Mail, Phone, Home, CreditCardIcon, ListOrderedIcon } from "lucide-react";
+import { User, Edit3, KeyRound, Mail, Phone, Home, CreditCardIcon, ListOrderedIcon, ShieldCheckIcon } from "lucide-react";
 import Link from "next/link";
 
 // Mock user data - in a real app, this would come from context/API
@@ -28,10 +28,12 @@ export default function UserProfilePage() {
     });
   };
 
-   const handlePlaceholderClick = (featureName: string) => {
+   const handlePlaceholderClick = (featureName: string, dedicatedPage?: string) => {
     toast({
-      title: `${featureName} (בקרוב)`,
-      description: `ניהול ${featureName.toLowerCase()} יתאפשר כאן בקרוב.`,
+      title: `${featureName}`,
+      description: dedicatedPage 
+        ? `תוכל לנהל ${featureName.toLowerCase()} בעמוד הייעודי אליו ניתן להגיע מתפריט החשבון.`
+        : `ניהול ${featureName.toLowerCase()} יתאפשר כאן או בעמוד ייעודי בקרוב.`,
     });
   };
 
@@ -65,8 +67,8 @@ export default function UserProfilePage() {
                 <Button type="submit" className="bg-primary hover:bg-primary/90">
                     <Edit3 className="mr-2 h-4 w-4" /> שמור שינויים
                 </Button>
-                <Button type="button" variant="outline" onClick={() => handlePlaceholderClick("שינוי סיסמה")}>
-                    <KeyRound className="mr-2 h-4 w-4" /> שנה סיסמה (בקרוב)
+                <Button type="button" variant="outline" onClick={() => handlePlaceholderClick("שינוי סיסמה", "/account/security")}>
+                    <KeyRound className="mr-2 h-4 w-4" /> שנה סיסמה
                 </Button>
             </div>
           </form>
@@ -82,14 +84,15 @@ export default function UserProfilePage() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-3">נהל את כתובות המשלוח שלך לגישה מהירה.</p>
-            {/* Placeholder for address list */}
             <div className="p-3 border rounded-md bg-muted/20 text-xs text-muted-foreground">
                 רחוב הדוגמה 1, תל אביב (ראשי)<br/>
                 עבודה - רחוב המשרד 5, רמת גן
             </div>
           </CardContent>
           <CardFooter>
-             <Button variant="outline" className="w-full" onClick={() => handlePlaceholderClick("ניהול כתובות")}>נהל כתובות (בקרוב)</Button>
+             <Button variant="outline" className="w-full" asChild>
+                <Link href="/account/addresses">נהל כתובות</Link>
+            </Button>
           </CardFooter>
         </Card>
 
@@ -104,7 +107,9 @@ export default function UserProfilePage() {
             </div>
           </CardContent>
           <CardFooter>
-            <Button variant="outline" className="w-full" onClick={() => handlePlaceholderClick("אמצעי תשלום")}>נהל אמצעי תשלום (בקרוב)</Button>
+            <Button variant="outline" className="w-full" asChild>
+                <Link href="/account/payment-methods">נהל אמצעי תשלום</Link>
+            </Button>
           </CardFooter>
         </Card>
 
@@ -127,18 +132,4 @@ export default function UserProfilePage() {
       </div>
     </div>
   );
-}
-
-// Placeholder pages for other account sections (to avoid 404s)
-export function AddressesPage() {
-  return <div className="text-center p-10"><Home className="mx-auto h-12 w-12 text-muted-foreground mb-4"/>דף ניהול כתובות יתווסף כאן בקרוב.</div>;
-}
-export function PaymentMethodsPage() {
-  return <div className="text-center p-10"><CreditCardIcon className="mx-auto h-12 w-12 text-muted-foreground mb-4"/>דף ניהול אמצעי תשלום יתווסף כאן בקרוב.</div>;
-}
-export function OrderHistoryPage() {
-  return <div className="text-center p-10"><ListOrderedIcon className="mx-auto h-12 w-12 text-muted-foreground mb-4"/>היסטוריית ההזמנות המלאה שלך תופיע כאן בקרוב.</div>;
-}
-export function SecurityPage() {
-  return <div className="text-center p-10"><KeyRound className="mx-auto h-12 w-12 text-muted-foreground mb-4"/>הגדרות אבטחה וניהול התראות יתווספו כאן בקרוב.</div>;
 }
