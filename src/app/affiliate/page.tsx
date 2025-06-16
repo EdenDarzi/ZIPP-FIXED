@@ -10,8 +10,8 @@ import { useToast } from '@/hooks/use-toast';
 const affiliateBenefits = [
   { icon: DollarSign, title: "הרוויחו כסף/נקודות", description: "קבלו תגמול על כל הזמנה שנעשית דרך הקישור האישי שלכם או שיתוף מוצלח." },
   { icon: Star, title: "צברו כוכבים מהר יותר", description: "קבלו בונוס כוכבים בתוכנית SocialDrop על הפניות מוצלחות." },
-  { icon: Store, title: "חנות המלצות אישית (בקרוב)", description: "צרו עמוד אישי עם המוצרים והעסקים האהובים עליכם ושתפו אותו." },
-  { icon: TrendingUp, title: "כלים למעקב", description: "עקבו אחר הביצועים שלכם, מספר ההפניות והרווחים שלכם בדשבורד אישי (בקרוב)." },
+  { icon: Store, title: "חנות המלצות אישית", description: "צרו עמוד אישי עם המוצרים והעסקים האהובים עליכם ושתפו אותו." },
+  { icon: TrendingUp, title: "כלים למעקב", description: "עקבו אחר הביצועים שלכם, מספר ההפניות והרווחים שלכם בדשבורד אישי." },
   { icon: Gift, title: "הטבות בלעדיות לשותפים", description: "גישה למבצעים מיוחדים, הנחות נוספות ופרסים לשותפים מצטיינים." },
 ];
 
@@ -20,8 +20,8 @@ export default function AffiliateProgramPage() {
 
   const handleStartNowClick = () => {
     toast({
-      title: "תוכנית השותפים - בקרוב!",
-      description: "ההרשמה לתוכנית השותפים שלנו תיפתח בקרוב. הישארו מעודכנים!",
+      title: "הצטרפות לתוכנית השותפים (הדמיה)",
+      description: "בקשת ההצטרפות שלך התקבלה! נציג ייצור איתך קשר בקרוב עם פרטים נוספים. (זהו דמו).",
     });
   };
 
@@ -79,20 +79,18 @@ export default function AffiliateProgramPage() {
         </CardHeader>
         <CardContent>
             <p className="text-muted-foreground mb-6">
-                <Info className="inline h-5 w-5 mr-1 text-primary"/>
-                תוכנית השותפים שלנו תושק בקרוב! לחצו למטה כדי להירשם לרשימת המתנה.
+               הצטרפו עוד היום לתוכנית השותפים והתחילו להרוויח על ידי המלצה על LivePick!
             </p>
             <Button size="lg" onClick={handleStartNowClick} className="bg-accent hover:bg-accent/90 text-accent-foreground text-lg shadow-md">
-                הצטרפו לרשימת המתנה (בקרוב!) <ArrowRight className="ml-2 h-5 w-5"/>
+                הצטרף כשותף עכשיו <ArrowRight className="ml-2 h-5 w-5"/>
             </Button>
         </CardContent>
          <CardFooter className="justify-center">
            <p className="text-xs text-muted-foreground text-center">
-            פרטים מלאים ותנאי התוכנית יפורסמו עם השקתה.
+            פרטים מלאים ותנאי התוכנית זמינים לאחר ההרשמה.
           </p>
         </CardFooter>
       </Card>
     </div>
   );
 }
-

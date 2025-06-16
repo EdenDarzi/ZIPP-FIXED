@@ -20,8 +20,8 @@ export default function VipProgramPage() {
 
   const handleJoinClick = () => {
     toast({
-      title: "תוכנית VIP - בקרוב!",
-      description: "פרטים נוספים על הצטרפות למועדון ה-VIP שלנו יפורסמו בקרוב. הישארו מעודכנים!",
+      title: "ברוכים הבאים ל-LivePick VIP (הדמיה)",
+      description: "תהליך ההצטרפות ל-VIP יוצג כאן. לעת עתה, אנא דמיין שהצטרפת למועדון האקסקלוסיבי שלנו!",
     });
   };
 
@@ -64,12 +64,10 @@ export default function VipProgramPage() {
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground mb-6">
-            <Info className="inline h-5 w-5 mr-1 text-primary"/>
-            תוכנית ה-VIP שלנו נמצאת כעת בשלבי פיתוח אחרונים ותושק בקרוב מאוד.
-            הישארו מעודכנים!
+             הצטרפו עכשיו למועדון ה-VIP ותיהנו מחוויה משודרגת ב-LivePick!
           </p>
           <Button size="lg" onClick={handleJoinClick} className="bg-accent hover:bg-accent/90 text-accent-foreground text-lg shadow-md">
-            הצטרפו לרשימת המתנה (בקרוב!) <ArrowRight className="ml-2 h-5 w-5" />
+            הצטרף ל-LivePick VIP <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </CardContent>
         <CardFooter className="justify-center">
@@ -81,4 +79,3 @@ export default function VipProgramPage() {
     </div>
   );
 }
-
