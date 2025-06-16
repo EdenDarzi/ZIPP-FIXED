@@ -10,6 +10,7 @@ import { DollarSign, Package, Clock, Star, TrendingUp, Award, CalendarDays, BarC
 import { DatePickerWithRange } from '@/components/ui/date-range-picker';
 import type { DateRange } from 'react-day-picker';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast'; // Added useToast
 
 const mockEarningsDataDefault = [
   { month: 'ינו', total: Math.floor(Math.random() * 2000) + 1000 }, { month: 'פבר', total: Math.floor(Math.random() * 2000) + 1200 }, { month: 'מרץ', total: Math.floor(Math.random() * 2000) + 1500 }, { month: 'אפר', total: Math.floor(Math.random() * 2000) + 1300 }, { month: 'מאי', total: Math.floor(Math.random() * 2000) + 1800 }, { month: 'יונ', total: Math.floor(Math.random() * 2000) + 2200 },
@@ -44,24 +45,37 @@ export default function CourierPerformancePage() {
 
   const [earningsData, setEarningsData] = useState(mockEarningsDataDefault);
   const [deliveriesData, setDeliveriesData] = useState(mockDeliveriesDataDefault);
-
+  const { toast } = useToast(); // Initialize useToast
 
   const handleDateRangeChange = (newRange: DateRange | undefined) => {
     setDateRange(newRange);
+    
     // Mock data refresh based on date range
-    const randomFactor = newRange ? (newRange.to && newRange.from ? (newRange.to.getTime() - newRange.from.getTime()) / (1000*60*60*24*30) : 1) : 1; // rough factor based on days
-    const newTotalEarnings = parseFloat((Math.random() * 5000 * Math.max(0.5, randomFactor) + 2000).toFixed(2));
-    const newTotalDeliveries = Math.floor(Math.random() * 150 * Math.max(0.5, randomFactor) + 50);
+    const randomFactor = newRange?.from && newRange?.to ? (newRange.to.getTime() - newRange.from.getTime()) / (1000*60*60*24*30) + 0.5 : 1;
+    
+    const newTotalEarnings = parseFloat((Math.random() * 5000 * Math.max(0.2, randomFactor) + 1500).toFixed(2));
+    const newTotalDeliveries = Math.floor(Math.random() * 150 * Math.max(0.2, randomFactor) + 40);
     
     setTotalEarnings(newTotalEarnings);
     setTotalDeliveries(newTotalDeliveries);
-    setAvgDeliveryTime(Math.floor(Math.random() * 10 + 20)); // 20-30 mins
-    setAvgRating(parseFloat((Math.random() * 0.5 + 4.2).toFixed(1))); // 4.2-4.7
+    setAvgDeliveryTime(Math.floor(Math.random() * 15 + 18)); // 18-33 mins
+    setAvgRating(parseFloat((Math.random() * 0.8 + 4.0).toFixed(1))); // 4.0-4.8
 
-    // Mock chart data update
-    setEarningsData(mockEarningsDataDefault.map(d => ({...d, total: Math.floor(d.total * (0.8 + Math.random() * 0.4))})));
-    setDeliveriesData(mockDeliveriesDataDefault.map(d => ({...d, deliveries: Math.floor(d.deliveries * (0.7 + Math.random() * 0.6))})));
+    setEarningsData(mockEarningsDataDefault.map(d => ({...d, total: Math.floor((d.total + Math.random() * 500 - 250) * Math.max(0.5, randomFactor * 0.7))})));
+    setDeliveriesData(mockDeliveriesDataDefault.map(d => ({...d, deliveries: Math.floor((d.deliveries + Math.random() * 5 - 2) * Math.max(0.5, randomFactor * 0.8))})));
+    
+    toast({
+        title: "נתונים רועננו (דמו)",
+        description: "הנתונים והגרפים עודכנו בהתאם לטווח התאריכים שנבחר.",
+    });
   };
+  
+  useEffect(() => {
+    // Initial data load simulation
+    handleDateRangeChange(undefined); 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
 
   return (
     <div className="space-y-6">
@@ -210,5 +224,6 @@ export default function CourierPerformancePage() {
     </div>
   );
 }
+    
 
     

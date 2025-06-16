@@ -37,7 +37,7 @@ export default function CourierDashboardPage() {
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <CardTitle className="text-2xl md:text-3xl font-headline text-primary">לוח הבקרה שלך</CardTitle>
-            <div className="flex items-center space-x-3 p-3 border rounded-lg bg-background shadow-sm">
+            <div className="flex items-center space-x-3 rtl:space-x-reverse p-3 border rounded-lg bg-background shadow-sm">
               <Label htmlFor="activityStatus" className="text-lg font-medium">
                 סטטוס: <span className={isActive ? "text-green-600" : "text-destructive"}>{isActive ? "פעיל/ה" : "לא פעיל/ה"}</span>
               </Label>
@@ -145,5 +145,7 @@ export default function CourierDashboardPage() {
     </div>
   );
 }
+
+    
 
     

@@ -13,6 +13,7 @@ import { mockCourierProfiles } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import type { DeliveryVehicle } from '@/types'; // Import DeliveryVehicle type
 
 const MOCK_CURRENT_COURIER_ID = 'courier1'; 
 
@@ -47,7 +48,7 @@ export default function CourierProfilePage() {
   const handleSaveChanges = () => {
     toast({
       title: "הפרופיל עודכן (דמו)",
-      description: "שינויי הפרופיל שלך נשמרו.",
+      description: "שינויי הפרופיל שלך נשמרו (זוהי הדגמה בלבד).",
     });
   };
   
@@ -56,11 +57,11 @@ export default function CourierProfilePage() {
   };
 
   const handleLogout = () => {
-    toast({ title: "התנתקת (דמו)", description: "התנתקת בהצלחה ממערכת השליחים." });
-    router.push('/'); // Redirect to homepage after logout
+    toast({ title: "התנתקת (דמו)", description: "התנתקת בהצלחה ממערכת השליחים (זוהי הדגמה)." });
+    router.push('/'); 
   };
 
-  const VehicleIcon = ({ type }: { type: typeof courier.vehicleType }) => {
+  const VehicleIconDisplay = ({ type }: { type: DeliveryVehicle | undefined }) => {
     if (type === 'motorcycle') return <Bike className="h-5 w-5 text-primary" title="אופנוע"/>;
     if (type === 'car') return <Car className="h-5 w-5 text-primary" title="רכב"/>;
     if (type === 'bicycle') return <Bike className="h-5 w-5 text-primary" title="אופניים"/>;
@@ -80,8 +81,8 @@ export default function CourierProfilePage() {
           </Avatar>
           <CardTitle className="text-3xl font-headline text-primary">{courier.name}</CardTitle>
           <CardDescription className="text-lg">מזהה: {courier.id}</CardDescription>
-          <div className="flex items-center space-x-2 mt-2 text-muted-foreground">
-            <VehicleIcon type={courier.vehicleType} />
+          <div className="flex items-center space-x-2 rtl:space-x-reverse mt-2 text-muted-foreground">
+            <VehicleIconDisplay type={courier.vehicleType} />
             <span className="capitalize">{courier.vehicleType} - {courier.transportationModeDetails || 'לא זמין'}</span>
             <span className="mx-1">|</span>
             <Users className="h-4 w-4 text-primary" />
