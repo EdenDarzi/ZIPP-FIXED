@@ -128,7 +128,6 @@ export default function OrderTrackingPage() {
       setOrder(null); 
       return;
     }
-    // Simulate adding notes to the fetched order for display purposes
     if (notesFromQuery) {
         fetchedOrder.customerNotes = decodeURIComponent(notesFromQuery);
     }
@@ -262,7 +261,7 @@ export default function OrderTrackingPage() {
   const handleGamificationTask = () => {
     toast({
         title: "משימת בונוס! (דמו)",
-        description: "שתף תמונה של הטרנד שהזמנת עם #SwiftServeLive וצבור עוד כוכבים! (משימה תופיע כאן)",
+        description: "שתף תמונה של הטרנד שהזמנת עם #LivePick וצבור עוד כוכבים! (משימה תופיע כאן)",
         action: <Award className="text-yellow-500" />
     });
   }
@@ -303,10 +302,10 @@ export default function OrderTrackingPage() {
       {shouldShowTrivia && (
         <TriviaChallengeCard
           imageUrl="https://placehold.co/600x400.png"
-          imageHint="פיצה פפרוני חריפה"
-          questionText="מה המנה שבתמונה?"
-          options={["פיצה פפרוני", "המבורגר קלאסי", "סלט קיסר עשיר"]}
-          correctAnswer="פיצה פפרוני"
+          imageHint={order.items[0]?.dataAiHint || order.items[0]?.name || "food item"}
+          questionText={`מהי המנה הראשונה בהזמנה זו מ-${order.restaurantName}?`}
+          options={order.items.length > 0 ? [order.items[0].name, "פיצה פטריות", "סלט יווני"] : ["לא ידוע", "צ'יפס", "שתייה קלה"]}
+          correctAnswer={order.items.length > 0 ? order.items[0].name : "לא ידוע"}
           onTriviaComplete={handleTriviaComplete}
         />
       )}

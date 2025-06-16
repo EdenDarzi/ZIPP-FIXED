@@ -110,7 +110,7 @@ export default function CourierBidPage() {
       toast({ title: "הזמנה דולגה", description: "דילגת על הזדמנות הצעה זו." });
       setIsSubmitting(false);
       setBidPlaced(true); 
-      handleBidEvaluation(otherBids); // Still evaluate other bids if user skips
+      handleBidEvaluation(otherBids); 
       setEvaluationTriggered(true);
       return;
     }
@@ -168,12 +168,11 @@ export default function CourierBidPage() {
 
   const handleBidEvaluation = async (allSubmittedBids: CourierBid[]) => {
     if (!order) return;
-    setIsSubmitting(true); // Indicate processing
-    setBidPlaced(true); // Prevent further bids
+    setIsSubmitting(true); 
+    setBidPlaced(true); 
     toast({ title: "מעבד הצעות...", description: "ה-AI בוחר את השליח המתאים ביותר." });
     try {
         const input: CourierMatchingInputType = { orderDetails: order, bids: allSubmittedBids };
-        // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 2000));
         const result = await selectBestCourierBid(input);
         setWinningBidInfo(result);
@@ -400,6 +399,15 @@ export default function CourierBidPage() {
       <p className="text-sm text-center text-muted-foreground mt-4">
         הצעתך מוערכת לפי מחיר, זמן הגעה משוער, דירוג, ציון אמון והצעת איסוף מהיר. מנוע ההתאמה החכם יבחר את ההצעה הטובה ביותר.
       </p>
+       <style jsx global>{`
+        .animate-pulse {
+            animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        `}</style>
     </div>
   );
 }

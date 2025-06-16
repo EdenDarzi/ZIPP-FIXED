@@ -17,21 +17,16 @@ const mockOrderHistory = [
   { id: 'hist101', date: '2024-06-25', restaurantName: 'פסטה פרפקשן', total: 98.00, status: 'DELIVERED' as OrderStatus, scheduled: false },
 ];
 
-const getStatusBadgeVariant = (status: OrderStatus): "default" | "secondary" | "destructive" | "outline" => {
-    switch (status) {
-        case 'DELIVERED': return 'default';
-        case 'CANCELLED': return 'destructive';
-        case 'SCHEDULED': return 'secondary';
-        default: return 'outline';
-    }
-};
-
 const getStatusTextAndIcon = (status: OrderStatus, scheduled: boolean): { text: string; variant: "default" | "secondary" | "destructive" | "outline"; icon?: React.ElementType } => {
     switch (status) {
         case 'DELIVERED': return { text: 'נמסר', variant: 'default', icon: scheduled ? CalendarClock : undefined };
         case 'CANCELLED': return { text: 'בוטל', variant: 'destructive' };
         case 'SCHEDULED': return { text: 'מתוכנן', variant: 'secondary', icon: CalendarClock };
-        default: return { text: status, variant: 'outline' };
+        // Add other statuses as needed
+        case 'AWAITING_PICKUP': return { text: 'ממתין לאיסוף', variant: 'secondary' };
+        case 'OUT_FOR_DELIVERY': return { text: 'בדרך אליך', variant: 'default' };
+        case 'PREPARING_AT_RESTAURANT': return { text: 'בהכנה', variant: 'default' };
+        default: return { text: status.replace(/_/g, ' ').toLowerCase(), variant: 'outline' };
     }
 };
 
@@ -83,12 +78,19 @@ export default function UserOrderHistoryPage() {
                 const Icon = statusInfo.icon;
                 return (
                   <TableRow key={order.id}>
-                    <TableCell className="font-medium">#{order.id}</TableCell>
+                    <TableCell className="font-medium">#{order.id.slice(-5)}</TableCell>
                     <TableCell>{new Date(order.date).toLocaleDateString('he-IL')}</TableCell>
                     <TableCell>{order.restaurantName}</TableCell>
                     <TableCell>₪{order.total.toFixed(2)}</TableCell>
                     <TableCell>
-                      <Badge variant={statusInfo.variant} className={cn(statusInfo.variant === 'default' && 'bg-green-500 text-white', statusInfo.variant === 'secondary' && 'bg-blue-500 text-white')}>
+                      <Badge 
+                        variant={statusInfo.variant} 
+                        className={cn(
+                            statusInfo.variant === 'default' && order.status === 'DELIVERED' && 'bg-green-500 text-white',
+                            statusInfo.variant === 'secondary' && order.status === 'SCHEDULED' && 'bg-blue-500 text-white',
+                            'capitalize'
+                        )}
+                      >
                         {Icon && <Icon className="inline h-3 w-3 mr-1"/>}
                         {statusInfo.text}
                       </Badge>
@@ -111,7 +113,7 @@ export default function UserOrderHistoryPage() {
         )}
       </CardContent>
       <CardFooter>
-        {mockOrderHistory.length > 10 && <Button variant="outline">טען הזמנות נוספות (בקרוב)</Button>}
+        {mockOrderHistory.length > 10 && <Button variant="outline" disabled>טען הזמנות נוספות (בקרוב)</Button>}
       </CardFooter>
     </Card>
   );

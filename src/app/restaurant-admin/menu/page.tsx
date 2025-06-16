@@ -49,14 +49,12 @@ const menuItemAddonGroupSchema = z.object({
     if (data.type === 'checkbox' && data.minSelection !== undefined && data.minSelection > data.options.length) {
         return false;
     }
-    if (data.type === 'checkbox' && data.maxSelection !== undefined && data.maxSelection > data.options.length) {
-        // This might be okay if maxSelection is a general limit, not per-group-options-length.
-        // If it's intended to be capped by options length, this refine can be stricter.
-    }
+    // Max selection validation against options length can be tricky, depends on intent.
+    // Example: if maxSelection is a global limit or per-group.
     return true;
 }, {
   message: "מספר בחירות מינימלי לא יכול להיות גדול ממספר בחירות מקסימלי, או גדול ממספר האפשרויות הזמינות.",
-  path: ['minSelection'], // Or ['maxSelection'] depending on which makes more sense to highlight
+  path: ['minSelection'], 
 });
 
 
@@ -90,13 +88,16 @@ const livePickSaleFormSchema = z.object({
     livePickSaleBagPrice: z.preprocess(val => Number(val), z.number().positive("מחיר שקית חייב להיות חיובי").optional()),
 }).refine(data => {
     if (data.livePickSaleEnabled) {
-        return !!data.livePickSaleStartTime && data.livePickSaleBagCount !== undefined && data.livePickSaleBagPrice !== undefined;
+        return !!data.livePickSaleStartTime && data.livePickSaleStartTime.trim() !== '' && 
+               data.livePickSaleBagCount !== undefined && data.livePickSaleBagCount >= 0 &&
+               data.livePickSaleBagPrice !== undefined && data.livePickSaleBagPrice > 0;
     }
     return true;
 }, {
-    message: "אם LivePick Sale מופעל, יש למלא שעת התחלה, כמות שקיות ומחיר.",
-    path: ['livePickSaleEnabled'],
+    message: "אם LivePick Sale מופעל, יש למלא שעת התחלה חוקית, כמות שקיות (0 ומעלה) ומחיר חיובי.",
+    path: ['livePickSaleEnabled'], // General path, specific field error messages better handled per field
 });
+
 
 type LivePickSaleFormValues = z.infer<typeof livePickSaleFormSchema>;
 
@@ -121,7 +122,10 @@ export default function MenuManagementPage() {
   const livePickSaleForm = useForm<LivePickSaleFormValues>({
     resolver: zodResolver(livePickSaleFormSchema),
     defaultValues: {
-        livePickSaleEnabled: false, livePickSaleStartTime: "20:00", livePickSaleBagCount: 5, livePickSaleBagPrice: 15,
+        livePickSaleEnabled: restaurant?.livePickSaleConfig?.enabled || false, 
+        livePickSaleStartTime: restaurant?.livePickSaleConfig?.startTime || "20:00", 
+        livePickSaleBagCount: restaurant?.livePickSaleConfig?.bagCount || 5, 
+        livePickSaleBagPrice: restaurant?.livePickSaleConfig?.bagPrice || 15,
     }
   });
 
@@ -197,6 +201,15 @@ export default function MenuManagementPage() {
   }
 
   function onLivePickSaleSubmit(values: LivePickSaleFormValues) {
+    setRestaurant(prev => prev ? ({
+        ...prev,
+        livePickSaleConfig: {
+            enabled: values.livePickSaleEnabled,
+            startTime: values.livePickSaleStartTime,
+            bagCount: values.livePickSaleBagCount,
+            bagPrice: values.livePickSaleBagPrice,
+        }
+    }) : undefined);
     console.log("LivePick Sale Settings Updated (Demo):", values);
     toast({ title: "הגדרות LivePick Sale עודכנו (דמו)", description: `LivePick Sale ${values.livePickSaleEnabled ? 'מופעל' : 'כבוי'}.` });
   }
@@ -427,7 +440,7 @@ export default function MenuManagementPage() {
                                     <FormMessage className="text-xs"/></FormItem>
                                 )}/>
                                  <FormField control={itemForm.control} name={`addons.${groupIndex}.required`} render={({ field }) => (
-                                    <FormItem className="flex flex-row items-center space-x-2 pt-5"><FormControl><Switch checked={field.value} onCheckedChange={field.onChange}/></FormControl><FormLabel className="text-xs !mt-0">קבוצת חובה</FormLabel><FormMessage className="text-xs"/></FormItem>
+                                    <FormItem className="flex flex-row items-center space-x-2 rtl:space-x-reverse pt-5"><FormControl><Switch checked={field.value} onCheckedChange={field.onChange}/></FormControl><FormLabel className="text-xs !mt-0">קבוצת חובה</FormLabel><FormMessage className="text-xs"/></FormItem>
                                 )}/>
                              </div>
                              <div className="grid grid-cols-2 gap-2 mb-2">

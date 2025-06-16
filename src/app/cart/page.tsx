@@ -125,7 +125,9 @@ export default function CartPage() {
                     <ul className="list-disc list-inside mr-4 rtl:mr-0 rtl:ml-4">
                       {item.selectedAddons.map(addon => (
                         <li key={addon.optionId}>
-                          {addon.groupTitle}: {addon.optionName} (+₪{addon.optionPrice.toFixed(2)})
+                          <span className="text-muted-foreground/80">{addon.groupTitle}: </span>
+                          {addon.optionName} 
+                          {addon.optionPrice > 0 && ` (+₪${addon.optionPrice.toFixed(2)})`}
                         </li>
                       ))}
                     </ul>

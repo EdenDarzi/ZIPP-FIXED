@@ -51,6 +51,12 @@ export interface Restaurant {
   menu: MenuItem[];
   hasDeliveryArena?: boolean;
   tags?: RestaurantTag[];
+  livePickSaleConfig?: { // Added for Restaurant-specific LivePick Sale settings
+    enabled: boolean;
+    startTime?: string; // e.g., "19:00"
+    bagCount?: number;
+    bagPrice?: number;
+  };
 }
 
 export interface SelectedAddon {
@@ -160,7 +166,7 @@ export interface Order {
   deliveryAddress: string; 
   restaurantId: string;
   restaurantName: string;
-  customerNotes?: string; // Added customer notes
+  customerNotes?: string; 
   estimatedDeliveryTime?: string; 
   actualDeliveryTime?: string; 
   scheduledDeliveryTime?: string; 
@@ -312,4 +318,3 @@ export interface SecondHandItem {
   contactMethod?: 'whatsapp' | 'phone' | 'app-chat'; // Mock for now
   contactDetails?: string; // Phone number or WhatsApp link
 }
-

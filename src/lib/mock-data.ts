@@ -13,7 +13,7 @@ const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
     isAvailable: true,
     addons: [
       { id: 'addon-group-pizza-size', title: 'בחר גודל', type: 'radio', required: true, options: [ {id: 's1', name: 'רגיל', price: 0, selectedByDefault: true}, {id: 's2', name: 'גדול', price: 5} ]},
-      { id: 'addon-group-pizza-toppings', title: 'תוספות (עד 3)', type: 'checkbox', maxSelection: 3, options: [ {id: 't1', name: 'זיתים', price: 2}, {id: 't2', name: 'פטריות', price: 2.5}, {id: 't3', name: 'בצל', price: 1.5}, {id: 't4', name: 'פפרוני', price: 3} ]}
+      { id: 'addon-group-pizza-toppings', title: 'תוספות (עד 3)', type: 'checkbox', minSelection: 0, maxSelection: 3, options: [ {id: 't1', name: 'זיתים', price: 2}, {id: 't2', name: 'פטריות', price: 2.5}, {id: 't3', name: 'בצל', price: 1.5}, {id: 't4', name: 'פפרוני', price: 3} ]}
     ]
   },
   {
@@ -37,7 +37,7 @@ const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
     isAvailable: false,
     addons: [
         { id: 'addon-group-burger-cheese', title: 'תוספת גבינה', type: 'radio', options: [ {id: 'c0', name: 'ללא גבינה', price: 0, selectedByDefault: true}, {id: 'c1', name: 'צ׳דר', price: 3}, {id: 'c2', name: 'אמנטל', price: 3.5} ]},
-        { id: 'addon-group-burger-extras', title: 'תוספות נוספות', type: 'checkbox', options: [ {id: 'e1', name: 'בצל מטוגן', price: 2}, {id: 'e2', name: 'פטריות מוקפצות', price: 2.5}, {id: 'e3', name: 'ביצת עין', price: 4} ]}
+        { id: 'addon-group-burger-extras', title: 'תוספות נוספות (חובה לבחור 1-2)', type: 'checkbox', required: true, minSelection: 1, maxSelection: 2, options: [ {id: 'e1', name: 'בצל מטוגן', price: 2}, {id: 'e2', name: 'פטריות מוקפצות', price: 2.5}, {id: 'e3', name: 'ביצת עין', price: 4} ]}
     ]
   },
   {
@@ -86,6 +86,12 @@ export const mockRestaurants: Restaurant[] = [
     menu: mockMenuItems.filter(item => item.category === 'Pizza' || item.category === 'Drinks').map(item => ({ ...item, restaurantId: 'restaurant1' })),
     hasDeliveryArena: true,
     tags: ['Popular', 'Fast Delivery', 'Delivery Arena'],
+     livePickSaleConfig: { // Added mock config
+        enabled: true,
+        startTime: "19:00",
+        bagCount: 10,
+        bagPrice: 20
+    }
   },
   {
     id: 'restaurant2',
@@ -436,4 +442,3 @@ export const mockExistingSettings: RestaurantSettings = {
   showRatingsOnStore: true,
   showDeliveryTimeOnStore: true,
 };
-
