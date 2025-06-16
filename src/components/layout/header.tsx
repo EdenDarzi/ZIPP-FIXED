@@ -22,13 +22,13 @@ const Header = () => {
 
   const handleLanguageToggle = () => {
     toast({ 
-        title: "מערכת שפות (בקרוב)", 
-        description: "אפשרות להחלפה בין עברית, אנגלית, רוסית וערבית תתווסף בעתיד."
+        title: "החלפת שפה", 
+        description: "אפשרות להחלפה בין עברית, אנגלית, רוסית וערבית תתווסף בעתיד. (הדגמה)"
     });
   };
 
   const handleTravelModeToggle = () => {
-    toast({ title: "מצב נסיעות (בטא)", description: "המלצות מותאמות למיקום ושירותים בינלאומיים יגיעו בקרוב!" });
+    toast({ title: "מצב נסיעות (בטא)", description: "המלצות מותאמות למיקום ושירותים בינלאומיים יגיעו בקרוב! (הפונקציונליות בפיתוח)" });
   };
 
   const navLinks = [
@@ -103,8 +103,8 @@ const Header = () => {
                 <Button variant="ghost" asChild size="icon" className="relative" title="התראות">
                   <Link href="/notifications" aria-label="התראות"><span className="relative flex items-center justify-center w-full h-full">
                     <Bell className="h-5 w-5" />
-                    {/* Placeholder for notification count badge */}
-                    {/* <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-xs">3</Badge> */}
+                    {/* Placeholder for notification count badge - e.g., if you have an unread count state */}
+                    {/* {unreadNotificationCount > 0 && <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-xs">{unreadNotificationCount}</Badge>} */}
                   </span></Link>
                 </Button>
             </TooltipTrigger>
@@ -138,14 +138,14 @@ const Header = () => {
           
           <Tooltip delayDuration={300}>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="sm" onClick={handleLanguageToggle} className="flex items-center" aria-label="החלף שפה (בקרוב)" title="החלף שפה (בקרוב)">
+              <Button variant="ghost" size="sm" onClick={handleLanguageToggle} className="flex items-center" aria-label="החלף שפה (פונקציונליות בפיתוח)" title="החלף שפה (פונקציונליות בפיתוח)">
                 <span className="flex items-center">
                     <Languages className="h-4 w-4 sm:mr-1" />
                     <span className="hidden sm:inline">EN</span>
                 </span>
               </Button>
             </TooltipTrigger>
-            <TooltipContent className="sm:hidden p-2 text-xs"><p>English (בקרוב)</p></TooltipContent>
+            <TooltipContent className="sm:hidden p-2 text-xs"><p>English (פונקציונליות בפיתוח)</p></TooltipContent>
           </Tooltip>
         </nav>
       </div>

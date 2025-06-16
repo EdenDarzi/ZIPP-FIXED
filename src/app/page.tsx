@@ -45,20 +45,19 @@ export default function HomePage() {
     fetchSuggestion();
 
     const currentHour = new Date().getHours();
-    // For demo purposes, sale is active between 7 PM and 11 PM
-    // if (currentHour >= 19 && currentHour < 23) {
-    // setShowLivePickSaleBanner(true);
+    // if (currentHour >= 19 && currentHour < 23) { // Original logic for sale active hours
+    //   setShowLivePickSaleBanner(true);
     // }
-    setShowLivePickSaleBanner(true); // Demo: always show banner
+    setShowLivePickSaleBanner(true); // Demo: always show banner for now
 
-    setAvailableCouriers(Math.floor(Math.random() * 20) + 5); 
+    setAvailableCouriers(Math.floor(Math.random() * 20) + 8); // Simulate 8-27 couriers
 
   }, []);
 
   const handlePartnershipsClick = () => {
     toast({
-        title: "שיתופי פעולה",
-        description: "הנה דוגמאות לשיתופי פעולה אפשריים. פרטים נוספים והצעות יפורסמו בקרוב.",
+        title: "גלה שיתופי פעולה",
+        description: "בקרוב תוכלו לראות כאן רשימה מלאה של שיתופי פעולה והטבות בלעדיות. (הדגמה)",
     });
   };
 
@@ -80,7 +79,7 @@ export default function HomePage() {
               type="search"
               placeholder="מה מתחשק לכם היום? (למשל, פיצה, פרחים, טרנד חם)"
               className="w-full pr-12 pl-4 py-3 text-lg rounded-full shadow-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
-              aria-label="Search for food, products, or services"
+              aria-label="חפש אוכל, מוצרים או שירותים"
             />
           </div>
         </div>
@@ -144,21 +143,21 @@ export default function HomePage() {
       <SurpriseFeatureCard />
 
       <section className="grid md:grid-cols-2 gap-6 animate-fadeInUp animation-delay-680">
-        <Card className="hover:shadow-lg hover:border-green-500/50 transition-all cursor-pointer h-full flex flex-col items-center justify-center text-center p-6 bg-green-500/5 border-green-500/20">
+        <Card className="hover:shadow-lg hover:border-green-500/50 transition-all cursor-default h-full flex flex-col items-center justify-center text-center p-6 bg-green-500/5 border-green-500/20">
            <Route className="h-12 w-12 text-green-600 mb-3" />
-           <CardTitle className="text-xl font-semibold text-green-700">שליחים בקרבתך</CardTitle>
+           <CardTitle className="text-xl font-semibold text-green-700">שליחים פעילים באזורך כעת!</CardTitle>
            {availableCouriers !== null ? (
              <>
                <CardDescription className="text-md text-green-600/90 mt-1">
-                 כרגע יש <strong className="text-2xl">{availableCouriers}</strong> שליחים זמינים באזורך!
+                 כרגע יש כ-<strong className="text-2xl">{availableCouriers}</strong> שליחים זמינים!
                </CardDescription>
-               <p className="text-xs text-muted-foreground/70 mt-1">(הנתון המוצג הוא להדגמה בלבד ומשתנה)</p>
+               <p className="text-xs text-muted-foreground/70 mt-1">(הנתון המוצג הוא להדגמה ומשתנה)</p>
              </>
            ) : (
              <CardDescription className="text-md text-green-600/90 mt-1 animate-pulse">בודק זמינות שליחים...</CardDescription>
            )}
         </Card>
-        <Card className="hover:shadow-lg hover:border-blue-500/50 transition-all cursor-pointer h-full flex flex-col items-center justify-center text-center p-6 bg-blue-500/5 border-blue-500/20">
+        <Card className="hover:shadow-lg hover:border-blue-500/50 transition-all cursor-default h-full flex flex-col items-center justify-center text-center p-6 bg-blue-500/5 border-blue-500/20">
            <PackagePlus className="h-12 w-12 text-blue-600 mb-3" />
            <CardTitle className="text-xl font-semibold text-blue-700">צריך לשלוח משהו?</CardTitle>
            <CardDescription className="text-md text-blue-600/90 mt-1">שירות משלוחי P2P לשליחת חפצים, מסמכים, או בקשת קניות מהשליח.</CardDescription>
@@ -204,9 +203,9 @@ export default function HomePage() {
             <CardDescription className="text-orange-700/80">מבצעים בלעדיים בשיתוף עם מותגים מובילים, בהשראת הטרנדים החמים ביותר!</CardDescription>
           </CardHeader>
           <CardContent className="text-center text-orange-700/90 space-y-2">
-            <p>"קבל 15% הנחה על קולקציית הקיץ של 'FashionForward' בהשראת טרנד ה-Y2K שזוהה לאחרונה ב-LivePick!" (דוגמה)</p>
+            <p>"לדוגמה: קבל 15% הנחה על קולקציית הקיץ של 'FashionForward' בהשראת טרנד ה-Y2K שזוהה לאחרונה ב-LivePick!"</p>
             <Button variant="link" size="sm" className="text-orange-600 hover:text-orange-700 p-0 h-auto mt-1" onClick={handlePartnershipsClick}>
-                גלה שיתופי פעולה <ExternalLink className="h-3 w-3 mr-1"/>
+                גלה שיתופי פעולה נוספים <ExternalLink className="h-3 w-3 mr-1"/>
             </Button>
           </CardContent>
         </Card>
@@ -394,5 +393,4 @@ export default function HomePage() {
     </div>
   );
 }
-
     

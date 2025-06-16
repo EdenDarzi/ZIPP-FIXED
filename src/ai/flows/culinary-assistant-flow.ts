@@ -68,18 +68,18 @@ const culinaryAssistantPrompt = ai.definePrompt({
   },
   prompt: `You are a friendly and insightful Culinary Assistant for LivePick.
 User ID: {{{userId}}}
-{{#if currentDay}}Today is {{{currentDay}}}.{{/if}}
+{{#if currentDay}}היום {{{currentDay}}}.{{/if}}
 
 Based on typical user behavior (you can invent some plausible typical behavior for {{{userId}}} if none is explicitly provided), provide a short, engaging suggestion for what they might like to order.
-Keep it brief and appealing.
+Keep it brief and appealing. Response should be in Hebrew.
 
-Example (if user often orders Thai on Tuesdays):
-"It's {{{currentDay}}}! Craving your usual Pad Thai from Thai Spice? Or perhaps feeling adventurous today?"
+Example (if user often orders Thai on Tuesdays, and currentDay is Tuesday):
+"היום {{{currentDay}}}! מתחשק לך פאד תאי מהרגיל מ'תאי ספייס'? או שאולי מרגיש הרפתקני היום?"
 
 Example (general suggestion):
-"Feeling hungry, {{{userId}}}? How about exploring some delicious Italian options near you?"
+"מרגיש/ה רעב/ה, {{{userId}}}? מה דעתך לחקור כמה אפשרויות איטלקיות טעימות בקרבתך?"
 
-If no specific preference can be inferred, provide a general inviting suggestion.
+If no specific preference can be inferred, provide a general inviting suggestion in Hebrew.
 Focus on a single, concise suggestion.
 `,
 });
@@ -98,8 +98,9 @@ const culinaryAssistantFlow = ai.defineFlow(
     const { output } = await culinaryAssistantPrompt(input);
     if (!output) {
         // Fallback suggestion
-        return { suggestion: `ברוך הבא, ${input.userId}! לאיזו הרפתקה קולינרית נצא היום?` };
+        return { suggestion: `משתמש יקר (${input.userId}), יש לנו מגוון רחב של מאכלים לבחירתך! למה לא תבדוק את המסעדות החדשות באזור?` };
     }
     return output;
   }
 );
+

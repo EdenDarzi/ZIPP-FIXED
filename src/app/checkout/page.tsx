@@ -21,11 +21,16 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   const [discreetDelivery, setDiscreetDelivery] = useState(false);
   const [customerNotes, setCustomerNotes] = useState('');
+  const [isGiftOrder, setIsGiftOrder] = useState(false);
 
   useEffect(() => {
     const notes = searchParams.get('notes');
     if (notes) {
       setCustomerNotes(notes);
+    }
+    const giftParam = searchParams.get('isGift');
+    if (giftParam === 'true') {
+        setIsGiftOrder(true);
     }
   }, [searchParams]);
 
@@ -34,8 +39,8 @@ export default function CheckoutPage() {
     setDiscreetDelivery(checked);
     if (checked) {
         toast({
-            title: "משלוח דיסקרטי הופעל (דמו)",
-            description: "אפשרויות למשלוח אנונימי (ללא שם שולח, אינטראקציה גנרית של שליח) יתווספו בקרוב.",
+            title: "משלוח דיסקרטי הופעל (הדגמה)",
+            description: "אפשרויות למשלוח אנונימי (ללא שם שולח, אינטראקציה גנרית של שליח) יתווספו בהמשך.",
             duration: 5000,
         });
     }
@@ -68,12 +73,13 @@ export default function CheckoutPage() {
 
     const mockOrderId = `livepick_${Date.now()}_${scheduledDeliveryTime ? 'scheduled' : 'asap'}`; 
     
-    const trackingUrl = customerNotes 
-      ? `/order-tracking/${mockOrderId}?notes=${encodeURIComponent(customerNotes)}`
-      : `/order-tracking/${mockOrderId}`;
+    // Pass customerNotes and isGiftOrder to the tracking page
+    const queryParams = new URLSearchParams();
+    if (customerNotes) queryParams.append('notes', customerNotes);
+    if (isGiftOrder) queryParams.append('isGift', 'true');
     
-    // Simulate clearing cart after successful payment
-    // clearCart(); // In a real app, clear cart after server confirmation
+    const trackingUrl = `/order-tracking/${mockOrderId}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    
     router.push(trackingUrl);
   };
 
@@ -82,6 +88,7 @@ export default function CheckoutPage() {
     <div className="max-w-2xl mx-auto py-12">
       <Card className="shadow-xl">
         <CardHeader className="text-center">
+          <Lock className="h-8 w-8 text-primary mx-auto mb-2" />
           <CardTitle className="text-3xl font-headline text-primary">תשלום מאובטח</CardTitle>
           <CardDescription>בדוק את הזמנתך והשלם את הרכישה.</CardDescription>
         </CardHeader>
@@ -141,7 +148,7 @@ export default function CheckoutPage() {
                     <span className="font-medium">{scheduledDeliveryTime}</span>
                   </div>
                 )}
-                {cart.some(item => item.name.toLowerCase().includes("gift") || item.selectedAddons?.some(sa => sa.optionName.toLowerCase().includes("gift")) || searchParams.get('isGift') === 'true') && ( 
+                {isGiftOrder && ( 
                     <div className="flex justify-between text-sm text-pink-600">
                         <span className="font-medium flex items-center"><Gift className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/>נשלח כמתנה</span>
                     </div>
@@ -175,7 +182,7 @@ export default function CheckoutPage() {
           <div className="flex items-center space-x-2 rtl:space-x-reverse p-3 border rounded-md bg-muted/50">
             <Checkbox id="discreetDelivery" checked={discreetDelivery} onCheckedChange={handleDiscreetToggle} aria-labelledby="discreetDeliveryLabel" />
             <Label htmlFor="discreetDelivery" id="discreetDeliveryLabel" className="cursor-pointer text-sm flex items-center">
-              <ShieldCheck className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1 text-blue-500"/> משלוח דיסקרטי (אפשרויות נוספות בפיתוח)
+              <ShieldCheck className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1 text-blue-500"/> משלוח דיסקרטי
             </Label>
           </div>
 
@@ -217,3 +224,4 @@ export default function CheckoutPage() {
     </div>
   );
 }
+

@@ -10,8 +10,36 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast"; // Import useToast
 
 export default function SupportPage() {
+  const { toast } = useToast(); // Initialize useToast
+
+  const handleSearchKnowledgeBase = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const searchTerm = formData.get("knowledgeBaseSearch") as string;
+    toast({
+      title: "חיפוש במאגר הידע (הדגמה)",
+      description: `מחפש תוצאות עבור: "${searchTerm}". (הפונקציונליות בפיתוח).`
+    });
+  };
+
+  const handleContactSupport = (method: 'chat' | 'email') => {
+    if (method === 'chat') {
+      toast({
+        title: "מתחיל צ'אט עם התמיכה...",
+        description: "ממשק הצ'אט עם נציג תמיכה יטען כאן. (הדגמה)",
+      });
+    } else {
+      toast({
+        title: "פותח טופס פנייה במייל...",
+        description: "טופס ליצירת קשר עם התמיכה באמצעות אימייל יטען כאן. (הדגמה)",
+      });
+    }
+  };
+
+
   return (
     <div className="container mx-auto py-12 max-w-3xl">
       <Card className="shadow-lg">
@@ -23,18 +51,21 @@ export default function SupportPage() {
         <CardContent className="space-y-8">
           
           <Card className="p-4 bg-muted/30">
-            <div className="flex items-center gap-2 mb-1">
-              <Search className="h-5 w-5 text-primary" />
+            <form onSubmit={handleSearchKnowledgeBase} className="space-y-2">
               <label htmlFor="knowledgeBaseSearch" className="sr-only">חפש במאגר הידע</label>
-              <Input 
-                id="knowledgeBaseSearch"
-                type="search" 
-                placeholder="חפש במאגר הידע שלנו (לדוגמה: איך לעקוב אחרי הזמנה)..." 
-                className="w-full p-2 border rounded-md text-sm focus:ring-primary focus:border-primary" 
-                disabled 
-              />
-            </div>
-            <p className="text-xs text-muted-foreground text-center">חיפוש במאגר הידע יופעל בקרוב.</p>
+              <div className="flex items-center gap-2">
+                <Search className="h-5 w-5 text-primary" />
+                <Input 
+                  id="knowledgeBaseSearch"
+                  name="knowledgeBaseSearch"
+                  type="search" 
+                  placeholder="חפש במאגר הידע שלנו (לדוגמה: איך לעקוב אחרי הזמנה)..." 
+                  className="w-full p-2 border rounded-md text-sm focus:ring-primary focus:border-primary" 
+                />
+                <Button type="submit" variant="outline" size="sm">חפש</Button>
+              </div>
+              <p className="text-xs text-muted-foreground text-center">תוצאות החיפוש הן להדגמה בלבד.</p>
+            </form>
           </Card>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -62,7 +93,7 @@ export default function SupportPage() {
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
-              <Button variant="outline" className="mt-4" disabled>עיין בכל השאלות (בקרוב)</Button>
+              <Button variant="outline" className="mt-4" onClick={() => toast({title:"מאגר שאלות נפוצות", description: "כל השאלות הנפוצות יוצגו כאן בקרוב."})}>עיין בכל השאלות</Button>
             </Card>
             
             <Card className="text-center p-6 hover:shadow-md transition-shadow flex flex-col">
@@ -70,11 +101,11 @@ export default function SupportPage() {
               <h3 className="text-lg font-semibold mb-2">מדריכים ומאמרים</h3>
               <p className="text-sm text-muted-foreground mb-4 flex-grow">למד כיצד להפיק את המרב מ-LivePick עם מדריכים מפורטים על כל הפיצ'רים.</p>
               <ul className="text-sm text-left space-y-1 list-none">
-                <li className="flex items-center"><FileText className="h-4 w-4 mr-2 text-primary/70"/> <Link href="#" className="hover:underline text-primary">מדריך למשתמש חדש (בקרוב)</Link></li>
-                <li className="flex items-center"><Video className="h-4 w-4 mr-2 text-primary/70"/> <Link href="#" className="hover:underline text-primary">סרטון: איך להשתמש ב-TrendScanner (בקרוב)</Link></li>
-                 <li className="flex items-center"><FileText className="h-4 w-4 mr-2 text-primary/70"/> <Link href="#" className="hover:underline text-primary">מדריך: הגדרת העסק שלך (בקרוב)</Link></li>
+                <li className="flex items-center"><FileText className="h-4 w-4 mr-2 text-primary/70"/> <Link href="#" className="hover:underline text-primary" onClick={(e)=>{e.preventDefault(); toast({title:"מדריך למשתמש חדש", description:"המדריך יפורסם בקרוב."})}}>מדריך למשתמש חדש</Link></li>
+                <li className="flex items-center"><Video className="h-4 w-4 mr-2 text-primary/70"/> <Link href="#" className="hover:underline text-primary" onClick={(e)=>{e.preventDefault(); toast({title:"סרטון: TrendScanner", description:"הסרטון יפורסם בקרוב."})}}>סרטון: איך להשתמש ב-TrendScanner</Link></li>
+                 <li className="flex items-center"><FileText className="h-4 w-4 mr-2 text-primary/70"/> <Link href="#" className="hover:underline text-primary" onClick={(e)=>{e.preventDefault(); toast({title:"מדריך: הגדרת עסק", description:"המדריך יפורסם בקרוב."})}}>מדריך: הגדרת העסק שלך</Link></li>
               </ul>
-              <Button variant="outline" className="mt-4" disabled>עיין בכל המדריכים (בקרוב)</Button>
+              <Button variant="outline" className="mt-4" onClick={() => toast({title:"מאגר מדריכים", description: "כל המדריכים והמאמרים יוצגו כאן בקרוב."})}>עיין בכל המדריכים</Button>
             </Card>
           </div>
           
@@ -89,7 +120,7 @@ export default function SupportPage() {
                 <Button 
                     size="lg" 
                     className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1"
-                    onClick={() => alert("יופנה לצ'אט תמיכה (ממשק דמו יטען כאן).")}
+                    onClick={() => handleContactSupport('chat')}
                 >
                     <MessageSquare className="ml-2 h-5 w-5"/> התחל צ'אט תמיכה
                 </Button>
@@ -97,7 +128,7 @@ export default function SupportPage() {
                     size="lg" 
                     variant="outline"
                     className="border-primary text-primary hover:bg-primary/5 flex-1"
-                    onClick={() => alert("יופנה לטופס פנייה במייל (ממשק דמו יטען כאן).")}
+                    onClick={() => handleContactSupport('email')}
                 >
                     <Mail className="ml-2 h-5 w-5"/> שלח פנייה במייל
                 </Button>
@@ -111,3 +142,4 @@ export default function SupportPage() {
     </div>
   );
 }
+

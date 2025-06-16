@@ -59,7 +59,7 @@ export default function CartPage() {
     if (checked) {
         toast({
             title: "משלוח מתנה!",
-            description: "ההזמנה תסומן כמתנה. אפשרויות נוספות יופיעו בתשלום.",
+            description: "ההזמנה תסומן כמתנה. (הדגמת סימון, אפשרויות נוספות כמו כרטיס ברכה יופיעו בתשלום).",
         });
     }
   };
@@ -67,7 +67,7 @@ export default function CartPage() {
   const handleDynamicLocationClick = () => {
     toast({
         title: "משלוח למיקום דינמי",
-        description: "השליח יעקוב אחר מיקומך בזמן אמת! (תכונה בפיתוח).",
+        description: "שירות זה יאפשר לשליח לעקוב אחר מיקומך בזמן אמת! (הפונקציונליות בפיתוח).",
         duration: 5000,
     });
   };
@@ -75,7 +75,7 @@ export default function CartPage() {
   const handleGroupOrderClick = () => {
     toast({
         title: "הזמנה קבוצתית",
-        description: "הזמן חברים להוסיף פריטים ולחלק את החשבון! (תכונה בפיתוח).",
+        description: "שירות זה יאפשר לך להזמין חברים להוסיף פריטים ולחלק את החשבון! (הפונקציונליות בפיתוח).",
         duration: 5000,
     });
   };
@@ -254,8 +254,8 @@ export default function CartPage() {
                 </div>
               )}
                <p className="text-xs text-muted-foreground">שימו לב: זמינות המשלוח המתוכנן תלויה בשעות הפעילות של המסעדה והשליחים.</p>
-                 <Button onClick={handleDynamicLocationClick} variant="outline" className="w-full mt-2" aria-label="משלוח למיקום דינמי">
-                    <Navigation className="h-4 w-4 ml-2 rtl:ml-0 rtl:mr-2 text-blue-500" /> משלוח למיקום דינמי (תכונה בפיתוח)
+                 <Button onClick={handleDynamicLocationClick} variant="outline" className="w-full mt-2" aria-label="משלוח למיקום דינמי (פונקציונליות בפיתוח)">
+                    <Navigation className="h-4 w-4 ml-2 rtl:ml-0 rtl:mr-2 text-blue-500" /> משלוח למיקום דינמי
                  </Button>
             </CardContent>
           </Card>
@@ -268,11 +268,11 @@ export default function CartPage() {
                 <div className="flex items-center space-x-2 rtl:space-x-reverse p-3 border rounded-md">
                     <Checkbox id="isGift" checked={isGift} onCheckedChange={handleGiftToggle} aria-labelledby="giftLabel" />
                     <Label htmlFor="isGift" id="giftLabel" className="flex items-center cursor-pointer">
-                        <Gift className="h-5 w-5 ml-2 rtl:ml-0 rtl:mr-2 text-pink-500" /> זו מתנה? (אפשרויות נוספות בתשלום)
+                        <Gift className="h-5 w-5 ml-2 rtl:ml-0 rtl:mr-2 text-pink-500" /> זו מתנה?
                     </Label>
                 </div>
-                <Button onClick={handleGroupOrderClick} variant="outline" className="w-full" aria-label="התחל הזמנה קבוצתית">
-                    <Users className="h-4 w-4 ml-2 rtl:ml-0 rtl:mr-2 text-purple-500" /> התחל הזמנה קבוצתית (תכונה בפיתוח)
+                <Button onClick={handleGroupOrderClick} variant="outline" className="w-full" aria-label="התחל הזמנה קבוצתית (פונקציונליות בפיתוח)">
+                    <Users className="h-4 w-4 ml-2 rtl:ml-0 rtl:mr-2 text-purple-500" /> התחל הזמנה קבוצתית
                  </Button>
             </CardContent>
           </Card>
@@ -342,7 +342,7 @@ export default function CartPage() {
             </CardContent>
             <CardFooter className="flex flex-col gap-3">
               <Button size="lg" asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg">
-                <Link href={{ pathname: "/checkout", query: { notes: customerNotes } }} aria-label="המשך לתשלום">
+                <Link href={{ pathname: "/checkout", query: { notes: customerNotes, isGift: String(isGift) } }} aria-label="המשך לתשלום">
                   <span className="flex items-center justify-center w-full">
                     <ArrowLeft className="mr-2 rtl:mr-0 rtl:ml-2 h-5 w-5" /> 
                     המשך לתשלום 
@@ -359,3 +359,4 @@ export default function CartPage() {
     </div>
   );
 }
+

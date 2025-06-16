@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Package, Navigation, MessageSquare, PhoneCall, Clock, AlertCircle, Filter, CheckCircle, Edit, Search, Loader2 } from 'lucide-react';
+import { Package, Navigation, MessageSquare, PhoneCall, Clock, AlertCircle, Filter, CheckCircle, Edit, Search, Loader2, HelpCircle } from 'lucide-react';
 import type { Order, OrderStatus } from '@/types'; 
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
@@ -52,11 +52,10 @@ const getStatusBadgeVariant = (status: OrderStatus | undefined): "default" | "se
 export default function ActiveOrdersPage() {
   const [orders, setOrders] = useState<Partial<Order>[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // For mock updates
+  const [isLoading, setIsLoading] = useState(true); 
   const { toast } = useToast();
 
   useEffect(() => {
-    // Simulate fetching orders
     setIsLoading(true);
     setTimeout(() => {
         setOrders(mockActiveOrders);
@@ -75,17 +74,22 @@ export default function ActiveOrdersPage() {
         toast({ title: "כתובת לא זמינה", description: "לא ניתן לנווט ללא כתובת.", variant: "destructive"});
         return;
     }
-    toast({ title: "מנווט...", description: `פותח אפליקציית ניווט לכתובת: ${address} (הדמיה).` });
+    toast({ title: "מנווט...", description: `פותח אפליקציית ניווט לכתובת: ${address} (הדגמה).` });
   };
 
-  const handleChat = (orderId: string | undefined, entity: 'customer' | 'support') => {
+  const handleChat = (orderId: string | undefined, entity: 'customer' | 'support' | 'restaurant') => {
     if(!orderId) return;
-    toast({ title: `מתחיל צ'אט... (הדמיה)`, description: `פותח צ'אט עם ${entity === 'customer' ? 'הלקוח' : 'מוקד התמיכה'} עבור הזמנה #${orderId.slice(-5)}.` });
+    let entityName = '';
+    if (entity === 'customer') entityName = 'הלקוח';
+    else if (entity === 'support') entityName = 'מוקד התמיכה';
+    else if (entity === 'restaurant') entityName = 'המסעדה';
+
+    toast({ title: `מתחיל צ'אט... (הדגמה)`, description: `פותח צ'אט עם ${entityName} עבור הזמנה #${orderId.slice(-5)}.` });
   };
   
   const handleUpdateStatus = (orderId: string | undefined, newStatus: OrderStatus) => {
     if(!orderId) return;
-    setIsLoading(true); // Simulate loading for status update
+    setIsLoading(true); 
     setTimeout(() => {
         setOrders(prevOrders => prevOrders.map(o => o.id === orderId ? {...o, status: newStatus, estimatedDeliveryTime: newStatus === 'DELIVERED' ? 'נמסר' : o.estimatedDeliveryTime } : o));
         toast({ title: "סטטוס עודכן!", description: `סטטוס הזמנה #${orderId.slice(-5)} עודכן ל: ${getStatusText(newStatus)}.`});
@@ -99,7 +103,7 @@ export default function ActiveOrdersPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-headline">ניהול הזמנות פעילות</CardTitle>
-          <CardDescription>צפה ועקוב אחר המשלוחים הנוכחיים שלך, עדכן סטטוסים ותקשר עם לקוחות או התמיכה.</CardDescription>
+          <CardDescription>צפה ועקוב אחר המשלוחים הנוכחיים שלך, עדכן סטטוסים ותקשר עם לקוחות, מסעדות או התמיכה.</CardDescription>
         </CardHeader>
       </Card>
 
@@ -114,12 +118,12 @@ export default function ActiveOrdersPage() {
                 aria-label="חיפוש הזמנות פעילות"
             />
         </div>
-        <Button variant="outline" className="w-full sm:w-auto bg-background" disabled>
-            <Filter className="mr-2 h-4 w-4"/> פילטרים (בקרוב)
+        <Button variant="outline" className="w-full sm:w-auto bg-background" onClick={() => toast({title: "פילטרים", description: "אפשרויות סינון מתקדמות יתווספו כאן.", duration: 3000})}>
+            <Filter className="mr-2 h-4 w-4"/> פילטרים
         </Button>
       </div>
 
-      {isLoading && orders.length === 0 && (
+      {isLoading && (
          <Card className="text-center py-10">
              <CardContent className="flex flex-col items-center gap-3">
                 <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -170,15 +174,18 @@ export default function ActiveOrdersPage() {
                         </p>
                     )}
                 </CardContent>
-                <CardFooter className="grid grid-cols-2 sm:grid-cols-4 gap-2 border-t pt-3">
-                    <Button variant="default" size="sm" onClick={() => handleNavigate(order.deliveryAddress)} className="bg-blue-600 hover:bg-blue-700">
+                <CardFooter className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 border-t pt-3">
+                    <Button variant="default" size="sm" onClick={() => handleNavigate(order.deliveryAddress)} className="bg-blue-600 hover:bg-blue-700 col-span-2 sm:col-span-1">
                         <Navigation className="mr-1 h-4 w-4"/> נווט
                     </Button>
                      <Button variant="outline" size="sm" onClick={() => handleChat(order.id, 'customer')}>
-                        <MessageSquare className="mr-1 h-4 w-4"/> צ'אט עם לקוח
+                        <MessageSquare className="mr-1 h-4 w-4 text-green-500"/> צ'אט עם לקוח
+                    </Button>
+                     <Button variant="outline" size="sm" onClick={() => handleChat(order.id, 'restaurant')}>
+                        <MessageSquare className="mr-1 h-4 w-4 text-orange-500"/> צ'אט עם מסעדה
                     </Button>
                      <Button variant="outline" size="sm" onClick={() => handleChat(order.id, 'support')}>
-                        <AlertCircle className="mr-1 h-4 w-4"/> צ'אט עם מוקד
+                        <HelpCircle className="mr-1 h-4 w-4"/> צ'אט עם תמיכה
                     </Button>
                     {order.status === 'AWAITING_PICKUP' && 
                         <Button variant="secondary" size="sm" onClick={() => handleUpdateStatus(order.id, 'OUT_FOR_DELIVERY')} className="bg-green-500 hover:bg-green-600 text-white">סמן כ"נאסף"</Button>}
@@ -194,3 +201,4 @@ export default function ActiveOrdersPage() {
     </div>
   );
 }
+

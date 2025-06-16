@@ -21,7 +21,7 @@ export default function AffiliateProgramPage() {
   const handleStartNowClick = () => {
     toast({
       title: "הצטרפות לתוכנית השותפים",
-      description: "בקשת ההצטרפות שלך התקבלה! נציג ייצור איתך קשר בקרוב עם פרטים נוספים. (זהו דמו של תהליך ההרשמה).",
+      description: "בקשת ההצטרפות שלך התקבלה! נציג ייצור איתך קשר בקרוב עם פרטים נוספים. (הדגמה של תהליך ההרשמה).",
     });
   };
 
@@ -94,3 +94,4 @@ export default function AffiliateProgramPage() {
     </div>
   );
 }
+

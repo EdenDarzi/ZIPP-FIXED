@@ -12,7 +12,7 @@ import { DeliveryCompleteView } from '@/components/order/delivery-complete-view'
 import { TriviaChallengeCard } from '@/components/order/trivia-challenge-card'; 
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, AlertTriangle, Info, Clock, Award, Gamepad2, Edit } from 'lucide-react'; 
+import { ArrowLeft, AlertTriangle, Info, Clock, Award, Gamepad2, Edit, Gift, CalendarClock } from 'lucide-react'; 
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast'; 
@@ -50,6 +50,7 @@ export default function OrderTrackingPage() {
 
   const [order, setOrder] = useState<Order | null | undefined>(undefined); 
   const [customerNotes, setCustomerNotes] = useState<string | null>(null);
+  const [isGiftOrder, setIsGiftOrder] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [triviaAnswered, setTriviaAnswered] = useState(false); 
   const [showGamificationHint, setShowGamificationHint] = useState(false);
@@ -116,6 +117,10 @@ export default function OrderTrackingPage() {
     if (notesFromQuery) {
       setCustomerNotes(decodeURIComponent(notesFromQuery));
     }
+    const giftParam = searchParams.get('isGift');
+    if (giftParam === 'true') {
+      setIsGiftOrder(true);
+    }
 
     let extractedScheduledTime: string | undefined = undefined;
     if (orderId.includes('_scheduled_')) {
@@ -163,10 +168,10 @@ export default function OrderTrackingPage() {
           }
           return prev;
         });
-      }, 60 * 1000 * (Math.random() * 0.5 + 0.5)); // Randomize update slightly for realism, average 1 min
+      }, 60 * 1000 * (Math.random() * 0.5 + 0.5)); 
       return () => clearInterval(etaInterval);
     }
-  }, [order]); // Removed order.assignedCourier.currentEtaMinutes, effect will re-run if order object changes.
+  }, [order]);
 
   if (order === undefined) { 
     return (
@@ -197,9 +202,9 @@ export default function OrderTrackingPage() {
     switch (order.status) {
       case 'SCHEDULED':
         return (
-            <Card className="shadow-xl text-center py-10 bg-blue-50 border-blue-200 animate-fadeIn">
+            <Card className="shadow-xl text-center py-10 bg-blue-50 border-blue-300 animate-fadeIn">
                 <CardHeader className="items-center">
-                    <Clock className="h-12 w-12 text-blue-600 mb-3" />
+                    <CalendarClock className="h-12 w-12 text-blue-600 mb-3" />
                     <CardTitle className="text-2xl font-semibold text-blue-700">הזמנה מתוכננת</CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -262,7 +267,7 @@ export default function OrderTrackingPage() {
   const handleGamificationTask = () => {
     toast({
         title: "משימת בונוס! (הדגמה)",
-        description: "שתף תמונה של הטרנד שהזמנת עם #LivePick וצבור עוד כוכבים! (משימה תופיע כאן)",
+        description: "שתף תמונה של הטרנד שהזמנת עם #LivePick וצבור עוד כוכבים! (פרטי המשימה יופיעו כאן).",
         action: <Award className="text-yellow-500" />
     });
   }
@@ -274,6 +279,18 @@ export default function OrderTrackingPage() {
       </Button>
 
       {renderOrderStatusView()}
+      
+      {isGiftOrder && (
+        <Card className="bg-pink-50 border-pink-200 animate-fadeIn">
+            <CardHeader className="pb-2 pt-3">
+                <CardTitle className="text-md text-pink-700 flex items-center"><Gift className="mr-2 h-4 w-4"/>הזמנה זו נשלחת כמתנה!</CardTitle>
+            </CardHeader>
+            <CardContent className="pb-3">
+                <p className="text-sm text-pink-600">אנו מקווים שהמקבל/ת ייהנה/תהנה מההפתעה.</p>
+            </CardContent>
+        </Card>
+      )}
+
 
       {customerNotes && (
         <Card className="bg-blue-50 border-blue-200 animate-fadeIn">
@@ -289,10 +306,10 @@ export default function OrderTrackingPage() {
       {showGamificationHint && !triviaAnswered && order.status !== 'SCHEDULED' && (
         <Card className="bg-purple-50 border-purple-200 text-purple-700 animate-fadeInUp">
             <CardHeader className="pb-2 pt-3">
-                <CardTitle className="flex items-center"><Gamepad2 className="mr-2 h-5 w-5"/> הרווח פרסים בזמן ההמתנה!</CardTitle>
+                <CardTitle className="flex items-center"><Gamepad2 className="mr-2 h-5 w-5"/> זמן מצוין לאתגר טריוויה!</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 pb-3">
-                <p>פתור את חידון הטריוויה שלנו (בהמשך העמוד אם זמין) או השלם משימת בונוס קטנה כדי לצבור נקודות וכוכבים!</p>
+                <p>בזמן שההזמנה שלך מתקדמת, למה לא לנסות את חידון הטריוויה שלנו (בהמשך העמוד אם זמין) או להשלים משימת בונוס קטנה כדי לצבור נקודות וכוכבים?</p>
                 <Button variant="link" onClick={handleGamificationTask} className="p-0 text-purple-700">
                     בדוק משימת בונוס (הדגמה)
                 </Button>
@@ -364,3 +381,4 @@ export default function OrderTrackingPage() {
     </div>
   );
 }
+

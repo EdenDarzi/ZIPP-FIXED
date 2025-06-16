@@ -111,6 +111,8 @@ export default function MenuManagementPage() {
   const [editingItem, setEditingItem] = useState<MenuItemType | null>(null);
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
   const [isAddingAddonGroup, setIsAddingAddonGroup] = useState(false);
+  const [isSavingLivePickSale, setIsSavingLivePickSale] = useState(false);
+
 
   const itemForm = useForm<MenuItemFormValues>({
     resolver: zodResolver(menuItemFormSchema),
@@ -200,7 +202,8 @@ export default function MenuManagementPage() {
     itemForm.reset(); 
   }
 
-  function onLivePickSaleSubmit(values: LivePickSaleFormValues) {
+  async function onLivePickSaleSubmit(values: LivePickSaleFormValues) {
+    setIsSavingLivePickSale(true);
     livePickSaleForm.clearErrors(); 
     if (values.livePickSaleEnabled) {
         if (!values.livePickSaleStartTime) {
@@ -212,11 +215,14 @@ export default function MenuManagementPage() {
         if (values.livePickSaleBagPrice === undefined || values.livePickSaleBagPrice <= 0) {
              livePickSaleForm.setError("livePickSaleBagPrice", {type: "manual", message: "מחיר חייב להיות חיובי."});
         }
-        if (livePickSaleForm.formState.errors && Object.keys(livePickSaleForm.formState.errors).length > 0) {
+        if (Object.keys(livePickSaleForm.formState.errors).length > 0) {
             toast({ title: "שגיאה בנתונים", description: "אנא תקן את השגיאות המסומנות בטופס.", variant: "destructive"});
+            setIsSavingLivePickSale(false);
             return;
         }
     }
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     setRestaurant(prev => prev ? ({
         ...prev,
@@ -228,13 +234,14 @@ export default function MenuManagementPage() {
         }
     }) : undefined);
     console.log("LivePick Sale Settings Updated (Demo):", values);
-    toast({ title: "הגדרות LivePick Sale עודכנו (דמו)", description: `LivePick Sale ${values.livePickSaleEnabled ? 'מופעל' : 'כבוי'}.` });
+    toast({ title: "הגדרות LivePick Sale עודכנו", description: `LivePick Sale ${values.livePickSaleEnabled ? 'מופעל' : 'כבוי'}. (הדגמה)` });
+    setIsSavingLivePickSale(false);
   }
   
   const handleAddAddonGroup = () => {
     setIsAddingAddonGroup(true);
     appendAddonGroup({ title: '', type: 'checkbox', minSelection:0, maxSelection: undefined, options: [{ name: '', price: 0, selectedByDefault: false }], required: false });
-    setTimeout(() => setIsAddingAddonGroup(false), 100); // Short delay to allow UI to update
+    setTimeout(() => setIsAddingAddonGroup(false), 100); 
   };
 
 
@@ -447,7 +454,7 @@ export default function MenuManagementPage() {
                         <Card key={groupField.id} className="p-3 bg-muted/50">
                             <div className="flex justify-between items-center mb-2">
                                 <FormField control={itemForm.control} name={`addons.${groupIndex}.title`} render={({ field }) => (
-                                    <FormItem className="flex-grow mr-2 rtl:mr-0 rtl:ml-2"><FormLabel className="text-xs">כותרת קבוצה</FormLabel><FormControl><Input {...field} placeholder="לדוגמה: מידות, צבעים" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
+                                    <FormItem className="flex-grow mr-2 rtl:mr-0 rtl:ml-2"><FormLabel className="text-sm font-semibold">כותרת קבוצה</FormLabel><FormControl><Input {...field} placeholder="לדוגמה: מידות, צבעים" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
                                 )}/>
                                 <Button type="button" variant="ghost" size="icon" onClick={() => removeAddonGroup(groupIndex)} className="text-destructive h-8 w-8"><Trash2 className="h-4 w-4"/></Button>
                             </div>
@@ -466,18 +473,18 @@ export default function MenuManagementPage() {
                                 )}/>
                                  <FormField control={itemForm.control} name={`addons.${groupIndex}.required`} render={({ field }) => (
                                     <FormItem className="flex flex-row items-center space-x-2 rtl:space-x-reverse pt-5">
-                                        <FormControl><Switch id={`addons.${groupIndex}.required`} checked={field.value} onCheckedChange={field.onChange}/></FormControl>
-                                        <FormLabel htmlFor={`addons.${groupIndex}.required`} className="text-xs !mt-0 cursor-pointer">קבוצת חובה</FormLabel>
+                                        <FormControl><Switch id={`addons.${groupIndex}.requiredSwitch`} checked={field.value} onCheckedChange={field.onChange}/></FormControl>
+                                        <FormLabel htmlFor={`addons.${groupIndex}.requiredSwitch`} className="text-sm !mt-0 cursor-pointer">קבוצת חובה</FormLabel>
                                         <FormMessage className="text-xs"/>
                                     </FormItem>
                                 )}/>
                                 {itemForm.watch(`addons.${groupIndex}.type`) === 'checkbox' && (
                                   <>
                                      <FormField control={itemForm.control} name={`addons.${groupIndex}.minSelection`} render={({ field }) => (
-                                         <FormItem><FormLabel className="text-xs">מינימום בחירות (אופצ')</FormLabel><FormControl><Input type="number" {...field} placeholder="0" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
+                                         <FormItem><FormLabel className="text-xs">מינימום בחירות</FormLabel><FormControl><Input type="number" {...field} placeholder="לדוגמה: 0" className="h-8"/></FormControl><FormDescription className="text-xs">השאר ריק/0 אם אין מינימום.</FormDescription><FormMessage className="text-xs"/></FormItem>
                                      )}/>
                                       <FormField control={itemForm.control} name={`addons.${groupIndex}.maxSelection`} render={({ field }) => (
-                                         <FormItem><FormLabel className="text-xs">מקסימום בחירות (אופצ')</FormLabel><FormControl><Input type="number" {...field} placeholder="ללא הגבלה" className="h-8"/></FormControl><FormMessage className="text-xs"/></FormItem>
+                                         <FormItem><FormLabel className="text-xs">מקסימום בחירות</FormLabel><FormControl><Input type="number" {...field} placeholder="לדוגמה: 3" className="h-8"/></FormControl><FormDescription className="text-xs">השאר ריק אם אין מקסימום.</FormDescription><FormMessage className="text-xs"/></FormItem>
                                      )}/>
                                   </>
                                 )}
@@ -567,8 +574,8 @@ export default function MenuManagementPage() {
                             )}
                         </div>
                     )}
-                     <Button type="submit" className="w-full sm:w-auto" disabled={livePickSaleForm.formState.isSubmitting}>
-                        {livePickSaleForm.formState.isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> שומר...</> : "שמור הגדרות LivePick Sale"}
+                     <Button type="submit" className="w-full sm:w-auto" disabled={isSavingLivePickSale}>
+                        {isSavingLivePickSale ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> שומר...</> : "שמור הגדרות LivePick Sale"}
                     </Button>
                 </form>
             </Form>
@@ -576,7 +583,7 @@ export default function MenuManagementPage() {
          <CardFooter className="p-4 border-t">
              <p className="text-xs text-muted-foreground flex items-center">
                 <Info className="h-4 w-4 mr-2 text-blue-500 flex-shrink-0"/>
-                <span>סטטיסטיקות LivePick Sale (כמה נמכרו / נותרו) יוצגו כאן (בקרוב). זכור לעדכן כמויות בתום המבצע.</span>
+                <span>סטטיסטיקות LivePick Sale (כמה נמכרו / נותרו) יוצגו בעמוד האנליטיקות. זכור לעדכן כמויות בתום המבצע.</span>
             </p>
          </CardFooter>
       </Card>
@@ -603,8 +610,8 @@ function AddonOptionsArray({ groupIndex, control }: { groupIndex: number, contro
           )}/>
           <FormField control={control} name={`addons.${groupIndex}.options.${optionIndex}.selectedByDefault`} render={({ field }) => (
             <FormItem className="flex flex-col items-center pt-5">
-                <FormControl><Switch id={`addons.${groupIndex}.options.${optionIndex}.selectedByDefault`} checked={field.value} onCheckedChange={field.onChange} className="h-4 w-7 data-[state=checked]:translate-x-3 data-[state=unchecked]:translate-x-0"/></FormControl>
-                <FormLabel htmlFor={`addons.${groupIndex}.options.${optionIndex}.selectedByDefault`} className="text-xs whitespace-nowrap cursor-pointer">ברירת מחדל</FormLabel>
+                <FormControl><Switch id={`addons.${groupIndex}.options.${optionIndex}.selectedByDefaultSwitch`} checked={field.value} onCheckedChange={field.onChange} className="h-4 w-7 data-[state=checked]:translate-x-3 data-[state=unchecked]:translate-x-0"/></FormControl>
+                <FormLabel htmlFor={`addons.${groupIndex}.options.${optionIndex}.selectedByDefaultSwitch`} className="text-xs whitespace-nowrap cursor-pointer">ברירת מחדל</FormLabel>
                 <FormMessage className="text-xs"/>
             </FormItem>
           )}/>
@@ -617,3 +624,4 @@ function AddonOptionsArray({ groupIndex, control }: { groupIndex: number, contro
     </div>
   );
 }
+
