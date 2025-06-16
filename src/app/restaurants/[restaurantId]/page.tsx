@@ -6,11 +6,16 @@ import type { Restaurant, MenuItem } from '@/types';
 import ItemCard from '@/components/items/item-card';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { Star, Clock, MapPin, Utensils, Share2, Award, MessageCircle } from 'lucide-react';
+import { Star, Clock, MapPin, Utensils, Share2, Award, MessageCircle, Edit, Send } from 'lucide-react'; // Added Edit, Send
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'; // Added for LiveKitchen
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { useState } from 'react'; // Added useState
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'; // Added Avatar components
+import { Textarea } from '@/components/ui/textarea'; // Added Textarea
+import { Label } from '@/components/ui/label'; // Added Label
+import { cn } from '@/lib/utils'; // Added cn
 
 interface RestaurantPageParams {
   params: {
@@ -18,9 +23,30 @@ interface RestaurantPageParams {
   };
 }
 
+interface MockReview {
+  id: string;
+  userName: string;
+  avatarFallback: string;
+  rating: number;
+  text: string;
+  date: string;
+}
+
+const mockReviews: MockReview[] = [
+  { id: 'review1', userName: 'ישראל ישראלי', avatarFallback: 'יש', rating: 5, text: 'האוכל היה מדהים והשירות היה מעולה! מומלץ בחום.', date: 'לפני יומיים' },
+  { id: 'review2', userName: 'חווה כהן', avatarFallback: 'חו', rating: 4, text: 'מקום נחמד, אווירה טובה. המנות היו טעימות אבל קצת קטנות למחיר.', date: 'לפני שבוע' },
+  { id: 'review3', userName: 'דוד לוי', avatarFallback: 'דל', rating: 3, text: 'חיכינו הרבה זמן למנות, והמלצר היה קצת מבולבל. האוכל עצמו היה בסדר.', date: 'לפני 3 ימים' },
+];
+
+
 export default function RestaurantPage({ params }: RestaurantPageParams) {
   const restaurant: Restaurant | undefined = getRestaurantById(params.restaurantId);
   const { toast } = useToast();
+
+  const [newReviewText, setNewReviewText] = useState('');
+  const [newReviewRating, setNewReviewRating] = useState(0);
+  const [hoverReviewRating, setHoverReviewRating] = useState(0);
+
 
   if (!restaurant) {
     notFound();
@@ -37,7 +63,24 @@ export default function RestaurantPage({ params }: RestaurantPageParams) {
       description: `שיתפת את מסעדת "${restaurant.name}"! +10 כוכבים התווספו לחשבונך (דמו).`,
       action: <Award className="h-5 w-5 text-yellow-400"/>
     });
-    // Actual sharing logic would go here
+  };
+  
+  const handleSubmitReview = () => {
+    if (newReviewRating === 0) {
+      toast({ title: "חסר דירוג", description: "אנא בחר/י דירוג כוכבים לפני שליחת הביקורת.", variant: "destructive" });
+      return;
+    }
+    if (newReviewText.trim().length < 10) {
+      toast({ title: "ביקורת קצרה מדי", description: "אנא כתוב/י לפחות 10 תווים בביקורת שלך.", variant: "destructive" });
+      return;
+    }
+    console.log("New Review Submitted:", { rating: newReviewRating, text: newReviewText, restaurantId: restaurant.id });
+    toast({
+      title: "הביקורת נשלחה!",
+      description: "תודה על המשוב. הביקורת שלך תפורסם לאחר אישור (דמו).",
+    });
+    setNewReviewText('');
+    setNewReviewRating(0);
   };
 
 
@@ -80,8 +123,7 @@ export default function RestaurantPage({ params }: RestaurantPageParams) {
         </div>
       </section>
 
-      {/* LiveKitchen Placeholder */}
-      {restaurant.id === 'restaurant1' && ( // Mock: only show for first restaurant
+      {restaurant.id === 'restaurant1' && ( 
         <Card className="bg-red-50 border-red-200">
             <CardHeader>
                 <CardTitle className="text-xl text-red-700 flex items-center">
@@ -121,12 +163,95 @@ export default function RestaurantPage({ params }: RestaurantPageParams) {
          <p className="text-muted-foreground text-lg text-center py-8">במסעדה זו אין כרגע פריטים בתפריט.</p>
        )}
 
-        <section className="mt-10 p-6 bg-muted/30 rounded-lg">
-            <h3 className="text-2xl font-semibold font-headline text-foreground/90 mb-4">קהילה ממליצה (בקרוב)</h3>
-            <p className="text-muted-foreground">כאן יוצגו טיפים, סקירות מפורטות והמלצות חמות מהקהילה על {restaurant.name}.</p>
-            <Button variant="link" className="p-0 mt-2 text-primary">הוסף טיפ משלך (בקרוב)</Button>
-        </section>
+        <section className="mt-10 p-6 bg-muted/30 rounded-lg shadow-md">
+            <CardHeader className="p-0 mb-6">
+              <CardTitle className="text-2xl font-semibold font-headline text-foreground/90 flex items-center">
+                <MessageCircle className="mr-3 h-6 w-6 text-primary" />
+                מה הקהילה חושבת על {restaurant.name}?
+              </CardTitle>
+            </CardHeader>
 
+            {mockReviews.length > 0 ? (
+              <div className="space-y-6 mb-8">
+                {mockReviews.map(review => (
+                  <Card key={review.id} className="bg-card p-4 shadow">
+                    <div className="flex items-start space-x-3 rtl:space-x-reverse">
+                      <Avatar className="h-10 w-10 border">
+                        <AvatarImage src={`https://placehold.co/40x40.png?text=${review.avatarFallback}`} alt={review.userName} data-ai-hint="user avatar" />
+                        <AvatarFallback>{review.avatarFallback}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <p className="font-semibold text-foreground">{review.userName}</p>
+                          <span className="text-xs text-muted-foreground">{review.date}</span>
+                        </div>
+                        <div className="flex items-center my-1">
+                          {[1, 2, 3, 4, 5].map(star => (
+                            <Star
+                              key={star}
+                              className={cn(
+                                "h-4 w-4",
+                                review.rating >= star ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+                              )}
+                            />
+                          ))}
+                        </div>
+                        <p className="text-sm text-muted-foreground">{review.text}</p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-center mb-8">עדיין אין ביקורות לעסק זה. היה/י הראשון/ה!</p>
+            )}
+            
+            <Separator className="my-6"/>
+
+            <Card className="bg-card shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold flex items-center">
+                  <Edit className="mr-2 h-5 w-5 text-accent" />
+                  הוסף/י ביקורת או טיפ משלך
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="reviewRating" className="mb-1.5 block text-sm font-medium">הדירוג שלך:</Label>
+                  <div className="flex items-center space-x-1 rtl:space-x-reverse" dir="ltr">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star
+                        key={`new-review-star-${star}`}
+                        className={cn("h-7 w-7 cursor-pointer transition-colors",
+                          (hoverReviewRating || newReviewRating) >= star ? "text-yellow-400 fill-yellow-400" : "text-gray-300 hover:text-yellow-200"
+                        )}
+                        onClick={() => setNewReviewRating(star)}
+                        onMouseEnter={() => setHoverReviewRating(star)}
+                        onMouseLeave={() => setHoverReviewRating(0)}
+                        aria-label={`דרג ${star} כוכבים`}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="reviewText" className="mb-1.5 block text-sm font-medium">הביקורת / הטיפ שלך:</Label>
+                  <Textarea
+                    id="reviewText"
+                    placeholder={`שתף/י את החוויה שלך מ${restaurant.name}...`}
+                    value={newReviewText}
+                    onChange={(e) => setNewReviewText(e.target.value)}
+                    className="min-h-[100px]"
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Button onClick={handleSubmitReview} className="w-full sm:w-auto" disabled={newReviewRating === 0 || newReviewText.trim().length < 10}>
+                  <Send className="mr-2 h-4 w-4" /> שלח ביקורת (דמו)
+                </Button>
+              </CardFooter>
+            </Card>
+        </section>
     </div>
   );
 }
+
