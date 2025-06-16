@@ -44,9 +44,7 @@ export default function HomePage() {
     }
     fetchSuggestion();
 
-    // For demo, make LivePick Sale always active
     setShowLivePickSaleBanner(true); 
-    // Mock available couriers
     setAvailableCouriers(Math.floor(Math.random() * 20) + 5); 
 
   }, []);
@@ -54,7 +52,7 @@ export default function HomePage() {
   const handlePartnershipsClick = () => {
     toast({
         title: "שיתופי פעולה",
-        description: "גלה מבצעים משתלמים בשיתוף עם מותגים מובילים! (פרטים נוספים והצעות יפורסמו כאן בקרוב).",
+        description: "גלה מבצעים משתלמים בשיתוף עם מותגים מובילים! (פרטים נוספים והצעות יפורסמו כאן בקרוב - הדמיה).",
     });
   };
 
@@ -150,7 +148,7 @@ export default function HomePage() {
            ) : (
              <CardDescription className="text-md text-green-600/90 mt-1 animate-pulse">בודק זמינות שליחים...</CardDescription>
            )}
-           <p className="text-xs text-muted-foreground mt-2">הנתון המוצג הוא להדגמה בלבד ומשתנה.</p>
+           <p className="text-xs text-muted-foreground mt-2">הנתון המוצג הוא להדגמה ומשתנה.</p>
         </Card>
         <Card className="hover:shadow-lg hover:border-blue-500/50 transition-all cursor-pointer h-full flex flex-col items-center justify-center text-center p-6 bg-blue-500/5 border-blue-500/20">
            <PackagePlus className="h-12 w-12 text-blue-600 mb-3" />
@@ -199,7 +197,7 @@ export default function HomePage() {
           </CardHeader>
           <CardContent className="text-center text-orange-700/90 space-y-2">
             <p>"קבל 15% הנחה על קולקציית הקיץ של 'FashionForward' בהשראת טרנד ה-Y2K שזוהה לאחרונה ב-LivePick!"</p>
-            <p className="text-xs">(הפרטים המלאים על השותפות יפורסמו בקרוב)</p>
+            <p className="text-xs">(הפרטים המלאים על השותפות יפורסמו בהמשך).</p>
             <Button variant="link" size="sm" className="text-orange-600 hover:text-orange-700 p-0 h-auto mt-1" onClick={handlePartnershipsClick}>
                 גלה שיתופי פעולה <ExternalLink className="h-3 w-3 mr-1"/>
             </Button>
@@ -251,30 +249,6 @@ export default function HomePage() {
           </div>
         </section>
       )}
-
-      <section className="animate-fadeInUp animation-delay-1100">
-         <div className="flex items-center mb-6">
-            <Library className="h-7 w-7 ml-3 text-indigo-500" />
-            <h2 className="text-3xl font-bold font-headline text-foreground">ספריית הטעמים שלך</h2>
-          </div>
-          <Card className="bg-indigo-500/5 border-indigo-500/20">
-            <CardContent className="p-6 text-center">
-                <p className="text-muted-foreground mb-3">כאן יוצגו המנות והעסקים שאהבת, דירגת או הזמנת שוב, עם הצעות דומות.</p>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {[1,2,3,4].map(i => (
-                        <div key={i} className="p-2 border rounded-md bg-background/50">
-                            <div className="h-16 w-full bg-muted rounded mb-1 data-ai-hint='liked food item'"></div>
-                            <p className="text-xs font-medium truncate">מנה שאהבת {i}</p>
-                        </div>
-                    ))}
-                </div>
-                <Button variant="link" className="mt-3 text-indigo-600 p-0 h-auto" onClick={() => toast({title: "בקרוב!", description: "ספריית הטעמים האישית שלך תהיה זמינה כאן במלואה."})}>
-                    הצג את כל ספריית הטעמים
-                </Button>
-            </CardContent>
-          </Card>
-      </section>
-
 
       {recentlyViewedMock.length > 0 && (
          <section className="animate-fadeInUp animation-delay-1200">
