@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { LayoutDashboard, Settings, ListChecks, Palette, ShoppingBasket, BarChart3, ChefHat, LogOut, Users as CourierIcon, Route, Lightbulb, Megaphone } from 'lucide-react';
+import { LayoutDashboard, Settings, ListChecks, Palette, ShoppingBasket, BarChart3, ChefHat, LogOut, Users as CourierIcon, Route, Lightbulb, Megaphone, CreditCard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const adminNavItems = [
@@ -16,8 +16,9 @@ const adminNavItems = [
   { href: '/restaurant-admin/delivery-management', label: 'ניהול משלוחים', icon: Route },
   { href: '/restaurant-admin/promotions', label: 'ניהול מבצעים', icon: Megaphone },
   { href: '/restaurant-admin/analytics', label: 'ניתוחים', icon: BarChart3 },
-  { href: '/restaurant-admin/courier-management', label: 'ניהול שליחים', icon: CourierIcon },
+  { href: '/restaurant-admin/courier-management', label: 'ניהול שליחים (צפייה)', icon: CourierIcon },
   { href: '/restaurant-admin/trending-insights', label: 'תובנות טרנדים', icon: Lightbulb },
+  { href: '/restaurant-admin/subscription', label: 'מנוי וחיוב', icon: CreditCard },
 ];
 
 export default function RestaurantAdminLayout({ children }: { children: ReactNode }) {

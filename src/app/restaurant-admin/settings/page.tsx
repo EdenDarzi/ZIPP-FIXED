@@ -20,8 +20,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import type { RestaurantSettings, OperatingHour, DayOfWeek } from '@/types';
 import { mockExistingSettings } from '@/lib/mock-data';
-import { UploadCloud, Info, Loader2 } from 'lucide-react';
+import { UploadCloud, Info, Loader2, MessageSquare } from 'lucide-react';
 import Image from 'next/image';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
 
 const operatingHourSchema = z.object({
   day: z.enum(['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']),
@@ -102,14 +104,14 @@ export default function RestaurantSettingsPage() {
   function onSubmit(values: z.infer<typeof settingsFormSchema>) {
     console.log(values);
     toast({
-      title: 'ההגדרות עודכנו (דמו)',
+      title: 'ההגדרות עודכנו (הדגמה)',
       description: 'הגדרות העסק שלך נשמרו בהצלחה.',
     });
   }
 
   const handleUploadClick = (fieldName: 'logoUrl' | 'coverImageUrl') => {
     toast({
-        title: 'העלאת קובץ (דמו)',
+        title: 'העלאת קובץ (הדגמה)',
         description: `העלאת קבצים עבור ${fieldName === 'logoUrl' ? 'לוגו' : 'תמונת נושא'} תתאפשר בקרוב. בינתיים, אנא השתמש בכתובת URL ישירה לתמונה.`,
         variant: 'default',
     });
@@ -178,6 +180,13 @@ export default function RestaurantSettingsPage() {
                 <Info className="h-4 w-4 mr-2 mt-0.5 text-blue-600 flex-shrink-0"/>
                 <span>עבור עסקים חדשים, במיוחד עסקים קטנים (מאפיות, פרחים, חנויות פופ-אפ), LivePick AI יכול לעזור לבנות תפריט/קטלוג ראשוני, עיצוב בסיסי והצעות מחיר - תוך דקות (בקרוב!).</span>
               </div>
+              <Alert variant="default" className="bg-green-50 border-green-200">
+                  <MessageSquare className="h-4 w-4 text-green-600" />
+                  <AlertTitle className="text-green-700">תמיכה בלקוחות</AlertTitle>
+                  <AlertDescription className="text-green-600/90">
+                    לקוחות שיש להם שאלות או בעיות בנוגע להזמנות מהעסק שלך יפנו אליך ישירות דרך אפשרויות הצ'אט והתמיכה בדף ההזמנה. אנא וודא שאתה מגיב לפניות אלו בזמן.
+                  </AlertDescription>
+              </Alert>
             </CardContent>
           </Card>
 
