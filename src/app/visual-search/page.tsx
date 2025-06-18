@@ -75,7 +75,7 @@ export default function AiTrendScannerPage() {
     if (!aiResponse) return;
     toast({
       title: "שיתוף ממצאי טרנד",
-      description: `זיהוי: ${aiResponse.identifiedDishName}. הצעה כללית: ${aiResponse.generalSuggestion.substring(0,50)}... (הדגמה של תהליך שיתוף).`,
+      description: `זיהוי: ${aiResponse.identifiedDishName}. הצעה כללית: ${aiResponse.generalSuggestion.substring(0,50)}... (תהליך שיתוף מדומה).`,
     });
   };
 
@@ -83,16 +83,16 @@ export default function AiTrendScannerPage() {
     if(!aiResponse) return;
     toast({
         title: "פרסום ב'פינה שלי'",
-        description: `התגלית שלך "${aiResponse.identifiedDishName}" תשותף ב'פינה' האישית שלך. צבור עוקבים וזכה בקופונים! (הדגמה של פונקציונליות זו).`,
+        description: `התגלית שלך "${aiResponse.identifiedDishName}" תשותף ב'פינה' האישית שלך. צבור עוקבים וזכה בקופונים! (פונקציונליות מדומה).`,
         action: <Star className="text-yellow-500"/>
     });
   };
 
   const handleSocialLink = (platform: string) => {
     toast({
-      title: `קישור מ${platform} (הדגמה)`,
-      description: `בגרסה מלאה, תוכל/י להדביק כאן קישור לפוסט מ${platform} או לבחור אותו ישירות. כרגע, אנא העלה/י צילום מסך או תמונה רלוונטית דרך "העלה תמונה".`,
-      duration: 7000,
+      title: `חיבור ל-${platform}`,
+      description: `תכונת ניתוח הטרנדים מקישורים ישירים ל-${platform} נמצאת בפיתוח מתקדם ותהיה זמינה בקרוב. בשלב זה, אנא העלה/י תמונה ברורה או צילום מסך של הטרנד דרך אפשרות "העלה תמונה" כדי שנוכל לנתח אותו עבורך.`,
+      duration: 8000,
     });
   };
 
@@ -231,5 +231,4 @@ export default function AiTrendScannerPage() {
     </div>
   );
 }
-
-      
+    
