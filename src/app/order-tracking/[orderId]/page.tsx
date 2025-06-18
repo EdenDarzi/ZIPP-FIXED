@@ -30,27 +30,27 @@ const getOrderStatusHebrew = (status: OrderStatus): string => {
         DELIVERED: 'נמסר',
         CANCELLED: 'בוטל'
     };
-    return map[status] || status.replace(/_/g, ' ').toLowerCase();
+    return map[status] || status.toString().replace(/_/g, ' ').toLowerCase();
 }
 
 const getAssignedCourierDetails = (courierId: string): Order['assignedCourier'] => {
     const profile = mockCourierProfiles.find(c => c.id === courierId);
     if (!profile) return undefined;
     return {
-        id: profile.id, name: profile.name, photoUrl: `https://placehold.co/100x100.png`, dataAiHint: "courier person", rating: profile.rating, vehicleType: profile.vehicleType, currentEtaMinutes: 12 + Math.floor(Math.random() * 8), vehicleDetails: profile.transportationModeDetails || `${profile.vehicleType}`, liveLocation: profile.currentLocation,
+        id: profile.id, name: profile.name, photoUrl: `https://placehold.co/100x100.png?text=${profile.name.substring(0,1)}`, dataAiHint: "courier person", rating: profile.rating, vehicleType: profile.vehicleType, currentEtaMinutes: 12 + Math.floor(Math.random() * 8), vehicleDetails: profile.transportationModeDetails || `${profile.vehicleType}`, liveLocation: profile.currentLocation,
     };
 };
 
 export default function OrderTrackingPage() {
-  const params = useParams();
+  const paramsHook = useParams(); // Use the hook
+  const orderId = paramsHook.orderId as string;
   const searchParams = useSearchParams();
-  const orderId = params.orderId as string;
   const router = useRouter();
   const { toast } = useToast(); 
 
   const [order, setOrder] = useState<Order | null | undefined>(undefined); 
   const [customerNotes, setCustomerNotes] = useState<string | null>(null);
-  const [isGiftOrder, setIsGiftOrder] = useState(false);
+  const [isGiftOrderState, setIsGiftOrderState] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [triviaAnswered, setTriviaAnswered] = useState(false); 
   const [showGamificationHint, setShowGamificationHint] = useState(false);
@@ -119,7 +119,7 @@ export default function OrderTrackingPage() {
     }
     const giftParam = searchParams.get('isGift');
     if (giftParam === 'true') {
-      setIsGiftOrder(true);
+      setIsGiftOrderState(true);
     }
 
     let extractedScheduledTime: string | undefined = undefined;
@@ -136,6 +136,9 @@ export default function OrderTrackingPage() {
     }
     if (notesFromQuery) {
         fetchedOrder.customerNotes = decodeURIComponent(notesFromQuery);
+    }
+    if (giftParam === 'true') {
+        fetchedOrder.isGiftOrder = true;
     }
     setOrder(fetchedOrder);
     
@@ -280,7 +283,7 @@ export default function OrderTrackingPage() {
 
       {renderOrderStatusView()}
       
-      {isGiftOrder && (
+      {isGiftOrderState && (
         <Card className="bg-pink-50 border-pink-200 animate-fadeIn">
             <CardHeader className="pb-2 pt-3">
                 <CardTitle className="text-md text-pink-700 flex items-center"><Gift className="mr-2 h-4 w-4"/>הזמנה זו נשלחת כמתנה!</CardTitle>
@@ -381,3 +384,5 @@ export default function OrderTrackingPage() {
     </div>
   );
 }
+
+    

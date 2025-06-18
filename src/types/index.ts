@@ -325,4 +325,23 @@ export interface SecondHandItem {
   contactDetails?: string; 
 }
 
+export interface Transaction {
+  id: string;
+  date: string;
+  description: string;
+  amount: number; // positive for income, negative for expense
+  type: 'purchase' | 'refund' | 'top-up' | 'payout' | 'commission' | 'bonus' | 'fee' | 'delivery_fee' | 'order_payment' | 'withdrawal';
+  status?: 'pending' | 'completed' | 'failed' | 'cancelled';
+  relatedEntityId?: string; // e.g., orderId, courierId
+  relatedEntityType?: 'order' | 'courier_payment' | 'business_payout';
+}
+
+export interface Wallet {
+  userId: string;
+  userType: 'client' | 'courier' | 'business';
+  balance: number;
+  currency?: string; // e.g., 'ILS'
+  transactions: Transaction[]; // Simplified for now, could be paginated
+  lastUpdatedAt: string;
+}
     

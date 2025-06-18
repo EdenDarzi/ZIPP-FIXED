@@ -2,7 +2,7 @@
 import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { User, MapPin, CreditCard, ListOrdered, Shield } from 'lucide-react';
+import { User, MapPin, CreditCard, ListOrdered, Shield, Wallet } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
@@ -13,7 +13,7 @@ import { Separator } from '@/components/ui/separator';
 const accountNavItems = [
   { href: '/account/profile', label: 'פרופיל אישי', icon: User },
   { href: '/account/addresses', label: 'ניהול כתובות', icon: MapPin },
-  { href: '/account/payment-methods', label: 'אמצעי תשלום', icon: CreditCard },
+  { href: '/account/payment-methods', label: 'ארנק ותשלומים', icon: Wallet },
   { href: '/account/order-history', label: 'היסטוריית הזמנות', icon: ListOrdered },
   { href: '/account/security', label: 'אבטחה והתראות', icon: Shield },
 ];
@@ -50,3 +50,4 @@ export default function AccountLayout({ children }: { children: ReactNode }) {
     </div>
   );
 }
+

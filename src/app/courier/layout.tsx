@@ -2,7 +2,7 @@
 import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { LayoutDashboard, ListChecks, PackageCheck, BarChart3, UserCog, CreditCard } from 'lucide-react'; 
+import { LayoutDashboard, ListChecks, PackageCheck, BarChart3, UserCog, CreditCard, Wallet } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
 
 const courierNavItems = [
@@ -11,7 +11,7 @@ const courierNavItems = [
   { href: '/courier/active-orders', label: 'הזמנות פעילות', icon: PackageCheck },
   { href: '/courier/performance', label: 'ביצועים והכנסות', icon: BarChart3 },
   { href: '/courier/profile', label: 'פרופיל והגדרות', icon: UserCog },
-  { href: '/courier/subscription', label: 'מנוי ותשלומים', icon: CreditCard },
+  { href: '/courier/subscription', label: 'הכנסות וארנק', icon: Wallet },
 ];
 
 export default function CourierLayout({ children }: { children: ReactNode }) {

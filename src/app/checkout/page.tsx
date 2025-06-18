@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { CreditCard, Lock, ShoppingBag, AlertTriangle, Zap, Sparkles, DollarSign, Clock, Gift, Edit, Check, ShieldCheck } from "lucide-react"; 
+import { CreditCard, Lock, ShoppingBag, AlertTriangle, Zap, Sparkles, DollarSign, Clock, Gift, Edit, Check, ShieldCheck, Wallet as WalletIcon, TicketPercent } from "lucide-react"; 
 import Link from "next/link";
 import { useCart } from "@/context/cart-context";
 import Image from "next/image";
@@ -13,6 +13,9 @@ import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react"; 
 import { Label } from "@/components/ui/label"; 
 import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 
 export default function CheckoutPage() {
   const { cart, itemCount, totalPrice, deliveryPreference, deliveryFee, discountAmount, finalPriceWithDelivery, smartCouponApplied, clearCart, scheduledDeliveryTime, getItemPriceWithAddons } = useCart();
@@ -22,6 +25,9 @@ export default function CheckoutPage() {
   const [discreetDelivery, setDiscreetDelivery] = useState(false);
   const [customerNotes, setCustomerNotes] = useState('');
   const [isGiftOrder, setIsGiftOrder] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'wallet'>('card');
+  const [mockWalletBalance, setMockWalletBalance] = useState<number>(0);
+  const [couponCode, setCouponCode] = useState('');
 
   useEffect(() => {
     const notes = searchParams.get('notes');
@@ -32,6 +38,8 @@ export default function CheckoutPage() {
     if (giftParam === 'true') {
         setIsGiftOrder(true);
     }
+    // Simulate fetching wallet balance
+    setMockWalletBalance(parseFloat((Math.random() * 150 + 20).toFixed(2)));
   }, [searchParams]);
 
 
@@ -44,6 +52,21 @@ export default function CheckoutPage() {
             duration: 5000,
         });
     }
+  };
+
+  const handleApplyCoupon = () => {
+    if (couponCode.trim() === '') {
+        toast({ title: "קוד קופון ריק", description: "אנא הזן קוד קופון.", variant: "destructive" });
+        return;
+    }
+    // Mock coupon logic
+    if (couponCode.toUpperCase() === 'LIVEPICK10') {
+        toast({ title: "קופון הופעל!", description: "10% הנחה נוספו להזמנה שלך (הדגמה).", className: "bg-green-500 text-white" });
+        // Here you would typically update the cart totals or discountAmount state
+    } else {
+        toast({ title: "קוד קופון לא תקין", description: "הקוד שהזנת אינו חוקי או פג תוקף.", variant: "destructive"});
+    }
+    setCouponCode('');
   };
 
 
@@ -63,6 +86,16 @@ export default function CheckoutPage() {
   }
 
   const handleMockPayment = () => {
+    if (paymentMethod === 'wallet' && mockWalletBalance < finalPriceWithDelivery) {
+        toast({
+            title: "יתרה לא מספקת בארנק",
+            description: `אין לך מספיק יתרה בארנק LivePick (₪${mockWalletBalance.toFixed(2)}) כדי לכסות את ההזמנה (₪${finalPriceWithDelivery.toFixed(2)}). אנא טען את הארנק או בחר אמצעי תשלום אחר.`,
+            variant: "destructive",
+            duration: 7000,
+        });
+        return;
+    }
+
     toast({
       title: "התשלום עבר בהצלחה!",
       description: scheduledDeliveryTime 
@@ -159,29 +192,69 @@ export default function CheckoutPage() {
                    </div>
                 )}
                 <div className="flex justify-between font-bold text-lg text-primary pt-1">
-                  <span>סה"כ</span>
+                  <span>סה"כ לתשלום</span>
                   <span>{finalPriceWithDelivery.toFixed(2)}₪</span>
                 </div>
               </div>
             </div>
           </div>
+          
+          <Separator />
 
           <div>
-            <h3 className="text-xl font-semibold mb-3">פרטי תשלום</h3>
-            <p className="text-muted-foreground mb-4 text-sm">
-              זהו מקטע הדגמה לשילוב תשלומים. לחץ על "שלם עכשיו" כדי לדמות תשלום מוצלח.
-            </p>
-            <div className="p-6 border border-dashed rounded-md text-center bg-muted/20">
-              <CreditCard className="h-12 w-12 text-primary mx-auto mb-4" />
-              <p className="font-semibold text-lg">שער תשלומים (הדגמה)</p>
-              <p className="text-sm text-muted-foreground">עבד את התשלום שלך באופן מאובטח.</p>
+            <h3 className="text-xl font-semibold mb-3">קופון / שובר</h3>
+            <div className="flex items-center gap-2">
+                <Input 
+                    id="couponCode"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                    placeholder="הזן קוד קופון או שובר"
+                    className="flex-grow"
+                    aria-label="קוד קופון או שובר"
+                />
+                <Button variant="outline" onClick={handleApplyCoupon} disabled={!couponCode.trim()} aria-label="הפעל קופון">
+                    <TicketPercent className="ml-2 h-4 w-4" /> הפעל
+                </Button>
             </div>
+            <p className="text-xs text-muted-foreground mt-1">הדגמה: נסה "LIVEPICK10".</p>
+          </div>
+
+          <Separator />
+
+          <div>
+            <h3 className="text-xl font-semibold mb-3">אמצעי תשלום</h3>
+            <RadioGroup value={paymentMethod} onValueChange={(value) => setPaymentMethod(value as 'card' | 'wallet')} className="space-y-3" dir="rtl">
+                <Label htmlFor="payWithCard" className="flex items-center p-4 border rounded-md cursor-pointer hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all">
+                    <RadioGroupItem value="card" id="payWithCard" className="ml-3 rtl:ml-0 rtl:mr-3" />
+                    <CreditCard className="h-5 w-5 ml-2 rtl:ml-0 rtl:mr-2 text-primary" />
+                    <div className="flex-grow">
+                        <span className="font-semibold">כרטיס אשראי</span>
+                        <p className="text-xs text-muted-foreground">השתמש בכרטיס שמור או הוסף חדש (שער תשלומים מדומה).</p>
+                    </div>
+                </Label>
+                <Label htmlFor="payWithWallet" className="flex items-center p-4 border rounded-md cursor-pointer hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all">
+                    <RadioGroupItem value="wallet" id="payWithWallet" className="ml-3 rtl:ml-0 rtl:mr-3" disabled={mockWalletBalance < finalPriceWithDelivery} />
+                    <WalletIcon className="h-5 w-5 ml-2 rtl:ml-0 rtl:mr-2 text-green-600" />
+                     <div className="flex-grow">
+                        <span className="font-semibold">ארנק LivePick</span>
+                        <p className="text-xs text-muted-foreground">יתרה נוכחית: <span className="font-medium text-green-700">₪{mockWalletBalance.toFixed(2)}</span></p>
+                         {mockWalletBalance < finalPriceWithDelivery && <p className="text-xs text-destructive">יתרה לא מספקת לתשלום מלא.</p>}
+                    </div>
+                </Label>
+            </RadioGroup>
+             {paymentMethod === 'card' && (
+                <div className="mt-4 p-4 border border-dashed rounded-md text-center bg-muted/20">
+                    <CreditCard className="h-10 w-10 text-primary mx-auto mb-3" />
+                    <p className="font-semibold">שער תשלומים מאובטח (הדגמה)</p>
+                    <p className="text-xs text-muted-foreground">יוצג כאן טופס להזנת פרטי כרטיס או בחירת כרטיס שמור.</p>
+                </div>
+            )}
           </div>
           
-          <div className="flex items-center space-x-2 rtl:space-x-reverse p-3 border rounded-md bg-muted/50">
+          <div className="flex items-center space-x-2 rtl:space-x-reverse p-3 border rounded-md bg-muted/50 mt-4">
             <Checkbox id="discreetDelivery" checked={discreetDelivery} onCheckedChange={handleDiscreetToggle} aria-labelledby="discreetDeliveryLabel" />
             <Label htmlFor="discreetDelivery" id="discreetDeliveryLabel" className="cursor-pointer text-sm flex items-center">
-              <ShieldCheck className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1 text-blue-500"/> משלוח דיסקרטי
+              <ShieldCheck className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1 text-blue-500"/> משלוח דיסקרטי (אופציונלי)
             </Label>
           </div>
 
@@ -208,7 +281,7 @@ export default function CheckoutPage() {
           )}
 
           <Button size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg" onClick={handleMockPayment} aria-label={`שלם ${finalPriceWithDelivery.toFixed(2)} שקלים`}>
-            <Lock className="ml-2 rtl:ml-0 rtl:mr-2 h-5 w-5" /> שלם {finalPriceWithDelivery.toFixed(2)}₪
+            <Lock className="ml-2 rtl:ml-0 rtl:mr-2 h-5 w-5" /> שלם ₪{finalPriceWithDelivery.toFixed(2)}
           </Button>
           <p className="text-xs text-muted-foreground text-center">
             בלחיצה על "שלם עכשיו", אתה מסכים לתנאי השירות ומדיניות הפרטיות שלנו.
