@@ -6,12 +6,12 @@ import type { Restaurant, MenuItem } from '@/types';
 import ItemCard from '@/components/items/item-card';
 import Image from 'next/image';
 import { useParams, notFound } from 'next/navigation'; 
-import { Star, Clock, MapPin, Utensils, Share2, Award, MessageCircle, Edit, Send } from 'lucide-react';
+import { Star, Clock, MapPin, Utensils, Share2, Award, MessageCircle, Edit, Send, Loader2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { useState, useEffect } from 'react'; // Added useEffect
+import { useState, useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -41,12 +41,12 @@ export default function RestaurantPage() {
   const [newReviewText, setNewReviewText] = useState('');
   const [newReviewRating, setNewReviewRating] = useState(0);
   const [hoverReviewRating, setHoverReviewRating] = useState(0);
-  const [pageReviewCount, setPageReviewCount] = useState<number | null>(null); // State for review count
+  const [pageReviewCount, setPageReviewCount] = useState<number | null>(null);
 
   useEffect(() => {
     // Generate random review count only on the client side after hydration
     setPageReviewCount(Math.floor(Math.random() * 200 + 50));
-  }, []); // Empty dependency array ensures this runs once on mount
+  }, []); 
 
   if (!restaurant) {
     notFound();
@@ -115,7 +115,13 @@ export default function RestaurantPage() {
         </div>
         <div className="flex items-center">
           <Star className="h-5 w-5 mr-2 text-yellow-500 fill-yellow-500" />
-          <span className="text-foreground">{restaurant.rating.toFixed(1)} ({pageReviewCount === null ? 'טוען...' : `${pageReviewCount} ratings`})</span>
+          <span className="text-foreground">
+            {restaurant.rating.toFixed(1)} 
+            {pageReviewCount === null ? 
+              <span className="text-xs animate-pulse"> (טוען ביקורות...)</span> : 
+              <span className="text-xs"> ({pageReviewCount} ביקורות)</span>
+            }
+          </span>
         </div>
         <div className="flex items-center">
           <Clock className="h-5 w-5 mr-2 text-primary" />

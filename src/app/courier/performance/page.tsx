@@ -88,7 +88,7 @@ export default function CourierPerformancePage() {
         setTotalEarnings(newTotalEarnings);
         setTotalDeliveries(newTotalDeliveries);
         setAvgDeliveryTime(Math.floor(Math.random() * 15 + 18)); 
-        setAvgRating(parseFloat((Math.random() * 0.8 + 4.0).toFixed(1))); 
+        setAvgRating(parseFloat((4.2 + Math.random() * 0.8).toFixed(1))); 
 
         setEarningsData(mockEarningsDataDefault.map(d => ({...d, total: Math.floor((d.total + Math.random() * 500 - 250) * Math.max(0.5, randomFactor * 0.7))})));
         setDeliveriesData(mockDeliveriesDataDefault.map(d => ({...d, deliveries: Math.floor((d.deliveries + Math.random() * 5 - 2) * Math.max(0.5, randomFactor * 0.8))})));
@@ -98,6 +98,7 @@ export default function CourierPerformancePage() {
   }, [dateRange]);
   
   const handleDateRangeChange = (newRange: DateRange | undefined) => {
+    setIsLoading(true); // Set loading when date range changes
     setDateRange(newRange);
     toast({
         title: "נתונים עודכנו (דמו)",

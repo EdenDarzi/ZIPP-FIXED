@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, DollarSign, Utensils, Star, TrendingUp, Clock, Lightbulb, Activity, Wallet as WalletIcon, History, FileText, BarChart3, Percent, Filter, AlertTriangle } from 'lucide-react'; // Added BarChart3, Percent, Filter, AlertTriangle
+import { Users, DollarSign, Utensils, Star, TrendingUp, Clock, Lightbulb, Activity, Wallet as WalletIcon, History, FileText, BarChart3, Percent, Filter, AlertTriangle, PieChart as PieChartIcon } from 'lucide-react';
 import { Bar, BarChart as RechartsBarChart, Line, LineChart as RechartsLineChart, Pie, PieChart as RechartsPieChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell } from 'recharts';
 import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
 import type { Wallet, Transaction, TransactionType } from '@/types';
@@ -79,9 +79,8 @@ export default function AnalyticsPage() {
 
   useEffect(() => {
     setIsLoading(true);
-    setTimeout(() => {
+    const loadingTimer = setTimeout(() => { // Ensure loading state is visible for a bit
         setBusinessWallet(mockBusinessWalletData);
-        // Simulate data based on dateRange or default
         const factor = dateRange?.from && dateRange?.to ? (dateRange.to.getTime() - dateRange.from.getTime()) / (1000*60*60*24*7) + 0.5 : 1;
         setTotalRevenue(parseFloat(((Math.random() * 8000 + 4000)*factor).toFixed(2)));
         setTotalOrders(Math.floor((Math.random() * 200 + 100)*factor));
@@ -92,6 +91,7 @@ export default function AnalyticsPage() {
         setPopularItemsData(popularItemsDataDefault.map(d => ({...d, sold: Math.floor(d.sold * (0.8 + Math.random()*0.4) * factor)})));
         setIsLoading(false);
     }, 800);
+    return () => clearTimeout(loadingTimer);
   }, [dateRange]);
 
 
@@ -257,7 +257,7 @@ export default function AnalyticsPage() {
 
         <Card className="premium-card-hover">
           <CardHeader>
-            <CardTitle className="text-xl flex items-center"><PieChart className="mr-2 h-5 w-5 text-accent"/> מוצרים/שירותים פופולריים (דמו)</CardTitle>
+            <CardTitle className="text-xl flex items-center"><PieChartIcon className="mr-2 h-5 w-5 text-accent"/> מוצרים/שירותים פופולריים (דמו)</CardTitle>
           </CardHeader>
           <CardContent className="h-[350px] flex items-center justify-center">
              {isLoading ? <div className="flex h-full justify-center items-center"><Loader2 className="h-8 w-8 animate-spin text-accent"/></div> : (

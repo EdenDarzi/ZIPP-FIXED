@@ -13,7 +13,7 @@ interface Stats {
   pendingOrders: number | null;
   totalRevenueToday: number | null;
   popularItem: string | null;
-  systemStatus: string;
+  systemStatus: string | null;
   newReviews: number | null;
   newCustomersToday: number | null;
   activeCampaigns: number | null;
@@ -25,14 +25,15 @@ export default function RestaurantAdminDashboard() {
     pendingOrders: null,
     totalRevenueToday: null,
     popularItem: null,
-    systemStatus: "כל המערכות פועלות כשורה",
+    systemStatus: null,
     newReviews: null,
     newCustomersToday: null,
     activeCampaigns: null,
   });
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
 
   useEffect(() => {
-    // Simulate fetching data with a slight delay for "live" feel
+    setIsLoadingStats(true);
     const timer = setTimeout(() => {
       setStats({
         todayOrders: Math.floor(Math.random() * 20) + 5,
@@ -44,6 +45,7 @@ export default function RestaurantAdminDashboard() {
         newCustomersToday: Math.floor(Math.random() * 10 + 1),
         activeCampaigns: Math.floor(Math.random() * 3 + 1),
       });
+      setIsLoadingStats(false);
     }, 700); 
     return () => clearTimeout(timer);
   }, []);
@@ -60,7 +62,7 @@ export default function RestaurantAdminDashboard() {
   ];
 
   return (
-    <div className="space-y-8"> {/* Increased spacing */}
+    <div className="space-y-8"> 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-3xl md:text-4xl font-bold font-headline text-primary">לוח בקרה לעסק</h1>
         <Button asChild className="btn-gradient-hover-accent">
@@ -84,15 +86,15 @@ export default function RestaurantAdminDashboard() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4"> {/* Increased gap */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card className="premium-card-hover">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">הזמנות היום</CardTitle>
-            <ListOrdered className="h-5 w-5 text-muted-foreground" /> {/* Increased icon size */}
+            <ListOrdered className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {stats.todayOrders === null ? <Loader2 className="h-7 w-7 animate-spin text-primary"/> : <div className="text-3xl font-bold text-primary">{stats.todayOrders}</div>}
-            {stats.todayOrders !== null && <p className="text-xs text-muted-foreground">+5 מאתמול (הדגמה)</p>}
+            {isLoadingStats || stats.todayOrders === null ? <Loader2 className="h-7 w-7 animate-spin text-primary"/> : <div className="text-3xl font-bold text-primary">{stats.todayOrders}</div>}
+            {!isLoadingStats && stats.todayOrders !== null && <p className="text-xs text-muted-foreground">+5 מאתמול (הדגמה)</p>}
           </CardContent>
         </Card>
         <Card className="premium-card-hover border-orange-400 hover:border-orange-500">
@@ -101,8 +103,8 @@ export default function RestaurantAdminDashboard() {
             <AlertTriangle className="h-5 w-5 text-orange-500" />
           </CardHeader>
           <CardContent>
-            {stats.pendingOrders === null ? <Loader2 className="h-7 w-7 animate-spin text-orange-600"/> : <div className="text-3xl font-bold text-orange-600">{stats.pendingOrders}</div>}
-            {stats.pendingOrders !== null && <p className="text-xs text-muted-foreground">נדרשת פעולה מיידית</p>}
+            {isLoadingStats || stats.pendingOrders === null ? <Loader2 className="h-7 w-7 animate-spin text-orange-600"/> : <div className="text-3xl font-bold text-orange-600">{stats.pendingOrders}</div>}
+            {!isLoadingStats && stats.pendingOrders !== null && <p className="text-xs text-muted-foreground">נדרשת פעולה מיידית</p>}
           </CardContent>
         </Card>
         <Card className="premium-card-hover border-green-400 hover:border-green-500">
@@ -111,18 +113,18 @@ export default function RestaurantAdminDashboard() {
             <DollarSign className="h-5 w-5 text-green-500" />
           </CardHeader>
           <CardContent>
-             {stats.totalRevenueToday === null ? <Loader2 className="h-7 w-7 animate-spin text-green-600"/> : <div className="text-3xl font-bold text-green-600">₪{stats.totalRevenueToday.toFixed(2)}</div>}
-            {stats.totalRevenueToday !== null && <p className="text-xs text-muted-foreground">+10% מאתמול (הדגמה)</p>}
+             {isLoadingStats || stats.totalRevenueToday === null ? <Loader2 className="h-7 w-7 animate-spin text-green-600"/> : <div className="text-3xl font-bold text-green-600">₪{stats.totalRevenueToday.toFixed(2)}</div>}
+            {!isLoadingStats && stats.totalRevenueToday !== null && <p className="text-xs text-muted-foreground">+10% מאתמול (הדגמה)</p>}
           </CardContent>
         </Card>
         <Card className="premium-card-hover">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">פריט פופולרי היום</CardTitle>
-            <TrendingUp className="h-5 w-5 text-muted-foreground" /> {/* Changed icon */}
+            <TrendingUp className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-             {stats.popularItem === null ? <Loader2 className="h-7 w-7 animate-spin text-accent"/> : <div className="text-xl font-bold truncate text-accent">{stats.popularItem}</div>}
-            {stats.popularItem !== null && <p className="text-xs text-muted-foreground">מבוסס על מכירות אחרונות</p>}
+             {isLoadingStats || stats.popularItem === null ? <Loader2 className="h-7 w-7 animate-spin text-accent"/> : <div className="text-xl font-bold truncate text-accent">{stats.popularItem}</div>}
+            {!isLoadingStats && stats.popularItem !== null && <p className="text-xs text-muted-foreground">מבוסס על מכירות אחרונות</p>}
           </CardContent>
         </Card>
          <Card className="premium-card-hover">
@@ -131,8 +133,8 @@ export default function RestaurantAdminDashboard() {
             <Users2 className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {stats.newCustomersToday === null ? <Loader2 className="h-7 w-7 animate-spin text-blue-500"/> : <div className="text-3xl font-bold text-blue-500">{stats.newCustomersToday}</div>}
-            {stats.newCustomersToday !== null && <p className="text-xs text-muted-foreground">ברכות על הצמיחה!</p>}
+            {isLoadingStats || stats.newCustomersToday === null ? <Loader2 className="h-7 w-7 animate-spin text-blue-500"/> : <div className="text-3xl font-bold text-blue-500">{stats.newCustomersToday}</div>}
+            {!isLoadingStats && stats.newCustomersToday !== null && <p className="text-xs text-muted-foreground">ברכות על הצמיחה!</p>}
           </CardContent>
         </Card>
         <Card className="premium-card-hover">
@@ -141,25 +143,25 @@ export default function RestaurantAdminDashboard() {
             <Megaphone className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {stats.activeCampaigns === null ? <Loader2 className="h-7 w-7 animate-spin text-purple-500"/> : <div className="text-3xl font-bold text-purple-500">{stats.activeCampaigns}</div>}
-            {stats.activeCampaigns !== null && <p className="text-xs text-muted-foreground">הצג ביצועים ונהל</p>}
+            {isLoadingStats || stats.activeCampaigns === null ? <Loader2 className="h-7 w-7 animate-spin text-purple-500"/> : <div className="text-3xl font-bold text-purple-500">{stats.activeCampaigns}</div>}
+            {!isLoadingStats && stats.activeCampaigns !== null && <p className="text-xs text-muted-foreground">הצג ביצועים ונהל</p>}
           </CardContent>
         </Card>
       </div>
 
       <Card className="premium-card-hover">
         <CardHeader>
-          <CardTitle className="text-2xl">פעולות מהירות</CardTitle> {/* Increased size */}
+          <CardTitle className="text-2xl">פעולות מהירות</CardTitle>
           <CardDescription>נווט במהירות לאזורי ניהול מרכזיים בעסק שלך.</CardDescription>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Increased gap */}
+        <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {quickLinks.map((link) => (
             <Button key={link.href} variant="outline" size="lg" asChild className="justify-start text-left h-auto py-4 hover:bg-primary/5 hover:border-primary/30 hover:shadow-md transition-all">
               <Link href={link.href}>
                 <span className="flex items-center w-full">
-                  <link.icon className="mr-3 h-6 w-6 text-primary flex-shrink-0" /> {/* Increased icon size */}
+                  <link.icon className="mr-3 h-6 w-6 text-primary flex-shrink-0" />
                   <div className="flex-grow">
-                    <p className="font-semibold text-base">{link.label}</p> {/* Increased text size */}
+                    <p className="font-semibold text-base">{link.label}</p>
                   </div>
                 </span>
               </Link>
@@ -171,15 +173,15 @@ export default function RestaurantAdminDashboard() {
       <div className="grid md:grid-cols-2 gap-6">
         <Card className="premium-card-hover">
           <CardHeader>
-            <CardTitle className="text-xl">התראות ועדכונים (דמו)</CardTitle> {/* Increased size */}
+            <CardTitle className="text-xl">התראות ועדכונים (דמו)</CardTitle>
             <CardDescription>עדכונים חשובים ופעולות נדרשות עבור העסק שלך.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4"> {/* Increased spacing */}
+          <CardContent className="space-y-4">
             <div className="p-4 border rounded-md bg-green-500/10 text-green-700 border-green-500/30">
-              <p className="font-medium flex items-center text-base"><CheckCircle className="mr-2 h-5 w-5"/> סטטוס מערכת: {stats.systemStatus}</p>
+                {isLoadingStats || stats.systemStatus === null ? <Loader2 className="h-5 w-5 animate-spin"/> : <p className="font-medium flex items-center text-base"><CheckCircle className="mr-2 h-5 w-5"/> סטטוס מערכת: {stats.systemStatus}</p>}
             </div>
              <div className="p-4 border rounded-md bg-yellow-500/10 text-yellow-700 border-yellow-500/30">
-               {stats.newReviews === null ? <Loader2 className="h-5 w-5 animate-spin"/> : <p className="font-medium flex items-center text-base"><Users className="mr-2 h-5 w-5"/> התקבלו {stats.newReviews} ביקורות חדשות לטיפולך (דמו)</p>}
+               {isLoadingStats || stats.newReviews === null ? <Loader2 className="h-5 w-5 animate-spin"/> : <p className="font-medium flex items-center text-base"><Users className="mr-2 h-5 w-5"/> התקבלו {stats.newReviews} ביקורות חדשות לטיפולך (דמו)</p>}
             </div>
              <div className="text-center text-muted-foreground py-4">
               <p className="text-sm">במערכת חיה, התראות חשובות ומותאמות אישית יופיעו כאן.</p>
@@ -189,10 +191,10 @@ export default function RestaurantAdminDashboard() {
 
         <Card className="premium-card-hover">
           <CardHeader>
-            <CardTitle className="flex items-center text-xl"><Video className="mr-2 h-6 w-6 text-red-500" /> LiveKitchen סטטוס (דמו)</CardTitle> {/* Increased size */}
+            <CardTitle className="flex items-center text-xl"><Video className="mr-2 h-6 w-6 text-red-500" /> LiveKitchen סטטוס (דמו)</CardTitle>
             <CardDescription>שתף את הלקוחות שלך במה שקורה מאחורי הקלעים בזמן אמת!</CardDescription>
           </CardHeader>
-          <CardContent className="text-center space-y-4"> {/* Increased spacing */}
+          <CardContent className="text-center space-y-4">
             <p className="text-lg font-medium text-muted-foreground">פיד ה-LiveKitchen שלך <span className="text-red-600 font-semibold">לא פעיל</span> כרגע.</p>
             <div className="aspect-video bg-muted rounded-md flex items-center justify-center border data-ai-hint='kitchen live stream preview' shadow-inner">
                 <Video className="h-16 w-16 text-muted-foreground/30"/>
@@ -205,3 +207,4 @@ export default function RestaurantAdminDashboard() {
     </div>
   );
 }
+

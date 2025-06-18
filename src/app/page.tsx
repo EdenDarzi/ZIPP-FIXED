@@ -4,7 +4,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Utensils, ShoppingCart, Brain, ArrowLeft, MapPin, Search, Sparkles, Heart, History, Award, Flame, Gift, Users as UsersIcon, MapIcon as FoodRadarIcon, ShoppingBag as LivePickSaleIcon, TrendingUp as LiveTrendIcon, MessageCircle, ExternalLink, Info, ShoppingBasket, ListChecks, Route, Send, PackagePlus, Loader2, Target } from "lucide-react";
-import { GamepadIcon as Gamepad2 } from 'lucide-react';
 import Image from "next/image";
 import Link from "next/link";
 import RestaurantCard from "@/components/restaurants/restaurant-card";
@@ -26,16 +25,17 @@ export default function HomePage() {
 
   const [culinarySuggestion, setCulinarySuggestion] = useState<string | null>(null);
   const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(true);
-  const [showLivePickSaleBanner, setShowLivePickSaleBanner] = useState(true); 
+  const [showLivePickSaleBanner, setShowLivePickSaleBanner] = useState(false); // Default to false, set in useEffect
   const [availableCouriers, setAvailableCouriers] = useState<number | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
+    // Client-side only effects
     async function fetchSuggestion() {
       setIsLoadingSuggestion(true);
       try {
         const input: CulinaryAssistantInput = { userId: "mockUser123", currentDay: new Date().toLocaleString('he-IL', { weekday: 'long' }) };
-        await new Promise(resolve => setTimeout(resolve, 600));
+        await new Promise(resolve => setTimeout(resolve, 600)); // Simulate API delay
         const result = await getCulinarySuggestion(input);
         setCulinarySuggestion(result.suggestion);
       } catch (error) {
@@ -47,10 +47,14 @@ export default function HomePage() {
     }
     fetchSuggestion();
 
-    // Simulate fetching available couriers count only on client
     const courierTimeout = setTimeout(() => {
       setAvailableCouriers(Math.floor(Math.random() * 20) + 8); 
     }, 800);
+
+    const currentHour = new Date().getHours();
+    if (currentHour >= 19 && currentHour <= 23) { // Example sale hours: 7 PM to 11 PM
+        setShowLivePickSaleBanner(true);
+    }
 
     return () => clearTimeout(courierTimeout);
 
@@ -64,12 +68,12 @@ export default function HomePage() {
   };
 
   return (
-    <div className="space-y-12 md:space-y-16"> {/* Increased spacing */}
+    <div className="space-y-12 md:space-y-16">
       <section className="text-center py-12 md:py-16 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 rounded-xl shadow-xl overflow-hidden border border-border">
         <div className="animate-fadeInUp">
           <Sparkles className="h-12 w-12 text-accent mx-auto mb-4" />
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-headline text-primary mb-6" style={{textShadow: '1px 1px 3px hsl(var(--foreground) / 0.1)'}}>
-            ברוכים הבאים ל-LivePick
+            ברוכים הבאים ל-SwiftServe
           </h1>
           <p className="text-lg sm:text-xl text-foreground/80 max-w-2xl mx-auto mb-8 sm:mb-10">
             הפתרון האחד שלכם למשלוח מהיר ואמין מהעסקים המקומיים האהובים עליכם, עם טוויסט חכם וקהילתי!
@@ -122,7 +126,7 @@ export default function HomePage() {
                     <CardContent className="p-6 flex flex-col sm:flex-row items-center justify-center text-center gap-3 sm:gap-4">
                         <LivePickSaleIcon className="h-10 w-10 sm:h-12 sm:w-12 animate-bounce" />
                         <div>
-                            <CardTitle className="text-2xl sm:text-3xl font-headline">🔥 מבצעי LivePick Sale לוהטים!</CardTitle>
+                            <CardTitle className="text-2xl sm:text-3xl font-headline">🔥 מבצעי SwiftServe Sale לוהטים!</CardTitle>
                             <CardDescription className="text-red-100 text-sm sm:text-base">שקיות הפתעה מסוף היום בהנחות ענק! מהרו לפני שייגמר.</CardDescription>
                         </div>
                     </CardContent>
@@ -135,7 +139,7 @@ export default function HomePage() {
         <Card className="bg-primary/5 border-primary/20 shadow-lg premium-card-hover">
           <CardHeader>
             <CardTitle className="text-2xl font-headline text-primary flex items-center">
-              <Brain className="h-7 w-7 ml-3 text-yellow-400" /> {/* Updated icon */}
+              <Brain className="h-7 w-7 ml-3 text-yellow-400" />
               העוזר הקולינרי החכם שלך
             </CardTitle>
           </CardHeader>
@@ -179,7 +183,7 @@ export default function HomePage() {
       </section>
 
 
-      <section className="grid md:grid-cols-2 gap-6 animate-fadeInUp animation-delay-700"> {/* Changed to 2 columns after VIP removal */}
+      <section className="grid md:grid-cols-2 gap-6 animate-fadeInUp animation-delay-700">
         <Link href="/food-radar" passHref>
           <Card className="premium-card-hover h-full flex flex-col items-center justify-center text-center p-6 transition-all hover:border-primary">
             <FoodRadarIcon className="h-10 w-10 text-primary mb-2" />
@@ -205,7 +209,7 @@ export default function HomePage() {
             <CardDescription className="text-orange-700/80 text-base">מבצעים בלעדיים בשיתוף עם מותגים מובילים, בהשראת הטרנדים החמים ביותר!</CardDescription>
           </CardHeader>
           <CardContent className="text-center text-orange-700/90 space-y-3">
-            <p className="text-md">"<strong>בלעדי ל-LivePick!</strong> קבלו 20% הנחה על כל קולקציית הקינוחים החדשה של 'Sweet Dreams Bakery' בהשראת טרנד ה'קרופי' שזוהה ב-TrendScanner!"</p>
+            <p className="text-md">"<strong>בלעדי ל-SwiftServe!</strong> קבלו 20% הנחה על כל קולקציית הקינוחים החדשה של 'Sweet Dreams Bakery' בהשראת טרנד ה'קרופי' שזוהה ב-TrendScanner!"</p>
             <Button variant="link" size="sm" className="text-orange-600 hover:text-orange-700 p-0 h-auto mt-2 text-base" onClick={handlePartnershipsClick}>
                 גלה שיתופי פעולה נוספים <ExternalLink className="h-4 w-4 mr-1"/>
             </Button>
@@ -216,8 +220,8 @@ export default function HomePage() {
       <section className="animate-fadeInUp animation-delay-650">
           <Card className="bg-teal-500/10 border-teal-500/30 premium-card-hover">
             <CardHeader className="items-center text-center">
-              <Gamepad2 className="h-10 w-10 text-teal-600 mb-2" />
-              <CardTitle className="text-2xl font-headline text-teal-700">🎡 גלגל ההפתעות של LivePick!</CardTitle>
+              <Gift className="h-10 w-10 text-teal-600 mb-2" /> {/* Changed icon from Gamepad2 to Gift */}
+              <CardTitle className="text-2xl font-headline text-teal-700">🎡 גלגל ההפתעות של SwiftServe!</CardTitle>
               <CardDescription className="text-teal-600/80 text-base">מרגיש בר מזל? סובב את הגלגל וזכה בהנחות, קינוחים, משלוחים חינם ועוד הפתעות!</CardDescription>
             </CardHeader>
             <CardContent className="text-center">
@@ -233,10 +237,10 @@ export default function HomePage() {
       {recommendedForYou.length > 0 && (
         <section className="animate-fadeInUp animation-delay-800">
           <div className="flex items-center mb-6">
-            <Target className="h-8 w-8 ml-3 text-pink-500" /> {/* Changed icon */}
+            <Target className="h-8 w-8 ml-3 text-pink-500" />
             <h2 className="text-3xl font-bold font-headline text-foreground">🎯 במיוחד בשבילך: ממצאים שאסור לפספס!</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> {/* Increased gap */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {recommendedForYou.map((restaurant) => (
               <RestaurantCard key={restaurant.id} restaurant={restaurant} />
             ))}
@@ -247,10 +251,10 @@ export default function HomePage() {
       {newInArea.length > 0 && (
         <section className="animate-fadeInUp animation-delay-1000">
           <div className="flex items-center mb-6">
-            <Sparkles className="h-8 w-8 ml-3 text-green-500" /> {/* Changed icon */}
+            <Sparkles className="h-8 w-8 ml-3 text-green-500" />
             <h2 className="text-3xl font-bold font-headline text-foreground">✨ חדש חם מהתנור: גלה מה נפתח לידך!</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> {/* Increased gap */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {newInArea.map((restaurant) => (
               <RestaurantCard key={restaurant.id} restaurant={restaurant} />
             ))}
@@ -264,7 +268,7 @@ export default function HomePage() {
             <History className="h-8 w-8 ml-3 text-blue-500" />
             <h2 className="text-3xl font-bold font-headline text-foreground">הזמן שוב מועדפים בקליק</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> {/* Increased gap */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {recentlyViewedMock.map((restaurant) => (
               <RestaurantCard key={restaurant.id} restaurant={restaurant} />
             ))}
@@ -278,7 +282,7 @@ export default function HomePage() {
           <h2 className="text-3xl font-bold font-headline text-foreground">גלה את כל העסקים</h2>
         </div>
         {allRestaurants.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> {/* Increased gap */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {allRestaurants.slice(0,3).map((restaurant) => ( 
               <RestaurantCard key={restaurant.id} restaurant={restaurant} />
             ))}
@@ -349,7 +353,7 @@ export default function HomePage() {
         />
         <div className="absolute inset-0 bg-gradient-to-l from-black/70 via-black/40 to-transparent flex items-center">
           <h3 className="text-3xl md:text-5xl font-bold text-white font-headline p-8 md:p-12 max-w-lg leading-tight shadow-text-lg">
-            מהיר, טרי, במשלוח. <br/> חוו את <span className="text-accent">זירת השליחים</span> החכמה של LivePick.
+            מהיר, טרי, במשלוח. <br/> חוו את <span className="text-accent">זירת השליחים</span> החכמה של SwiftServe.
           </h3>
         </div>
       </section>
@@ -373,7 +377,7 @@ export default function HomePage() {
         @keyframes fadeInUp {
           from {
             opacity: 0;
-            transform: translateY(25px); /* Slightly more noticeable */
+            transform: translateY(25px);
           }
           to {
             opacity: 1;
@@ -381,11 +385,11 @@ export default function HomePage() {
           }
         }
         .animate-fadeInUp {
-          animation: fadeInUp 0.7s ease-out forwards; /* Slightly longer duration */
+          animation: fadeInUp 0.7s ease-out forwards;
           opacity: 0; 
         }
         .animate-fadeIn {
-            animation: fadeIn 0.6s ease-out forwards; /* Slightly longer duration */
+            animation: fadeIn 0.6s ease-out forwards;
             opacity: 0;
         }
         @keyframes fadeIn {

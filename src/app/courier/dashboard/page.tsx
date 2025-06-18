@@ -16,15 +16,17 @@ export default function CourierDashboardPage() {
   const [dailyEarnings, setDailyEarnings] = useState<number | null>(null);
   const [dailyDeliveries, setDailyDeliveries] = useState<number | null>(null);
   const [openBidCount, setOpenBidCount] = useState<number | null>(null);
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    // Mock data updates only on client-side
+    setIsLoadingStats(true);
     const timer = setTimeout(() => {
         setDailyEarnings(parseFloat((Math.random() * 150 + 50).toFixed(2)));
         setDailyDeliveries(Math.floor(Math.random() * 10 + 3));
         setOpenBidCount(Math.floor(Math.random() * 5 + 1));
-    }, 500); // Simulate slight delay for data fetching
+        setIsLoadingStats(false);
+    }, 700); 
     return () => clearTimeout(timer);
   }, []);
 
@@ -95,15 +97,15 @@ export default function CourierDashboardPage() {
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center p-3 bg-green-50 border border-green-200 rounded-md">
               <p className="font-medium">הכנסות היום:</p>
-              {dailyEarnings === null ? <Loader2 className="h-6 w-6 animate-spin text-green-700" /> : <p className="text-2xl font-bold text-green-700">₪{dailyEarnings.toFixed(2)}</p>}
+              {isLoadingStats || dailyEarnings === null ? <Loader2 className="h-6 w-6 animate-spin text-green-700" /> : <p className="text-2xl font-bold text-green-700">₪{dailyEarnings.toFixed(2)}</p>}
             </div>
             <div className="flex justify-between items-center p-3 bg-blue-50 border border-blue-200 rounded-md">
               <p className="font-medium">משלוחים שהושלמו היום:</p>
-              {dailyDeliveries === null ? <Loader2 className="h-6 w-6 animate-spin text-blue-700" /> : <p className="text-2xl font-bold text-blue-700">{dailyDeliveries}</p>}
+              {isLoadingStats || dailyDeliveries === null ? <Loader2 className="h-6 w-6 animate-spin text-blue-700" /> : <p className="text-2xl font-bold text-blue-700">{dailyDeliveries}</p>}
             </div>
              <div className="flex justify-between items-center p-3 bg-orange-50 border border-orange-200 rounded-md">
               <p className="font-medium">הצעות פתוחות כרגע:</p>
-              {openBidCount === null ? <Loader2 className="h-6 w-6 animate-spin text-orange-700" /> : <p className="text-2xl font-bold text-orange-700">{openBidCount}</p>}
+              {isLoadingStats || openBidCount === null ? <Loader2 className="h-6 w-6 animate-spin text-orange-700" /> : <p className="text-2xl font-bold text-orange-700">{openBidCount}</p>}
             </div>
             <Button asChild size="lg" className="w-full">
                 <Link href="/courier/performance">
@@ -121,9 +123,9 @@ export default function CourierDashboardPage() {
         <CardContent>
             <Button size="xl" className="bg-accent hover:bg-accent/90 text-accent-foreground text-lg px-10 py-7 shadow-lg relative overflow-hidden group">
               <Link href="/courier/open-bids" className="flex items-center">
-                <Zap className="mr-3 h-6 w-6 text-yellow-300 group-hover:animate-ping absolute left-4 opacity-75"/> 
+                <Zap className="mr-3 h-6 w-6 text-yellow-300 group-hover:animate-pulse absolute left-4 opacity-75"/> 
                 <Search className="mr-3 h-6 w-6"/> 
-                מצא משלוחים כעת ({openBidCount === null ? <Loader2 className="inline-block h-5 w-5 animate-spin" /> : openBidCount} הצעות פתוחות)
+                מצא משלוחים כעת ({isLoadingStats || openBidCount === null ? <Loader2 className="inline-block h-5 w-5 animate-spin" /> : openBidCount} הצעות פתוחות)
               </Link>
             </Button>
         </CardContent>
