@@ -49,16 +49,17 @@ const Footer = () => {
             </Button>
              <Button variant="link" size="sm" asChild className="text-muted-foreground hover:text-primary p-0 h-auto">
                 <Link href="/order-tracking/mockOrder_example" className="flex items-center gap-1">
-                    <Navigation className="h-4 w-4"/> עקוב אחר שליח/הזמנה {/* Changed icon and text */}
+                    <Navigation className="h-4 w-4"/> עקוב אחר הזמנה
                 </Link>
             </Button>
         </div>
 
         <p className="text-xs">&copy; {currentYear} SwiftServe. כל הזכויות שמורות.</p>
-        <p className="text-xs mt-1">נוצר באהבה לנוחיותך, עם קורטוב של AI.</p>
+        <p className="text-xs mt-1">פלטפורמת המשלוחים החכמה שלך, מבוססת AI.</p>
       </div>
     </footer>
   );
 };
 
 export default Footer;
+
