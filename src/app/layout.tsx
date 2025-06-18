@@ -10,22 +10,13 @@ import Footer from '@/components/layout/footer';
 import { CartProvider } from '@/context/cart-context';
 import { cn } from '@/lib/utils';
 import AiChatAssistant from '@/components/layout/ai-chat-assistant';
-import React, { useEffect, useState } from 'react'; // Import useEffect and useState
+import React, { useEffect, useState } from 'react';
 
 const ptSans = PT_Sans({
   subsets: ['latin', 'cyrillic'],
   weight: ['400', '700'],
   variable: '--font-pt-sans',
 });
-
-// Metadata can remain static if not dynamically changed by language
-// export const metadata: Metadata = { // This is static metadata, no problem
-//   title: 'LivePick - פלטפורמת המשלוחים החכמה שלך',
-//   description: 'הזמינו משלוח ממסעדות, חנויות ובתי קפה עם LivePick. גלו טרנדים, שתפו וזכו בפרסים!',
-//   icons: {
-//     icon: '/favicon.ico',
-//   }
-// };
 
 export default function RootLayout({
   children,
@@ -35,17 +26,15 @@ export default function RootLayout({
   const [timeBasedTheme, setTimeBasedTheme] = useState('theme-day');
 
   useEffect(() => {
-    // This effect runs only on the client
     const hour = new Date().getHours();
-    if (hour >= 6 && hour < 18) { // Day
+    if (hour >= 6 && hour < 18) {
       setTimeBasedTheme('theme-day');
-    } else if (hour >= 18 && hour < 21) { // Evening
+    } else if (hour >= 18 && hour < 21) {
       setTimeBasedTheme('theme-evening');
-    } else { // Night
+    } else {
       setTimeBasedTheme('theme-night');
     }
 
-    // Set metadata dynamically on client - useful if title/desc need to change
     if (document) {
         document.title = 'LivePick - פלטפורמת המשלוחים החכמה שלך';
         const metaDesc = document.querySelector('meta[name="description"]');
@@ -54,18 +43,35 @@ export default function RootLayout({
         }
     }
 
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
   }, []);
 
   return (
     <html lang="he" dir="rtl" suppressHydrationWarning>
       <head>
-        {/* Static metadata elements can remain in head if not using the metadata object above for client components */}
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#29ABE2" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="LivePick" />
+        {/* Add Apple touch icons later if specific ones are needed */}
       </head>
       <body className={cn('font-body antialiased min-h-screen flex flex-col bg-background text-foreground', ptSans.variable, timeBasedTheme)}>
         <CartProvider>
