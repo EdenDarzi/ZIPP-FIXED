@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Utensils, ShoppingCart, Brain, ArrowLeft, MapPin, Search, Sparkles, Heart, History, Award, Flame, Gift, Gem, UsersIcon, MapIcon as FoodRadarIcon, ShoppingBag as LivePickSaleIcon, TrendingUp as LiveTrendIcon, MessageCircle, ExternalLink, Info, ShoppingBasket, Gamepad2, ListChecks, Route, Send, PackagePlus, Loader2 } from "lucide-react";
+import { Utensils, ShoppingCart, Brain, ArrowLeft, MapPin, Search, Sparkles, Heart, History, Award, Flame, Gift, Gem, UsersIcon, MapIcon as FoodRadarIcon, ShoppingBag as LivePickSaleIcon, TrendingUp as LiveTrendIcon, MessageCircle, ExternalLink, Info, ShoppingBasket, Gamepad2, ListChecks, Route, Send, PackagePlus, Loader2, Target } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import RestaurantCard from "@/components/restaurants/restaurant-card";
@@ -15,6 +15,7 @@ import { getCulinarySuggestion, CulinaryAssistantInput } from "@/ai/flows/culina
 import SurpriseFeatureCard from "@/components/surprise/surprise-feature-card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function HomePage() {
   const allRestaurants: Restaurant[] = mockRestaurants;
@@ -24,7 +25,7 @@ export default function HomePage() {
 
   const [culinarySuggestion, setCulinarySuggestion] = useState<string | null>(null);
   const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(true);
-  const [showLivePickSaleBanner, setShowLivePickSaleBanner] = useState(true); // Always show for demo
+  const [showLivePickSaleBanner, setShowLivePickSaleBanner] = useState(true); 
   const [availableCouriers, setAvailableCouriers] = useState<number | null>(null);
   const { toast } = useToast();
 
@@ -33,7 +34,6 @@ export default function HomePage() {
       setIsLoadingSuggestion(true);
       try {
         const input: CulinaryAssistantInput = { userId: "mockUser123", currentDay: new Date().toLocaleString('he-IL', { weekday: 'long' }) };
-        // Simulate API call delay
         await new Promise(resolve => setTimeout(resolve, 600));
         const result = await getCulinarySuggestion(input);
         setCulinarySuggestion(result.suggestion);
@@ -46,9 +46,8 @@ export default function HomePage() {
     }
     fetchSuggestion();
 
-    // Simulate fetching available couriers
     const courierTimeout = setTimeout(() => {
-      setAvailableCouriers(Math.floor(Math.random() * 20) + 8); // Simulate 8-27 couriers
+      setAvailableCouriers(Math.floor(Math.random() * 20) + 8); 
     }, 800);
 
     return () => clearTimeout(courierTimeout);
@@ -57,47 +56,57 @@ export default function HomePage() {
 
   const handlePartnershipsClick = () => {
     toast({
-        title: "שיתופי פעולה והטבות",
-        description: "בקרוב יוצגו כאן שיתופי פעולה והטבות בלעדיות. (הדגמה של אזור זה)",
+        title: "שותפויות והטבות",
+        description: "אזור זה יציג שיתופי פעולה ודילים חמים עם מותגים ומשפיענים. (הדגמה)",
     });
   };
 
   return (
-    <div className="space-y-16">
-      <section className="text-center py-16 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl shadow-xl overflow-hidden">
+    <div className="space-y-12 md:space-y-16"> {/* Increased spacing */}
+      <section className="text-center py-12 md:py-16 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 rounded-xl shadow-xl overflow-hidden border border-border">
         <div className="animate-fadeInUp">
-          <h1 className="text-5xl md:text-6xl font-bold font-headline text-primary mb-6" style={{textShadow: '2px 2px 4px hsl(var(--foreground) / 0.1)'}}>
+          <Sparkles className="h-12 w-12 text-accent mx-auto mb-4" />
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-headline text-primary mb-6" style={{textShadow: '1px 1px 3px hsl(var(--foreground) / 0.1)'}}>
             ברוכים הבאים ל-LivePick
           </h1>
-          <p className="text-xl text-foreground/80 max-w-2xl mx-auto mb-10">
+          <p className="text-lg sm:text-xl text-foreground/80 max-w-2xl mx-auto mb-8 sm:mb-10">
             הפתרון האחד שלכם למשלוח מהיר ואמין מהעסקים המקומיים האהובים עליכם, עם טוויסט חכם וקהילתי!
           </p>
         </div>
-        <div className="max-w-xl mx-auto mb-10 animate-fadeInUp animation-delay-200">
-          <div className="relative">
-            <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="מה מתחשק לכם היום? (למשל, פיצה, פרחים, טרנד חם)"
-              className="w-full pr-12 pl-4 py-3 text-lg rounded-full shadow-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
-              aria-label="חפש אוכל, מוצרים או שירותים"
-            />
-          </div>
+        <div className="max-w-xl mx-auto mb-8 sm:mb-10 animate-fadeInUp animation-delay-200">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger className="w-full">
+                <div className="relative">
+                  <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
+                  <Input
+                    type="search"
+                    placeholder="מה בא לכם? חפשו 'פיצה חריפה', 'זר ורדים' או 'קפה קר'"
+                    className="w-full pr-12 pl-4 py-3.5 text-base md:text-lg rounded-full shadow-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                    aria-label="חפש אוכל, מוצרים או שירותים"
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>נסה לחפש מנה, סוג מטבח, שם עסק, או אפילו טרנד!</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
-        <div className="mt-10 flex flex-wrap justify-center gap-4 animate-fadeInUp animation-delay-400">
-          <Button size="lg" asChild className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg transition-transform hover:scale-105 px-8 py-6 text-lg">
+        <div className="mt-8 sm:mt-10 flex flex-wrap justify-center gap-4 animate-fadeInUp animation-delay-400">
+          <Button size="lg" asChild className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg transition-transform hover:scale-105 px-8 py-3 text-lg btn-gradient-hover-accent">
             <Link href="/restaurants">
               <span className="flex items-center justify-center w-full">
                 <Utensils className="ml-2 h-5 w-5" />
-                חיפוש עסקים 
+                לכל העסקים
               </span>
             </Link>
           </Button>
-          <Button size="lg" variant="outline" asChild className="shadow-md transition-transform hover:scale-105 px-8 py-6 text-lg">
+          <Button size="lg" variant="outline" asChild className="shadow-md transition-transform hover:scale-105 px-8 py-3 text-lg border-primary text-primary hover:bg-primary/5">
             <Link href="/auth/register">
                <span className="flex items-center justify-center w-full">
                  <ArrowLeft className="ml-2 h-5 w-5" />
-                 הרשמה 
+                 הרשמה מהירה
                </span>
             </Link>
           </Button>
@@ -106,13 +115,13 @@ export default function HomePage() {
 
       {showLivePickSaleBanner && (
         <section className="animate-fadeInUp animation-delay-500">
-            <Card className="bg-red-500 text-white shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
+            <Card className="bg-red-500 text-white shadow-xl hover:shadow-2xl transition-shadow cursor-pointer border-2 border-red-600 premium-card-hover">
                 <Link href="/livepick-sale">
-                    <CardContent className="p-6 flex items-center justify-center text-center">
-                        <LivePickSaleIcon className="h-10 w-10 mr-4 animate-bounce" />
+                    <CardContent className="p-6 flex flex-col sm:flex-row items-center justify-center text-center gap-3 sm:gap-4">
+                        <LivePickSaleIcon className="h-10 w-10 sm:h-12 sm:w-12 animate-bounce" />
                         <div>
-                            <CardTitle className="text-2xl font-headline">🔥 מבצעי LivePick Sale פעילים!</CardTitle>
-                            <CardDescription className="text-red-100">שקיות הפתעה מסוף היום זמינות עכשיו במחירים מיוחדים! (הדגמה)</CardDescription>
+                            <CardTitle className="text-2xl sm:text-3xl font-headline">🔥 מבצעי LivePick Sale לוהטים!</CardTitle>
+                            <CardDescription className="text-red-100 text-sm sm:text-base">שקיות הפתעה מסוף היום בהנחות ענק! מהרו לפני שייגמר.</CardDescription>
                         </div>
                     </CardContent>
                 </Link>
@@ -121,21 +130,21 @@ export default function HomePage() {
       )}
 
       <section className="animate-fadeInUp animation-delay-600">
-        <Card className="bg-primary/5 border-primary/20 shadow-lg hover:shadow-xl transition-shadow">
+        <Card className="bg-primary/5 border-primary/20 shadow-lg premium-card-hover">
           <CardHeader>
-            <CardTitle className="text-xl font-headline text-primary flex items-center">
-              <Sparkles className="h-6 w-6 ml-2 text-yellow-500" />
-              העוזר האישי שלך
+            <CardTitle className="text-2xl font-headline text-primary flex items-center">
+              <Brain className="h-7 w-7 ml-3 text-yellow-400" /> {/* Updated icon */}
+              העוזר הקולינרי החכם שלך
             </CardTitle>
           </CardHeader>
           <CardContent>
             {isLoadingSuggestion ? (
-              <p className="text-muted-foreground animate-pulse flex items-center"><Loader2 className="h-4 w-4 mr-2 animate-spin"/>ה-AI שלנו חושב על משהו מיוחד בשבילך...</p>
+              <p className="text-muted-foreground animate-pulse flex items-center"><Loader2 className="h-5 w-5 mr-2 animate-spin"/>ה-AI שלנו רוקח משהו מיוחד בשבילך...</p>
             ) : (
               <p className="text-lg text-foreground/90">{culinarySuggestion}</p>
             )}
-            <Button variant="link" className="p-0 h-auto mt-2 text-primary hover:text-accent transition-colors" asChild>
-              <Link href="/recommendations"><span>קבל המלצות אישיות נוספות &larr;</span></Link>
+            <Button variant="link" className="p-0 h-auto mt-3 text-primary hover:text-accent transition-colors text-base" asChild>
+              <Link href="/recommendations"><span>קבל המלצות AI נוספות &larr;</span></Link>
             </Button>
           </CardContent>
         </Card>
@@ -144,22 +153,22 @@ export default function HomePage() {
       <SurpriseFeatureCard />
 
       <section className="grid md:grid-cols-2 gap-6 animate-fadeInUp animation-delay-680">
-        <Card className="hover:shadow-lg hover:border-green-500/50 transition-all cursor-default h-full flex flex-col items-center justify-center text-center p-6 bg-green-500/5 border-green-500/20">
+        <Card className="premium-card-hover h-full flex flex-col items-center justify-center text-center p-6 bg-green-500/5 border-green-500/20">
            <Route className="h-12 w-12 text-green-600 mb-3" />
            <CardTitle className="text-xl font-semibold text-green-700">שליחים פעילים באזורך כעת!</CardTitle>
            {availableCouriers === null ? (
              <CardDescription className="text-md text-green-600/90 mt-1 animate-pulse flex items-center justify-center"><Loader2 className="h-4 w-4 mr-1 animate-spin"/>בודק זמינות...</CardDescription>
            ) : (
              <CardDescription className="text-md text-green-600/90 mt-1">
-               כרגע יש כ-<strong className="text-2xl">{availableCouriers}</strong> שליחים זמינים!
+               כעת יש כ-<strong className="text-2xl">{availableCouriers}</strong> שליחים זמינים!
              </CardDescription>
            )}
         </Card>
-        <Card className="hover:shadow-lg hover:border-blue-500/50 transition-all cursor-default h-full flex flex-col items-center justify-center text-center p-6 bg-blue-500/5 border-blue-500/20">
+        <Card className="premium-card-hover h-full flex flex-col items-center justify-center text-center p-6 bg-blue-500/5 border-blue-500/20">
            <PackagePlus className="h-12 w-12 text-blue-600 mb-3" />
-           <CardTitle className="text-xl font-semibold text-blue-700">צריך לשלוח משהו?</CardTitle>
-           <CardDescription className="text-md text-blue-600/90 mt-1">שירות משלוחי P2P לשליחת חפצים, מסמכים, או בקשת קניות מהשליח.</CardDescription>
-           <Button asChild className="mt-4 bg-blue-600 hover:bg-blue-700 text-white">
+           <CardTitle className="text-xl font-semibold text-blue-700">צריך לשלוח חפץ או מסמך?</CardTitle>
+           <CardDescription className="text-md text-blue-600/90 mt-1">שירות משלוחי P2P לשליחת חפצים, מסמכים, או אפילו לבקש מהשליח לרכוש עבורך משהו קטן.</CardDescription>
+           <Button asChild className="mt-4 bg-blue-600 hover:bg-blue-700 text-white btn-gradient-hover-primary">
              <Link href="/send-package">
                התחל משלוח P2P <ArrowLeft className="mr-2 h-4 w-4" />
              </Link>
@@ -168,58 +177,58 @@ export default function HomePage() {
       </section>
 
 
-      <section className="grid md:grid-cols-3 gap-4 animate-fadeInUp animation-delay-700">
+      <section className="grid md:grid-cols-3 gap-6 animate-fadeInUp animation-delay-700">
         <Link href="/food-radar" passHref>
-          <Card className="hover:shadow-lg hover:border-primary/50 transition-all cursor-pointer h-full flex flex-col items-center justify-center text-center p-4">
+          <Card className="premium-card-hover h-full flex flex-col items-center justify-center text-center p-6 transition-all hover:border-primary">
             <FoodRadarIcon className="h-10 w-10 text-primary mb-2" />
             <CardTitle className="text-lg font-semibold">Food Radar & Live Trends</CardTitle>
-            <CardDescription className="text-xs">גלה מה חם סביבך בזמן אמת!</CardDescription>
+            <CardDescription className="text-sm">גלה מה חם סביבך בזמן אמת!</CardDescription>
           </Card>
         </Link>
         <Link href="/vip" passHref>
-           <Card className="hover:shadow-lg hover:border-primary/50 transition-all cursor-pointer h-full flex flex-col items-center justify-center text-center p-4">
+           <Card className="premium-card-hover h-full flex flex-col items-center justify-center text-center p-6 transition-all hover:border-purple-500">
             <Gem className="h-10 w-10 text-purple-500 mb-2" />
             <CardTitle className="text-lg font-semibold">LivePick VIP</CardTitle>
-            <CardDescription className="text-xs">חווית פרימיום והטבות בלעדיות.</CardDescription>
+            <CardDescription className="text-sm">חווית פרימיום והטבות בלעדיות.</CardDescription>
           </Card>
         </Link>
         <Link href="/affiliate" passHref>
-          <Card className="hover:shadow-lg hover:border-primary/50 transition-all cursor-pointer h-full flex flex-col items-center justify-center text-center p-4">
+          <Card className="premium-card-hover h-full flex flex-col items-center justify-center text-center p-6 transition-all hover:border-green-500">
             <UsersIcon className="h-10 w-10 text-green-500 mb-2" />
             <CardTitle className="text-lg font-semibold">תוכנית שותפים</CardTitle>
-            <CardDescription className="text-xs">הרווח כסף והטבות על המלצות.</CardDescription>
+            <CardDescription className="text-sm">הרווח כסף והטבות על המלצות.</CardDescription>
           </Card>
         </Link>
       </section>
       
        <section className="animate-fadeInUp animation-delay-750">
-        <Card className="border-orange-500/30 bg-orange-500/5">
+        <Card className="border-orange-500/30 bg-orange-500/5 premium-card-hover">
           <CardHeader className="items-center text-center">
-            <CardTitle className="text-xl font-headline text-orange-600 flex items-center justify-center">
-              <Flame className="h-6 w-6 ml-2" /> שותפויות ודילים חמים
+            <CardTitle className="text-2xl font-headline text-orange-600 flex items-center justify-center">
+              <Flame className="h-7 w-7 ml-2" /> שיתופי פעולה ודילים חמים
             </CardTitle>
-            <CardDescription className="text-orange-700/80">מבצעים בלעדיים בשיתוף עם מותגים מובילים, בהשראת הטרנדים החמים ביותר!</CardDescription>
+            <CardDescription className="text-orange-700/80 text-base">מבצעים בלעדיים בשיתוף עם מותגים מובילים, בהשראת הטרנדים החמים ביותר!</CardDescription>
           </CardHeader>
-          <CardContent className="text-center text-orange-700/90 space-y-2">
-            <p>"לדוגמה: קבל 15% הנחה על קולקציית הקיץ של 'FashionForward' בהשראת טרנד ה-Y2K שזוהה לאחרונה ב-LivePick!"</p>
-            <Button variant="link" size="sm" className="text-orange-600 hover:text-orange-700 p-0 h-auto mt-1" onClick={handlePartnershipsClick}>
-                גלה שיתופי פעולה נוספים <ExternalLink className="h-3 w-3 mr-1"/>
+          <CardContent className="text-center text-orange-700/90 space-y-3">
+            <p className="text-md">"<strong>בלעדי ל-LivePick!</strong> קבלו 20% הנחה על כל קולקציית הקינוחים החדשה של 'Sweet Dreams Bakery' בהשראת טרנד ה'קרופי' שזוהה ב-TrendScanner!"</p>
+            <Button variant="link" size="sm" className="text-orange-600 hover:text-orange-700 p-0 h-auto mt-2 text-base" onClick={handlePartnershipsClick}>
+                גלה שיתופי פעולה נוספים <ExternalLink className="h-4 w-4 mr-1"/>
             </Button>
           </CardContent>
         </Card>
       </section>
 
       <section className="animate-fadeInUp animation-delay-650">
-          <Card className="bg-teal-500/10 border-teal-500/30">
+          <Card className="bg-teal-500/10 border-teal-500/30 premium-card-hover">
             <CardHeader className="items-center text-center">
               <Gamepad2 className="h-10 w-10 text-teal-600 mb-2" />
-              <CardTitle className="text-xl font-headline text-teal-700">🎡 גלגל ההפתעות של LivePick!</CardTitle>
-              <CardDescription className="text-teal-600/80">מרגיש בר מזל? סובב את הגלגל וזכה בהנחות, קינוחים, משלוחים חינם ועוד הפתעות!</CardDescription>
+              <CardTitle className="text-2xl font-headline text-teal-700">🎡 גלגל ההפתעות של LivePick!</CardTitle>
+              <CardDescription className="text-teal-600/80 text-base">מרגיש בר מזל? סובב את הגלגל וזכה בהנחות, קינוחים, משלוחים חינם ועוד הפתעות!</CardDescription>
             </CardHeader>
             <CardContent className="text-center">
-              <Button asChild className="bg-teal-600 hover:bg-teal-700 text-white shadow-md">
+              <Button asChild size="lg" className="bg-teal-600 hover:bg-teal-700 text-white shadow-lg btn-gradient-hover-primary px-10 py-3 text-lg">
                 <Link href="/spin-wheel">
-                  סובב את הגלגל
+                  סובב את הגלגל היומי
                 </Link>
               </Button>
             </CardContent>
@@ -229,10 +238,10 @@ export default function HomePage() {
       {recommendedForYou.length > 0 && (
         <section className="animate-fadeInUp animation-delay-800">
           <div className="flex items-center mb-6">
-            <Heart className="h-7 w-7 ml-3 text-pink-500" />
-            <h2 className="text-3xl font-bold font-headline text-foreground">מומלץ עבורך</h2>
+            <Target className="h-8 w-8 ml-3 text-pink-500" /> {/* Changed icon */}
+            <h2 className="text-3xl font-bold font-headline text-foreground">🎯 במיוחד בשבילך: ממצאים שאסור לפספס!</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> {/* Increased gap */}
             {recommendedForYou.map((restaurant) => (
               <RestaurantCard key={restaurant.id} restaurant={restaurant} />
             ))}
@@ -243,10 +252,10 @@ export default function HomePage() {
       {newInArea.length > 0 && (
         <section className="animate-fadeInUp animation-delay-1000">
           <div className="flex items-center mb-6">
-            <MapPin className="h-7 w-7 ml-3 text-green-500" />
-            <h2 className="text-3xl font-bold font-headline text-foreground">חדש באזורך</h2>
+            <Sparkles className="h-8 w-8 ml-3 text-green-500" /> {/* Changed icon */}
+            <h2 className="text-3xl font-bold font-headline text-foreground">✨ חדש חם מהתנור: גלה מה נפתח לידך!</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> {/* Increased gap */}
             {newInArea.map((restaurant) => (
               <RestaurantCard key={restaurant.id} restaurant={restaurant} />
             ))}
@@ -257,10 +266,10 @@ export default function HomePage() {
       {recentlyViewedMock.length > 0 && (
          <section className="animate-fadeInUp animation-delay-1200">
           <div className="flex items-center mb-6">
-            <History className="h-7 w-7 ml-3 text-blue-500" />
-            <h2 className="text-3xl font-bold font-headline text-foreground">הזמן שוב מועדפים</h2>
+            <History className="h-8 w-8 ml-3 text-blue-500" />
+            <h2 className="text-3xl font-bold font-headline text-foreground">הזמן שוב מועדפים בקליק</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> {/* Increased gap */}
             {recentlyViewedMock.map((restaurant) => (
               <RestaurantCard key={restaurant.id} restaurant={restaurant} />
             ))}
@@ -268,30 +277,30 @@ export default function HomePage() {
         </section>
       )}
       
-      <section className="animate-fadeInUp animation-delay-1400">
+      <section className="animate-fadeInUp animation-delay-1400 bg-muted/30 p-6 sm:p-8 rounded-xl">
         <div className="flex items-center mb-6">
-          <ListChecks className="h-7 w-7 ml-3 text-gray-500" />
+          <ListChecks className="h-8 w-8 ml-3 text-gray-500" />
           <h2 className="text-3xl font-bold font-headline text-foreground">גלה את כל העסקים</h2>
         </div>
         {allRestaurants.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> {/* Increased gap */}
             {allRestaurants.slice(0,3).map((restaurant) => ( 
               <RestaurantCard key={restaurant.id} restaurant={restaurant} />
             ))}
           </div>
         ) : (
-           <Card className="text-center py-10">
+           <Card className="text-center py-10 premium-card-hover">
             <CardContent>
                 <Search className="h-12 w-12 mx-auto text-muted-foreground mb-3 opacity-50"/>
                 <p className="text-muted-foreground">לא נמצאו עסקים להצגה כרגע. אנא נסה מאוחר יותר.</p>
             </CardContent>
            </Card>
         )}
-        <div className="text-center mt-8">
-            <Button variant="link" asChild className="text-lg text-primary hover:text-accent transition-colors">
+        <div className="text-center mt-10">
+            <Button variant="link" asChild className="text-xl text-primary hover:text-accent transition-colors">
                 <Link href="/restaurants">
                   <span className="flex items-center justify-center w-full">
-                    <ArrowLeft className="mr-1 h-4 w-4" /> הצג את כל העסקים
+                    <ArrowLeft className="mr-2 h-5 w-5" /> הצג את כל העסקים והחנויות
                   </span>
                 </Link>
             </Button>
@@ -299,7 +308,7 @@ export default function HomePage() {
       </section>
 
       <section className="grid md:grid-cols-3 gap-8 animate-fadeInUp animation-delay-1600">
-        <Card className="hover:shadow-xl transition-all duration-300 hover:border-primary border-2 border-transparent">
+        <Card className="premium-card-hover hover:border-accent">
           <CardHeader className="items-center text-center">
             <Utensils className="h-12 w-12 text-accent mb-3" />
             <CardTitle className="font-headline text-xl">מבחר רחב</CardTitle>
@@ -310,7 +319,7 @@ export default function HomePage() {
             </CardDescription>
           </CardContent>
         </Card>
-        <Card className="hover:shadow-xl transition-all duration-300 hover:border-primary border-2 border-transparent">
+        <Card className="premium-card-hover hover:border-accent">
           <CardHeader className="items-center text-center">
             <ShoppingCart className="h-12 w-12 text-accent mb-3" />
             <CardTitle className="font-headline text-xl">הזמנה קלה</CardTitle>
@@ -321,7 +330,7 @@ export default function HomePage() {
             </CardDescription>
           </CardContent>
         </Card>
-        <Card className="hover:shadow-xl transition-all duration-300 hover:border-primary border-2 border-transparent">
+        <Card className="premium-card-hover hover:border-accent">
           <CardHeader className="items-center text-center">
             <Brain className="h-12 w-12 text-accent mb-3" />
             <CardTitle className="font-headline text-xl">הצעות חכמות</CardTitle>
@@ -341,9 +350,10 @@ export default function HomePage() {
           layout="fill"
           objectFit="cover"
           data-ai-hint="food delivery collage promotion"
+          className="transition-transform duration-500 ease-in-out hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-l from-black/60 via-black/30 to-transparent flex items-center">
-          <h3 className="text-3xl md:text-5xl font-bold text-white font-headline p-8 md:p-12 max-w-lg leading-tight">
+        <div className="absolute inset-0 bg-gradient-to-l from-black/70 via-black/40 to-transparent flex items-center">
+          <h3 className="text-3xl md:text-5xl font-bold text-white font-headline p-8 md:p-12 max-w-lg leading-tight shadow-text-lg">
             מהיר, טרי, במשלוח. <br/> חוו את <span className="text-accent">זירת השליחים</span> החכמה של LivePick.
           </h3>
         </div>
@@ -368,7 +378,7 @@ export default function HomePage() {
         @keyframes fadeInUp {
           from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(25px); /* Slightly more noticeable */
           }
           to {
             opacity: 1;
@@ -376,20 +386,22 @@ export default function HomePage() {
           }
         }
         .animate-fadeInUp {
-          animation: fadeInUp 0.6s ease-out forwards;
+          animation: fadeInUp 0.7s ease-out forwards; /* Slightly longer duration */
           opacity: 0; 
         }
         .animate-fadeIn {
-            animation: fadeIn 0.5s ease-out forwards;
+            animation: fadeIn 0.6s ease-out forwards; /* Slightly longer duration */
             opacity: 0;
         }
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
+        .shadow-text-lg {
+            text-shadow: 0px 2px 4px rgba(0,0,0,0.5);
+        }
       `}</style>
     </div>
   );
 }
     
-

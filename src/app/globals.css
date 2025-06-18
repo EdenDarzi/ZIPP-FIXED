@@ -43,6 +43,7 @@ body {
     --sidebar-ring: 197 71% 50%;
     --font-pt-sans: 'PT Sans', sans-serif;
   }
+
   .dark {
     --background: 210 10% 15%; /* Dark Gray */
     --foreground: 210 30% 90%; /* Light Gray */
@@ -78,6 +79,31 @@ body {
     --sidebar-ring: 197 71% 65%;
     --font-pt-sans: 'PT Sans', sans-serif;
   }
+
+  /* Dynamic background themes based on time of day */
+  .theme-day {
+    /* Default theme is day theme, no changes needed here unless specific overrides */
+  }
+  .theme-evening {
+    --background: 210 12% 90%; /* Slightly darker light gray for evening */
+    --card: 210 10% 98%;
+    --muted: 210 25% 85%;
+  }
+  .dark .theme-evening {
+    --background: 210 10% 13%; /* Slightly darker dark gray for evening */
+    --card: 210 10% 18%;
+    --muted: 210 10% 23%;
+  }
+  .theme-night {
+    --background: 210 15% 85%; /* Even darker light gray for night */
+    --card: 210 10% 95%;
+    --muted: 210 20% 80%;
+  }
+  .dark .theme-night {
+    --background: 210 12% 10%; /* Even darker for night */
+    --card: 210 10% 15%;
+    --muted: 210 10% 20%;
+  }
 }
 
 @layer base {
@@ -85,6 +111,24 @@ body {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-500;
   }
+}
+
+/* Custom button hover gradients */
+.btn-gradient-hover-primary:hover {
+  background-image: linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary) / 0.8));
+}
+.btn-gradient-hover-accent:hover {
+  background-image: linear-gradient(to right, hsl(var(--accent)), hsl(var(--accent) / 0.8));
+}
+
+/* General card hover effect for premium feel */
+.premium-card-hover {
+  @apply transition-all duration-300 ease-in-out hover:shadow-xl hover:border-primary/30 hover:scale-[1.01];
+}
+
+/* Smooth scroll for anchor links (if any) */
+html {
+  scroll-behavior: smooth;
 }
