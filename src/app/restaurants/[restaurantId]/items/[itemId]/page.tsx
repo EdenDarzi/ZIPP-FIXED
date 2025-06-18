@@ -169,7 +169,7 @@ export default function ItemPage({ params }: ItemPageParams) {
   const handleShareItem = () => {
     toast({
       title: "שיתוף פריט (הדגמה)",
-      description: `שיתפת את "${item.name}"! +5 כוכבים התווספו לחשבונך (הדמיה).`,
+      description: `שיתפת את "${item.name}"! +5 כוכבים התווספו לחשבונך (דמו).`,
       action: <Award className="h-5 w-5 text-yellow-400" aria-label="פרס כוכבים"/>
     });
   };
@@ -177,7 +177,7 @@ export default function ItemPage({ params }: ItemPageParams) {
   const handleAddToFavorites = () => {
     toast({
         title: "נוסף למועדפים",
-        description: `"${item.name}" נוסף לספריית הטעמים שלך. תוכל למצוא אותו שם בפעם הבאה! (הדמיה)`,
+        description: `"${item.name}" נוסף לספריית הטעמים שלך. תוכל למצוא אותו שם בפעם הבאה! (הדגמה)`,
     });
   };
 
@@ -317,3 +317,4 @@ export default function ItemPage({ params }: ItemPageParams) {
     </div>
   );
 }
+

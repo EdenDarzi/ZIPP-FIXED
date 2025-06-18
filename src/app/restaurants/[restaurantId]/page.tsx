@@ -109,7 +109,7 @@ export default function RestaurantPage() {
         </div>
       </header>
 
-      <section className="grid md:grid-cols-3 gap-6 text-sm bg-card p-4 rounded-lg shadow"> {/* Increased gap */}
+      <section className="grid md:grid-cols-3 gap-6 text-sm bg-card p-4 rounded-lg shadow"> 
         <div className="flex items-center">
           <MapPin className="h-5 w-5 mr-2 text-primary" />
           <span className="text-foreground">{restaurant.location}</span>
@@ -134,7 +134,7 @@ export default function RestaurantPage() {
         <Card className="bg-red-50 border-red-200">
             <CardHeader>
                 <CardTitle className="text-xl text-red-700 flex items-center">
-                    <MessageCircle className="mr-2 h-5 w-5 animate-pulse" /> 🎬 SwiftServe LiveKitchen פעיל! (דמו) {/* Updated name */}
+                    <MessageCircle className="mr-2 h-5 w-5 animate-pulse" /> 🎬 ZIPP LiveKitchen פעיל! (דמו) 
                 </CardTitle>
             </CardHeader>
             <CardContent className="text-center">
@@ -155,7 +155,7 @@ export default function RestaurantPage() {
         <section key={category} className="space-y-4">
           <h3 className="text-2xl font-semibold font-headline text-foreground/90 border-b-2 border-primary/30 pb-2">{category}</h3>
           {items.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> {/* Increased gap */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> 
               {items.map((item) => (
                 <ItemCard key={item.id} item={item} restaurantId={restaurant.id} />
               ))}

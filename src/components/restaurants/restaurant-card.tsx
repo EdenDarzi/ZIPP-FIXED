@@ -38,13 +38,13 @@ const tagColorMap: Record<RestaurantTag, string> = {
 
 export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
   const [reviewCount, setReviewCount] = useState<number | null>(null);
-  const [isLivePickChoice, setIsLivePickChoice] = useState(false);
+  const [isZippChoice, setIsZippChoice] = useState(false); // Changed variable name
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setReviewCount(Math.floor(Math.random() * 150 + 50));
       if (restaurant.rating > 4.6 && Math.random() > 0.6) {
-        setIsLivePickChoice(true);
+        setIsZippChoice(true); // Changed variable name
       }
     }
   }, [restaurant.rating]); 
@@ -61,22 +61,22 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
             className="group-hover:scale-110 transition-transform duration-500 ease-in-out"
             data-ai-hint={restaurant.dataAiHint || "restaurant exterior food"} 
           />
-           <div className="absolute top-2 left-2 flex flex-col items-start gap-1.5 z-10"> {/* Increased gap */}
-            {isLivePickChoice && (
+           <div className="absolute top-2 left-2 flex flex-col items-start gap-1.5 z-10"> 
+            {isZippChoice && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                      <Badge variant="default" className="py-1.5 px-3 text-xs bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white shadow-lg border border-white/30">
-                        <Award className="h-4 w-4 ml-1.5" /> SwiftServe Choice {/* Updated name */}
+                        <Award className="h-4 w-4 ml-1.5" /> ZIPP Choice 
                     </Badge>
                   </TooltipTrigger>
                   <TooltipContent side="top" align="start" className="bg-popover text-popover-foreground p-2 text-xs rounded-md shadow-lg">
-                    <p>מומלץ במיוחד על ידי צוות SwiftServe!</p> {/* Updated name */}
+                    <p>מומלץ במיוחד על ידי צוות ZIPP!</p> 
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             )}
-            {restaurant.tags?.slice(0, isLivePickChoice ? 1 : 2).map(tag => { 
+            {restaurant.tags?.slice(0, isZippChoice ? 1 : 2).map(tag => { 
                 const Icon = tagIconMap[tag] || CircleHelp;
                 return (
                     <TooltipProvider key={tag}>
@@ -95,7 +95,7 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
             })}
             </div>
         </div>
-        <CardHeader className="pt-4 pb-2 px-4"> {/* Adjusted padding */}
+        <CardHeader className="pt-4 pb-2 px-4"> 
           <CardTitle className="text-xl font-headline group-hover:text-primary transition-colors duration-300">{restaurant.name}</CardTitle>
           <CardDescription className="text-sm h-10 overflow-hidden text-ellipsis mt-1">{restaurant.description}</CardDescription>
         </CardHeader>
@@ -135,3 +135,4 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
     </Card>
   );
 }
+

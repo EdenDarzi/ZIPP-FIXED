@@ -54,7 +54,7 @@ const Header = () => {
     { href: "/restaurants", label: "עסקים", icon: Utensils, showAlways: true, showSm: true, showMd: true, showLg: true, showXl: true },
     { href: "/marketplace", label: "יד 2", icon: Store, showAlways: false, showSm: false, showMd: false, showLg: true, showXl: true },
     { href: "/send-package", label: "שלח חבילה", icon: Send, showAlways: false, showSm: false, showMd: false, showLg: true, showXl: true },
-    { href: "/livepick-sale", label: "SwiftServe Sale", icon: PackageSearch, showAlways: false, showSm: true, showMd: true, showLg: true, showXl: true },
+    { href: "/livepick-sale", label: "ZIPP Sale", icon: PackageSearch, showAlways: false, showSm: true, showMd: true, showLg: true, showXl: true }, // Changed name here
     { href: "/visual-search", label: "סורק טרנדים", icon: TrendingUp, showAlways: true, showSm: true, showMd: true, showLg: true, showXl: true },
     { href: "/favorites", label: "מועדפים", icon: Heart, showAlways: false, showSm: false, showMd: true, showLg: true, showXl: true },
     { href: "/affiliate", label: "שותפים", icon: Users, showAlways: false, showSm: false, showMd: true, showLg: true, showXl: true },
@@ -68,8 +68,8 @@ const Header = () => {
     <header className="bg-card border-b border-border shadow-sm sticky top-0 z-50">
       <TooltipProvider>
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold text-primary font-headline" aria-label="SwiftServe - דף הבית">
-          SwiftServe
+        <Link href="/" className="text-2xl font-bold text-primary font-headline" aria-label="ZIPP - דף הבית">
+          ZIPP
         </Link>
         <nav className="flex items-center space-x-0.5 sm:space-x-1 flex-wrap justify-end">
           {navLinks.map(link => (
@@ -202,3 +202,4 @@ const Header = () => {
 };
 
 export default Header;
+

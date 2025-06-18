@@ -8,13 +8,13 @@ import { Badge } from '@/components/ui/badge';
 import { ShoppingBag, AlertTriangle, Clock, ArrowLeft, PlusCircle, Store, Info } from 'lucide-react';
 import Image from 'next/image';
 import { mockLivePickSaleItems } from '@/lib/mock-data';
-import type { LivePickSaleItem as SwiftSaleItem } from '@/types'; 
+import type { LivePickSaleItem as ZippSaleItem } from '@/types'; 
 import { useCart } from '@/context/cart-context'; 
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 
-export default function LivePickSalePage() {
-  const [activeItems, setActiveItems] = useState<SwiftSaleItem[]>([]);
+export default function ZippSalePage() {
+  const [activeItems, setActiveItems] = useState<ZippSaleItem[]>([]);
   const { addToCart } = useCart(); 
   const { toast } = useToast();
   const [isSaleActiveNow, setIsSaleActiveNow] = useState(false);
@@ -31,7 +31,7 @@ export default function LivePickSalePage() {
     setActiveItems(mockLivePickSaleItems.filter(item => item.isActive && item.quantityAvailable > 0));
   }, []);
 
-  const handleAddToCart = (item: SwiftSaleItem) => {
+  const handleAddToCart = (item: ZippSaleItem) => {
     const cartItem = {
         id: item.id, 
         name: `שקית הפתעה: ${item.name}`,
@@ -39,7 +39,7 @@ export default function LivePickSalePage() {
         price: item.price,
         imageUrl: item.imageUrl || 'https://placehold.co/600x400.png?text=הפתעה!',
         dataAiHint: item.dataAiHint || 'surprise bag',
-        category: 'SwiftServe Sale', 
+        category: 'ZIPP Sale', 
         restaurantId: item.restaurantId, 
     };
     addToCart(cartItem as any, 1); 
@@ -54,7 +54,7 @@ export default function LivePickSalePage() {
       <Card className="text-center shadow-xl bg-gradient-to-br from-red-500 via-orange-500 to-yellow-400 text-white">
         <CardHeader>
           <ShoppingBag className="h-16 w-16 mx-auto mb-4 animate-bounce" />
-          <CardTitle className="text-3xl md:text-4xl font-headline">SwiftServe Sale - שקיות הפתעה חמות מסוף היום!</CardTitle>
+          <CardTitle className="text-3xl md:text-4xl font-headline">ZIPP Sale - שקיות הפתעה חמות מסוף היום!</CardTitle>
           <CardDescription className="text-lg text-red-100 mt-2">
             תפסו דילים מדהימים על מוצרים איכותיים שעסקים, שווקים ודוכנים מציעים בהנחה בסוף היום. הפחתת בזבוז, מקסימום חיסכון!
           </CardDescription>
@@ -72,7 +72,7 @@ export default function LivePickSalePage() {
         <Card className="text-center py-12">
           <CardContent className="flex flex-col items-center gap-4">
             <Clock className="h-16 w-16 text-muted-foreground" />
-            <p className="text-xl text-muted-foreground">מבצעי SwiftServe Sale סגורים כעת.</p>
+            <p className="text-xl text-muted-foreground">מבצעי ZIPP Sale סגורים כעת.</p>
             <p className="text-sm">המבצע פעיל בין השעות {String(SALE_START_HOUR).padStart(2, '0')}:00 - {String(SALE_END_HOUR).padStart(2, '0')}:00. בדקו עסקים אחרים או חזרו מאוחר יותר!</p>
           </CardContent>
         </Card>
@@ -101,7 +101,7 @@ export default function LivePickSalePage() {
                   data-ai-hint={item.dataAiHint || "surprise bag food bakery items"}
                 />
                 <Badge variant="destructive" className="absolute top-2 right-2 text-sm px-3 py-1">
-                  🔥 SwiftServe Sale
+                  🔥 ZIPP Sale
                 </Badge>
               </div>
               <CardHeader className="pb-2">
@@ -134,3 +134,4 @@ export default function LivePickSalePage() {
     </div>
   );
 }
+

@@ -36,10 +36,10 @@ export default function RootLayout({
     }
 
     if (document) {
-        document.title = 'SwiftServe - פלטפורמת המשלוחים החכמה שלך'; // Updated name
+        document.title = 'ZIPP - פלטפורמת המשלוחים החכמה שלך'; 
         const metaDesc = document.querySelector('meta[name="description"]');
         if (metaDesc) {
-            metaDesc.setAttribute('content', 'הזמינו משלוח ממסעדות, חנויות ובתי קפה עם SwiftServe. גלו טרנדים, שתפו וזכו בפרסים!'); // Updated name
+            metaDesc.setAttribute('content', 'הזמינו משלוח ממסעדות, חנויות ובתי קפה עם ZIPP. גלו טרנדים, שתפו וזכו בפרסים!'); 
         }
     }
 
@@ -70,7 +70,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#29ABE2" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="SwiftServe" /> 
+        <meta name="apple-mobile-web-app-title" content="ZIPP" /> 
       </head>
       <body className={cn('font-body antialiased min-h-screen flex flex-col bg-background text-foreground', ptSans.variable, timeBasedTheme)}>
         <CartProvider>
@@ -86,3 +86,4 @@ export default function RootLayout({
     </html>
   );
 }
+

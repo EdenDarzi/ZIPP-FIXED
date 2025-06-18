@@ -101,7 +101,7 @@ export default function AiTrendScannerPage() {
       <Card className="shadow-xl">
         <CardHeader className="text-center">
           <TrendingUp className="h-12 w-12 text-primary mx-auto mb-3" />
-          <CardTitle className="text-3xl font-headline text-primary">SwiftServe TrendScanner - מנוע הטרנדים</CardTitle>
+          <CardTitle className="text-3xl font-headline text-primary">ZIPP TrendScanner - מנוע הטרנדים</CardTitle>
           <CardDescription>
             ראית טרנד קולינרי בטיקטוק או באינסטגרם? העלה/י תמונה, וה-AI שלנו ינסה לזהות אותו, להציע איפה למצוא משהו דומה, או אפילו לתת רעיונות לעסקים! תמונות שאתה מעלה עוזרות למערכת לזהות טרנדים לכל הקהילה ומקדמות אותך ב'פינה' האישית שלך.
           </CardDescription>
@@ -193,7 +193,7 @@ export default function AiTrendScannerPage() {
             {aiResponse.businessOpportunity && (
               <div className="mt-4 p-3 border border-dashed border-green-500 rounded-md bg-green-50/50">
                 <h4 className="text-md font-semibold text-green-700 flex items-center">
-                  <Info className="mr-2 h-4 w-4"/> הצעה לעסקים ב-SwiftServe:
+                  <Info className="mr-2 h-4 w-4"/> הצעה לעסקים ב-ZIPP:
                 </h4>
                 <p className="text-sm text-green-600"><strong>שם מוצע למנה:</strong> {aiResponse.businessOpportunity.suggestedItemName}</p>
                 <p className="text-sm text-green-600"><strong>טווח מחירים מוצע:</strong> {aiResponse.businessOpportunity.suggestedPriceRange}</p>
@@ -218,7 +218,7 @@ export default function AiTrendScannerPage() {
               </div>
             )}
             <p className="text-xs text-muted-foreground pt-2">
-                טיפ: השתמש/י בשם המנה או במילות מפתח מההצעה כדי לחפש ב-SwiftServe.
+                טיפ: השתמש/י בשם המנה או במילות מפתח מההצעה כדי לחפש ב-ZIPP.
             </p>
           </CardContent>
            <CardFooter className="pt-3 border-t">

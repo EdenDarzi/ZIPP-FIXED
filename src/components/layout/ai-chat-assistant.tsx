@@ -32,7 +32,7 @@ export default function AiChatAssistant() {
   const initialAiMessage: ChatMessage = {
     id: `ai-init-${Date.now()}`,
     sender: 'ai',
-    text: "שלום! אני SwiftServeBot, העוזר האישי שלך. איך אוכל לסייע לך היום? 🤖\nאפשר לשאול אותי על מעקב הזמנות, חיפוש מסעדות, או לקבל המלצות טעימות!",
+    text: "שלום! אני ZIPPBot, העוזר האישי שלך. איך אוכל לסייע לך היום? 🤖\nאפשר לשאול אותי על מעקב הזמנות, חיפוש מסעדות, או לקבל המלצות טעימות!",
     timestamp: new Date(),
   };
 
@@ -118,7 +118,7 @@ export default function AiChatAssistant() {
             </Button>
         </TooltipTrigger>
         <TooltipContent side="left" className="bg-popover text-popover-foreground p-2 text-xs rounded-md shadow-lg">
-            <p>היי, אני SwiftServeBot! <br/> לחץ כאן לעזרה, המלצות ומידע.</p>
+            <p>היי, אני ZIPPBot! <br/> לחץ כאן לעזרה, המלצות ומידע.</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
@@ -127,7 +127,7 @@ export default function AiChatAssistant() {
         <SheetContent className="w-full sm:max-w-md flex flex-col p-0 shadow-2xl">
           <SheetHeader className="p-4 sm:p-6 pb-2 border-b bg-muted/30">
             <SheetTitle className="flex items-center text-lg text-primary font-headline">
-              <Sparkles className="h-6 w-6 mr-2 text-accent" /> SwiftServe AI Assistant
+              <Sparkles className="h-6 w-6 mr-2 text-accent" /> ZIPP AI Assistant
             </SheetTitle>
             <SheetDescription className="text-xs sm:text-sm">
               מוכן לעזור לך למצוא, להזמין וליהנות. שאל אותי כל דבר!
@@ -201,3 +201,4 @@ export default function AiChatAssistant() {
     </>
   );
 }
+

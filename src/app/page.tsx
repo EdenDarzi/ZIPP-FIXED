@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Utensils, ShoppingCart, Brain, ArrowLeft, MapPin, Search, Sparkles, Heart, History, Award, Flame, Gift, Users as UsersIcon, MapIcon as FoodRadarIcon, ShoppingBag as LivePickSaleIcon, TrendingUp as LiveTrendIcon, MessageCircle, ExternalLink, Info, ShoppingBasket, ListChecks, Route, Send, PackagePlus, Loader2, Target } from "lucide-react";
+import { Utensils, ShoppingCart, Brain, ArrowLeft, MapPin, Search, Sparkles, Heart, History, Award, Flame, Gift, Users as UsersIcon, MapIcon as FoodRadarIcon, ShoppingBag as ZippsSaleIcon, TrendingUp as LiveTrendIcon, MessageCircle, ExternalLink, Info, ShoppingBasket, ListChecks, Route, Send, PackagePlus, Loader2, Target } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import RestaurantCard from "@/components/restaurants/restaurant-card";
@@ -25,7 +25,7 @@ export default function HomePage() {
 
   const [culinarySuggestion, setCulinarySuggestion] = useState<string | null>(null);
   const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(true);
-  const [showLivePickSaleBanner, setShowLivePickSaleBanner] = useState(false); 
+  const [showZippSaleBanner, setShowZippSaleBanner] = useState(false); 
   const [availableCouriers, setAvailableCouriers] = useState<number | null>(null);
   const { toast } = useToast();
 
@@ -51,8 +51,8 @@ export default function HomePage() {
     }, 800);
 
     const currentHour = new Date().getHours();
-    if (currentHour >= 19 && currentHour < 23) { // Example sale hours: 7 PM to 10:59 PM
-        setShowLivePickSaleBanner(true);
+    if (currentHour >= 19 && currentHour < 23) { 
+        setShowZippSaleBanner(true);
     }
 
     return () => clearTimeout(courierTimeout);
@@ -72,7 +72,7 @@ export default function HomePage() {
         <div className="animate-fadeInUp">
           <Sparkles className="h-12 w-12 text-accent mx-auto mb-4" />
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-headline text-primary mb-6" style={{textShadow: '1px 1px 3px hsl(var(--foreground) / 0.1)'}}>
-            ברוכים הבאים ל-SwiftServe
+            ברוכים הבאים ל-ZIPP
           </h1>
           <p className="text-lg sm:text-xl text-foreground/80 max-w-2xl mx-auto mb-8 sm:mb-10">
             הפתרון האחד שלכם למשלוח מהיר ואמין מהעסקים המקומיים האהובים עליכם, עם טוויסט חכם וקהילתי!
@@ -118,14 +118,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      {showLivePickSaleBanner && (
+      {showZippSaleBanner && (
         <section className="animate-fadeInUp animation-delay-500">
             <Card className="bg-red-500 text-white shadow-xl hover:shadow-2xl transition-shadow cursor-pointer border-2 border-red-600 premium-card-hover">
                 <Link href="/livepick-sale">
                     <CardContent className="p-6 flex flex-col sm:flex-row items-center justify-center text-center gap-3 sm:gap-4">
-                        <LivePickSaleIcon className="h-10 w-10 sm:h-12 sm:w-12 animate-bounce" />
+                        <ZippsSaleIcon className="h-10 w-10 sm:h-12 sm:w-12 animate-bounce" />
                         <div>
-                            <CardTitle className="text-2xl sm:text-3xl font-headline">🔥 מבצעי SwiftServe Sale לוהטים!</CardTitle>
+                            <CardTitle className="text-2xl sm:text-3xl font-headline">🔥 מבצעי ZIPP Sale לוהטים!</CardTitle>
                             <CardDescription className="text-red-100 text-sm sm:text-base">שקיות הפתעה מסוף היום בהנחות ענק! מהרו לפני שייגמר.</CardDescription>
                         </div>
                     </CardContent>
@@ -208,7 +208,7 @@ export default function HomePage() {
             <CardDescription className="text-orange-700/80 text-base">מבצעים בלעדיים בשיתוף עם מותגים מובילים, בהשראת הטרנדים החמים ביותר!</CardDescription>
           </CardHeader>
           <CardContent className="text-center text-orange-700/90 space-y-3">
-            <p className="text-md">"<strong>בלעדי ל-SwiftServe!</strong> קבלו 20% הנחה על כל קולקציית הקינוחים החדשה של 'Sweet Dreams Bakery' בהשראת טרנד ה'קרופי' שזוהה ב-TrendScanner!"</p>
+            <p className="text-md">"<strong>בלעדי ל-ZIPP!</strong> קבלו 20% הנחה על כל קולקציית הקינוחים החדשה של 'Sweet Dreams Bakery' בהשראת טרנד ה'קרופי' שזוהה ב-TrendScanner!"</p>
             <Button variant="link" size="sm" className="text-orange-600 hover:text-orange-700 p-0 h-auto mt-2 text-base" onClick={handlePartnershipsClick}>
                 גלה שיתופי פעולה נוספים <ExternalLink className="h-4 w-4 mr-1"/>
             </Button>
@@ -219,8 +219,8 @@ export default function HomePage() {
       <section className="animate-fadeInUp animation-delay-650">
           <Card className="bg-teal-500/10 border-teal-500/30 premium-card-hover">
             <CardHeader className="items-center text-center">
-              <Award className="h-10 w-10 text-teal-600 mb-2" /> {/* Changed icon */}
-              <CardTitle className="text-2xl font-headline text-teal-700">🎡 גלגל ההפתעות של SwiftServe!</CardTitle>
+              <Award className="h-10 w-10 text-teal-600 mb-2" /> 
+              <CardTitle className="text-2xl font-headline text-teal-700">🎡 גלגל ההפתעות של ZIPP!</CardTitle>
               <CardDescription className="text-teal-600/80 text-base">מרגיש בר מזל? סובב את הגלגל וזכה בהנחות, קינוחים, משלוחים חינם ועוד הפתעות!</CardDescription>
             </CardHeader>
             <CardContent className="text-center">
@@ -239,7 +239,7 @@ export default function HomePage() {
             <Target className="h-8 w-8 ml-3 text-pink-500" />
             <h2 className="text-3xl font-bold font-headline text-foreground">🎯 במיוחד בשבילך: ממצאים שאסור לפספס!</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> {/* Increased gap */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> 
             {recommendedForYou.map((restaurant) => (
               <RestaurantCard key={restaurant.id} restaurant={restaurant} />
             ))}
@@ -253,7 +253,7 @@ export default function HomePage() {
             <Sparkles className="h-8 w-8 ml-3 text-green-500" />
             <h2 className="text-3xl font-bold font-headline text-foreground">✨ חדש חם מהתנור: גלה מה נפתח לידך!</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> {/* Increased gap */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> 
             {newInArea.map((restaurant) => (
               <RestaurantCard key={restaurant.id} restaurant={restaurant} />
             ))}
@@ -267,7 +267,7 @@ export default function HomePage() {
             <History className="h-8 w-8 ml-3 text-blue-500" />
             <h2 className="text-3xl font-bold font-headline text-foreground">הזמן שוב מועדפים בקליק</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> {/* Increased gap */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> 
             {recentlyViewedMock.map((restaurant) => (
               <RestaurantCard key={restaurant.id} restaurant={restaurant} />
             ))}
@@ -281,7 +281,7 @@ export default function HomePage() {
           <h2 className="text-3xl font-bold font-headline text-foreground">גלה את כל העסקים</h2>
         </div>
         {allRestaurants.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> {/* Increased gap */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> 
             {allRestaurants.slice(0,3).map((restaurant) => ( 
               <RestaurantCard key={restaurant.id} restaurant={restaurant} />
             ))}
@@ -305,7 +305,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="grid md:grid-cols-3 gap-8 animate-fadeInUp animation-delay-1600"> {/* Increased gap */}
+      <section className="grid md:grid-cols-3 gap-8 animate-fadeInUp animation-delay-1600"> 
         <Card className="premium-card-hover hover:border-accent">
           <CardHeader className="items-center text-center">
             <Utensils className="h-12 w-12 text-accent mb-3" />
@@ -352,7 +352,7 @@ export default function HomePage() {
         />
         <div className="absolute inset-0 bg-gradient-to-l from-black/70 via-black/40 to-transparent flex items-center">
           <h3 className="text-3xl md:text-5xl font-bold text-white font-headline p-8 md:p-12 max-w-lg leading-tight shadow-text-lg">
-            מהיר, טרי, במשלוח. <br/> חוו את <span className="text-accent">זירת השליחים</span> החכמה של SwiftServe.
+            מהיר, טרי, במשלוח. <br/> חוו את <span className="text-accent">זירת השליחים</span> החכמה של ZIPP.
           </h3>
         </div>
       </section>

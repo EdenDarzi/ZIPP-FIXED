@@ -11,7 +11,7 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 text-sm">
           <div>
-            <h4 className="font-semibold text-foreground mb-3">SwiftServe</h4>
+            <h4 className="font-semibold text-foreground mb-3">ZIPP</h4>
             <ul className="space-y-1">
               <li><Button variant="link" asChild className="text-muted-foreground hover:text-primary p-0 h-auto"><Link href="/about">אודותינו (בקרוב)</Link></Button></li>
               <li><Button variant="link" asChild className="text-muted-foreground hover:text-primary p-0 h-auto"><Link href="/careers">קריירה (בקרוב)</Link></Button></li>
@@ -29,7 +29,7 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold text-foreground mb-3">הצטרפו אלינו</h4>
             <ul className="space-y-1">
-              <li><Button variant="link" asChild className="text-muted-foreground hover:text-primary p-0 h-auto"><Link href="/restaurant-admin">עסקים: הירשמו ל-SwiftServe</Link></Button></li>
+              <li><Button variant="link" asChild className="text-muted-foreground hover:text-primary p-0 h-auto"><Link href="/restaurant-admin">עסקים: הירשמו ל-ZIPP</Link></Button></li>
               <li><Button variant="link" asChild className="text-muted-foreground hover:text-primary p-0 h-auto"><Link href="/courier/dashboard">שליחים: הצטרפו לצוות</Link></Button></li>
               <li><Button variant="link" asChild className="text-muted-foreground hover:text-primary p-0 h-auto"><Link href="/affiliate">תוכנית שותפים</Link></Button></li>
             </ul>
@@ -54,7 +54,7 @@ const Footer = () => {
             </Button>
         </div>
 
-        <p className="text-xs">&copy; {currentYear} SwiftServe. כל הזכויות שמורות.</p>
+        <p className="text-xs">&copy; {currentYear} ZIPP. כל הזכויות שמורות.</p>
         <p className="text-xs mt-1">פלטפורמת המשלוחים החכמה שלך, מבוססת AI.</p>
       </div>
     </footer>
@@ -62,4 +62,3 @@ const Footer = () => {
 };
 
 export default Footer;
-
