@@ -1,9 +1,8 @@
-
 'use client';
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { CreditCard, Lock, ShoppingBag, AlertTriangle, Zap, Sparkles, DollarSign, Clock, Gift, Edit, Check, ShieldCheck, Wallet as WalletIcon, TicketPercent } from "lucide-react"; 
+import { CreditCard, Lock, ShoppingBag, AlertTriangle, Zap, Sparkles, DollarSign, Clock, Gift, Edit, Check, ShieldCheck, Wallet as WalletIcon, TicketPercent, Calculator } from "lucide-react"; 
 import Link from "next/link";
 import { useCart } from "@/context/cart-context";
 import Image from "next/image";
@@ -16,6 +15,21 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+// Mock pricing parameters for the calculator demo
+const MOCK_PRICING_PARAMS = {
+  firstKmPrice: 20,
+  subsequentKmPrice: 5,
+  heavySurcharge: 15,
+  stairsSurcharge: 10,
+  peakHourMultiplier: 1.2,
+  nightMultiplier: 1.5,
+  expressFee: 10,
+  regionalSurcharges: {
+    eilat: 20,
+  },
+};
 
 export default function CheckoutPage() {
   const { cart, itemCount, totalPrice, deliveryPreference, deliveryFee, discountAmount, finalPriceWithDelivery, smartCouponApplied, clearCart, scheduledDeliveryTime, getItemPriceWithAddons } = useCart();
@@ -29,6 +43,16 @@ export default function CheckoutPage() {
   const [mockWalletBalance, setMockWalletBalance] = useState<number>(0);
   const [couponCode, setCouponCode] = useState('');
 
+  // State for pricing calculator
+  const [calcDistance, setCalcDistance] = useState<number | string>('');
+  const [calcWeight, setCalcWeight] = useState<'normal' | 'heavy'>('normal');
+  const [calcTime, setCalcTime] = useState<'regular' | 'peak' | 'night'>('regular');
+  const [calcExpress, setCalcExpress] = useState(false);
+  const [calcRegion, setCalcRegion] = useState<'tel-aviv' | 'eilat'>('tel-aviv');
+  const [calcStairs, setCalcStairs] = useState(false);
+  const [estimatedCalcFee, setEstimatedCalcFee] = useState<number | null>(null);
+
+
   useEffect(() => {
     const notes = searchParams.get('notes');
     if (notes) {
@@ -38,7 +62,6 @@ export default function CheckoutPage() {
     if (giftParam === 'true') {
         setIsGiftOrder(true);
     }
-    // Simulate fetching wallet balance
     setMockWalletBalance(parseFloat((Math.random() * 150 + 20).toFixed(2)));
   }, [searchParams]);
 
@@ -59,37 +82,19 @@ export default function CheckoutPage() {
         toast({ title: "קוד קופון ריק", description: "אנא הזן קוד קופון.", variant: "destructive" });
         return;
     }
-    // Mock coupon logic
     if (couponCode.toUpperCase() === 'LIVEPICK10') {
         toast({ title: "קופון הופעל!", description: "10% הנחה נוספו להזמנה שלך (הדגמה).", className: "bg-green-500 text-white" });
-        // Here you would typically update the cart totals or discountAmount state
     } else {
         toast({ title: "קוד קופון לא תקין", description: "הקוד שהזנת אינו חוקי או פג תוקף.", variant: "destructive"});
     }
     setCouponCode('');
   };
 
-
-  if (itemCount === 0) {
-    return (
-      <div className="text-center py-20">
-        <ShoppingBag className="h-24 w-24 mx-auto text-muted-foreground mb-6" />
-        <h1 className="text-3xl font-bold font-headline text-primary mb-4">הסל שלך ריק</h1>
-        <p className="text-lg text-muted-foreground mb-8">
-          הוסף פריטים לסל שלך לפני שתמשיך לתשלום.
-        </p>
-        <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground btn-gradient-hover-primary">
-          <Link href="/restaurants" aria-label="התחל בקניות"><span>התחל בקניות</span></Link>
-        </Button>
-      </div>
-    );
-  }
-
   const handleMockPayment = () => {
     if (paymentMethod === 'wallet' && mockWalletBalance < finalPriceWithDelivery) {
         toast({
             title: "יתרה לא מספקת בארנק",
-            description: `אין לך מספיק יתרה בארנק SwiftServe (₪${mockWalletBalance.toFixed(2)}) כדי לכסות את ההזמנה (₪${finalPriceWithDelivery.toFixed(2)}). אנא טען את הארנק או בחר אמצעי תשלום אחר.`, // Updated name
+            description: `אין לך מספיק יתרה בארנק SwiftServe (₪${mockWalletBalance.toFixed(2)}) כדי לכסות את ההזמנה (₪${finalPriceWithDelivery.toFixed(2)}). אנא טען את הארנק או בחר אמצעי תשלום אחר.`,
             variant: "destructive",
             duration: 7000,
         });
@@ -104,7 +109,7 @@ export default function CheckoutPage() {
       action: <Check className="text-green-500" />
     });
 
-    const mockOrderId = `swiftsrve_${Date.now()}_${scheduledDeliveryTime ? 'scheduled' : 'asap'}`; // Updated prefix
+    const mockOrderId = `swiftsrve_${Date.now()}_${scheduledDeliveryTime ? 'scheduled' : 'asap'}`;
     
     const queryParams = new URLSearchParams();
     if (customerNotes) queryParams.append('notes', customerNotes);
@@ -112,9 +117,70 @@ export default function CheckoutPage() {
     
     const trackingUrl = `/order-tracking/${mockOrderId}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
     
+    clearCart(); // Clear cart after successful "payment"
     router.push(trackingUrl);
   };
 
+  const calculateEstimatedFee = () => {
+    const distance = parseFloat(calcDistance as string);
+    if (isNaN(distance) || distance <= 0) {
+      toast({ title: "מרחק לא תקין", description: "אנא הזן מרחק חוקי בקילומטרים.", variant: "destructive" });
+      setEstimatedCalcFee(null);
+      return;
+    }
+
+    let fee = 0;
+    // Distance pricing
+    fee += MOCK_PRICING_PARAMS.firstKmPrice;
+    if (distance > 1) {
+      fee += (distance - 1) * MOCK_PRICING_PARAMS.subsequentKmPrice;
+    }
+
+    // Weight surcharge
+    if (calcWeight === 'heavy') {
+      fee += MOCK_PRICING_PARAMS.heavySurcharge;
+    }
+    
+    // Stairs surcharge
+    if (calcStairs) {
+        fee += MOCK_PRICING_PARAMS.stairsSurcharge;
+    }
+
+    // Time multiplier
+    if (calcTime === 'peak') {
+      fee *= MOCK_PRICING_PARAMS.peakHourMultiplier;
+    } else if (calcTime === 'night') {
+      fee *= MOCK_PRICING_PARAMS.nightMultiplier;
+    }
+
+    // Express fee
+    if (calcExpress) {
+      fee += MOCK_PRICING_PARAMS.expressFee;
+    }
+
+    // Regional surcharge
+    if (calcRegion === 'eilat') {
+      fee += MOCK_PRICING_PARAMS.regionalSurcharges.eilat;
+    }
+    
+    setEstimatedCalcFee(parseFloat(fee.toFixed(2)));
+  };
+
+
+  if (itemCount === 0 && !searchParams.get('fromExternal')) { // Allow accessing page if redirected from external (even if cart is empty locally)
+    return (
+      <div className="text-center py-20">
+        <ShoppingBag className="h-24 w-24 mx-auto text-muted-foreground mb-6" />
+        <h1 className="text-3xl font-bold font-headline text-primary mb-4">הסל שלך ריק</h1>
+        <p className="text-lg text-muted-foreground mb-8">
+          הוסף פריטים לסל שלך לפני שתמשיך לתשלום.
+        </p>
+        <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground btn-gradient-hover-primary">
+          <Link href="/restaurants" aria-label="התחל בקניות"><span>התחל בקניות</span></Link>
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl mx-auto py-12">
@@ -125,82 +191,144 @@ export default function CheckoutPage() {
           <CardDescription>בדוק את הזמנתך והשלם את הרכישה.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div>
-            <h3 className="text-xl font-semibold mb-3">סיכום הזמנה</h3>
-            <div className="p-4 bg-muted/30 rounded-md space-y-3">
-              {cart.map(item => (
-                <div key={item.id} className="text-sm pb-2 mb-2 border-b border-border/50 last:border-b-0 last:pb-0 last:mb-0">
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-start">
-                      <Image
-                        src={item.imageUrl || 'https://placehold.co/40x40.png'}
-                        alt={item.name}
-                        width={40}
-                        height={40}
-                        className="rounded ml-3 rtl:ml-0 rtl:mr-3 flex-shrink-0" 
-                        data-ai-hint={item.dataAiHint || "item"}
-                      />
-                      <div>
-                        <span className="font-medium">{item.name} (x{item.quantity})</span>
-                        {item.selectedAddons && item.selectedAddons.length > 0 && (
-                          <ul className="list-none mr-0 rtl:mr-0 text-xs text-muted-foreground mt-0.5">
-                              {item.selectedAddons.map(addon => (
-                                  <li key={addon.optionId}>
-                                      <span className="text-muted-foreground/80">{addon.groupTitle}: </span>
-                                      {addon.optionName} 
-                                      {addon.optionPrice > 0 && ` (+₪${addon.optionPrice.toFixed(2)})`}
-                                  </li>
-                              ))}
-                          </ul>
-                        )}
+          {itemCount > 0 && (
+            <div>
+              <h3 className="text-xl font-semibold mb-3">סיכום הזמנה</h3>
+              <div className="p-4 bg-muted/30 rounded-md space-y-3">
+                {cart.map(item => (
+                  <div key={item.id} className="text-sm pb-2 mb-2 border-b border-border/50 last:border-b-0 last:pb-0 last:mb-0">
+                    <div className="flex justify-between items-start">
+                      <div className="flex items-start">
+                        <Image
+                          src={item.imageUrl || 'https://placehold.co/40x40.png'}
+                          alt={item.name}
+                          width={40}
+                          height={40}
+                          className="rounded ml-3 rtl:ml-0 rtl:mr-3 flex-shrink-0" 
+                          data-ai-hint={item.dataAiHint || "item"}
+                        />
+                        <div>
+                          <span className="font-medium">{item.name} (x{item.quantity})</span>
+                          {item.selectedAddons && item.selectedAddons.length > 0 && (
+                            <ul className="list-none mr-0 rtl:mr-0 text-xs text-muted-foreground mt-0.5">
+                                {item.selectedAddons.map(addon => (
+                                    <li key={addon.optionId}>
+                                        <span className="text-muted-foreground/80">{addon.groupTitle}: </span>
+                                        {addon.optionName} 
+                                        {addon.optionPrice > 0 && ` (+₪${addon.optionPrice.toFixed(2)})`}
+                                    </li>
+                                ))}
+                            </ul>
+                          )}
+                        </div>
                       </div>
+                      <span className="font-medium whitespace-nowrap">{(getItemPriceWithAddons(item) * item.quantity).toFixed(2)}₪</span>
                     </div>
-                    <span className="font-medium whitespace-nowrap">{(getItemPriceWithAddons(item) * item.quantity).toFixed(2)}₪</span>
                   </div>
-                </div>
-              ))}
-              <div className="border-t pt-3 mt-3 space-y-1">
-                <div className="flex justify-between text-sm">
-                  <span>סה"כ ביניים</span>
-                  <span>{totalPrice.toFixed(2)}₪</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>משלוח ({deliveryPreference === 'fastest' ? 'המהיר ביותר' : deliveryPreference === 'smartSaver' ? 'חסכוני חכם' : 'זירה'})</span>
-                  <span>{deliveryFee > 0 ? `${deliveryFee.toFixed(2)}₪` : 'חינם'}</span>
-                </div>
-                {discountAmount > 0 && (
-                  <div className="flex justify-between text-sm text-green-600">
-                    <span className="flex items-center"><Sparkles className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/>הנחות שהופעלו</span>
-                    <span>-{discountAmount.toFixed(2)}₪</span>
+                ))}
+                <div className="border-t pt-3 mt-3 space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span>סה"כ ביניים</span>
+                    <span>{totalPrice.toFixed(2)}₪</span>
                   </div>
-                )}
-                {scheduledDeliveryTime && (
-                  <div className="flex justify-between text-sm text-blue-600">
-                    <span className="font-medium flex items-center"><Clock className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/>מתוכנן ל:</span>
-                    <span className="font-medium">{scheduledDeliveryTime}</span>
+                  <div className="flex justify-between text-sm">
+                    <span>משלוח ({deliveryPreference === 'fastest' ? 'המהיר ביותר' : deliveryPreference === 'smartSaver' ? 'חסכוני חכם' : 'זירה'})</span>
+                    <span>{deliveryFee > 0 ? `${deliveryFee.toFixed(2)}₪` : 'חינם'}</span>
                   </div>
-                )}
-                {isGiftOrder && ( 
-                    <div className="flex justify-between text-sm text-pink-600">
-                        <span className="font-medium flex items-center"><Gift className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/>נשלח כמתנה</span>
+                  {discountAmount > 0 && (
+                    <div className="flex justify-between text-sm text-green-600">
+                      <span className="flex items-center"><Sparkles className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/>הנחות שהופעלו</span>
+                      <span>-{discountAmount.toFixed(2)}₪</span>
                     </div>
-                )}
-                {customerNotes && (
-                   <div className="text-sm text-muted-foreground">
-                     <p className="font-medium flex items-center"><Edit className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/>הערות להזמנה:</p>
-                     <p className="text-xs whitespace-pre-line bg-muted p-2 rounded-md mt-1">{customerNotes}</p>
-                   </div>
-                )}
-                <div className="flex justify-between font-bold text-lg text-primary pt-1">
-                  <span>סה"כ לתשלום</span>
-                  <span>{finalPriceWithDelivery.toFixed(2)}₪</span>
+                  )}
+                  {scheduledDeliveryTime && (
+                    <div className="flex justify-between text-sm text-blue-600">
+                      <span className="font-medium flex items-center"><Clock className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/>מתוכנן ל:</span>
+                      <span className="font-medium">{scheduledDeliveryTime}</span>
+                    </div>
+                  )}
+                  {isGiftOrder && ( 
+                      <div className="flex justify-between text-sm text-pink-600">
+                          <span className="font-medium flex items-center"><Gift className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/>נשלח כמתנה</span>
+                      </div>
+                  )}
+                  {customerNotes && (
+                     <div className="text-sm text-muted-foreground">
+                       <p className="font-medium flex items-center"><Edit className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/>הערות להזמנה:</p>
+                       <p className="text-xs whitespace-pre-line bg-muted p-2 rounded-md mt-1">{customerNotes}</p>
+                     </div>
+                  )}
+                  <div className="flex justify-between font-bold text-lg text-primary pt-1">
+                    <span>סה"כ לתשלום</span>
+                    <span>{finalPriceWithDelivery.toFixed(2)}₪</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
           
           <Separator />
 
+          <Card className="bg-muted/20">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center"><Calculator className="ml-2 h-5 w-5 text-primary" /> מחשבון עלות משלוח (הדגמה)</CardTitle>
+              <CardDescription className="text-xs">הזן פרטים כדי לקבל הערכת מחיר מבוססת על מודל התמחור הדינמי שלנו.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <Label htmlFor="calcDistance">מרחק (ק"מ)</Label>
+                        <Input id="calcDistance" type="number" value={calcDistance} onChange={(e) => setCalcDistance(e.target.value)} placeholder="לדוגמה: 5" />
+                    </div>
+                    <div>
+                        <Label htmlFor="calcWeight">משקל/גודל</Label>
+                        <Select value={calcWeight} onValueChange={(v) => setCalcWeight(v as 'normal' | 'heavy')}>
+                            <SelectTrigger id="calcWeight"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="normal">רגיל</SelectItem>
+                                <SelectItem value="heavy">כבד/גדול</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div>
+                        <Label htmlFor="calcTime">שעת משלוח</Label>
+                        <Select value={calcTime} onValueChange={(v) => setCalcTime(v as 'regular' | 'peak' | 'night')}>
+                            <SelectTrigger id="calcTime"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="regular">רגילה</SelectItem>
+                                <SelectItem value="peak">שעות שיא</SelectItem>
+                                <SelectItem value="night">לילה</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                     <div>
+                        <Label htmlFor="calcRegion">אזור יעד</Label>
+                        <Select value={calcRegion} onValueChange={(v) => setCalcRegion(v as 'tel-aviv' | 'eilat')}>
+                            <SelectTrigger id="calcRegion"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="tel-aviv">תל אביב (מרכז)</SelectItem>
+                                <SelectItem value="eilat">אילת</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+                <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                    <Checkbox id="calcExpress" checked={calcExpress} onCheckedChange={(c) => setCalcExpress(Boolean(c.valueOf()))} />
+                    <Label htmlFor="calcExpress">משלוח אקספרס</Label>
+                </div>
+                 <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                    <Checkbox id="calcStairs" checked={calcStairs} onCheckedChange={(c) => setCalcStairs(Boolean(c.valueOf()))} />
+                    <Label htmlFor="calcStairs">כניסה רגלית / מדרגות</Label>
+                </div>
+                <Button onClick={calculateEstimatedFee} variant="outline" className="w-full">חשב עלות משוערת</Button>
+                {estimatedCalcFee !== null && (
+                    <p className="text-center font-semibold text-primary pt-2">עלות משלוח משוערת (לפי מחשבון): ₪{estimatedCalcFee.toFixed(2)}</p>
+                )}
+            </CardContent>
+          </Card>
+
+          <Separator />
+          
           <div>
             <h3 className="text-xl font-semibold mb-3">קופון / שובר</h3>
             <div className="flex items-center gap-2">
@@ -236,7 +364,7 @@ export default function CheckoutPage() {
                     <RadioGroupItem value="wallet" id="payWithWallet" className="ml-3 rtl:ml-0 rtl:mr-3" disabled={mockWalletBalance < finalPriceWithDelivery} />
                     <WalletIcon className="h-5 w-5 ml-2 rtl:ml-0 rtl:mr-2 text-green-600" />
                      <div className="flex-grow">
-                        <span className="font-semibold">ארנק SwiftServe</span> {/* Updated name */}
+                        <span className="font-semibold">ארנק SwiftServe</span>
                         <p className="text-xs text-muted-foreground">יתרה נוכחית: <span className="font-medium text-green-700">₪{mockWalletBalance.toFixed(2)}</span></p>
                          {mockWalletBalance < finalPriceWithDelivery && <p className="text-xs text-destructive">יתרה לא מספקת לתשלום מלא.</p>}
                     </div>

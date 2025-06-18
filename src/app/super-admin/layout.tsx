@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { LayoutDashboard, Home, ChefHat, Truck, Users, Settings, BarChart3, LogOut, ShieldCheck, KeyRound, UserCog, Server, Activity } from 'lucide-react';
+import { LayoutDashboard, Home, ChefHat, Truck, Users, Settings, BarChart3, LogOut, ShieldCheck, KeyRound, UserCog, Server, Activity, DollarSign } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 
@@ -13,6 +13,7 @@ const SuperAdminNavItems = [
   { href: '/restaurant-admin', label: 'פורטל ניהול עסקים', icon: ChefHat },
   { href: '/courier/dashboard', label: 'פורטל שליחים', icon: Truck },
   { isSeparator: true },
+  { href: '/super-admin/tariff-management', label: 'ניהול תעריפי משלוחים', icon: DollarSign },
   { href: '#', label: 'ניהול משתמשים (כללי)', icon: Users, disabled: true, comingSoon: true },
   { href: '#', label: 'הגדרות מערכת', icon: Settings, disabled: true, comingSoon: true },
   { href: '#', label: 'ניהול גישה (IP, 2FA)', icon: KeyRound, disabled: true, comingSoon: true },
@@ -30,7 +31,7 @@ export default function SuperAdminLayout({ children }: { children: ReactNode }) 
         <div className="p-4 border-b">
           <Link href="/super-admin" className="flex items-center gap-2 text-lg font-semibold text-purple-600 font-headline">
             <ShieldCheck className="h-7 w-7" />
-            <span>LivePick - Super Admin</span>
+            <span>SwiftServe - Super Admin</span>
           </Link>
         </div>
         <ScrollArea className="flex-1">
@@ -77,12 +78,4 @@ export default function SuperAdminLayout({ children }: { children: ReactNode }) 
         </header>
         <main className="flex-1 p-4 sm:px-6 sm:py-0 md:p-6 bg-muted/40">
             <ScrollArea className="h-[calc(100vh-theme(spacing.14)-theme(spacing.12))] md:h-[calc(100vh-theme(spacing.12))]">
-                 <div className="p-0 md:p-4"> {children} </div>
-            </ScrollArea>
-        </main>
-      </div>
-    </div>
-  );
-}
-
-    
+                 <div className="p-0 md:p-4"> {children
