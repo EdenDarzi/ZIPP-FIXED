@@ -78,8 +78,9 @@ const Header = () => {
     <header className="bg-card border-b border-border shadow-sm sticky top-0 z-50">
       <TooltipProvider>
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold text-primary font-headline" aria-label="ZIPP - דף הבית">
-          ZIPP
+        <Link href="/" className="flex flex-col items-start" aria-label="ZIPP - דף הבית">
+          <span className="text-2xl font-bold text-primary font-headline">ZIPP</span>
+          <span className="text-xs text-muted-foreground -mt-1">הבית של המשלוחים</span>
         </Link>
         <nav className="flex items-center space-x-0.5 sm:space-x-1 flex-wrap justify-end">
           {navLinks.map(link => (
@@ -146,7 +147,7 @@ const Header = () => {
               </DropdownMenuItem>
                <DropdownMenuItem asChild>
                 <Link href="/spin-wheel" className="flex items-center w-full cursor-pointer hover:bg-muted/50">
-                  <Award className="ml-2 h-4 w-4 text-teal-500" /> גלגל ההפתעות {/* Changed Icon */}
+                  <Award className="ml-2 h-4 w-4 text-teal-500" /> גלגל ההפתעות
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -161,7 +162,7 @@ const Header = () => {
                 <Button variant="ghost" asChild size="icon" className="relative hover:bg-primary/10" title="התראות">
                   <Link href="/notifications" aria-label="התראות"><span className="relative flex items-center justify-center w-full h-full">
                     <Bell className="h-5 w-5" />
-                    {showNotificationDot && <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-xs animate-pulse">2</Badge>}
+                    {isClient && showNotificationDot && <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-xs animate-pulse">2</Badge>}
                   </span></Link>
                 </Button>
             </TooltipTrigger>
