@@ -30,12 +30,22 @@ const Header = () => {
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const { toast } = useToast();
   const [showNotificationDot, setShowNotificationDot] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && Math.random() > 0.7) {
-      setShowNotificationDot(true);
-    }
+    setIsClient(true);
   }, []);
+
+  useEffect(() => {
+    // This effect runs only on the client after hydration
+    if (isClient) {
+      // Simulate a condition for showing notification dot
+      // In a real app, this might come from an API or other client-side logic
+      if (Math.random() > 0.7) {
+        setShowNotificationDot(true);
+      }
+    }
+  }, [isClient]);
 
 
   const handleLanguageToggle = () => {
@@ -54,7 +64,7 @@ const Header = () => {
     { href: "/restaurants", label: "עסקים", icon: Utensils, showAlways: true, showSm: true, showMd: true, showLg: true, showXl: true },
     { href: "/marketplace", label: "יד 2", icon: Store, showAlways: false, showSm: false, showMd: false, showLg: true, showXl: true },
     { href: "/send-package", label: "שלח חבילה", icon: Send, showAlways: false, showSm: false, showMd: false, showLg: true, showXl: true },
-    { href: "/livepick-sale", label: "ZIPP Sale", icon: PackageSearch, showAlways: false, showSm: true, showMd: true, showLg: true, showXl: true }, // Changed name here
+    { href: "/livepick-sale", label: "ZIPP Sale", icon: PackageSearch, showAlways: false, showSm: true, showMd: true, showLg: true, showXl: true },
     { href: "/visual-search", label: "סורק טרנדים", icon: TrendingUp, showAlways: true, showSm: true, showMd: true, showLg: true, showXl: true },
     { href: "/favorites", label: "מועדפים", icon: Heart, showAlways: false, showSm: false, showMd: true, showLg: true, showXl: true },
     { href: "/affiliate", label: "שותפים", icon: Users, showAlways: false, showSm: false, showMd: true, showLg: true, showXl: true },
@@ -202,4 +212,3 @@ const Header = () => {
 };
 
 export default Header;
-
