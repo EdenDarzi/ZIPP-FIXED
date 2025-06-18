@@ -1,23 +1,23 @@
 
 'use server';
 /**
- * @fileOverview AI flow for matching the best courier to an order based on bids.
+ * @fileOverview AI flow for matching the best courier to an order based on a scoring algorithm.
  *
- * This module is responsible for evaluating courier bids for a given order
- * and selecting the most suitable one based on various factors including bid amount,
- * estimated time of arrival (ETA), courier rating, trust score, and vehicle type.
+ * This module is responsible for evaluating available couriers for a given order
+ * and selecting the most suitable one based on factors including distance to pickup,
+ * delivery route distance, current courier load (batching potential), and overall daily activity (load balancing).
  * It uses a Genkit flow to process this logic.
  *
  * @module ai/flows/courier-matching-flow
- * @exports selectBestCourierBid - The main function to select the best courier bid.
+ * @exports selectBestCourierBid - The main function to select the best courier.
  * @exports CourierMatchingInput - Zod schema for the input to the courier matching flow.
  * @exports CourierMatchingOutput - Zod schema for the output from the courier matching flow.
  * @exports type CourierMatchingInputType - TypeScript type for the input.
- * @exports type CourierMatchingOutputTyoe - TypeScript type for the output.
+ * @exports type CourierMatchingOutputType - TypeScript type for the output.
  */
 
 import { ai } from '@/ai/genkit';
-import type { DeliveryVehicle } from '@/types'; // Keep type import for DeliveryVehicle enum
+import type { DeliveryVehicle } from '@/types';
 import { z } from 'genkit';
 
 // Define Zod schemas based on TypeScript types
@@ -50,32 +50,34 @@ const CourierProfileSchema = z.object({
   batteryPercent: z.number().optional().describe("Battery percentage for electric vehicles"),
   isActive: z.boolean().describe("Is courier currently working/accepting offers"),
   transportationModeDetails: z.string().optional().describe("e.g. 'Honda PCX 150', 'Trek FX 2'"),
+  currentDeliveriesCount: z.number().optional().default(0).describe("Number of deliveries currently assigned or in progress by the courier."),
+  totalDeliveriesToday: z.number().optional().default(0).describe("Total deliveries completed by the courier today."),
 });
 
 /**
  * @description Zod schema for a courier's bid on an order.
+ * In this context, a "bid" represents an available courier being considered.
  * Details the terms of a courier's offer to deliver an order.
  */
 const CourierBidSchema = z.object({
-  bidId: z.string(),
+  bidId: z.string(), // Can be courierId if direct assignment
   orderId: z.string(),
   courierId: z.string(),
   courierName: z.string().describe('Name of the courier for display purposes.'),
   distanceToRestaurantKm: z.number().describe("Courier's current distance to the restaurant in kilometers."),
-  bidAmount: z.number().describe('Total commission courier is asking for this delivery (base + any bonus).'),
+  bidAmount: z.number().describe('Standard commission or bid for this delivery.'), // Kept for schema compatibility, but new scoring focuses elsewhere
   proposedEtaMinutes: z.number().describe("Courier's estimated time to deliver, including pickup and travel to customer, in minutes."),
-  courierRating: z.number().describe("Courier's performance rating at the time of bid (scale 1-5)."),
-  courierTrustScore: z.number().describe("Courier's reliability score at the time of bid (scale 0-100)."),
+  courierRating: z.number().describe("Courier's performance rating (scale 1-5)."),
+  courierTrustScore: z.number().describe("Courier's reliability score (scale 0-100)."),
   vehicleType: DeliveryVehicleEnum.describe("Type of vehicle the courier will use."),
-  timestamp: z.string().datetime().describe('ISO string representing when the bid was placed.'),
-  isFastPickup: z.boolean().describe('Indicates if the courier committed to an expedited pickup (e.g., within 4 minutes).'),
-  status: z.enum(['pending', 'accepted', 'rejected', 'expired']).optional().describe('Current status of the bid.'),
-  courierProfileSnapshot: CourierProfileSchema.partial().optional().describe("A snapshot of the courier's profile at the time of bidding, for context."),
+  timestamp: z.string().datetime().describe('ISO string representing when the bid was placed/courier data was fetched.'),
+  isFastPickup: z.boolean().describe('Indicates if the courier committed to an expedited pickup.'), // May influence distanceToRestaurantKm or proposedEtaMinutes
+  status: z.enum(['pending', 'accepted', 'rejected', 'expired']).optional().describe('Current status of the bid/courier availability.'),
+  courierProfileSnapshot: CourierProfileSchema.partial().optional().describe("A snapshot of the courier's profile at the time of matching, for context."),
 });
 
 /**
- * @description Zod schema for order details relevant to the bidding process.
- * Provides context for couriers to make informed bids.
+ * @description Zod schema for order details relevant to the courier matching process.
  */
 const OrderDetailsForBiddingSchema = z.object({
   orderId: z.string(),
@@ -95,12 +97,11 @@ const OrderDetailsForBiddingSchema = z.object({
 
 /**
  * @description Zod schema for the input to the courier matching flow.
- * Encapsulates all information needed to select the best courier bid.
+ * Encapsulates all information needed to select the best courier.
  */
 const CourierMatchingInputSchema = z.object({
   orderDetails: OrderDetailsForBiddingSchema.describe("Details of the order needing a courier."),
-  bids: z.array(CourierBidSchema).min(0).describe('A list of bids received from couriers for this order. Can be empty.'),
-  // Future: could include real-time traffic conditions, weather, etc.
+  bids: z.array(CourierBidSchema).min(0).describe('A list of available couriers (represented as bids) for this order. Can be empty.'),
 });
 /**
  * @description TypeScript type for the courier matching input, inferred from CourierMatchingInputSchema.
@@ -109,61 +110,65 @@ export type CourierMatchingInputType = z.infer<typeof CourierMatchingInputSchema
 
 /**
  * @description Zod schema for the output from the courier matching flow.
- * Contains the selected bid (if any) and reasoning for the decision.
+ * Contains the selected courier (bid) and reasoning for the decision.
  */
 const CourierMatchingOutputSchema = z.object({
-  selectedBid: CourierBidSchema.optional().describe('The winning courier bid. Undefined if no suitable bid was found.'),
-  reasoning: z.string().optional().describe('Explanation for the selection or why no bid was selected, considering all factors.'),
-  fallbackRequired: z.boolean().describe('True if no bids were provided or no suitable bid was found, indicating a fallback mechanism should be used.'),
+  selectedBid: CourierBidSchema.optional().describe('The selected courier. Undefined if no suitable courier was found.'),
+  reasoning: z.string().optional().describe('Explanation for the selection or why no courier was selected, considering all factors.'),
+  fallbackRequired: z.boolean().describe('True if no couriers were provided or no suitable courier was found, indicating a fallback mechanism should be used.'),
 });
 /**
  * @description TypeScript type for the courier matching output, inferred from CourierMatchingOutputSchema.
  */
 export type CourierMatchingOutputType = z.infer<typeof CourierMatchingOutputSchema>;
 
-// Ranking function based on the provided logic
-// Type for internal ranking function based on Zod schema
-type CourierBidForRanking = z.infer<typeof CourierBidSchema>;
+
+const MAX_BATCH_SIZE = 3; // Maximum number of deliveries a courier can batch
+const EPSILON = 0.1; // To prevent division by zero
 
 /**
- * Ranks courier bids based on a scoring system.
- * The scoring considers trust score, ETA, rating, bid amount, and fast pickup offer.
+ * Ranks courier bids based on the new scoring algorithm.
+ * The scoring considers distance to pickup, delivery route distance, batching potential, and load balancing.
  *
- * @function rankBids
- * @param {CourierBidForRanking[]} bids - An array of courier bids to rank.
- * @returns {CourierBidForRanking[]} The ranked array of courier bids, with the best bid first.
+ * @function rankCouriers
+ * @param {CourierBid[]} couriers - An array of available couriers (represented as bids).
+ * @param {OrderDetailsForBidding} orderDetails - Details of the order.
+ * @returns {CourierBid[]} The ranked array of couriers, with the best one first.
  * @private
  */
-function rankBids(bids: CourierBidForRanking[]): CourierBidForRanking[] {
-  return bids.sort((a, b) => {
-    // Score: trustScore (30%), ETA (lower is better, max 100 points), rating (scaled), bidAmount (lower is better), fast pickup bonus
-    const aScore =
-      (a.courierTrustScore * 0.3) +
-      (Math.max(0, 100 - a.proposedEtaMinutes * 2)) + // Max 100 points, 2 points per minute under 50min
-      (a.courierRating * 10) - // Max 50 points
-      (a.bidAmount * 2) + // Penalty for higher bids
-      (a.isFastPickup ? 15 : 0); // Increased bonus for fast pickup
+function rankCouriers(couriers: CourierBid[], orderDetails: OrderDetailsForBidding): CourierBid[] {
+  const scoredCouriers = couriers.map(bid => {
+    const profile = bid.courierProfileSnapshot;
 
-    const bScore =
-      (b.courierTrustScore * 0.3) +
-      (Math.max(0, 100 - b.proposedEtaMinutes * 2)) +
-      (b.courierRating * 10) -
-      (b.bidAmount * 2) +
-      (b.isFastPickup ? 15 : 0);
+    const pickupTimeScoreFactor = 1 / (bid.distanceToRestaurantKm + EPSILON);
+    const deliveryDistanceScoreFactor = 1 / ((orderDetails.estimatedRouteDistanceKm || orderDetails.estimatedDistanceKm) + EPSILON);
+    
+    const currentDeliveries = profile?.currentDeliveriesCount || 0;
+    const batchScoreValue = currentDeliveries < MAX_BATCH_SIZE ? 1.0 : 0.5;
+    
+    const totalDeliveriesToday = profile?.totalDeliveriesToday || 0;
+    const loadBalancingScoreFactor = 1 / (totalDeliveriesToday + 1); // +1 to avoid division by zero and give new couriers a chance
 
-    return bScore - aScore; // Higher score is better
+    const score = 
+      (pickupTimeScoreFactor * 0.4) +
+      (deliveryDistanceScoreFactor * 0.3) +
+      (batchScoreValue * 0.2) +
+      (loadBalancingScoreFactor * 0.1);
+
+    return { ...bid, score };
   });
+
+  return scoredCouriers.sort((a, b) => (b.score || 0) - (a.score || 0)); // Higher score is better
 }
 
 /**
- * Selects the most suitable courier bid from a list of bids for a given order.
+ * Selects the most suitable courier for a given order based on the new algorithm.
  * This function serves as the primary entry point for the courier matching logic.
  *
  * @async
  * @function selectBestCourierBid
- * @param {CourierMatchingInputType} input - The order details and the list of courier bids.
- * @returns {Promise<CourierMatchingOutputType>} A promise that resolves to the selected bid and reasoning.
- * @throws {Error} If there's an issue processing the bids.
+ * @param {CourierMatchingInputType} input - The order details and the list of available couriers.
+ * @returns {Promise<CourierMatchingOutputType>} A promise that resolves to the selected courier and reasoning.
  */
 export async function selectBestCourierBid(input: CourierMatchingInputType): Promise<CourierMatchingOutputType> {
   return courierMatchingFlow(input);
@@ -180,76 +185,77 @@ const courierMatchingFlow = ai.defineFlow(
 
     if (!bids || bids.length === 0) {
       const { text: reasoning } = await ai.generate({
-        prompt: `No bids were received for order ${orderDetails.orderId} from ${orderDetails.restaurantName} heading to ${orderDetails.deliveryAddress}. The order value is approximately ${orderDetails.orderValue || 'N/A'}. Items: ${orderDetails.itemsDescription}. Expected pickup: ${orderDetails.expectedPickupTime}. Base commission offered was ₪${orderDetails.baseCommission}. Suggest a reason for no bids or a next step, like increasing the base commission, checking courier availability in the area, or dispatching via a fallback mechanism. Be concise and professional.`,
+        prompt: `No couriers were available or provided for order ${orderDetails.orderId} from ${orderDetails.restaurantName}. Restaurant expected pickup: ${orderDetails.expectedPickupTime}. Destination: ${orderDetails.deliveryAddress}. Suggest a reason for no couriers or a next step, like alerting operations or using a fallback. Be concise.`,
       });
       return {
         selectedBid: undefined,
-        reasoning: reasoning || "לא התקבלו הצעות. מומלץ לשקול שימוש במנגנון גיבוי או התאמה דינמית של המחיר.",
+        reasoning: reasoning || "לא נמצאו שליחים זמינים. מומלץ לשקול שימוש במנגנון גיבוי או התראה למנהל תפעול.",
         fallbackRequired: true,
       };
     }
 
-    // Filter bids based on order requirements (e.g., vehicle type)
-    let eligibleBids = bids;
-    if (orderDetails.requiredVehicleType && orderDetails.requiredVehicleType.length > 0) {
-      eligibleBids = bids.filter(bid => orderDetails.requiredVehicleType!.includes(bid.vehicleType as DeliveryVehicle));
-    }
+    // Filter couriers
+    let eligibleCouriers = bids.filter(bid => bid.courierProfileSnapshot?.isActive === true);
 
-    if (eligibleBids.length === 0) {
+    if (orderDetails.requiredVehicleType && orderDetails.requiredVehicleType.length > 0) {
+      eligibleCouriers = eligibleCouriers.filter(bid => {
+        const vehicle = bid.courierProfileSnapshot?.vehicleType || bid.vehicleType;
+        return orderDetails.requiredVehicleType!.includes(vehicle as DeliveryVehicle);
+      });
+    }
+    
+    // Additional filter for overload (example, can be more sophisticated)
+    eligibleCouriers = eligibleCouriers.filter(bid => (bid.courierProfileSnapshot?.currentDeliveriesCount || 0) < MAX_BATCH_SIZE + 1); // Allow one more than max if desperate
+
+
+    if (eligibleCouriers.length === 0) {
         const { text: reasoning } = await ai.generate({
-            prompt: `For order ${orderDetails.orderId} (${orderDetails.itemsDescription}), bids were received but none met the vehicle requirements (${orderDetails.requiredVehicleType?.join(', ')}). Original bids received from: ${JSON.stringify(bids.map(b => ({ courier: b.courierName, vehicle:b.vehicleType })))}. Provide a concise reason.`,
+            prompt: `For order ${orderDetails.orderId} (${orderDetails.itemsDescription}), couriers were available but none met the filtering criteria (e.g., vehicle: ${orderDetails.requiredVehicleType?.join(', ')}, activity status, or current load). Original bids: ${JSON.stringify(bids.map(b => ({ courier: b.courierName, vehicle:b.vehicleType, active: b.courierProfileSnapshot?.isActive, load: b.courierProfileSnapshot?.currentDeliveriesCount})))}. Provide a concise reason.`,
         });
         return {
             selectedBid: undefined,
-            reasoning: reasoning || `לא נמצאו הצעות העומדות בדרישות הרכב.`,
+            reasoning: reasoning || `לא נמצאו שליחים העומדים בקריטריונים הנדרשים (סוג רכב, זמינות, עומס).`,
             fallbackRequired: true,
         };
     }
 
-    const rankedBids = rankBids(eligibleBids);
-    const bestBid = rankedBids[0];
+    const rankedCouriers = rankCouriers(eligibleCouriers, orderDetails);
+    const bestCourierBid = rankedCouriers[0];
 
     const promptForReasoning = `
-      Order Analysis for ID: ${orderDetails.orderId}
-      Restaurant: ${orderDetails.restaurantName} (${orderDetails.restaurantLocation.lat.toFixed(4)}, ${orderDetails.restaurantLocation.lng.toFixed(4)})
+      Order ID: ${orderDetails.orderId}
+      Restaurant: ${orderDetails.restaurantName} (Pickup: ${orderDetails.restaurantLocation.lat.toFixed(4)}, ${orderDetails.restaurantLocation.lng.toFixed(4)})
       Delivery To: ${orderDetails.deliveryAddress} (Est. Route: ${orderDetails.estimatedRouteDistanceKm || orderDetails.estimatedDistanceKm} km)
       Items: ${orderDetails.itemsDescription} (Order Value: ₪${orderDetails.orderValue || 'N/A'})
-      Base Commission Offered: ₪${orderDetails.baseCommission}
-      Expected Pickup: ${orderDetails.expectedPickupTime}
-      Customer Notes: ${orderDetails.customerNotes || 'None'}
-      ${orderDetails.requiredVehicleType && orderDetails.requiredVehicleType.length > 0 ? `Required Vehicle(s): ${orderDetails.requiredVehicleType.join(', ')}` : ''}
+      Expected Restaurant Pickup: ${orderDetails.expectedPickupTime}
 
-      The AI has intelligently chosen ${bestBid.courierName}'s bid as the most suitable for this delivery from the pool of available and responsive couriers who placed a bid.
-      Details of the Winning Bid:
-      - Courier ID: ${bestBid.courierId}
-      - Bid Amount: ₪${bestBid.bidAmount}
-      - Proposed ETA: ${bestBid.proposedEtaMinutes} minutes
-      - Courier Rating: ${bestBid.courierRating}/5
-      - Courier Trust Score: ${bestBid.courierTrustScore}%
-      - Vehicle: ${bestBid.vehicleType} (${bestBid.courierProfileSnapshot?.transportationModeDetails || 'N/A'})
-      - Distance to Restaurant: ${bestBid.distanceToRestaurantKm} km
-      - Fast Pickup Offered: ${bestBid.isFastPickup ? 'Yes' : 'No'}
-      - Bid Placed At: ${new Date(bestBid.timestamp).toLocaleTimeString()}
+      The AI has selected ${bestCourierBid.courierName}'s bid as the most suitable for this delivery.
+      Selected Courier Details:
+      - Courier ID: ${bestCourierBid.courierId}
+      - Distance to Restaurant: ${bestCourierBid.distanceToRestaurantKm.toFixed(1)} km
+      - Vehicle: ${bestCourierBid.courierProfileSnapshot?.vehicleType || bestCourierBid.vehicleType} (${bestCourierBid.courierProfileSnapshot?.transportationModeDetails || 'N/A'})
+      - Current Load: ${bestCourierBid.courierProfileSnapshot?.currentDeliveriesCount || 0} active deliveries
+      - Deliveries Today: ${bestCourierBid.courierProfileSnapshot?.totalDeliveriesToday || 0}
+      - Calculated Score (internal): ${(bestCourierBid as any).score?.toFixed(4) || 'N/A'} 
+      (Original Bid Amount (for info): ₪${bestCourierBid.bidAmount.toFixed(2)}, ETA Estimate by Courier: ${bestCourierBid.proposedEtaMinutes} min, Rating: ${bestCourierBid.courierRating}/5, Trust: ${bestCourierBid.courierTrustScore}%)
 
-      Summary of All Eligible Bids Considered (after filtering, if any):
-      ${JSON.stringify(eligibleBids.map(b => ({
+      Summary of Top Eligible Couriers Considered (up to 3, scores are internal):
+      ${JSON.stringify(rankedCouriers.slice(0, 3).map(b => ({
         name: b.courierName,
-        bid: b.bidAmount,
-        eta: b.proposedEtaMinutes,
-        rating: b.courierRating,
-        trust: b.courierTrustScore,
-        vehicle: b.vehicleType,
-        fastPickup: b.isFastPickup,
-        distToRest: b.distanceToRestaurantKm,
-        score: (b.courierTrustScore * 0.3) + (Math.max(0, 100 - b.proposedEtaMinutes * 2)) + (b.courierRating * 10) - (b.bidAmount * 2) + (b.isFastPickup ? 15 : 0) // Show score for context
+        distToRest: b.distanceToRestaurantKm.toFixed(1),
+        load: b.courierProfileSnapshot?.currentDeliveriesCount || 0,
+        deliveriesToday: b.courierProfileSnapshot?.totalDeliveriesToday || 0,
+        vehicle: b.courierProfileSnapshot?.vehicleType || b.vehicleType,
+        score: (b as any).score?.toFixed(4) || 'N/A'
       })))}
 
-      Provide a concise, professional reasoning (1-2 sentences) for why ${bestBid.courierName}'s bid was selected as the most suitable and optimal option for this delivery.
-      Focus on the key factors that made this bid stand out from the others, such as the balance of bid amount vs. ETA, reliability (rating & trust score),
-      vehicle suitability, proximity to restaurant (distanceToRestaurantKm), and fast pickup offer.
-      The system aims to achieve an optimal balance of speed, reliability, and cost-effectiveness for the customer.
-      If the winning bid amount is higher than the base commission, briefly justify if other factors (like much better ETA or trust) make it worthwhile.
-      If the bid is significantly lower, mention this as a positive factor.
+      Provide a concise, professional reasoning (1-2 sentences) for why ${bestCourierBid.courierName} was selected.
+      Focus on the key factors from the NEW scoring:
+      1. Proximity to restaurant (distanceToRestaurantKm - lower is better).
+      2. Delivery route efficiency (estimatedRouteDistanceKm - lower is better).
+      3. Courier's current load (currentDeliveriesCount - lower allows batching or faster focus).
+      4. Courier's overall activity today (totalDeliveriesToday - for load balancing, giving chances to less busy couriers).
+      The system aims for an optimal balance of speed, efficiency, and courier utilization.
     `;
 
     const { text: selectionReasoning } = await ai.generate({
@@ -257,9 +263,11 @@ const courierMatchingFlow = ai.defineFlow(
     });
 
     return {
-      selectedBid: bestBid,
-      reasoning: selectionReasoning || `הצעתו של ${bestBid.courierName} נבחרה בהתבסס על ציון כולל (המתחשב בזמן הגעה, סכום ההצעה, אמינות והצעת איסוף מהיר).`,
+      selectedBid: bestCourierBid,
+      reasoning: selectionReasoning || `הצעתו של ${bestCourierBid.courierName} נבחרה בהתבסס על שקלול של קרבה למסעדה, יעילות מסלול המשלוח, עומס נוכחי וניצולת כללית.`,
       fallbackRequired: false,
     };
   }
 );
+
+
