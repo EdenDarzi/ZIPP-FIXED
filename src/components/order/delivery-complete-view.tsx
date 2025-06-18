@@ -6,17 +6,16 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { Star, CheckCircle, Gift, Heart, RotateCcw, DollarSign, MessageCircle, Camera, Share2, Mic, ThumbsUp } from 'lucide-react'; // Added ThumbsUp
+import { Star, CheckCircle, Gift, Heart, RotateCcw, DollarSign, MessageSquare, Camera, Share2, Mic, ThumbsUp, Facebook, Instagram, Video as TiktokIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Separator } from '../ui/separator';
 import { Label } from '../ui/label';
-import { Checkbox } from '../ui/checkbox'; // Added Checkbox
+import { Checkbox } from '../ui/checkbox';
+import { cn } from '@/lib/utils';
 
-const TikTokIcon = MessageCircle; 
-const InstagramIcon = Camera;
-const WhatsAppIcon = MessageCircle;
+const WhatsAppIcon = MessageSquare; // Keep for WhatsApp or replace if a more specific icon is found later
 
 
 interface DeliveryCompleteViewProps {
@@ -115,17 +114,20 @@ export function DeliveryCompleteView({ order }: DeliveryCompleteViewProps) {
                 <Share2 className="h-6 w-6 ml-2" /> SocialDrop: שתפו וזכו בכוכבים!
             </CardTitle>
             <CardDescription className="text-sm text-accent-foreground/80">
-                כל שיתוף מוצלח של המנה שלכם בטיקטוק, אינסטגרם או וואטסאפ יכול לזכות אתכם ב"כוכבים" להנחות ופרסים!
+                כל שיתוף מוצלח של המנה שלכם ברשתות החברתיות יכול לזכות אתכם ב"כוכבים" להנחות ופרסים!
             </CardDescription>
           </CardHeader>
-          <CardContent className="p-0 pt-3 flex justify-center items-center gap-3">
-            <Button variant="outline" className="border-accent text-accent hover:bg-accent/20" onClick={() => handleSocialShare('TikTok')}>
-                <TikTokIcon className="h-5 w-5 ml-2"/> TikTok
+          <CardContent className="p-0 pt-3 flex flex-wrap justify-center items-center gap-3">
+            <Button variant="outline" className="border-accent text-accent hover:bg-accent/20" onClick={() => handleSocialShare('Facebook')}>
+                <Facebook className="h-5 w-5 ml-2"/> Facebook
             </Button>
             <Button variant="outline" className="border-accent text-accent hover:bg-accent/20" onClick={() => handleSocialShare('Instagram')}>
-                <InstagramIcon className="h-5 w-5 ml-2"/> Instagram
+                <Instagram className="h-5 w-5 ml-2"/> Instagram
             </Button>
-             <Button variant="outline" className="border-accent text-accent hover:bg-accent/20" onClick={() => handleSocialShare('WhatsApp')}>
+            <Button variant="outline" className="border-accent text-accent hover:bg-accent/20" onClick={() => handleSocialShare('TikTok')}>
+                <TiktokIcon className="h-5 w-5 ml-2"/> TikTok
+            </Button>
+            <Button variant="outline" className="border-accent text-accent hover:bg-accent/20" onClick={() => handleSocialShare('WhatsApp')}>
                 <WhatsAppIcon className="h-5 w-5 ml-2"/> WhatsApp
             </Button>
           </CardContent>
