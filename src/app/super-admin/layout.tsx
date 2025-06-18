@@ -78,4 +78,10 @@ export default function SuperAdminLayout({ children }: { children: ReactNode }) 
         </header>
         <main className="flex-1 p-4 sm:px-6 sm:py-0 md:p-6 bg-muted/40">
             <ScrollArea className="h-[calc(100vh-theme(spacing.14)-theme(spacing.12))] md:h-[calc(100vh-theme(spacing.12))]">
-                 <div className="p-0 md:p-4"> {children
+                 <div className="p-0 md:p-4"> {children} </div>
+            </ScrollArea>
+        </main>
+      </div>
+    </div>
+  );
+}

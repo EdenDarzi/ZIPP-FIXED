@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -8,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { DollarSign, Edit2, Settings, MapPin, CloudRain, Moon, AlertTriangle, Zap, Percent, Shield, Info, Briefcase, BarChart3, X, PlusCircle, Wallet } from 'lucide-react';
+import { DollarSign, Edit2, Settings, MapPin, CloudRain, Moon, AlertTriangle, Zap, Percent, Shield, Info, Briefcase, BarChart3, X, PlusCircle, Wallet, Checkbox, Calculator } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -17,12 +18,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import type { RegionalSurcharge as RegionalSurchargeType } from '@/types';
 
-interface RegionalSurcharge {
-  id: string;
-  region: string;
-  surcharge: number;
-}
+// Mock pricing parameters for the calculator demo (should align with page state)
+const MOCK_PRICING_PARAMS_FOR_CALC = {
+  firstKmPrice: 20,
+  subsequentKmPrice: 5,
+  heavySurcharge: 15,
+  stairsSurcharge: 10,
+  peakHourMultiplier: 1.2,
+  nightMultiplier: 1.5,
+  expressFee: 10,
+  regionalSurcharges: {
+    eilat: 20,
+  },
+};
+
 
 export default function TariffManagementPage() {
   const { toast } = useToast();
@@ -30,23 +42,31 @@ export default function TariffManagementPage() {
   const [surcharges, setSurcharges] = useState({ weightLarge: 15, stairsWalking: 10 });
   const [cancellationFees, setCancellationFees] = useState({ beforeDispatch: 5, afterDispatch: 20 });
   const [dynamicSurcharges, setDynamicSurcharges] = useState({
-    peakHours: { enabled: true, amount: 1.2, isPercent: true }, // 20% more
-    night: { enabled: true, amount: 1.5, isPercent: true }, // 50% more
-    weekend: { enabled: true, amount: 5, isPercent: false }, // +5 ILS
-    rain: { enabled: false, amount: 7, isPercent: false }, // +7 ILS (AI or manual)
+    peakHours: { enabled: true, amount: 1.2, isPercent: true }, 
+    night: { enabled: true, amount: 1.5, isPercent: true }, 
+    weekend: { enabled: true, amount: 5, isPercent: false }, 
+    rain: { enabled: false, amount: 7, isPercent: false }, 
   });
   const [expressFee, setExpressFee] = useState(10);
   const [insuranceFeePercent, setInsuranceFeePercent] = useState(2);
-  const [regionalSurcharges, setRegionalSurcharges] = useState<RegionalSurcharge[]>([
+  const [regionalSurcharges, setRegionalSurcharges] = useState<RegionalSurchargeType[]>([
     { id: 'eilat1', region: 'אילת', surcharge: 20 },
     { id: 'north_remote', region: 'צפון רחוק (מעל 80קמ)', surcharge: 15 },
   ]);
   const [newRegion, setNewRegion] = useState('');
   const [newRegionSurcharge, setNewRegionSurcharge] = useState<number | string>('');
 
+  // State for pricing calculator
+  const [calcDistance, setCalcDistance] = useState<number | string>('');
+  const [calcWeight, setCalcWeight] = useState<'normal' | 'heavy'>('normal');
+  const [calcTime, setCalcTime] = useState<'regular' | 'peak' | 'night'>('regular');
+  const [calcExpress, setCalcExpress] = useState(false);
+  const [calcRegion, setCalcRegion] = useState<'tel-aviv' | 'eilat' | 'other'>('tel-aviv');
+  const [calcStairs, setCalcStairs] = useState(false);
+  const [estimatedCalcFee, setEstimatedCalcFee] = useState<number | null>(null);
+
 
   const handleSaveAll = () => {
-    // In a real app, this would send all state objects to the backend
     console.log({
       basePricing,
       surcharges,
@@ -75,6 +95,56 @@ export default function TariffManagementPage() {
   const handleRemoveRegionalSurcharge = (id: string) => {
     setRegionalSurcharges(prev => prev.filter(rs => rs.id !== id));
   };
+  
+  const calculateEstimatedFee = () => {
+    const distance = parseFloat(calcDistance as string);
+    if (isNaN(distance) || distance <= 0) {
+      toast({ title: "מרחק לא תקין", description: "אנא הזן מרחק חוקי בקילומטרים.", variant: "destructive" });
+      setEstimatedCalcFee(null);
+      return;
+    }
+
+    let fee = 0;
+    // Base distance pricing from state
+    fee += basePricing.firstKm;
+    if (distance > 1) {
+      fee += (distance - 1) * basePricing.subsequentKm;
+    }
+
+    // Weight surcharge from state
+    if (calcWeight === 'heavy') {
+      fee += surcharges.weightLarge;
+    }
+    
+    // Stairs surcharge from state
+    if (calcStairs) {
+        fee += surcharges.stairsWalking;
+    }
+
+    // Time multiplier from state
+    if (calcTime === 'peak' && dynamicSurcharges.peakHours.enabled) {
+      fee *= dynamicSurcharges.peakHours.isPercent ? dynamicSurcharges.peakHours.amount : 1;
+      if (!dynamicSurcharges.peakHours.isPercent) fee += dynamicSurcharges.peakHours.amount;
+    } else if (calcTime === 'night' && dynamicSurcharges.night.enabled) {
+      fee *= dynamicSurcharges.night.isPercent ? dynamicSurcharges.night.amount : 1;
+       if (!dynamicSurcharges.night.isPercent) fee += dynamicSurcharges.night.amount;
+    }
+    // Note: Weekend and Rain surcharges could also be applied here if calculator had inputs for them
+
+    // Express fee from state
+    if (calcExpress) {
+      fee += expressFee;
+    }
+
+    // Regional surcharge from state
+    const selectedRegionalSurcharge = regionalSurcharges.find(rs => rs.region.toLowerCase().includes(calcRegion));
+    if (selectedRegionalSurcharge) {
+      fee += selectedRegionalSurcharge.surcharge;
+    }
+    
+    setEstimatedCalcFee(parseFloat(fee.toFixed(2)));
+  };
+
 
   return (
     <div className="space-y-6">
@@ -217,6 +287,71 @@ export default function TariffManagementPage() {
                 <Input type="number" placeholder="תוספת (₪)" value={newRegionSurcharge} onChange={e => setNewRegionSurcharge(e.target.value)} />
                 <Button onClick={handleAddRegionalSurcharge}><PlusCircle className="mr-2 h-4 w-4"/>הוסף אזור</Button>
             </div>
+        </CardContent>
+      </Card>
+      
+      <Separator />
+
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center"><Calculator className="mr-2 h-5 w-5 text-blue-500" /> מחשבון עלות משלוח (הדגמה פנימית)</CardTitle>
+          <CardDescription>בדוק כיצד התעריפים שהגדרת משפיעים על עלות משלוח לדוגמה.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div>
+              <Label htmlFor="calcDistance">מרחק (ק"מ)</Label>
+              <Input id="calcDistance" type="number" value={calcDistance} onChange={(e) => setCalcDistance(e.target.value)} placeholder="לדוגמה: 5" />
+            </div>
+            <div>
+              <Label htmlFor="calcWeight">משקל/גודל</Label>
+              <Select value={calcWeight} onValueChange={(v) => setCalcWeight(v as 'normal' | 'heavy')}>
+                <SelectTrigger id="calcWeight"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="normal">רגיל</SelectItem>
+                  <SelectItem value="heavy">כבד/גדול</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="calcTime">שעת משלוח</Label>
+              <Select value={calcTime} onValueChange={(v) => setCalcTime(v as 'regular' | 'peak' | 'night')}>
+                <SelectTrigger id="calcTime"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="regular">רגילה</SelectItem>
+                  <SelectItem value="peak">שעות שיא</SelectItem>
+                  <SelectItem value="night">לילה</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="calcRegion">אזור יעד</Label>
+              <Select value={calcRegion} onValueChange={(v) => setCalcRegion(v as 'tel-aviv' | 'eilat' | 'other')}>
+                <SelectTrigger id="calcRegion"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="tel-aviv">תל אביב (מרכז)</SelectItem>
+                  <SelectItem value="eilat">אילת</SelectItem>
+                  <SelectItem value="other">אחר (ללא תוספת אזורית)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-4">
+            <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                <Checkbox id="calcExpress" checked={calcExpress} onCheckedChange={(c) => setCalcExpress(Boolean(c.valueOf()))} />
+                <Label htmlFor="calcExpress">משלוח אקספרס</Label>
+            </div>
+            <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                <Checkbox id="calcStairs" checked={calcStairs} onCheckedChange={(c) => setCalcStairs(Boolean(c.valueOf()))} />
+                <Label htmlFor="calcStairs">כניסה רגלית / מדרגות</Label>
+            </div>
+          </div>
+          <Button onClick={calculateEstimatedFee} variant="outline" className="w-full sm:w-auto">חשב עלות משוערת</Button>
+          {estimatedCalcFee !== null && (
+            <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-md text-center">
+              <p className="text-lg font-semibold text-green-700">עלות משלוח משוערת (לפי מחשבון): <span className="text-2xl">₪{estimatedCalcFee.toFixed(2)}</span></p>
+            </div>
+          )}
         </CardContent>
       </Card>
 

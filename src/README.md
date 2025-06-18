@@ -1,3 +1,4 @@
+
 # Firebase Studio
 
 This is a NextJS starter in Firebase Studio.
@@ -97,4 +98,4 @@ Client (Web & Mobile via Capacitor)
 *   **פריסה אזורית:** עלויות שונות לפי אזור מגורים (תל אביב ללא תוספת, אילת תוספת 20 ₪).
 
 האלגוריתם ניתן להגדרה דרך Admin Panel בצורה נוחה, ומתוכנן להיות מבוסס TypeScript בצד השרת (API) לצורך גמישות מלאה בעתיד (חיבור ל-Admin Panel, אפליקציות וכו').
-
+```

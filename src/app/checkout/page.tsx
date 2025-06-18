@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Button } from "@/components/ui/button";
@@ -15,21 +16,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-// Mock pricing parameters for the calculator demo
-const MOCK_PRICING_PARAMS = {
-  firstKmPrice: 20,
-  subsequentKmPrice: 5,
-  heavySurcharge: 15,
-  stairsSurcharge: 10,
-  peakHourMultiplier: 1.2,
-  nightMultiplier: 1.5,
-  expressFee: 10,
-  regionalSurcharges: {
-    eilat: 20,
-  },
-};
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; // No longer needed for calculator here
 
 export default function CheckoutPage() {
   const { cart, itemCount, totalPrice, deliveryPreference, deliveryFee, discountAmount, finalPriceWithDelivery, smartCouponApplied, clearCart, scheduledDeliveryTime, getItemPriceWithAddons } = useCart();
@@ -43,20 +30,11 @@ export default function CheckoutPage() {
   const [mockWalletBalance, setMockWalletBalance] = useState<number>(0);
   const [couponCode, setCouponCode] = useState('');
 
-  // State for pricing calculator
-  const [calcDistance, setCalcDistance] = useState<number | string>('');
-  const [calcWeight, setCalcWeight] = useState<'normal' | 'heavy'>('normal');
-  const [calcTime, setCalcTime] = useState<'regular' | 'peak' | 'night'>('regular');
-  const [calcExpress, setCalcExpress] = useState(false);
-  const [calcRegion, setCalcRegion] = useState<'tel-aviv' | 'eilat'>('tel-aviv');
-  const [calcStairs, setCalcStairs] = useState(false);
-  const [estimatedCalcFee, setEstimatedCalcFee] = useState<number | null>(null);
-
 
   useEffect(() => {
     const notes = searchParams.get('notes');
     if (notes) {
-      setCustomerNotes(notes);
+      setCustomerNotes(decodeURIComponent(notes));
     }
     const giftParam = searchParams.get('isGift');
     if (giftParam === 'true') {
@@ -117,57 +95,12 @@ export default function CheckoutPage() {
     
     const trackingUrl = `/order-tracking/${mockOrderId}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
     
-    clearCart(); // Clear cart after successful "payment"
+    clearCart(); 
     router.push(trackingUrl);
   };
 
-  const calculateEstimatedFee = () => {
-    const distance = parseFloat(calcDistance as string);
-    if (isNaN(distance) || distance <= 0) {
-      toast({ title: "מרחק לא תקין", description: "אנא הזן מרחק חוקי בקילומטרים.", variant: "destructive" });
-      setEstimatedCalcFee(null);
-      return;
-    }
 
-    let fee = 0;
-    // Distance pricing
-    fee += MOCK_PRICING_PARAMS.firstKmPrice;
-    if (distance > 1) {
-      fee += (distance - 1) * MOCK_PRICING_PARAMS.subsequentKmPrice;
-    }
-
-    // Weight surcharge
-    if (calcWeight === 'heavy') {
-      fee += MOCK_PRICING_PARAMS.heavySurcharge;
-    }
-    
-    // Stairs surcharge
-    if (calcStairs) {
-        fee += MOCK_PRICING_PARAMS.stairsSurcharge;
-    }
-
-    // Time multiplier
-    if (calcTime === 'peak') {
-      fee *= MOCK_PRICING_PARAMS.peakHourMultiplier;
-    } else if (calcTime === 'night') {
-      fee *= MOCK_PRICING_PARAMS.nightMultiplier;
-    }
-
-    // Express fee
-    if (calcExpress) {
-      fee += MOCK_PRICING_PARAMS.expressFee;
-    }
-
-    // Regional surcharge
-    if (calcRegion === 'eilat') {
-      fee += MOCK_PRICING_PARAMS.regionalSurcharges.eilat;
-    }
-    
-    setEstimatedCalcFee(parseFloat(fee.toFixed(2)));
-  };
-
-
-  if (itemCount === 0 && !searchParams.get('fromExternal')) { // Allow accessing page if redirected from external (even if cart is empty locally)
+  if (itemCount === 0 && !searchParams.get('fromExternal')) { 
     return (
       <div className="text-center py-20">
         <ShoppingBag className="h-24 w-24 mx-auto text-muted-foreground mb-6" />
@@ -267,66 +200,6 @@ export default function CheckoutPage() {
             </div>
           )}
           
-          <Separator />
-
-          <Card className="bg-muted/20">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center"><Calculator className="ml-2 h-5 w-5 text-primary" /> מחשבון עלות משלוח (הדגמה)</CardTitle>
-              <CardDescription className="text-xs">הזן פרטים כדי לקבל הערכת מחיר מבוססת על מודל התמחור הדינמי שלנו.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <Label htmlFor="calcDistance">מרחק (ק"מ)</Label>
-                        <Input id="calcDistance" type="number" value={calcDistance} onChange={(e) => setCalcDistance(e.target.value)} placeholder="לדוגמה: 5" />
-                    </div>
-                    <div>
-                        <Label htmlFor="calcWeight">משקל/גודל</Label>
-                        <Select value={calcWeight} onValueChange={(v) => setCalcWeight(v as 'normal' | 'heavy')}>
-                            <SelectTrigger id="calcWeight"><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="normal">רגיל</SelectItem>
-                                <SelectItem value="heavy">כבד/גדול</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div>
-                        <Label htmlFor="calcTime">שעת משלוח</Label>
-                        <Select value={calcTime} onValueChange={(v) => setCalcTime(v as 'regular' | 'peak' | 'night')}>
-                            <SelectTrigger id="calcTime"><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="regular">רגילה</SelectItem>
-                                <SelectItem value="peak">שעות שיא</SelectItem>
-                                <SelectItem value="night">לילה</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                     <div>
-                        <Label htmlFor="calcRegion">אזור יעד</Label>
-                        <Select value={calcRegion} onValueChange={(v) => setCalcRegion(v as 'tel-aviv' | 'eilat')}>
-                            <SelectTrigger id="calcRegion"><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="tel-aviv">תל אביב (מרכז)</SelectItem>
-                                <SelectItem value="eilat">אילת</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
-                <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                    <Checkbox id="calcExpress" checked={calcExpress} onCheckedChange={(c) => setCalcExpress(Boolean(c.valueOf()))} />
-                    <Label htmlFor="calcExpress">משלוח אקספרס</Label>
-                </div>
-                 <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                    <Checkbox id="calcStairs" checked={calcStairs} onCheckedChange={(c) => setCalcStairs(Boolean(c.valueOf()))} />
-                    <Label htmlFor="calcStairs">כניסה רגלית / מדרגות</Label>
-                </div>
-                <Button onClick={calculateEstimatedFee} variant="outline" className="w-full">חשב עלות משוערת</Button>
-                {estimatedCalcFee !== null && (
-                    <p className="text-center font-semibold text-primary pt-2">עלות משלוח משוערת (לפי מחשבון): ₪{estimatedCalcFee.toFixed(2)}</p>
-                )}
-            </CardContent>
-          </Card>
-
           <Separator />
           
           <div>

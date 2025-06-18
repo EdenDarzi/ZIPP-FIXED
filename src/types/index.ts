@@ -1,4 +1,5 @@
 
+
 export interface MenuItemOption {
   name: string;
   priceModifier: number; // e.g., +1.00 for extra cheese
@@ -182,6 +183,7 @@ export interface Order {
   orderTimeline?: { status: OrderStatus, timestamp: string, notes?: string }[]; 
   createdAt: string; 
   updatedAt: string; 
+  isGiftOrder?: boolean; // Added for checkout page
 }
 
 export type DayOfWeek = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
@@ -325,23 +327,52 @@ export interface SecondHandItem {
   contactDetails?: string; 
 }
 
+export type TransactionType = 
+  | 'deposit'
+  | 'withdrawal'
+  | 'purchase' // General purchase from wallet
+  | 'refund'
+  | 'commission' // Courier earnings from a delivery
+  | 'bonus' // Courier/User bonus
+  | 'fee' // Platform fee, service fee
+  | 'order_payment' // Business receiving payment for an order
+  | 'payout' // Business/Courier payout to bank
+  | 'subscription_fee' // For business/courier subscriptions
+  | 'COURIER_PAYOUT' // Alias for courier commission
+  | 'COURIER_BONUS' // Alias for courier bonus
+  | 'BUSINESS_PAYOUT' // Alias for business payout
+  | 'PLATFORM_FEE' // Alias for platform fee
+  | 'SUBSCRIPTION_FEE' // Alias for subscription fee
+  | 'campaign_payment'; // Business payment for marketing campaign
+
+export type TransactionStatus = 'pending' | 'completed' | 'failed' | 'cancelled' | 'processing' | 'refunded';
+
 export interface Transaction {
   id: string;
-  date: string;
+  timestamp?: string; // Generic timestamp for all uses
+  date: string; // Keep for display if needed, or derive from timestamp
   description: string;
-  amount: number; // positive for income, negative for expense
-  type: 'purchase' | 'refund' | 'top-up' | 'payout' | 'commission' | 'bonus' | 'fee' | 'delivery_fee' | 'order_payment' | 'withdrawal';
-  status?: 'pending' | 'completed' | 'failed' | 'cancelled';
-  relatedEntityId?: string; // e.g., orderId, courierId
-  relatedEntityType?: 'order' | 'courier_payment' | 'business_payout';
+  amount: number; 
+  type: TransactionType;
+  status: TransactionStatus;
+  relatedOrderId?: string;
+  relatedCampaignId?: string; 
+  relatedEntityId?: string; 
+  relatedEntityType?: 'order' | 'courier_payment' | 'business_payout' | 'campaign';
 }
 
 export interface Wallet {
   userId: string;
   userType: 'client' | 'courier' | 'business';
   balance: number;
-  currency?: string; // e.g., 'ILS'
-  transactions: Transaction[]; // Simplified for now, could be paginated
+  currency?: string; 
+  transactions: Transaction[]; 
   lastUpdatedAt: string;
+}
+
+export interface RegionalSurcharge {
+  id: string;
+  region: string;
+  surcharge: number;
 }
     
