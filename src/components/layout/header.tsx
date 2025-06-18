@@ -2,7 +2,8 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, TrendingUp, Languages, Send, HeartPulse, MapIcon, Briefcase, Gem, Users, Store, Bell, Heart, PackageSearch, ShieldCheck, Sparkles, Settings2, Award, Flame, PackagePlus, Route, ListChecks, GamepadIcon as Gamepad2 } from 'lucide-react'; // Changed Gamepad2 to GamepadIcon
+import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, TrendingUp, Languages, Send, HeartPulse, MapIcon, Briefcase, Users, Store, Bell, Heart, PackageSearch, ShieldCheck, Sparkles, Settings2, Award, Flame, PackagePlus, Route, ListChecks } from 'lucide-react'; // Removed Gem
+import { GamepadIcon as Gamepad2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
 import { Badge } from '@/components/ui/badge';
@@ -59,7 +60,7 @@ const Header = () => {
     { href: "/visual-search", label: "סורק טרנדים", icon: TrendingUp, showAlways: true, showSm: true, showMd: true, showLg: true, showXl: true },
     { href: "/favorites", label: "מועדפים", icon: Heart, showAlways: false, showSm: false, showMd: true, showLg: true, showXl: true },
     { href: "/affiliate", label: "שותפים", icon: Users, showAlways: false, showSm: false, showMd: true, showLg: true, showXl: true },
-    { href: "/vip", label: "VIP", icon: Gem, showAlways: false, showSm: false, showMd: true, showLg: true, showXl: true },
+    // VIP Link Removed
     { href: "/courier/dashboard", label: "שליחים", icon: Truck, showAlways: false, showSm: false, showMd: false, showLg: false, showXl: true },
     { href: "/restaurant-admin", label: "ניהול עסק", icon: ChefHat, showAlways: false, showSm: false, showMd: false, showLg: false, showXl: true },
     { href: "/super-admin", label: "סופר אדמין", icon: ShieldCheck, showAlways: false, showSm: false, showMd: false, showLg: false, showXl: true, className: "text-purple-600" },

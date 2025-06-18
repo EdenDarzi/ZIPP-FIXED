@@ -3,7 +3,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Utensils, ShoppingCart, Brain, ArrowLeft, MapPin, Search, Sparkles, Heart, History, Award, Flame, Gift, Gem, UsersIcon, MapIcon as FoodRadarIcon, ShoppingBag as LivePickSaleIcon, TrendingUp as LiveTrendIcon, MessageCircle, ExternalLink, Info, ShoppingBasket, Gamepad2, ListChecks, Route, Send, PackagePlus, Loader2, Target } from "lucide-react";
+import { Utensils, ShoppingCart, Brain, ArrowLeft, MapPin, Search, Sparkles, Heart, History, Award, Flame, Gift, Users as UsersIcon, MapIcon as FoodRadarIcon, ShoppingBag as LivePickSaleIcon, TrendingUp as LiveTrendIcon, MessageCircle, ExternalLink, Info, ShoppingBasket, ListChecks, Route, Send, PackagePlus, Loader2, Target } from "lucide-react";
+import { GamepadIcon as Gamepad2 } from 'lucide-react';
 import Image from "next/image";
 import Link from "next/link";
 import RestaurantCard from "@/components/restaurants/restaurant-card";
@@ -46,6 +47,7 @@ export default function HomePage() {
     }
     fetchSuggestion();
 
+    // Simulate fetching available couriers count only on client
     const courierTimeout = setTimeout(() => {
       setAvailableCouriers(Math.floor(Math.random() * 20) + 8); 
     }, 800);
@@ -56,8 +58,8 @@ export default function HomePage() {
 
   const handlePartnershipsClick = () => {
     toast({
-        title: "שותפויות והטבות",
-        description: "אזור זה יציג שיתופי פעולה ודילים חמים עם מותגים ומשפיענים. (הדגמה)",
+        title: "שותפויות והטבות (הדגמה)",
+        description: "אזור זה יציג שיתופי פעולה ודילים חמים עם מותגים ומשפיענים.",
     });
   };
 
@@ -177,19 +179,12 @@ export default function HomePage() {
       </section>
 
 
-      <section className="grid md:grid-cols-3 gap-6 animate-fadeInUp animation-delay-700">
+      <section className="grid md:grid-cols-2 gap-6 animate-fadeInUp animation-delay-700"> {/* Changed to 2 columns after VIP removal */}
         <Link href="/food-radar" passHref>
           <Card className="premium-card-hover h-full flex flex-col items-center justify-center text-center p-6 transition-all hover:border-primary">
             <FoodRadarIcon className="h-10 w-10 text-primary mb-2" />
             <CardTitle className="text-lg font-semibold">Food Radar & Live Trends</CardTitle>
             <CardDescription className="text-sm">גלה מה חם סביבך בזמן אמת!</CardDescription>
-          </Card>
-        </Link>
-        <Link href="/vip" passHref>
-           <Card className="premium-card-hover h-full flex flex-col items-center justify-center text-center p-6 transition-all hover:border-purple-500">
-            <Gem className="h-10 w-10 text-purple-500 mb-2" />
-            <CardTitle className="text-lg font-semibold">LivePick VIP</CardTitle>
-            <CardDescription className="text-sm">חווית פרימיום והטבות בלעדיות.</CardDescription>
           </Card>
         </Link>
         <Link href="/affiliate" passHref>
