@@ -8,10 +8,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { identifyDishFromImage, IdentifyDishInputType, IdentifyDishOutputType } from '@/ai/flows/identify-dish-flow';
-import { Camera, ImageUp, Loader2, Sparkles, Utensils, Share2, TrendingUp, Info, Star } from 'lucide-react';
+import { Camera, ImageUp, Loader2, Sparkles, Utensils, Share2, TrendingUp, Info, Star, Youtube, Facebook, Instagram, Link as LinkIcon } from 'lucide-react';
 import Image from 'next/image';
 import { Label } from '@/components/ui/label'; 
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 
 export default function AiTrendScannerPage() {
   const { toast } = useToast();
@@ -87,12 +88,20 @@ export default function AiTrendScannerPage() {
     });
   };
 
+  const handleSocialLink = (platform: string) => {
+    toast({
+      title: `קישור מ${platform} (הדגמה)`,
+      description: `בגרסה מלאה, תוכל/י להדביק כאן קישור לפוסט מ${platform} או לבחור אותו ישירות. כרגע, אנא העלה/י צילום מסך או תמונה רלוונטית דרך "העלה תמונה".`,
+      duration: 7000,
+    });
+  };
+
   return (
     <div className="max-w-2xl mx-auto py-8 space-y-8">
       <Card className="shadow-xl">
         <CardHeader className="text-center">
           <TrendingUp className="h-12 w-12 text-primary mx-auto mb-3" />
-          <CardTitle className="text-3xl font-headline text-primary">LivePick TrendScanner - מנוע הטרנדים</CardTitle>
+          <CardTitle className="text-3xl font-headline text-primary">SwiftServe TrendScanner - מנוע הטרנדים</CardTitle>
           <CardDescription>
             ראית טרנד קולינרי בטיקטוק או באינסטגרם? העלה/י תמונה, וה-AI שלנו ינסה לזהות אותו, להציע איפה למצוא משהו דומה, או אפילו לתת רעיונות לעסקים! תמונות שאתה מעלה עוזרות למערכת לזהות טרנדים לכל הקהילה ומקדמות אותך ב'פינה' האישית שלך.
           </CardDescription>
@@ -110,6 +119,28 @@ export default function AiTrendScannerPage() {
             />
              <p className="text-xs text-muted-foreground mt-1">גודל קובץ מקסימלי: 4MB.</p>
           </div>
+          
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+                <Separator />
+            </div>
+            <div className="relative flex justify-center text-xs">
+                <span className="bg-card px-2 text-muted-foreground">או קשר מ...</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <Button variant="outline" onClick={() => handleSocialLink('TikTok')} className="hover:border-black hover:text-black">
+              <Youtube className="ml-2 h-5 w-5 text-[#FF0050]" /> TikTok
+            </Button>
+            <Button variant="outline" onClick={() => handleSocialLink('Facebook')} className="hover:border-blue-600 hover:text-blue-600">
+              <Facebook className="ml-2 h-5 w-5 text-[#1877F2]" /> Facebook
+            </Button>
+            <Button variant="outline" onClick={() => handleSocialLink('Instagram')} className="hover:border-pink-500 hover:text-pink-500">
+              <Instagram className="ml-2 h-5 w-5 text-[#E4405F]" /> Instagram
+            </Button>
+          </div>
+
 
           {imagePreview && (
             <div className="mt-4 border rounded-lg overflow-hidden shadow-inner bg-muted/20">
@@ -162,7 +193,7 @@ export default function AiTrendScannerPage() {
             {aiResponse.businessOpportunity && (
               <div className="mt-4 p-3 border border-dashed border-green-500 rounded-md bg-green-50/50">
                 <h4 className="text-md font-semibold text-green-700 flex items-center">
-                  <Info className="mr-2 h-4 w-4"/> הצעה לעסקים ב-LivePick:
+                  <Info className="mr-2 h-4 w-4"/> הצעה לעסקים ב-SwiftServe:
                 </h4>
                 <p className="text-sm text-green-600"><strong>שם מוצע למנה:</strong> {aiResponse.businessOpportunity.suggestedItemName}</p>
                 <p className="text-sm text-green-600"><strong>טווח מחירים מוצע:</strong> {aiResponse.businessOpportunity.suggestedPriceRange}</p>
@@ -181,13 +212,13 @@ export default function AiTrendScannerPage() {
                         objectFit="cover"
                         data-ai-hint={aiResponse.businessOpportunity.suggestedItemName?.toLowerCase().split(' ').slice(0,2).join(' ') || "food concept"}
                     />
-                    <p className="absolute bottom-1 right-1 text-xs bg-black/50 text-white px-1 rounded">תצוגת AI (הדגמה)</p>
+                    <p className="absolute bottom-1 right-1 text-xs bg-black/50 text-white px-1 rounded">תצוגת AI (דמו)</p>
                 </div>
                 <p className="text-xs text-green-500 mt-2"><strong>נימוק:</strong> {aiResponse.businessOpportunity.rationale}</p>
               </div>
             )}
             <p className="text-xs text-muted-foreground pt-2">
-                טיפ: השתמש/י בשם המנה או במילות מפתח מההצעה כדי לחפש ב-LivePick.
+                טיפ: השתמש/י בשם המנה או במילות מפתח מההצעה כדי לחפש ב-SwiftServe.
             </p>
           </CardContent>
            <CardFooter className="pt-3 border-t">
@@ -200,3 +231,5 @@ export default function AiTrendScannerPage() {
     </div>
   );
 }
+
+      
