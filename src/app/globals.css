@@ -117,10 +117,10 @@ body {
 
 /* Custom button hover gradients */
 .btn-gradient-hover-primary:hover {
-  background-image: linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary) / 0.8));
+  background-image: linear-gradient(to right, hsl(var(--primary) / 0.9), hsl(var(--primary) / 0.7));
 }
 .btn-gradient-hover-accent:hover {
-  background-image: linear-gradient(to right, hsl(var(--accent)), hsl(var(--accent) / 0.8));
+  background-image: linear-gradient(to right, hsl(var(--accent) / 0.9), hsl(var(--accent) / 0.7));
 }
 
 /* General card hover effect for premium feel */

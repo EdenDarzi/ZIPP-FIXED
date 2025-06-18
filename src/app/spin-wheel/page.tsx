@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Gamepad2, Gift, Loader2, Play, TicketPercent, CakeSlice, Truck, Share2, Sparkles, AlertTriangle, CalendarClock, Info } from 'lucide-react';
+import { Gift, Loader2, Play, TicketPercent, CakeSlice, Truck, Share2, Sparkles, AlertTriangle, CalendarClock, Info, Award } from 'lucide-react'; // Updated Gamepad2 to Award
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
@@ -44,8 +44,7 @@ export default function SpinWheelPage() {
 
 
   useEffect(() => {
-    // This effect runs only on the client
-    const lastSpinTimestamp = localStorage.getItem('lastLivePickSpin');
+    const lastSpinTimestamp = localStorage.getItem('lastSwiftServeSpin'); // Updated local storage key
     if (lastSpinTimestamp) {
       const lastSpinDate = new Date(parseInt(lastSpinTimestamp, 10));
       const cooldownPeriod = DAILY_SPIN_COOLDOWN_HOURS * 60 * 60 * 1000;
@@ -59,7 +58,6 @@ export default function SpinWheelPage() {
   }, []);
 
   useEffect(() => {
-    // This effect also runs only on the client
     if (!canSpin && nextSpinTime) {
       const calculateTimeLeft = () => {
         const now = new Date().getTime();
@@ -69,7 +67,7 @@ export default function SpinWheelPage() {
           setCanSpin(true);
           setTimeLeftForNextSpin('');
           setNextSpinTime(null);
-          localStorage.removeItem('lastLivePickSpin'); 
+          localStorage.removeItem('lastSwiftServeSpin'); // Updated local storage key
           return;
         }
         const hours = Math.floor(diff / (1000 * 60 * 60));
@@ -107,7 +105,7 @@ export default function SpinWheelPage() {
       setIsSpinning(false);
       setCanSpin(false); 
       const now = new Date();
-      localStorage.setItem('lastLivePickSpin', now.getTime().toString());
+      localStorage.setItem('lastSwiftServeSpin', now.getTime().toString()); // Updated local storage key
       setNextSpinTime(new Date(now.getTime() + DAILY_SPIN_COOLDOWN_HOURS * 60 * 60 * 1000));
 
       if (result.isWin) {
@@ -152,7 +150,7 @@ export default function SpinWheelPage() {
 
   return (
     <div className="max-w-2xl mx-auto py-8 space-y-8 text-center">
-      <Card className="shadow-2xl bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/10 overflow-hidden border-2 border-primary/30 rounded-xl">
+      <Card className="shadow-2xl bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/10 overflow-hidden border-2 border-primary/30 rounded-xl premium-card-hover">
         <CardHeader className="items-center pt-6 pb-4 bg-card/50">
           <h1 className="text-3xl sm:text-4xl font-headline text-primary px-2">
             מרגיש/ה בר מזל? 🍀 סובב את הגלגל – ותגלה מה מחכה לך היום!
@@ -199,7 +197,7 @@ export default function SpinWheelPage() {
             </div>
              <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-card border-4 border-primary/70 shadow-lg flex items-center justify-center">
-                     <Gamepad2 className={cn("h-8 w-8 sm:h-10 sm:w-10 text-primary/80", isSpinning && "opacity-50")} />
+                     <Award className={cn("h-8 w-8 sm:h-10 sm:w-10 text-primary/80", isSpinning && "opacity-50")} /> {/* Changed Icon */}
                 </div>
             </div>
           </div>
@@ -240,7 +238,7 @@ export default function SpinWheelPage() {
             className={cn(
                 "w-full max-w-xs text-xl py-3 sm:py-4 shadow-lg rounded-full text-white transition-all duration-300 ease-in-out focus:ring-4 focus:ring-offset-2",
                 isSpinning || !canSpin ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 focus:ring-blue-400 hover:shadow-xl transform hover:scale-105",
-                "font-headline group" 
+                "font-headline group btn-gradient-hover-primary" 
             )}
             aria-label={canSpin ? "סובב עכשיו" : "תוכל לסובב שוב מאוחר יותר"}
           >

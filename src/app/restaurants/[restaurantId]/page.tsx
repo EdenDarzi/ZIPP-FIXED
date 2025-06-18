@@ -44,8 +44,9 @@ export default function RestaurantPage() {
   const [pageReviewCount, setPageReviewCount] = useState<number | null>(null);
 
   useEffect(() => {
-    // Generate random review count only on the client side after hydration
-    setPageReviewCount(Math.floor(Math.random() * 200 + 50));
+    if (typeof window !== 'undefined') {
+      setPageReviewCount(Math.floor(Math.random() * 200 + 50));
+    }
   }, []); 
 
   if (!restaurant) {
@@ -108,7 +109,7 @@ export default function RestaurantPage() {
         </div>
       </header>
 
-      <section className="grid md:grid-cols-3 gap-4 text-sm bg-card p-4 rounded-lg shadow">
+      <section className="grid md:grid-cols-3 gap-6 text-sm bg-card p-4 rounded-lg shadow"> {/* Increased gap */}
         <div className="flex items-center">
           <MapPin className="h-5 w-5 mr-2 text-primary" />
           <span className="text-foreground">{restaurant.location}</span>
@@ -133,11 +134,11 @@ export default function RestaurantPage() {
         <Card className="bg-red-50 border-red-200">
             <CardHeader>
                 <CardTitle className="text-xl text-red-700 flex items-center">
-                    <MessageCircle className="mr-2 h-5 w-5 animate-pulse" /> 🎬 LiveKitchen פעיל! (דמו)
+                    <MessageCircle className="mr-2 h-5 w-5 animate-pulse" /> 🎬 SwiftServe LiveKitchen פעיל! (דמו) {/* Updated name */}
                 </CardTitle>
             </CardHeader>
             <CardContent className="text-center">
-                <div className="aspect-video bg-black rounded-md flex items-center justify-center mb-2">
+                <div className="aspect-video bg-black rounded-md flex items-center justify-center mb-2 data-ai-hint='kitchen live stream placeholder'">
                     <p className="text-white">שידור חי מהמטבח (Placeholder)</p>
                 </div>
                 <CardDescription className="text-sm text-red-600">צפו בנו מכינים את המנות שלכם בזמן אמת!</CardDescription>
@@ -154,7 +155,7 @@ export default function RestaurantPage() {
         <section key={category} className="space-y-4">
           <h3 className="text-2xl font-semibold font-headline text-foreground/90 border-b-2 border-primary/30 pb-2">{category}</h3>
           {items.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> {/* Increased gap */}
               {items.map((item) => (
                 <ItemCard key={item.id} item={item} restaurantId={restaurant.id} />
               ))}
@@ -251,7 +252,7 @@ export default function RestaurantPage() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button onClick={handleSubmitReview} className="w-full sm:w-auto" disabled={newReviewRating === 0 || newReviewText.trim().length < 10}>
+                <Button onClick={handleSubmitReview} className="w-full sm:w-auto btn-gradient-hover-accent" disabled={newReviewRating === 0 || newReviewText.trim().length < 10}>
                   <Send className="mr-2 h-4 w-4" /> שלח ביקורת (דמו)
                 </Button>
               </CardFooter>

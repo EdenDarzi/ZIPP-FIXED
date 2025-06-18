@@ -25,17 +25,16 @@ export default function HomePage() {
 
   const [culinarySuggestion, setCulinarySuggestion] = useState<string | null>(null);
   const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(true);
-  const [showLivePickSaleBanner, setShowLivePickSaleBanner] = useState(false); // Default to false, set in useEffect
+  const [showLivePickSaleBanner, setShowLivePickSaleBanner] = useState(false); 
   const [availableCouriers, setAvailableCouriers] = useState<number | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    // Client-side only effects
     async function fetchSuggestion() {
       setIsLoadingSuggestion(true);
       try {
         const input: CulinaryAssistantInput = { userId: "mockUser123", currentDay: new Date().toLocaleString('he-IL', { weekday: 'long' }) };
-        await new Promise(resolve => setTimeout(resolve, 600)); // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 600)); 
         const result = await getCulinarySuggestion(input);
         setCulinarySuggestion(result.suggestion);
       } catch (error) {
@@ -52,7 +51,7 @@ export default function HomePage() {
     }, 800);
 
     const currentHour = new Date().getHours();
-    if (currentHour >= 19 && currentHour <= 23) { // Example sale hours: 7 PM to 11 PM
+    if (currentHour >= 19 && currentHour < 23) { // Example sale hours: 7 PM to 10:59 PM
         setShowLivePickSaleBanner(true);
     }
 
@@ -140,7 +139,7 @@ export default function HomePage() {
           <CardHeader>
             <CardTitle className="text-2xl font-headline text-primary flex items-center">
               <Brain className="h-7 w-7 ml-3 text-yellow-400" />
-              העוזר הקולינרי החכם שלך
+              🔮 השף הקולינרי החכם שלך ממליץ...
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -158,7 +157,7 @@ export default function HomePage() {
       
       <SurpriseFeatureCard />
 
-      <section className="grid md:grid-cols-2 gap-6 animate-fadeInUp animation-delay-680">
+      <section className="grid md:grid-cols-2 gap-8 animate-fadeInUp animation-delay-680"> {/* Increased gap */}
         <Card className="premium-card-hover h-full flex flex-col items-center justify-center text-center p-6 bg-green-500/5 border-green-500/20">
            <Route className="h-12 w-12 text-green-600 mb-3" />
            <CardTitle className="text-xl font-semibold text-green-700">שליחים פעילים באזורך כעת!</CardTitle>
@@ -183,7 +182,7 @@ export default function HomePage() {
       </section>
 
 
-      <section className="grid md:grid-cols-2 gap-6 animate-fadeInUp animation-delay-700">
+      <section className="grid md:grid-cols-2 gap-8 animate-fadeInUp animation-delay-700"> {/* Increased gap */}
         <Link href="/food-radar" passHref>
           <Card className="premium-card-hover h-full flex flex-col items-center justify-center text-center p-6 transition-all hover:border-primary">
             <FoodRadarIcon className="h-10 w-10 text-primary mb-2" />
@@ -220,7 +219,7 @@ export default function HomePage() {
       <section className="animate-fadeInUp animation-delay-650">
           <Card className="bg-teal-500/10 border-teal-500/30 premium-card-hover">
             <CardHeader className="items-center text-center">
-              <Gift className="h-10 w-10 text-teal-600 mb-2" /> {/* Changed icon from Gamepad2 to Gift */}
+              <Award className="h-10 w-10 text-teal-600 mb-2" /> {/* Changed icon */}
               <CardTitle className="text-2xl font-headline text-teal-700">🎡 גלגל ההפתעות של SwiftServe!</CardTitle>
               <CardDescription className="text-teal-600/80 text-base">מרגיש בר מזל? סובב את הגלגל וזכה בהנחות, קינוחים, משלוחים חינם ועוד הפתעות!</CardDescription>
             </CardHeader>
@@ -240,7 +239,7 @@ export default function HomePage() {
             <Target className="h-8 w-8 ml-3 text-pink-500" />
             <h2 className="text-3xl font-bold font-headline text-foreground">🎯 במיוחד בשבילך: ממצאים שאסור לפספס!</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> {/* Increased gap */}
             {recommendedForYou.map((restaurant) => (
               <RestaurantCard key={restaurant.id} restaurant={restaurant} />
             ))}
@@ -254,7 +253,7 @@ export default function HomePage() {
             <Sparkles className="h-8 w-8 ml-3 text-green-500" />
             <h2 className="text-3xl font-bold font-headline text-foreground">✨ חדש חם מהתנור: גלה מה נפתח לידך!</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> {/* Increased gap */}
             {newInArea.map((restaurant) => (
               <RestaurantCard key={restaurant.id} restaurant={restaurant} />
             ))}
@@ -268,7 +267,7 @@ export default function HomePage() {
             <History className="h-8 w-8 ml-3 text-blue-500" />
             <h2 className="text-3xl font-bold font-headline text-foreground">הזמן שוב מועדפים בקליק</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> {/* Increased gap */}
             {recentlyViewedMock.map((restaurant) => (
               <RestaurantCard key={restaurant.id} restaurant={restaurant} />
             ))}
@@ -282,7 +281,7 @@ export default function HomePage() {
           <h2 className="text-3xl font-bold font-headline text-foreground">גלה את כל העסקים</h2>
         </div>
         {allRestaurants.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> {/* Increased gap */}
             {allRestaurants.slice(0,3).map((restaurant) => ( 
               <RestaurantCard key={restaurant.id} restaurant={restaurant} />
             ))}
@@ -306,7 +305,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="grid md:grid-cols-3 gap-8 animate-fadeInUp animation-delay-1600">
+      <section className="grid md:grid-cols-3 gap-8 animate-fadeInUp animation-delay-1600"> {/* Increased gap */}
         <Card className="premium-card-hover hover:border-accent">
           <CardHeader className="items-center text-center">
             <Utensils className="h-12 w-12 text-accent mb-3" />

@@ -6,7 +6,7 @@ import type { OrderDetailsForBidding, DeliveryVehicle } from '@/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { MapPin, Clock, Package, DollarSign, ArrowRight, AlertTriangle, Bike, Car, Footprints, Info, ListFilter, SlidersHorizontal, Search } from 'lucide-react';
+import { MapPin, Clock, Package, DollarSign, ArrowRight, AlertTriangle, Bike, Car, Footprints, Info, ListFilter, SlidersHorizontal, Search, Compass } from 'lucide-react'; // Added Compass
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
@@ -32,14 +32,12 @@ export default function OpenBidsPage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Simulate fetching data
     setOpenOrders(mockOpenOrdersForBidding);
   }, []);
 
   useEffect(() => {
     let tempOrders = [...openOrders];
 
-    // Search filter
     if (searchTerm) {
       tempOrders = tempOrders.filter(order =>
         order.restaurantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -48,14 +46,12 @@ export default function OpenBidsPage() {
       );
     }
 
-    // Sort
     if (sortBy === 'reward') {
       tempOrders.sort((a, b) => b.baseCommission - a.baseCommission);
     } else if (sortBy === 'distance') {
       tempOrders.sort((a, b) => (a.estimatedRouteDistanceKm || a.estimatedDistanceKm) - (b.estimatedRouteDistanceKm || b.estimatedDistanceKm));
     }
-    // Add time sort logic if available in data
-
+    
     setFilteredOrders(tempOrders);
   }, [openOrders, searchTerm, sortBy]);
   
@@ -66,13 +62,20 @@ export default function OpenBidsPage() {
     });
   };
 
+  const handleCheckNearbyAreas = () => {
+    toast({
+        title: "בודק הצעות באזורים סמוכים...",
+        description: "כרגע מציג הצעות מדומות מאזור זה. יכולת זו תפותח."
+    });
+  };
+
 
   return (
     <div className="space-y-8">
       <header className="space-y-2">
         <h1 className="text-4xl font-bold font-headline text-primary">הצעות משלוח פתוחות</h1>
         <p className="text-lg text-muted-foreground">
-          מצא והגש הצעות להזדמנויות משלוח זמינות. הזדמנויות חדשות מופיעות בזמן אמת.
+          מצא והגש הצעות להזדמנויות משלוח זמינות. הזדמנויות חדשות מופיעות בזמן אמת. המערכת מציעה לך הצעות מותאמות על בסיס מיקום, העדפות וביצועים (AI).
         </p>
       </header>
 
@@ -81,7 +84,7 @@ export default function OpenBidsPage() {
             <CardTitle className="text-lg flex items-center"><ListFilter className="mr-2 h-5 w-5"/> סינון וחיפוש הצעות</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 items-end">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 items-end"> {/* Changed to 5 cols */}
                 <div className="space-y-1">
                     <Label htmlFor="searchTermBids" className="text-xs font-medium text-muted-foreground">חיפוש חופשי</Label>
                      <div className="relative">
@@ -116,6 +119,9 @@ export default function OpenBidsPage() {
                  <Button variant="outline" className="w-full sm:w-auto bg-background shadow-sm" onClick={handleMoreFilters}>
                     <SlidersHorizontal className="mr-2 h-4 w-4" /> עוד פילטרים
                 </Button>
+                <Button variant="outline" className="w-full sm:w-auto bg-background shadow-sm" onClick={handleCheckNearbyAreas}>
+                    <Compass className="mr-2 h-4 w-4 text-blue-500"/> אזורים סמוכים
+                </Button>
             </div>
         </CardContent>
       </Card>
@@ -126,7 +132,7 @@ export default function OpenBidsPage() {
           {filteredOrders.map((order) => {
             const restaurant = getRestaurantById(order.restaurantName === 'פיצה פאלאס' ? 'restaurant1' : order.restaurantName === 'בורגר בוננזה' ? 'restaurant2' : 'restaurant3'); 
             return (
-            <Card key={order.orderId} className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col">
+            <Card key={order.orderId} className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col premium-card-hover">
               <CardHeader>
                 <div className="flex justify-between items-start">
                     <CardTitle className="text-xl font-headline text-primary truncate">הזמנה מ{order.restaurantName}</CardTitle>
@@ -165,7 +171,7 @@ export default function OpenBidsPage() {
                 )}
               </CardContent>
               <CardFooter>
-                <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground btn-gradient-hover-primary">
                   <Link href={`/courier/bids/${order.orderId}`}>
                     צפה והגש הצעה <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>

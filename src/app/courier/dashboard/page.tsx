@@ -6,10 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { MapPin, DollarSign, PackageCheck, CheckCircle, XCircle, Search, AlertTriangle, Route, BarChart3, ListChecks, Lightbulb, Zap, Loader2 } from 'lucide-react';
+import { MapPin, DollarSign, PackageCheck, CheckCircle, XCircle, Search, AlertTriangle, Route, BarChart3, ListChecks, Lightbulb, Zap, Loader2, Trophy, CalendarClock } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 
 export default function CourierDashboardPage() {
   const [isActive, setIsActive] = useState(true);
@@ -27,8 +28,24 @@ export default function CourierDashboardPage() {
         setOpenBidCount(Math.floor(Math.random() * 5 + 1));
         setIsLoadingStats(false);
     }, 700); 
-    return () => clearTimeout(timer);
-  }, []);
+    
+    // Mock bonus alert
+    const bonusAlertTimeout = setTimeout(() => {
+      if (isActive && Math.random() > 0.7) {
+        toast({
+          title: "🚀 בונוס אזורי זמין!",
+          description: "₪10 נוספים לכל משלוח מאזור 'מרכז העיר' בשעה הקרובה! (הדגמה)",
+          duration: 10000,
+          className: "bg-yellow-400 text-black border-yellow-500"
+        });
+      }
+    }, 5000);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(bonusAlertTimeout);
+    }
+  }, [isActive]); // Rerun if isActive changes, to potentially show bonus if newly active
 
   const handleActivityToggle = (checked: boolean) => {
     setIsActive(checked);
@@ -39,8 +56,8 @@ export default function CourierDashboardPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <Card className="shadow-lg">
+    <div className="space-y-8"> {/* Increased spacing */}
+      <Card className="shadow-xl premium-card-hover"> {/* Added shadow and hover effect */}
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <CardTitle className="text-2xl md:text-3xl font-headline text-primary">לוח הבקרה שלך, שליח!</CardTitle>
@@ -63,8 +80,8 @@ export default function CourierDashboardPage() {
         </CardHeader>
       </Card>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card>
+      <div className="grid md:grid-cols-3 gap-6"> {/* Changed to 3 cols for new card */}
+        <Card className="premium-card-hover">
           <CardHeader>
             <CardTitle className="text-xl flex items-center"><MapPin className="mr-2 h-5 w-5 text-accent"/> מפת אזורים חמים</CardTitle>
             <CardDescription>צפה/י באזורים עם ריכוז גבוה של הזמנות כרגע.</CardDescription>
@@ -81,15 +98,16 @@ export default function CourierDashboardPage() {
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 p-4 text-center">
                 <p className="text-white text-lg font-semibold">תצוגת מפה חיה (הדגמה)</p>
                 <div className="mt-2 space-y-1 text-xs">
-                    <p className="text-yellow-300 flex items-center justify-center"><AlertTriangle className="mr-1 h-3 w-3"/> אזור ביקוש גבוה: מרכז העיר</p>
-                    <p className="text-blue-300 flex items-center justify-center"><Lightbulb className="mr-1 h-3 w-3"/> מיקום מומלץ (AI): ליד קניון מרכזי</p>
+                    <Badge variant="destructive" className="bg-red-500/80 text-white animate-pulse"><AlertTriangle className="mr-1 h-3 w-3"/> אזור ביקוש גבוה: מרכז העיר</Badge>
+                    <Badge variant="secondary" className="bg-blue-500/80 text-white"><Lightbulb className="mr-1 h-3 w-3"/> מיקום מומלץ (AI): ליד קניון מרכזי</Badge>
                 </div>
               </div>
             </div>
+            <p className="text-xs text-muted-foreground mt-2">הערה: התראות על בונוסים באזורים חמים יופיעו כ-toast.</p>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="premium-card-hover">
           <CardHeader>
             <CardTitle className="text-xl flex items-center"><DollarSign className="mr-2 h-5 w-5 text-green-600"/> ביצועים יומיים</CardTitle>
              <CardDescription>סיכום הפעילות שלך להיום.</CardDescription>
@@ -107,21 +125,44 @@ export default function CourierDashboardPage() {
               <p className="font-medium">הצעות פתוחות כרגע:</p>
               {isLoadingStats || openBidCount === null ? <Loader2 className="h-6 w-6 animate-spin text-orange-700" /> : <p className="text-2xl font-bold text-orange-700">{openBidCount}</p>}
             </div>
-            <Button asChild size="lg" className="w-full">
+            <Button asChild size="lg" className="w-full btn-gradient-hover-primary">
                 <Link href="/courier/performance">
                     <BarChart3 className="mr-2 h-5 w-5"/> צפה בביצועים מלאים
                 </Link>
             </Button>
           </CardContent>
         </Card>
+        <Card className="premium-card-hover">
+          <CardHeader>
+            <CardTitle className="text-xl flex items-center"><Trophy className="mr-2 h-5 w-5 text-yellow-500"/> משימות ובונוסים</CardTitle>
+             <CardDescription>עקוב אחר התקדמותך והזדמנויות לבונוסים.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="p-3 border border-dashed border-yellow-400 rounded-md bg-yellow-50">
+                <p className="font-semibold text-yellow-700">משימת סופ"ש (דמו):</p>
+                <p className="text-sm text-yellow-600">השלם 5 משלוחים בין שישי לשבת וקבל ₪20 בונוס!</p>
+                <div className="w-full bg-yellow-200 rounded-full h-2.5 mt-1">
+                    <div className="bg-yellow-500 h-2.5 rounded-full" style={{ width: `${( (dailyDeliveries || 0) % 5 / 5) * 100}%` }}></div> {/* Mock progress */}
+                </div>
+                <p className="text-xs text-yellow-500 mt-1">התקדמות: {(dailyDeliveries || 0) % 5}/5</p>
+            </div>
+            <div className="p-3 border rounded-md bg-purple-50 text-purple-700">
+                <p className="font-semibold">דירוג VIP (דמו): <Badge variant="secondary" className="bg-purple-200 text-purple-800">זהב</Badge></p>
+                <p className="text-xs">שליחי VIP מקבלים עדיפות בהצעות משתלמות.</p>
+            </div>
+            <Button variant="outline" className="w-full" onClick={() => toast({title: "בקרוב", description: "עמוד מלא לניהול משימות, הישגים ותוכנית VIP יתווסף."})}>
+                <CalendarClock className="mr-2 h-4 w-4"/> הצג את כל המשימות
+            </Button>
+          </CardContent>
+        </Card>
       </div>
 
-      <Card className="text-center">
+      <Card className="text-center premium-card-hover">
         <CardHeader>
             <CardTitle className="text-xl">מחפש/ת את המשלוח הבא?</CardTitle>
         </CardHeader>
         <CardContent>
-            <Button size="xl" className="bg-accent hover:bg-accent/90 text-accent-foreground text-lg px-10 py-7 shadow-lg relative overflow-hidden group">
+            <Button size="xl" className="bg-accent hover:bg-accent/90 text-accent-foreground text-lg px-10 py-7 shadow-lg relative overflow-hidden group btn-gradient-hover-accent">
               <Link href="/courier/open-bids" className="flex items-center">
                 <Zap className="mr-3 h-6 w-6 text-yellow-300 group-hover:animate-pulse absolute left-4 opacity-75"/> 
                 <Search className="mr-3 h-6 w-6"/> 
@@ -130,12 +171,12 @@ export default function CourierDashboardPage() {
             </Button>
         </CardContent>
          <CardFooter className="justify-center pt-2">
-            <p className="text-xs text-muted-foreground">זירת הצעות מתעדכנת בזמן אמת.</p>
+            <p className="text-xs text-muted-foreground">זירת הצעות מתעדכנת בזמן אמת. הצעות מותאמות לך ע"י AI.</p>
          </CardFooter>
       </Card>
       
        <div className="grid md:grid-cols-2 gap-6">
-           <Card className="hover:shadow-md transition-shadow">
+           <Card className="hover:shadow-md transition-shadow premium-card-hover">
                 <CardHeader>
                     <CardTitle className="text-lg flex items-center"><PackageCheck className="mr-2 h-5 w-5 text-primary"/> ניהול הזמנות פעילות</CardTitle>
                 </CardHeader>
@@ -146,7 +187,7 @@ export default function CourierDashboardPage() {
                     </Button>
                 </CardContent>
             </Card>
-             <Card className="hover:shadow-md transition-shadow">
+             <Card className="hover:shadow-md transition-shadow premium-card-hover">
                 <CardHeader>
                     <CardTitle className="text-lg flex items-center"><ListChecks className="mr-2 h-5 w-5 text-primary"/> הצעות מהירות</CardTitle>
                 </CardHeader>

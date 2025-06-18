@@ -36,10 +36,10 @@ export default function RootLayout({
     }
 
     if (document) {
-        document.title = 'LivePick - פלטפורמת המשלוחים החכמה שלך';
+        document.title = 'SwiftServe - פלטפורמת המשלוחים החכמה שלך'; // Updated name
         const metaDesc = document.querySelector('meta[name="description"]');
         if (metaDesc) {
-            metaDesc.setAttribute('content', 'הזמינו משלוח ממסעדות, חנויות ובתי קפה עם LivePick. גלו טרנדים, שתפו וזכו בפרסים!');
+            metaDesc.setAttribute('content', 'הזמינו משלוח ממסעדות, חנויות ובתי קפה עם SwiftServe. גלו טרנדים, שתפו וזכו בפרסים!'); // Updated name
         }
     }
 
@@ -70,8 +70,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#29ABE2" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="LivePick" />
-        {/* Add Apple touch icons later if specific ones are needed */}
+        <meta name="apple-mobile-web-app-title" content="SwiftServe" /> 
       </head>
       <body className={cn('font-body antialiased min-h-screen flex flex-col bg-background text-foreground', ptSans.variable, timeBasedTheme)}>
         <CartProvider>

@@ -1,81 +1,62 @@
+// Basic Service Worker for PWA (placeholder)
+// In a real app, use Workbox or a more robust caching strategy.
 
-// Basic service worker for PWA (Progressive Web App)
-// This is a very simple service worker for demonstration.
-// For production, consider using Workbox or more advanced caching strategies.
-
-const CACHE_NAME = 'livepick-cache-v1';
+const CACHE_NAME = 'swiftserve-cache-v1';
 const urlsToCache = [
   '/',
-  // Add other important static assets you want to cache initially
-  // For example: '/_next/static/css/...', '/_next/static/chunks/...'
-  // Be careful with dynamic Next.js assets, Workbox is better for this.
-  '/favicon.ico'
+  '/globals.css', // Assuming your main CSS is here or linked from index
+  // Add other critical static assets: logo, main JS bundles if known and static
+  // Note: Next.js handles its own JS chunk caching effectively.
+  // This is more for very basic offline fallback for the shell.
 ];
 
-self.addEventListener('install', (event) => {
-  console.log('[Service Worker] Install');
+self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('[Service Worker] Opened cache');
-        // Add essential assets that are not part of Next.js build (like manifest, custom icons if any)
-        // Next.js built-in assets are usually better handled by more sophisticated tools like next-pwa or Workbox
-        return cache.addAll(urlsToCache.filter(url => !url.startsWith('/_next/')));
+      .then(cache => {
+        console.log('Opened SwiftServe cache');
+        return cache.addAll(urlsToCache);
       })
-      .catch(error => {
-        console.error('[Service Worker] Cache addAll failed:', error);
+      .catch(err => {
+        console.error('Failed to cache on install:', err);
       })
   );
-  self.skipWaiting();
 });
 
-self.addEventListener('activate', (event) => {
-  console.log('[Service Worker] Activate');
+self.addEventListener('fetch', event => {
+  // Basic cache-first strategy for assets in urlsToCache
+  // For other requests (like API calls, dynamic pages), it will go to network.
+  // A more advanced SW would handle these differently (e.g., networkFirst, staleWhileRevalidate).
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        if (response) {
+          return response; // Serve from cache
+        }
+        return fetch(event.request); // Fetch from network
+      })
+      .catch(err => {
+        console.error('Fetch error/cache miss:', err, event.request.url);
+        // Optionally, return a generic offline page here for navigation requests
+        // if (event.request.mode === 'navigate') {
+        //   return caches.match('/offline.html'); // You'd need to create an offline.html
+        // }
+      })
+  );
+});
+
+self.addEventListener('activate', event => {
+  const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    caches.keys().then(cacheNames => {
       return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('[Service Worker] Deleting old cache:', cacheName);
+        cacheNames.map(cacheName => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            console.log('Deleting old SwiftServe cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
     })
   );
-  return self.clients.claim();
-});
-
-self.addEventListener('fetch', (event) => {
-  // console.log('[Service Worker] Fetching:', event.request.url);
-  // Basic cache-first strategy for non-API GET requests
-  if (event.request.method === 'GET' && !event.request.url.includes('/api/')) {
-    event.respondWith(
-      caches.match(event.request)
-        .then((response) => {
-          if (response) {
-            // console.log('[Service Worker] Found in cache:', event.request.url);
-            return response;
-          }
-          // console.log('[Service Worker] Not in cache, fetching from network:', event.request.url);
-          return fetch(event.request).then(
-            (networkResponse) => {
-              // Optional: Cache new requests dynamically (be careful with this for Next.js pages)
-              // if (networkResponse && networkResponse.status === 200 && !event.request.url.startsWith('chrome-extension://')) {
-              //   const responseToCache = networkResponse.clone();
-              //   caches.open(CACHE_NAME)
-              //     .then(cache => {
-              //       cache.put(event.request, responseToCache);
-              //     });
-              // }
-              return networkResponse;
-            }
-          ).catch(error => {
-            console.error('[Service Worker] Fetch failed; returning offline page if available or error for:', event.request.url, error);
-            // You could return a generic offline page here from cache if 'offline.html' was cached.
-            // return caches.match('/offline.html'); 
-          });
-        })
-    );
-  }
 });

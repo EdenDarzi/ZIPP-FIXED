@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, DollarSign, Utensils, Star, TrendingUp, Clock, Lightbulb, Activity, Wallet as WalletIcon, History, FileText, BarChart3, Percent, Filter, AlertTriangle, PieChart as PieChartIcon } from 'lucide-react';
+import { Users, DollarSign, Utensils, Star, TrendingUp, Clock, Lightbulb, Activity, Wallet as WalletIcon, History, FileText, BarChart3, Percent, Filter, AlertTriangle, PieChart as PieChartIcon, ExternalLink } from 'lucide-react'; // Added ExternalLink
 import { Bar, BarChart as RechartsBarChart, Line, LineChart as RechartsLineChart, Pie, PieChart as RechartsPieChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell } from 'recharts';
 import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
 import type { Wallet, Transaction, TransactionType } from '@/types';
@@ -15,6 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { DatePickerWithRange } from '@/components/ui/date-range-picker';
 import type { DateRange } from "react-day-picker";
 import { Info, Loader2 } from 'lucide-react';
+import Link from 'next/link'; // Added Link
 
 const mockDailySalesDataDefault = [
   { date: 'א\'', sales: 4000 }, { date: 'ב\'', sales: 3000 }, { date: 'ג\'', sales: 2000 },
@@ -39,33 +40,10 @@ const customerFeedbackDataDefault = [
   { name: '3 כוכבים', value: 30, fill: "hsl(var(--chart-3))" }, { name: '2 כוכבים', value: 10, fill: "hsl(var(--chart-4))" }, { name: 'כוכב 1', value: 5, fill: "hsl(var(--chart-5))" },
 ];
 
-const mockBusinessWalletData: Wallet = {
-    userId: 'business1',
-    userType: 'business',
-    balance: 10250.75, 
-    currency: 'ILS',
-    transactions: [
-        { id: 'btxn1', type: 'order_payment', amount: 75.50, description: 'תשלום מהזמנה #orderClient1', date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), status: 'completed', relatedUserId: 'client1'},
-        { id: 'btxn2', type: 'fee', amount: -7.55, description: 'עמלת פלטפורמה (10%)', date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), status: 'completed', relatedOrderId: 'orderClient1'},
-        { id: 'btxn3', type: 'order_payment', amount: 120.00, description: 'תשלום מהזמנה #orderClient2', date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), status: 'completed', relatedUserId: 'client2'},
-        { id: 'btxn4', type: 'fee', amount: -12.00, description: 'עמלת פלטפורמה (10%)', date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), status: 'completed', relatedOrderId: 'orderClient2'},
-        { id: 'btxn5', type: 'fee', amount: -100.00, description: 'חיוב קמפיין "מבצעי קיץ"', date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), status: 'completed', relatedCampaignId: 'SUMMER_SALE'},
-    ],
-    lastUpdatedAt: new Date().toISOString(),
-};
-
-const getTransactionTypeDisplayBusiness = (type: TransactionType): { text: string; icon: React.ElementType; colorClass: string } => {
-  switch (type) {
-    case 'order_payment': return { text: 'קבלת תשלום', icon: DollarSign, colorClass: 'text-green-600' };
-    case 'fee': return { text: 'עמלת פלטפורמה/קמפיין', icon: Percent, colorClass: 'text-red-600' };
-    case 'withdrawal': return { text: 'משיכה', icon: FileText, colorClass: 'text-blue-600'};
-    default: return { text: type, icon: WalletIcon, colorClass: 'text-muted-foreground' };
-  }
-}
+// Removed businessWalletData and transaction type display as they are now in wallet page
 
 
 export default function AnalyticsPage() {
-  const [businessWallet, setBusinessWallet] = useState<Wallet | null>(null);
   const { toast } = useToast();
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [totalRevenue, setTotalRevenue] = useState<number | null>(null);
@@ -79,8 +57,7 @@ export default function AnalyticsPage() {
 
   useEffect(() => {
     setIsLoading(true);
-    const loadingTimer = setTimeout(() => { // Ensure loading state is visible for a bit
-        setBusinessWallet(mockBusinessWalletData);
+    const loadingTimer = setTimeout(() => { 
         const factor = dateRange?.from && dateRange?.to ? (dateRange.to.getTime() - dateRange.from.getTime()) / (1000*60*60*24*7) + 0.5 : 1;
         setTotalRevenue(parseFloat(((Math.random() * 8000 + 4000)*factor).toFixed(2)));
         setTotalOrders(Math.floor((Math.random() * 200 + 100)*factor));
@@ -95,17 +72,10 @@ export default function AnalyticsPage() {
   }, [dateRange]);
 
 
-  const handleGenerateInvoice = () => {
+  const handleGenerateReport = () => { // Renamed from handleGenerateInvoice
     toast({
-        title: "הפקת דוח/חשבונית (דמו)",
+        title: "הפקת דוח ביצועים (דמו)", // Updated title
         description: "דוח עבור התקופה הנבחרת 'נוצר' ויהיה זמין להורדה או יישלח למייל הרשום. (הדגמה)",
-    });
-  };
-
-  const handleRequestPayout = () => {
-    toast({
-        title: "בקשת משיכת כספים (דמו)",
-        description: "בקשתך למשיכת כספים מהארנק העסקי נשלחה. הכספים יועברו לחשבונך תוך 3-5 ימי עסקים.",
     });
   };
 
@@ -115,82 +85,24 @@ export default function AnalyticsPage() {
       <Card className="premium-card-hover">
         <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
             <div>
-                <CardTitle className="text-2xl md:text-3xl font-headline">ניתוחים וביצועים</CardTitle>
-                <CardDescription>עקוב אחר מדדי המפתח וביצועי העסק שלך. קבל תובנות AI לשיפור.</CardDescription>
+                <CardTitle className="text-2xl md:text-3xl font-headline">ניתוחים והכנסות</CardTitle>
+                <CardDescription>עקוב/י אחר מדדי המפתח וביצועי העסק שלך. קבל תובנות AI לשיפור.</CardDescription>
             </div>
             <div className="mt-3 sm:mt-0 w-full sm:w-auto">
                 <DatePickerWithRange onDateChange={setDateRange} />
             </div>
         </CardHeader>
-      </Card>
-
-       <Card className="premium-card-hover">
-        <CardHeader>
-            <CardTitle className="text-xl flex items-center"><WalletIcon className="mr-2 h-6 w-6 text-primary"/> הארנק העסקי שלי</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-            {isLoading || !businessWallet ? (
-                <div className="flex justify-center items-center py-8"> <Loader2 className="h-8 w-8 animate-spin text-primary"/> <p className="mr-2">טוען נתוני ארנק...</p></div>
-            ) : (
-                <>
-                    <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg text-center shadow-md">
-                        <p className="text-sm text-blue-700 font-medium">יתרה נוכחית זמינה למשיכה</p>
-                        <p className="text-4xl font-bold text-blue-600">₪{businessWallet.balance.toFixed(2)}</p>
-                        <p className="text-xs text-blue-500">עדכון אחרון: {new Date(businessWallet.lastUpdatedAt).toLocaleTimeString('he-IL')}</p>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Button onClick={handleRequestPayout} variant="outline" size="lg" className="hover:bg-blue-500/10 hover:border-blue-500/50 hover:text-blue-700">
-                            <DollarSign className="mr-2 h-5 w-5"/> בקש משיכת כספים
-                        </Button>
-                        <Button onClick={handleGenerateInvoice} variant="outline" size="lg" className="hover:bg-blue-500/10 hover:border-blue-500/50 hover:text-blue-700">
-                            <FileText className="mr-2 h-5 w-5"/> הפק דוח/חשבונית
-                        </Button>
-                    </div>
-                    <div>
-                        <h4 className="text-lg font-semibold mb-2 flex items-center"><History className="mr-2 h-5 w-5 text-muted-foreground"/>תנועות אחרונות בארנק (דמו)</h4>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                <TableHead>תאריך</TableHead>
-                                <TableHead>תיאור</TableHead>
-                                <TableHead>סוג</TableHead>
-                                <TableHead className="text-right">סכום</TableHead>
-                                <TableHead>סטטוס</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {businessWallet.transactions.slice(0, 3).map(tx => {
-                                    const typeDisplay = getTransactionTypeDisplayBusiness(tx.type);
-                                    const Icon = typeDisplay.icon;
-                                    return (
-                                    <TableRow key={tx.id}>
-                                        <TableCell className="text-xs">{new Date(tx.date).toLocaleDateString('he-IL')}</TableCell>
-                                        <TableCell className="text-sm max-w-[150px] truncate" title={tx.description}>{tx.description}</TableCell>
-                                        <TableCell className="text-xs"><Icon className={`inline h-3.5 w-3.5 mr-1 ${typeDisplay.colorClass}`} />{typeDisplay.text}</TableCell>
-                                        <TableCell className={`text-right font-medium text-sm ${tx.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                            {tx.amount > 0 ? '+' : ''}₪{tx.amount.toFixed(2)}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Badge variant={tx.status === 'completed' ? 'default' : tx.status === 'pending' ? 'secondary' : 'destructive'} 
-                                                className={`text-xs ${tx.status === 'completed' ? 'bg-green-100 text-green-700' : tx.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : ''}`}>
-                                            {tx.status === 'completed' ? 'הושלם' : tx.status === 'pending' ? 'ממתין' : 'נכשל'}
-                                            </Badge>
-                                        </TableCell>
-                                    </TableRow>
-                                    );
-                                })}
-                            </TableBody>
-                        </Table>
-                        {businessWallet.transactions.length > 3 && <Button variant="link" size="sm" className="mt-2 p-0 h-auto text-xs text-primary hover:text-accent">הצג את כל התנועות</Button>}
-                    </div>
-                </>
-            )}
-        </CardContent>
-         <CardFooter>
-            <p className="text-xs text-muted-foreground">ההכנסות מהזמנות (בניכוי עמלות) מועברות לארנק העסק. ניתן למשוך כספים בהתאם לתנאי השירות.</p>
+         <CardFooter className="border-t pt-3">
+            <Button variant="outline" size="sm" asChild>
+                <Link href="/restaurant-admin/wallet">
+                    <WalletIcon className="mr-2 h-4 w-4"/> עבור לארנק העסקי <ExternalLink className="h-3 w-3 ml-1 text-muted-foreground"/>
+                </Link>
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleGenerateReport} className="mr-auto">
+                <FileText className="mr-2 h-4 w-4"/> הפק דוח תקופתי
+            </Button>
         </CardFooter>
       </Card>
-
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card className="premium-card-hover">
@@ -239,6 +151,7 @@ export default function AnalyticsPage() {
         <Card className="premium-card-hover">
           <CardHeader>
             <CardTitle className="text-xl flex items-center"><TrendingUp className="mr-2 h-5 w-5 text-primary"/> סקירת מכירות (שבוע נוכחי - דמו)</CardTitle>
+             <CardDescription>הכנסות לפי חודש (דמו, נתונים משתנים עם בחירת תאריכים).</CardDescription>
           </CardHeader>
           <CardContent className="h-[350px] -ml-2 pr-2"> 
              {isLoading ? <div className="flex h-full justify-center items-center"><Loader2 className="h-8 w-8 animate-spin text-primary"/></div> : (
@@ -258,6 +171,7 @@ export default function AnalyticsPage() {
         <Card className="premium-card-hover">
           <CardHeader>
             <CardTitle className="text-xl flex items-center"><PieChartIcon className="mr-2 h-5 w-5 text-accent"/> מוצרים/שירותים פופולריים (דמו)</CardTitle>
+             <CardDescription>התפלגות מכירות של המוצרים המובילים שלך.</CardDescription>
           </CardHeader>
           <CardContent className="h-[350px] flex items-center justify-center">
              {isLoading ? <div className="flex h-full justify-center items-center"><Loader2 className="h-8 w-8 animate-spin text-accent"/></div> : (

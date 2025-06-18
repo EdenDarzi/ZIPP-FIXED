@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, ListOrdered, ShoppingCart, Users, AlertTriangle, Settings, LayoutList, Palette, BarChart3, Video, Info, CheckCircle, Loader2, TrendingUp, Megaphone, Users2 } from "lucide-react";
+import { DollarSign, ListOrdered, ShoppingCart, Users, AlertTriangle, Settings, LayoutList, Palette, BarChart3, Video, Info, CheckCircle, Loader2, TrendingUp, Megaphone, Users2, Sparkles, Briefcase } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -147,6 +147,26 @@ export default function RestaurantAdminDashboard() {
             {!isLoadingStats && stats.activeCampaigns !== null && <p className="text-xs text-muted-foreground">הצג ביצועים ונהל</p>}
           </CardContent>
         </Card>
+         <Card className="premium-card-hover">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">קמפיינים מומלצים (AI)</CardTitle>
+            <Sparkles className="h-5 w-5 text-yellow-400" />
+          </CardHeader>
+          <CardContent>
+            <p className="text-xs text-muted-foreground">"הצע 1+1 על משקאות קלים בימי חמישי"</p>
+            <Button variant="link" size="sm" className="p-0 h-auto text-xs">הפעל קמפיין (דמו)</Button>
+          </CardContent>
+        </Card>
+         <Card className="premium-card-hover">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">הכנסות בלייב (מדומה)</CardTitle>
+            <Briefcase className="h-5 w-5 text-indigo-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-indigo-600">₪1,234.50</div>
+            <p className="text-xs text-muted-foreground">מעודכן כל דקה</p>
+          </CardContent>
+        </Card>
       </div>
 
       <Card className="premium-card-hover">
@@ -191,7 +211,7 @@ export default function RestaurantAdminDashboard() {
 
         <Card className="premium-card-hover">
           <CardHeader>
-            <CardTitle className="flex items-center text-xl"><Video className="mr-2 h-6 w-6 text-red-500" /> LiveKitchen סטטוס (דמו)</CardTitle>
+            <CardTitle className="flex items-center text-xl"><Video className="mr-2 h-6 w-6 text-red-500" /> SwiftServe LiveKitchen סטטוס (דמו)</CardTitle> {/* Updated name */}
             <CardDescription>שתף את הלקוחות שלך במה שקורה מאחורי הקלעים בזמן אמת!</CardDescription>
           </CardHeader>
           <CardContent className="text-center space-y-4">

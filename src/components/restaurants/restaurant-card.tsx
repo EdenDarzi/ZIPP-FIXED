@@ -41,7 +41,6 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
   const [isLivePickChoice, setIsLivePickChoice] = useState(false);
 
   useEffect(() => {
-    // Ensure this runs only on the client
     if (typeof window !== 'undefined') {
       setReviewCount(Math.floor(Math.random() * 150 + 50));
       if (restaurant.rating > 4.6 && Math.random() > 0.6) {
@@ -68,11 +67,11 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
                 <Tooltip>
                   <TooltipTrigger asChild>
                      <Badge variant="default" className="py-1.5 px-3 text-xs bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white shadow-lg border border-white/30">
-                        <Award className="h-4 w-4 ml-1.5" /> LivePick Choice
+                        <Award className="h-4 w-4 ml-1.5" /> SwiftServe Choice {/* Updated name */}
                     </Badge>
                   </TooltipTrigger>
                   <TooltipContent side="top" align="start" className="bg-popover text-popover-foreground p-2 text-xs rounded-md shadow-lg">
-                    <p>מומלץ במיוחד על ידי צוות LivePick!</p>
+                    <p>מומלץ במיוחד על ידי צוות SwiftServe!</p> {/* Updated name */}
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

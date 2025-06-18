@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { LayoutDashboard, Settings, ListChecks, Palette, ShoppingBasket, BarChart3, ChefHat, LogOut, Users as CourierIcon, Route, Lightbulb, Megaphone, CreditCard, Wallet } from 'lucide-react';
+import { LayoutDashboard, Settings, ListChecks, Palette, ShoppingBasket, BarChart3, ChefHat, LogOut, Users as CourierIcon, Route, Lightbulb, Megaphone, CreditCard, Wallet, Banknote } from 'lucide-react'; // Updated Wallet to Banknote
 import { cn } from '@/lib/utils';
-import { useToast } from '@/hooks/use-toast'; // Import useToast
-import { useRouter } from 'next/navigation'; // Import useRouter
+import { useToast } from '@/hooks/use-toast'; 
+import { useRouter } from 'next/navigation'; 
 
 const adminNavItems = [
   { href: '/restaurant-admin', label: 'לוח בקרה', icon: LayoutDashboard },
@@ -17,19 +17,14 @@ const adminNavItems = [
   { href: '/restaurant-admin/orders', label: 'ניהול הזמנות', icon: ShoppingBasket },
   { href: '/restaurant-admin/delivery-management', label: 'ניהול משלוחים', icon: Route },
   { href: '/restaurant-admin/promotions', label: 'ניהול מבצעים', icon: Megaphone },
-  { href: '/restaurant-admin/analytics', label: 'ניתוחים', icon: BarChart3 },
+  { href: '/restaurant-admin/analytics', label: 'ניתוחים והכנסות', icon: BarChart3 }, // Updated label
   { href: '/restaurant-admin/courier-management', label: 'ניהול שליחים (צפייה)', icon: CourierIcon },
   { href: '/restaurant-admin/trending-insights', label: 'תובנות טרנדים', icon: Lightbulb },
-  { href: '/restaurant-admin/wallet', label: 'ארנק עסקי וחיובים', icon: Wallet }, // Changed from subscription
+  { href: '/restaurant-admin/wallet', label: 'ארנק עסקי וחיובים', icon: Banknote }, // Updated icon
 ];
 
 export default function RestaurantAdminLayout({ children }: { children: ReactNode }) {
-  const businessName = "העסק שלי"; // In a real app, get from context/session
-  // const router = useRouter(); // Can't use in Server Component directly if needed for logout
-  // const { toast } = useToast(); // Can't use in Server Component
-
-  // The logout button below will simply navigate. Proper logout requires client-side logic or a server action.
-  // For the demo, we'll keep the Link which will redirect to login.
+  const businessName = "העסק שלי"; 
 
   return (
     <div className="flex min-h-screen bg-muted/40">
@@ -47,7 +42,7 @@ export default function RestaurantAdminLayout({ children }: { children: ReactNod
                 key={item.label}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-primary/10 my-1',
+                  'flex items-center gap-3 rounded-lg px-3 py-2.5 text-muted-foreground transition-all hover:text-primary hover:bg-primary/10 my-1', // Increased py
                   // Add active link styling here if using usePathname
                 )}
               >

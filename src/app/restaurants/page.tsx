@@ -25,7 +25,7 @@ export default function RestaurantsPage() {
 
   useEffect(() => {
     const currentHour = new Date().getHours();
-    if (currentHour >= 19 && currentHour <= 23) { 
+    if (currentHour >= 19 && currentHour < 23) { 
         setActiveLivePickSaleItems(mockLivePickSaleItems.filter(item => item.isActive));
     }
   }, []);
@@ -74,7 +74,7 @@ export default function RestaurantsPage() {
             <Card className="bg-red-500 text-white shadow-lg hover:shadow-xl transition-shadow">
                 <CardHeader>
                     <CardTitle className="text-2xl font-headline flex items-center">
-                        <ShoppingBag className="h-7 w-7 mr-3 animate-bounce" /> 🔥 מבצעי LivePick פעילים כעת!
+                        <ShoppingBag className="h-7 w-7 mr-3 animate-bounce" /> 🔥 מבצעי SwiftServe Sale פעילים כעת! {/* Updated Name */}
                     </CardTitle>
                     <CardDescription className="text-red-100">שקיות הפתעה מסוף היום במחירים מיוחדים! מהרו לפני שייגמר.</CardDescription>
                 </CardHeader>
@@ -103,7 +103,7 @@ export default function RestaurantsPage() {
                     {activeLivePickSaleItems.length > 3 && (
                         <div className="text-center mt-4">
                             <Button variant="link" asChild className="text-white hover:text-red-200">
-                                <Link href="/livepick-sale">הצג את כל מבצעי LivePick...</Link>
+                                <Link href="/livepick-sale">הצג את כל מבצעי SwiftServe Sale...</Link> {/* Updated Name */}
                             </Button>
                         </div>
                     )}
@@ -164,7 +164,7 @@ export default function RestaurantsPage() {
       </div>
 
       {filteredRestaurants.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> {/* Increased gap */}
           {filteredRestaurants.map((restaurant) => (
             <RestaurantCard key={restaurant.id} restaurant={restaurant} />
           ))}

@@ -78,7 +78,7 @@ export default function CheckoutPage() {
         <p className="text-lg text-muted-foreground mb-8">
           הוסף פריטים לסל שלך לפני שתמשיך לתשלום.
         </p>
-        <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
+        <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground btn-gradient-hover-primary">
           <Link href="/restaurants" aria-label="התחל בקניות"><span>התחל בקניות</span></Link>
         </Button>
       </div>
@@ -89,7 +89,7 @@ export default function CheckoutPage() {
     if (paymentMethod === 'wallet' && mockWalletBalance < finalPriceWithDelivery) {
         toast({
             title: "יתרה לא מספקת בארנק",
-            description: `אין לך מספיק יתרה בארנק LivePick (₪${mockWalletBalance.toFixed(2)}) כדי לכסות את ההזמנה (₪${finalPriceWithDelivery.toFixed(2)}). אנא טען את הארנק או בחר אמצעי תשלום אחר.`,
+            description: `אין לך מספיק יתרה בארנק SwiftServe (₪${mockWalletBalance.toFixed(2)}) כדי לכסות את ההזמנה (₪${finalPriceWithDelivery.toFixed(2)}). אנא טען את הארנק או בחר אמצעי תשלום אחר.`, // Updated name
             variant: "destructive",
             duration: 7000,
         });
@@ -104,7 +104,7 @@ export default function CheckoutPage() {
       action: <Check className="text-green-500" />
     });
 
-    const mockOrderId = `livepick_${Date.now()}_${scheduledDeliveryTime ? 'scheduled' : 'asap'}`; 
+    const mockOrderId = `swiftsrve_${Date.now()}_${scheduledDeliveryTime ? 'scheduled' : 'asap'}`; // Updated prefix
     
     const queryParams = new URLSearchParams();
     if (customerNotes) queryParams.append('notes', customerNotes);
@@ -236,7 +236,7 @@ export default function CheckoutPage() {
                     <RadioGroupItem value="wallet" id="payWithWallet" className="ml-3 rtl:ml-0 rtl:mr-3" disabled={mockWalletBalance < finalPriceWithDelivery} />
                     <WalletIcon className="h-5 w-5 ml-2 rtl:ml-0 rtl:mr-2 text-green-600" />
                      <div className="flex-grow">
-                        <span className="font-semibold">ארנק LivePick</span>
+                        <span className="font-semibold">ארנק SwiftServe</span> {/* Updated name */}
                         <p className="text-xs text-muted-foreground">יתרה נוכחית: <span className="font-medium text-green-700">₪{mockWalletBalance.toFixed(2)}</span></p>
                          {mockWalletBalance < finalPriceWithDelivery && <p className="text-xs text-destructive">יתרה לא מספקת לתשלום מלא.</p>}
                     </div>
@@ -280,7 +280,7 @@ export default function CheckoutPage() {
             </Badge>
           )}
 
-          <Button size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg" onClick={handleMockPayment} aria-label={`שלם ${finalPriceWithDelivery.toFixed(2)} שקלים`}>
+          <Button size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg btn-gradient-hover-primary" onClick={handleMockPayment} aria-label={`שלם ${finalPriceWithDelivery.toFixed(2)} שקלים`}>
             <Lock className="ml-2 rtl:ml-0 rtl:mr-2 h-5 w-5" /> שלם ₪{finalPriceWithDelivery.toFixed(2)}
           </Button>
           <p className="text-xs text-muted-foreground text-center">

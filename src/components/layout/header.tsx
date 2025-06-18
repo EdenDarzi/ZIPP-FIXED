@@ -2,8 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, TrendingUp, Languages, Send, HeartPulse, MapIcon, Briefcase, Users, Store, Bell, Heart, PackageSearch, ShieldCheck, Sparkles, Settings2, Award, Flame, PackagePlus, Route, ListChecks } from 'lucide-react'; // Removed Gem
-import { GamepadIcon as Gamepad2 } from 'lucide-react';
+import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, TrendingUp, Languages, Send, HeartPulse, MapIcon, Briefcase, Users, Store, Bell, Heart, PackageSearch, ShieldCheck, Sparkles, Settings2, Award, Flame, PackagePlus, Route, ListChecks } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
 import { Badge } from '@/components/ui/badge';
@@ -33,7 +32,6 @@ const Header = () => {
   const [showNotificationDot, setShowNotificationDot] = useState(false);
 
   useEffect(() => {
-    // This effect runs only on the client
     if (typeof window !== 'undefined' && Math.random() > 0.7) {
       setShowNotificationDot(true);
     }
@@ -56,11 +54,10 @@ const Header = () => {
     { href: "/restaurants", label: "עסקים", icon: Utensils, showAlways: true, showSm: true, showMd: true, showLg: true, showXl: true },
     { href: "/marketplace", label: "יד 2", icon: Store, showAlways: false, showSm: false, showMd: false, showLg: true, showXl: true },
     { href: "/send-package", label: "שלח חבילה", icon: Send, showAlways: false, showSm: false, showMd: false, showLg: true, showXl: true },
-    { href: "/livepick-sale", label: "LivePick Sale", icon: PackageSearch, showAlways: false, showSm: true, showMd: true, showLg: true, showXl: true },
+    { href: "/livepick-sale", label: "SwiftServe Sale", icon: PackageSearch, showAlways: false, showSm: true, showMd: true, showLg: true, showXl: true },
     { href: "/visual-search", label: "סורק טרנדים", icon: TrendingUp, showAlways: true, showSm: true, showMd: true, showLg: true, showXl: true },
     { href: "/favorites", label: "מועדפים", icon: Heart, showAlways: false, showSm: false, showMd: true, showLg: true, showXl: true },
     { href: "/affiliate", label: "שותפים", icon: Users, showAlways: false, showSm: false, showMd: true, showLg: true, showXl: true },
-    // VIP Link Removed
     { href: "/courier/dashboard", label: "שליחים", icon: Truck, showAlways: false, showSm: false, showMd: false, showLg: false, showXl: true },
     { href: "/restaurant-admin", label: "ניהול עסק", icon: ChefHat, showAlways: false, showSm: false, showMd: false, showLg: false, showXl: true },
     { href: "/super-admin", label: "סופר אדמין", icon: ShieldCheck, showAlways: false, showSm: false, showMd: false, showLg: false, showXl: true, className: "text-purple-600" },
@@ -71,8 +68,8 @@ const Header = () => {
     <header className="bg-card border-b border-border shadow-sm sticky top-0 z-50">
       <TooltipProvider>
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold text-primary font-headline" aria-label="LivePick - דף הבית">
-          LivePick
+        <Link href="/" className="text-2xl font-bold text-primary font-headline" aria-label="SwiftServe - דף הבית">
+          SwiftServe
         </Link>
         <nav className="flex items-center space-x-0.5 sm:space-x-1 flex-wrap justify-end">
           {navLinks.map(link => (
@@ -139,7 +136,7 @@ const Header = () => {
               </DropdownMenuItem>
                <DropdownMenuItem asChild>
                 <Link href="/spin-wheel" className="flex items-center w-full cursor-pointer hover:bg-muted/50">
-                  <Gamepad2 className="ml-2 h-4 w-4 text-teal-500" /> גלגל ההפתעות
+                  <Award className="ml-2 h-4 w-4 text-teal-500" /> גלגל ההפתעות {/* Changed Icon */}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />

@@ -11,9 +11,11 @@ import { DatePickerWithRange } from '@/components/ui/date-range-picker';
 import type { DateRange } from 'react-day-picker';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast'; 
-import type { Wallet, Transaction, TransactionType } from '@/types';
+import type { Wallet, Transaction, TransactionType } from '@/types'; // Keep Wallet and Transaction related types
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
+import Link from 'next/link'; // Import Link
+import { ExternalLink } from 'lucide-react'; // Import ExternalLink
 
 const mockEarningsDataDefault = [
   { month: 'ינו', total: Math.floor(Math.random() * 2000) + 1000 }, { month: 'פבר', total: Math.floor(Math.random() * 2000) + 1200 }, { month: 'מרץ', total: Math.floor(Math.random() * 2000) + 1500 }, { month: 'אפר', total: Math.floor(Math.random() * 2000) + 1300 }, { month: 'מאי', total: Math.floor(Math.random() * 2000) + 1800 }, { month: 'יונ', total: Math.floor(Math.random() * 2000) + 2200 },
@@ -38,30 +40,8 @@ const mockGoals = [
     { id: 'goal3', name: 'השלם 5 משלוחים באזור צפון', progress: '2/5', reward: '₪25 בונוס', active: false },
 ];
 
-const mockCourierWalletData: Wallet = {
-    userId: 'courier1',
-    userType: 'courier',
-    balance: 345.70, 
-    currency: 'ILS',
-    transactions: [
-        { id: 'ctxn1', type: 'commission', amount: 120.50, description: 'תשלום עבור משלוח #order123', date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), status: 'completed'},
-        { id: 'ctxn2', type: 'bonus', amount: 25.00, description: 'בונוס השלמת אתגר שבועי', date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), status: 'completed'},
-        { id: 'ctxn3', type: 'commission', amount: 95.20, description: 'תשלום עבור משלוח #order456', date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), status: 'completed'},
-        { id: 'ctxn4', type: 'withdrawal', amount: -200.00, description: 'משיכה לחשבון בנק', date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), status: 'pending'},
-    ],
-    lastUpdatedAt: new Date().toISOString(),
-};
-
-const getTransactionTypeDisplayCourier = (type: TransactionType): { text: string; icon: React.ElementType; colorClass: string } => {
-  switch (type) {
-    case 'commission': return { text: 'עמלת משלוח', icon: DollarSign, colorClass: 'text-green-600' };
-    case 'bonus': return { text: 'בונוס', icon: Award, colorClass: 'text-yellow-500' };
-    case 'withdrawal': return { text: 'משיכה', icon: Download, colorClass: 'text-blue-600' };
-    case 'fee': return { text: 'עמלה', icon: AlertCircle, colorClass: 'text-red-600'};
-    default: return { text: type, icon: WalletIcon, colorClass: 'text-muted-foreground' };
-  }
-}
-
+// Wallet related mock data and functions are now primarily in courier/wallet/page.tsx
+// We might still show some summary here, but details are in the wallet page.
 
 export default function CourierPerformancePage() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
@@ -69,8 +49,7 @@ export default function CourierPerformancePage() {
   const [totalDeliveries, setTotalDeliveries] = useState<number | null>(null);
   const [avgDeliveryTime, setAvgDeliveryTime] = useState<number | null>(null);
   const [avgRating, setAvgRating] = useState<number | null>(null);
-  const [courierWallet, setCourierWallet] = useState<Wallet | null>(null);
-
+  
   const [earningsData, setEarningsData] = useState(mockEarningsDataDefault);
   const [deliveriesData, setDeliveriesData] = useState(mockDeliveriesDataDefault);
   const { toast } = useToast();
@@ -80,7 +59,6 @@ export default function CourierPerformancePage() {
   useEffect(() => {
     setIsLoading(true);
     const timer = setTimeout(() => {
-        setCourierWallet(mockCourierWalletData);
         const randomFactor = dateRange?.from && dateRange?.to ? (dateRange.to.getTime() - dateRange.from.getTime()) / (1000*60*60*24*30) + 0.5 : 1;
         const newTotalEarnings = parseFloat((Math.random() * 5000 * Math.max(0.2, randomFactor) + 1500).toFixed(2));
         const newTotalDeliveries = Math.floor(Math.random() * 150 * Math.max(0.2, randomFactor) + 40);
@@ -98,18 +76,11 @@ export default function CourierPerformancePage() {
   }, [dateRange]);
   
   const handleDateRangeChange = (newRange: DateRange | undefined) => {
-    setIsLoading(true); // Set loading when date range changes
+    setIsLoading(true); 
     setDateRange(newRange);
     toast({
         title: "נתונים עודכנו (דמו)",
         description: "הנתונים והגרפים רועננו בהתאם לטווח התאריכים שנבחר.",
-    });
-  };
-
-  const handleWithdrawFunds = () => {
-    toast({
-        title: "בקשת משיכה נשלחה (דמו)",
-        description: "בקשתך למשיכת כספים מהארנק נשלחה לעיבוד. הכספים יועברו לחשבונך תוך 1-3 ימי עסקים.",
     });
   };
 
@@ -120,75 +91,21 @@ export default function CourierPerformancePage() {
         <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
           <div>
             <CardTitle className="text-2xl md:text-3xl font-headline">ביצועים והכנסות</CardTitle>
-            <CardDescription>עקוב/י אחר ההכנסות, המשלוחים, הדירוגים וההישגים שלך.</CardDescription>
+            <CardDescription>עקוב/י אחר ההכנסות, המשלוחים, הדירוגים וההישגים שלך. הכנסות מפורטות זמינות בארנק.</CardDescription> {/* Updated description */}
           </div>
            <div className="mt-3 sm:mt-0 w-full sm:w-auto">
              <DatePickerWithRange onDateChange={handleDateRangeChange} />
           </div>
         </CardHeader>
-        <CardContent>
-            <p className="text-xs text-muted-foreground text-center sm:text-right">בחר/י טווח תאריכים כדי לסנן נתונים (הנתונים מתרעננים באופן מדומה).</p>
-        </CardContent>
-      </Card>
-
-      <Card className="premium-card-hover">
-        <CardHeader>
-            <CardTitle className="text-xl flex items-center"><WalletIcon className="mr-2 h-6 w-6 text-primary"/> ארנק השליח שלי</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-            {isLoading || !courierWallet ? (
-                <div className="flex justify-center items-center py-8"> <Loader2 className="h-8 w-8 animate-spin text-primary"/> <p className="mr-2">טוען נתוני ארנק...</p></div>
-            ) : (
-                <>
-                    <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-center shadow-md">
-                        <p className="text-sm text-green-700 font-medium">יתרה נוכחית בארנק</p>
-                        <p className="text-4xl font-bold text-green-600">₪{courierWallet.balance.toFixed(2)}</p>
-                    </div>
-                    <Button onClick={handleWithdrawFunds} size="lg" className="w-full btn-gradient-hover-primary">
-                        <Download className="mr-2 h-5 w-5"/> בקש משיכת כספים
-                    </Button>
-                    <div>
-                        <h4 className="text-lg font-semibold mb-2 flex items-center"><History className="mr-2 h-5 w-5 text-muted-foreground"/>תנועות אחרונות בארנק (דמו)</h4>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                <TableHead>תאריך</TableHead>
-                                <TableHead>תיאור</TableHead>
-                                <TableHead>סוג</TableHead>
-                                <TableHead className="text-right">סכום</TableHead>
-                                <TableHead>סטטוס</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {courierWallet.transactions.slice(0, 3).map(tx => {
-                                    const typeDisplay = getTransactionTypeDisplayCourier(tx.type);
-                                    const Icon = typeDisplay.icon;
-                                    return (
-                                    <TableRow key={tx.id}>
-                                        <TableCell className="text-xs">{new Date(tx.date).toLocaleDateString('he-IL')}</TableCell>
-                                        <TableCell className="text-sm max-w-[150px] truncate" title={tx.description}>{tx.description}</TableCell>
-                                        <TableCell className="text-sm"><Icon className={`inline h-4 w-4 mr-1.5 ${typeDisplay.colorClass}`} />{typeDisplay.text}</TableCell>
-                                        <TableCell className={`text-right font-medium text-sm ${tx.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                            {tx.amount > 0 ? '+' : ''}₪{tx.amount.toFixed(2)}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Badge variant={tx.status === 'completed' ? 'default' : tx.status === 'pending' ? 'secondary' : 'destructive'} 
-                                                className={`text-xs ${tx.status === 'completed' ? 'bg-green-100 text-green-700' : tx.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : ''}`}>
-                                            {tx.status === 'completed' ? 'הושלם' : tx.status === 'pending' ? 'ממתין' : 'נכשל'}
-                                            </Badge>
-                                        </TableCell>
-                                    </TableRow>
-                                    );
-                                })}
-                            </TableBody>
-                        </Table>
-                         {courierWallet.transactions.length > 3 && <Button variant="link" size="sm" className="mt-2 p-0 h-auto text-xs text-primary hover:text-accent">הצג את כל התנועות</Button>}
-                    </div>
-                </>
-            )}
-        </CardContent>
-        <CardFooter>
-            <p className="text-xs text-muted-foreground">הכנסות משולמות בדרך כלל תוך 24-48 שעות מהשלמת המשלוח. משיכות מעובדות תוך 1-3 ימי עסקים.</p>
+         <CardFooter className="border-t pt-3">
+            <Button variant="outline" size="sm" asChild>
+                <Link href="/courier/wallet">
+                    <WalletIcon className="mr-2 h-4 w-4"/> עבור לארנק המלא <ExternalLink className="h-3 w-3 ml-1 text-muted-foreground"/>
+                </Link>
+            </Button>
+             <Button variant="outline" size="sm" className="mr-auto" onClick={() => toast({title: "הפקת דוח", description:"הפקת דוח ביצועים לתקופה זו (בקרוב)."})}>
+                <FileText className="mr-2 h-4 w-4"/> הפק דוח ביצועים
+            </Button>
         </CardFooter>
       </Card>
       

@@ -8,12 +8,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
-import { Shield, Edit3, LogOut, Bike, Car, Footprints, AlertTriangle, Users, Camera, Award, MessageSquare, Star, Lightbulb, Banknote, FileText, CalendarDays, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Shield, Edit3, LogOut, Bike, Car, Footprints, AlertTriangle, Users, Camera, Award, MessageSquare, Star, Lightbulb, Banknote, FileText, CalendarDays, ThumbsUp, ThumbsDown, MapPin } from 'lucide-react'; // Added MapPin
 import { mockCourierProfiles } from '@/lib/mock-data'; 
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import type { DeliveryVehicle } from '@/types'; // Import DeliveryVehicle type
+import type { DeliveryVehicle } from '@/types'; 
+import { cn } from '@/lib/utils';
 
 const MOCK_CURRENT_COURIER_ID = 'courier1'; 
 
@@ -23,6 +24,7 @@ export default function CourierProfilePage() {
   const courier = mockCourierProfiles.find(c => c.id === MOCK_CURRENT_COURIER_ID);
   const [followers, setFollowers] = useState<number | null>(null);
   const [mockFeedbacks, setMockFeedbacks] = useState<string[]>([]);
+  const [allowNearbyOffers, setAllowNearbyOffers] = useState(false); // State for auto-switch
 
   useEffect(() => {
     setFollowers(Math.floor(Math.random() * 500 + 50));
@@ -73,7 +75,7 @@ export default function CourierProfilePage() {
 
   return (
     <div className="max-w-3xl mx-auto py-8 space-y-6">
-      <Card className="shadow-xl">
+      <Card className="shadow-xl premium-card-hover">
         <CardHeader className="items-center text-center">
           <Avatar className="h-24 w-24 mb-4 border-4 border-primary shadow-lg">
             <AvatarImage src={`https://placehold.co/100x100.png?text=${courier.name.substring(0,1)}`} alt={courier.name} data-ai-hint="courier person" />
@@ -128,6 +130,13 @@ export default function CourierProfilePage() {
                     <p className="text-xs text-muted-foreground">לרכבים חשמליים, מתעדכן אוטומטית.</p>
                 </div>
             }
+             <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+                <div className="space-y-0.5">
+                    <Label htmlFor="allowNearbyOffers" className="text-base flex items-center cursor-pointer"><MapPin className="mr-2 h-4 w-4 text-blue-500"/>אפשר הצעות מאזורים סמוכים</Label>
+                    <p className="text-sm text-muted-foreground">קבל התראות על הצעות משתלמות מאזורים הגובלים באזור הפעילות הראשי שלך.</p>
+                </div>
+                <Switch id="allowNearbyOffers" checked={allowNearbyOffers} onCheckedChange={setAllowNearbyOffers} />
+            </div>
           </div>
           
           <Separator />
@@ -204,7 +213,7 @@ export default function CourierProfilePage() {
           </div>
 
 
-          <Button onClick={handleSaveChanges} className="w-full mt-4 bg-primary hover:bg-primary/90">
+          <Button onClick={handleSaveChanges} className="w-full mt-4 bg-primary hover:bg-primary/90 btn-gradient-hover-primary">
             <Edit3 className="mr-2 h-4 w-4" /> שמור שינויים (דמו)
           </Button>
         </CardContent>
@@ -216,5 +225,3 @@ export default function CourierProfilePage() {
     </div>
   );
 }
-
-    

@@ -61,14 +61,14 @@ export default function MarketplacePage() {
 
   return (
     <div className="space-y-8">
-      <Card className="shadow-lg">
+      <Card className="shadow-lg premium-card-hover">
         <CardHeader className="text-center items-center">
             <Store className="h-12 w-12 text-primary mb-3" />
-            <CardTitle className="text-3xl font-headline text-primary">LivePick יד 2 - לוח קהילתי</CardTitle>
+            <CardTitle className="text-3xl font-headline text-primary">SwiftServe יד 2 - לוח קהילתי</CardTitle> {/* Updated name */}
             <CardDescription>
-                קנה ומכור פריטי יד שנייה בתוך קהילת LivePick. מצא מציאות או פנה מקום בבית!
+                קנה ומכור פריטי יד שנייה בתוך קהילת SwiftServe. מצא מציאות או פנה מקום בבית! {/* Updated name */}
             </CardDescription>
-            <Button asChild className="mt-4">
+            <Button asChild className="mt-4 btn-gradient-hover-accent">
                 <Link href="/marketplace/publish">
                 <PlusCircle className="mr-2 h-4 w-4" /> פרסם מוצר חדש
                 </Link>
@@ -129,13 +129,13 @@ export default function MarketplacePage() {
       </Card>
 
       {filteredItems.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"> {/* Increased gap */}
           {filteredItems.map((item) => (
             <SecondHandItemCard key={item.id} item={item} />
           ))}
         </div>
       ) : (
-        <Card className="text-center py-12">
+        <Card className="text-center py-12 premium-card-hover">
             <CardContent className="flex flex-col items-center gap-4">
                 <PackageSearch className="h-16 w-16 text-muted-foreground" />
                 <p className="text-xl text-muted-foreground">לא נמצאו מוצרים התואמים לחיפוש שלך.</p>

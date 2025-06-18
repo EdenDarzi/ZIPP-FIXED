@@ -18,13 +18,16 @@ export default function LivePickSalePage() {
   const { addToCart } = useCart(); 
   const { toast } = useToast();
   const [isSaleActiveNow, setIsSaleActiveNow] = useState(false);
-  const SALE_START_HOUR = 19; // 7 PM (example)
-  const SALE_END_HOUR = 23; // 11 PM (example, active until 22:59)
+  const SALE_START_HOUR = 19; 
+  const SALE_END_HOUR = 23; 
 
   useEffect(() => {
-    // For demo purposes, we'll assume the sale is always active when this page is visited.
-    // In a real app, this logic would be more robust and potentially server-driven.
-    setIsSaleActiveNow(true); 
+    const currentHour = new Date().getHours();
+    if (currentHour >= SALE_START_HOUR && currentHour < SALE_END_HOUR) {
+      setIsSaleActiveNow(true); 
+    } else {
+      setIsSaleActiveNow(false); 
+    }
     setActiveItems(mockLivePickSaleItems.filter(item => item.isActive && item.quantityAvailable > 0));
   }, []);
 
@@ -36,7 +39,7 @@ export default function LivePickSalePage() {
         price: item.price,
         imageUrl: item.imageUrl || 'https://placehold.co/600x400.png?text=הפתעה!',
         dataAiHint: item.dataAiHint || 'surprise bag',
-        category: 'LivePick Sale', 
+        category: 'SwiftServe Sale', 
         restaurantId: item.restaurantId, 
     };
     addToCart(cartItem as any, 1); 
@@ -51,9 +54,9 @@ export default function LivePickSalePage() {
       <Card className="text-center shadow-xl bg-gradient-to-br from-red-500 via-orange-500 to-yellow-400 text-white">
         <CardHeader>
           <ShoppingBag className="h-16 w-16 mx-auto mb-4 animate-bounce" />
-          <CardTitle className="text-3xl md:text-4xl font-headline">LivePick Sale - שקיות הפתעה חמות מסוף היום!</CardTitle>
+          <CardTitle className="text-3xl md:text-4xl font-headline">SwiftServe Sale - שקיות הפתעה חמות מסוף היום!</CardTitle>
           <CardDescription className="text-lg text-red-100 mt-2">
-            תפסו דילים מדהימים על מוצרים איכותיים שעסקים, שווקים ודוכנים מציעים בהנחה בסוף היום. הפחתת בזבוז, מקסימוum חיסכון!
+            תפסו דילים מדהימים על מוצרים איכותיים שעסקים, שווקים ודוכנים מציעים בהנחה בסוף היום. הפחתת בזבוז, מקסימום חיסכון!
           </CardDescription>
         </CardHeader>
          <CardContent>
@@ -65,12 +68,12 @@ export default function LivePickSalePage() {
         </CardContent>
       </Card>
 
-      {!isSaleActiveNow && ( // This block might not be reached if sale is always active for demo
+      {!isSaleActiveNow && ( 
         <Card className="text-center py-12">
           <CardContent className="flex flex-col items-center gap-4">
             <Clock className="h-16 w-16 text-muted-foreground" />
-            <p className="text-xl text-muted-foreground">מבצעי LivePick Sale סגורים כעת.</p>
-            <p className="text-sm">המבצע פעיל בין השעות {String(SALE_START_HOUR).padStart(2, '0')}:00 - {String(SALE_END_HOUR).padStart(2, '0')}:00 (הדגמה). בדקו עסקים אחרים או חזרו מאוחר יותר!</p>
+            <p className="text-xl text-muted-foreground">מבצעי SwiftServe Sale סגורים כעת.</p>
+            <p className="text-sm">המבצע פעיל בין השעות {String(SALE_START_HOUR).padStart(2, '0')}:00 - {String(SALE_END_HOUR).padStart(2, '0')}:00. בדקו עסקים אחרים או חזרו מאוחר יותר!</p>
           </CardContent>
         </Card>
       )}
@@ -88,7 +91,7 @@ export default function LivePickSalePage() {
       {isSaleActiveNow && activeItems.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {activeItems.map(item => (
-            <Card key={item.id} className="flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+            <Card key={item.id} className="flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow premium-card-hover">
               <div className="relative h-48 w-full">
                 <Image
                   src={item.imageUrl || 'https://placehold.co/600x400.png?text=הפתעה!'}
@@ -98,7 +101,7 @@ export default function LivePickSalePage() {
                   data-ai-hint={item.dataAiHint || "surprise bag food bakery items"}
                 />
                 <Badge variant="destructive" className="absolute top-2 right-2 text-sm px-3 py-1">
-                  🔥 LivePick Sale
+                  🔥 SwiftServe Sale
                 </Badge>
               </div>
               <CardHeader className="pb-2">
@@ -116,7 +119,7 @@ export default function LivePickSalePage() {
                 <p className="text-xs text-orange-600 mt-1">נותרו: {item.quantityAvailable} שקיות בלבד!</p>
               </CardContent>
               <CardFooter className="p-3 border-t">
-                <Button onClick={() => handleAddToCart(item)} className="w-full bg-primary hover:bg-primary/90">
+                <Button onClick={() => handleAddToCart(item)} className="w-full bg-primary hover:bg-primary/90 btn-gradient-hover-primary">
                   <PlusCircle className="mr-2 h-4 w-4" /> הוסף שקית הפתעה לעגלה
                 </Button>
               </CardFooter>

@@ -10,6 +10,8 @@ import { useToast } from '@/hooks/use-toast';
 import { getChatResponse, ChatAssistantInputType } from '@/ai/flows/chat-assistant-flow';
 import { ScrollArea } from '../ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 
 interface ChatMessage {
   id: string;
@@ -30,7 +32,7 @@ export default function AiChatAssistant() {
   const initialAiMessage: ChatMessage = {
     id: `ai-init-${Date.now()}`,
     sender: 'ai',
-    text: "היי! אני עוזר ה-AI של LivePick. איך אני יכול לעזור לך היום? אפשר לשאול אותי על הזמנות, איך למצוא מסעדות, או לבקש המלצות!",
+    text: "שלום! אני SwiftServeBot, העוזר האישי שלך. איך אוכל לסייע לך היום? 🤖\nאפשר לשאול אותי על מעקב הזמנות, חיפוש מסעדות, או לקבל המלצות טעימות!",
     timestamp: new Date(),
   };
 
@@ -42,9 +44,8 @@ export default function AiChatAssistant() {
 
 
   useEffect(() => {
-    // Scroll to bottom when new messages are added
     if (scrollAreaRef.current) {
-      const scrollElement = scrollAreaRef.current.querySelector('div > div'); // Adjust selector if needed
+      const scrollElement = scrollAreaRef.current.querySelector('div > div'); 
       if (scrollElement) {
         scrollElement.scrollTop = scrollElement.scrollHeight;
       }
@@ -53,7 +54,7 @@ export default function AiChatAssistant() {
   
   useEffect(() => {
     if (isOpen && inputRef.current) {
-      setTimeout(() => inputRef.current?.focus(), 100); // Delay focus slightly for sheet animation
+      setTimeout(() => inputRef.current?.focus(), 100); 
     }
   }, [isOpen]);
 
@@ -73,7 +74,7 @@ export default function AiChatAssistant() {
 
     try {
       const input: ChatAssistantInputType = { userInput: currentInput };
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000)); 
       const result = await getChatResponse(input);
       const aiResponse: ChatMessage = {
         id: `ai-${Date.now()}`,
@@ -103,22 +104,30 @@ export default function AiChatAssistant() {
 
   return (
     <>
-      <Button
-        variant="default"
-        size="lg"
-        className="fixed bottom-6 right-6 rounded-full shadow-xl p-0 h-16 w-16 bg-gradient-to-br from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground z-50 transition-all duration-300 hover:scale-110 focus:ring-4 focus:ring-primary/50"
-        onClick={() => setIsOpen(true)}
-        aria-label="פתח עוזר צ'אט AI"
-        title="פתח עוזר צ'אט AI"
-      >
-        <Bot className="h-8 w-8" /> {/* Slightly larger icon */}
-      </Button>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+            <Button
+                variant="default"
+                size="lg"
+                className="fixed bottom-6 right-6 rounded-full shadow-xl p-0 h-16 w-16 bg-gradient-to-br from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground z-50 transition-all duration-300 hover:scale-110 focus:ring-4 focus:ring-primary/50"
+                onClick={() => setIsOpen(true)}
+                aria-label="פתח עוזר צ'אט AI"
+            >
+                <Bot className="h-8 w-8" />
+            </Button>
+        </TooltipTrigger>
+        <TooltipContent side="left" className="bg-popover text-popover-foreground p-2 text-xs rounded-md shadow-lg">
+            <p>היי, אני SwiftServeBot! <br/> לחץ כאן לעזרה, המלצות ומידע.</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
 
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetContent className="w-full sm:max-w-md flex flex-col p-0 shadow-2xl">
           <SheetHeader className="p-4 sm:p-6 pb-2 border-b bg-muted/30">
             <SheetTitle className="flex items-center text-lg text-primary font-headline">
-              <Sparkles className="h-6 w-6 mr-2 text-accent" /> LivePick AI Assistant
+              <Sparkles className="h-6 w-6 mr-2 text-accent" /> SwiftServe AI Assistant
             </SheetTitle>
             <SheetDescription className="text-xs sm:text-sm">
               מוכן לעזור לך למצוא, להזמין וליהנות. שאל אותי כל דבר!
