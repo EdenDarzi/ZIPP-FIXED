@@ -18,6 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation'; 
 import { Eye, EyeOff, LogIn, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
+import { Separator } from '@/components/ui/separator';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'כתובת אימייל לא תקינה.' }),
@@ -84,6 +85,22 @@ export default function LoginForm() {
     });
   }
 
+  const handleSocialLogin = (provider: string) => {
+    toast({
+      title: `מתחבר באמצעות ${provider}... (הדגמה)`,
+      description: `מאמת את פרטיך מול ${provider}.`,
+    });
+    // Simulate successful login and redirect
+    setTimeout(() => {
+      toast({
+        title: `התחברות מוצלחת עם ${provider}!`,
+        description: 'ברוך שובך ל-LivePick!',
+        action: <LogIn className="text-green-500" />,
+      });
+      router.push('/');
+    }, 1500);
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -132,6 +149,32 @@ export default function LoginForm() {
         <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
           <LogIn className="ml-2 h-4 w-4" /> התחבר
         </Button>
+
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <Separator />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">
+              או התחבר באמצעות
+            </span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-3">
+          <Button variant="outline" type="button" onClick={() => handleSocialLogin('גוגל')} className="w-full">
+            {/* TODO: Add Google Icon if available, or use a generic one */}
+            התחבר עם גוגל
+          </Button>
+          <Button variant="outline" type="button" onClick={() => handleSocialLogin('פייסבוק')} className="w-full">
+            {/* TODO: Add Facebook Icon */}
+            התחבר עם פייסבוק
+          </Button>
+          <Button variant="outline" type="button" onClick={() => handleSocialLogin('אפל')} className="w-full">
+            {/* TODO: Add Apple Icon */}
+            התחבר עם אפל
+          </Button>
+        </div>
       </form>
     </Form>
   );

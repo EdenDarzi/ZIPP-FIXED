@@ -18,6 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { UserPlus, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
+import { Separator } from '../ui/separator';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'שם חייב להכיל לפחות 2 תווים.' }),
@@ -47,6 +48,22 @@ export default function RegisterForm() {
     });
     router.push('/auth/login'); 
   }
+
+  const handleSocialRegister = (provider: string) => {
+    toast({
+      title: `יוצר חשבון באמצעות ${provider}... (הדגמה)`,
+      description: `מאמת את פרטיך מול ${provider} ויוצר לך חשבון LivePick.`,
+    });
+    // Simulate successful registration and redirect
+    setTimeout(() => {
+      toast({
+        title: `חשבון נוצר בהצלחה עם ${provider}!`,
+        description: 'אנא התחבר כעת.',
+        action: <UserPlus className="text-green-500" />,
+      });
+      router.push('/auth/login');
+    }, 1500);
+  };
 
   return (
     <Form {...form}>
@@ -109,6 +126,32 @@ export default function RegisterForm() {
         <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
           <UserPlus className="ml-2 h-4 w-4" /> הירשם {/* Adjusted for RTL */}
         </Button>
+
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <Separator />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">
+              או הירשם באמצעות
+            </span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-3">
+          <Button variant="outline" type="button" onClick={() => handleSocialRegister('גוגל')} className="w-full">
+            {/* TODO: Add Google Icon */}
+            הירשם עם גוגל
+          </Button>
+          <Button variant="outline" type="button" onClick={() => handleSocialRegister('פייסבוק')} className="w-full">
+            {/* TODO: Add Facebook Icon */}
+            הירשם עם פייסבוק
+          </Button>
+          <Button variant="outline" type="button" onClick={() => handleSocialRegister('אפל')} className="w-full">
+            {/* TODO: Add Apple Icon */}
+            הירשם עם אפל
+          </Button>
+        </div>
       </form>
     </Form>
   );
