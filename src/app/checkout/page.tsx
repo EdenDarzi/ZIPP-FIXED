@@ -24,7 +24,7 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   const [discreetDelivery, setDiscreetDelivery] = useState(false);
   const [customerNotes, setCustomerNotes] = useState('');
-  const [isGiftOrder, setIsGiftOrder] = useState(false);
+  const [isGiftOrderState, setIsGiftOrderState] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'wallet'>('card');
   const [mockWalletBalance, setMockWalletBalance] = useState<number>(0);
   const [couponCode, setCouponCode] = useState('');
@@ -37,7 +37,7 @@ export default function CheckoutPage() {
     }
     const giftParam = searchParams.get('isGift');
     if (giftParam === 'true') {
-        setIsGiftOrderState(true);
+        setIsGiftOrderState(true); // Corrected function name
     }
     setMockWalletBalance(parseFloat((Math.random() * 150 + 20).toFixed(2)));
   }, [searchParams]);
@@ -59,7 +59,7 @@ export default function CheckoutPage() {
         toast({ title: "קוד קופון ריק", description: "אנא הזן קוד קופון.", variant: "destructive" });
         return;
     }
-    if (couponCode.toUpperCase() === 'LIVEPICK10') {
+    if (couponCode.toUpperCase() === 'ZIPP10') { // Updated coupon code
         toast({ title: "קופון הופעל!", description: "10% הנחה נוספו להזמנה שלך (הדגמה).", className: "bg-green-500 text-white" });
     } else {
         toast({ title: "קוד קופון לא תקין", description: "הקוד שהזנת אינו חוקי או פג תוקף.", variant: "destructive"});
@@ -71,7 +71,7 @@ export default function CheckoutPage() {
     if (paymentMethod === 'wallet' && mockWalletBalance < finalPriceWithDelivery) {
         toast({
             title: "יתרה לא מספקת בארנק",
-            description: `אין לך מספיק יתרה בארנק SwiftServe (₪${mockWalletBalance.toFixed(2)}) כדי לכסות את ההזמנה (₪${finalPriceWithDelivery.toFixed(2)}). אנא טען את הארנק או בחר אמצעי תשלום אחר.`,
+            description: `אין לך מספיק יתרה בארנק ZIPP (₪${mockWalletBalance.toFixed(2)}) כדי לכסות את ההזמנה (₪${finalPriceWithDelivery.toFixed(2)}). אנא טען את הארנק או בחר אמצעי תשלום אחר.`,
             variant: "destructive",
             duration: 7000,
         });
@@ -88,11 +88,11 @@ export default function CheckoutPage() {
       action: <Check className="text-green-500" />
     });
 
-    const mockOrderId = `swiftsrve_${Date.now()}_${scheduledDeliveryTime ? 'scheduled' : deliveryPreference === 'takeaway' ? 'takeaway' : deliveryPreference === 'curbside' ? 'curbside' : 'asap'}`;
+    const mockOrderId = `ZIPPORD_${Date.now()}_${scheduledDeliveryTime ? 'scheduled' : deliveryPreference === 'takeaway' ? 'takeaway' : deliveryPreference === 'curbside' ? 'curbside' : 'asap'}`;
     
     const queryParams = new URLSearchParams();
     if (customerNotes) queryParams.append('notes', customerNotes);
-    if (isGiftOrder) queryParams.append('isGift', 'true');
+    if (isGiftOrderState) queryParams.append('isGift', 'true');
     
     const trackingUrl = `/order-tracking/${mockOrderId}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
     
@@ -192,7 +192,7 @@ export default function CheckoutPage() {
                       <span className="font-medium">{scheduledDeliveryTime}</span>
                     </div>
                   )}
-                  {isGiftOrder && ( 
+                  {isGiftOrderState && ( 
                       <div className="flex justify-between text-sm text-pink-600">
                           <span className="font-medium flex items-center"><Gift className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/>נשלח כמתנה</span>
                       </div>
@@ -229,7 +229,7 @@ export default function CheckoutPage() {
                     <TicketPercent className="ml-2 h-4 w-4" /> הפעל
                 </Button>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">הדגמה: נסה "LIVEPICK10".</p>
+            <p className="text-xs text-muted-foreground mt-1">הדגמה: נסה "ZIPP10".</p>
           </div>
 
           <Separator />
@@ -249,7 +249,7 @@ export default function CheckoutPage() {
                     <RadioGroupItem value="wallet" id="payWithWallet" className="ml-3 rtl:ml-0 rtl:mr-3" disabled={mockWalletBalance < finalPriceWithDelivery} />
                     <WalletIcon className="h-5 w-5 ml-2 rtl:ml-0 rtl:mr-2 text-green-600" />
                      <div className="flex-grow">
-                        <span className="font-semibold">ארנק SwiftServe</span>
+                        <span className="font-semibold">ארנק ZIPP</span>
                         <p className="text-xs text-muted-foreground">יתרה נוכחית: <span className="font-medium text-green-700">₪{mockWalletBalance.toFixed(2)}</span></p>
                          {mockWalletBalance < finalPriceWithDelivery && <p className="text-xs text-destructive">יתרה לא מספקת לתשלום מלא.</p>}
                     </div>
@@ -265,7 +265,7 @@ export default function CheckoutPage() {
           </div>
           
           <div className="flex items-center space-x-2 rtl:space-x-reverse p-3 border rounded-md bg-muted/50 mt-4">
-            <Checkbox id="discreetDelivery" checked={discreetDelivery} onCheckedChange={handleDiscreetToggle} aria-labelledby="discreetDeliveryLabel" />
+            <Checkbox id="discreetDelivery" checked={discreetDelivery} onCheckedChange={(checked) => handleDiscreetToggle(Boolean(checked))} aria-labelledby="discreetDeliveryLabel" />
             <Label htmlFor="discreetDelivery" id="discreetDeliveryLabel" className="cursor-pointer text-sm flex items-center">
               <ShieldCheck className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1 text-blue-500"/> משלוח דיסקרטי (אופציונלי)
             </Label>

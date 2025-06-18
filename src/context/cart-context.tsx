@@ -61,31 +61,31 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const storedCart = localStorage.getItem('livePickCart');
+    const storedCart = localStorage.getItem('zippCart');
     if (storedCart) {
       setCart(JSON.parse(storedCart));
     }
-    const storedPreference = localStorage.getItem('livePickDeliveryPreference') as DeliveryPreference | null;
+    const storedPreference = localStorage.getItem('zippDeliveryPreference') as DeliveryPreference | null;
     if (storedPreference) {
       setDeliveryPreferenceState(storedPreference);
     }
-    const storedScheduledTime = localStorage.getItem('livePickScheduledTime');
+    const storedScheduledTime = localStorage.getItem('zippScheduledTime');
     if (storedScheduledTime) {
       setScheduledDeliveryTimeState(storedScheduledTime);
     }
   }, []);
 
   useEffect(() => {
-    if (cart.length > 0 || localStorage.getItem('livePickCart')) {
-      localStorage.setItem('livePickCart', JSON.stringify(cart));
+    if (cart.length > 0 || localStorage.getItem('zippCart')) {
+      localStorage.setItem('zippCart', JSON.stringify(cart));
     } else if (cart.length === 0) {
-      localStorage.removeItem('livePickCart');
+      localStorage.removeItem('zippCart');
     }
-    localStorage.setItem('livePickDeliveryPreference', deliveryPreference);
+    localStorage.setItem('zippDeliveryPreference', deliveryPreference);
     if (scheduledDeliveryTime) {
-      localStorage.setItem('livePickScheduledTime', scheduledDeliveryTime);
+      localStorage.setItem('zippScheduledTime', scheduledDeliveryTime);
     } else {
-      localStorage.removeItem('livePickScheduledTime');
+      localStorage.removeItem('zippScheduledTime');
     }
   }, [cart, deliveryPreference, scheduledDeliveryTime]);
 
@@ -155,8 +155,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const clearCart = () => {
     setCart([]);
     setScheduledDeliveryTimeState(null); 
-    localStorage.removeItem('livePickCart');
-    localStorage.removeItem('livePickScheduledTime');
+    localStorage.removeItem('zippCart');
+    localStorage.removeItem('zippScheduledTime');
     toast({
       title: "הסל נוקה",
       description: "הסל שלך רוקן.",
@@ -193,24 +193,18 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     currentDiscount += SMART_SAVER_DISCOUNT;
   } else if (deliveryPreference === 'takeaway' || deliveryPreference === 'curbside') {
     deliveryFee = 0; 
-    // Smart coupon should not apply if it's a pickup method
-    const isSmartCouponDeliveryApplicable = totalPrice >= SMART_COUPON_THRESHOLD && (deliveryPreference !== 'takeaway' && deliveryPreference !== 'curbside' && deliveryPreference !== 'smartSaver');
-    if (isSmartCouponDeliveryApplicable) {
-        currentDiscount += totalPrice * SMART_COUPON_DISCOUNT_PERCENTAGE;
-    }
   }
 
+  // Smart coupon applies if not takeaway/curbside and not already smartSaver
+  const smartCouponApplicable = totalPrice >= SMART_COUPON_THRESHOLD && 
+                                deliveryPreference !== 'takeaway' && 
+                                deliveryPreference !== 'curbside' && 
+                                deliveryPreference !== 'smartSaver';
 
-  const smartCouponApplied = totalPrice >= SMART_COUPON_THRESHOLD && deliveryPreference !== 'smartSaver' && deliveryPreference !== 'takeaway' && deliveryPreference !== 'curbside';
-  if (smartCouponApplied && deliveryPreference !== 'takeaway' && deliveryPreference !== 'curbside') { // ensure smart coupon is not applied if already handled or is pickup
+  if (smartCouponApplicable) {
     currentDiscount += totalPrice * SMART_COUPON_DISCOUNT_PERCENTAGE;
   }
-  // Ensure discount is not double-counted if smartSaver and smartCoupon threshold met
-  if (deliveryPreference === 'smartSaver' && totalPrice >= SMART_COUPON_THRESHOLD) {
-      currentDiscount = SMART_SAVER_DISCOUNT; // Prioritize smart saver, or define combined logic
-  }
-
-
+  
   const finalPriceWithDelivery = totalPrice + deliveryFee - currentDiscount;
 
   return (
@@ -226,8 +220,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       setDeliveryPreference,
       deliveryFee,
       discountAmount: currentDiscount,
-      finalPriceWithDelivery,
-      smartCouponApplied,
+      finalPriceWithDelivery: Math.max(0, finalPriceWithDelivery), // Ensure final price is not negative
+      smartCouponApplied: smartCouponApplicable,
       scheduledDeliveryTime,
       setScheduledDeliveryTime,
       getItemPriceWithAddons,

@@ -260,9 +260,17 @@ export const mockBidsForOrder: (orderId: string) => CourierBid[] = (orderId) => 
 };
 
 export const getMockOrderById = (orderId: string, scheduledDeliveryTime?: string): Order | undefined => {
-  const baseOrderId = orderId.split('_scheduled_')[0];
-  if (baseOrderId.startsWith('mockOrder_')) {
-    const restaurant = mockRestaurants[0]; // Default to first restaurant for simplicity
+  const baseOrderId = orderId.split('_scheduled_')[0].split('?')[0]; // Also remove query params if any
+  const isTakeaway = orderId.includes('_takeaway_');
+  const isCurbside = orderId.includes('_curbside_');
+  let deliveryPreference: DeliveryPreference = 'arena';
+  if (isTakeaway) deliveryPreference = 'takeaway';
+  else if (isCurbside) deliveryPreference = 'curbside';
+  else if (orderId.includes('_asap_')) deliveryPreference = 'fastest';
+
+
+  if (baseOrderId.startsWith('ZIPPORD_') || baseOrderId.startsWith('mockOrder_')) { // Changed from swiftsrve_
+    const restaurant = mockRestaurants[0]; 
     const items: CartItem[] = [ 
         { 
             id: `cartItem_${restaurant.menu[0].id}_${Date.now()}`, 
@@ -297,12 +305,31 @@ export const getMockOrderById = (orderId: string, scheduledDeliveryTime?: string
         totalAmount += itemPrice * item.quantity;
     });
 
-    const initialStatus = scheduledDeliveryTime ? 'SCHEDULED' : 'MATCHING_COURIER';
-    const initialTimelineNote = scheduledDeliveryTime ? `ההזמנה תוכננה ל: ${scheduledDeliveryTime}.` : "התשלום התקבל. מחפש שליח.";
+    let finalAmount = totalAmount;
+    let deliveryFee = 0;
+    if (deliveryPreference === 'fastest') {
+        deliveryFee = 5.00;
+        finalAmount += deliveryFee;
+    } else if (deliveryPreference === 'smartSaver') {
+        finalAmount -= 3.00; // Discount
+    }
+    // No delivery fee for takeaway or curbside
+
+    const initialStatus = scheduledDeliveryTime ? 'SCHEDULED' : 
+                          (deliveryPreference === 'takeaway' || deliveryPreference === 'curbside') ? 'PREPARING_AT_RESTAURANT' : 
+                          'MATCHING_COURIER';
+    const initialTimelineNote = scheduledDeliveryTime ? `ההזמנה תוכננה ל: ${scheduledDeliveryTime}.` :
+                                (deliveryPreference === 'takeaway' || deliveryPreference === 'curbside') ? 'התשלום התקבל. העסק מכין את הזמנתך לאיסוף.' :
+                                "התשלום התקבל. מחפש שליח.";
 
     const baseOrder: Order = {
-      id: orderId, userId: 'userTest1', items, totalAmount, deliveryPreference: 'arena' as DeliveryPreference, deliveryFee: 0, discountAmount: 0, finalAmount: totalAmount, status: initialStatus, deliveryAddress: 'רחוב המשלוחים 123, עיר האוכל, 90210', restaurantId: restaurant.id, restaurantName: restaurant.name, createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(), updatedAt: new Date().toISOString(), scheduledDeliveryTime: scheduledDeliveryTime, scheduledDeliveryTimestamp: scheduledDeliveryTime ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() : undefined, orderTimeline: [ { status: 'PENDING_PAYMENT', timestamp: new Date(Date.now() - 6 * 60 * 1000).toISOString(), notes: "מעבד תשלום..." }, { status: initialStatus, timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(), notes: initialTimelineNote } ]
+      id: orderId, userId: 'userTest1', items, totalAmount, deliveryPreference, deliveryFee, discountAmount: deliveryPreference === 'smartSaver' ? 3.00 : 0, finalAmount: Math.max(0, finalAmount), status: initialStatus, deliveryAddress: deliveryPreference === 'takeaway' || deliveryPreference === 'curbside' ? restaurant.location : 'רחוב המשלוחים 123, עיר האוכל, 90210', restaurantId: restaurant.id, restaurantName: restaurant.name, createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(), updatedAt: new Date().toISOString(), scheduledDeliveryTime: scheduledDeliveryTime, scheduledDeliveryTimestamp: scheduledDeliveryTime ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() : undefined, orderTimeline: [ { status: 'PENDING_PAYMENT', timestamp: new Date(Date.now() - 6 * 60 * 1000).toISOString(), notes: "מעבד תשלום..." }, { status: initialStatus, timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(), notes: initialTimelineNote } ]
     };
+    if (deliveryPreference === 'curbside' || deliveryPreference === 'takeaway') {
+        baseOrder.assignedCourier = undefined; // No courier for pickup orders
+        baseOrder.estimatedDeliveryTime = `מוכן לאיסוף בעוד ~${10 + Math.floor(Math.random() * 10)} דק'`;
+    }
+
     return baseOrder;
   }
   return undefined;

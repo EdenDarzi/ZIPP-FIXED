@@ -12,7 +12,7 @@ import { DeliveryCompleteView } from '@/components/order/delivery-complete-view'
 import { TriviaChallengeCard } from '@/components/order/trivia-challenge-card'; 
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, AlertTriangle, Info, Clock, Award, Gamepad2, Edit, Gift, CalendarClock } from 'lucide-react'; 
+import { ArrowLeft, AlertTriangle, Info, Clock, Award, Gamepad2, Edit, Gift, CalendarClock, ShoppingBag, Car } from 'lucide-react'; 
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast'; 
@@ -26,7 +26,7 @@ const getOrderStatusHebrew = (status: OrderStatus): string => {
         COURIER_ASSIGNED: 'שליח שובץ',
         PREPARING_AT_RESTAURANT: 'בהכנה במסעדה',
         AWAITING_PICKUP: 'ממתין לאיסוף',
-        OUT_FOR_DELIVERY: 'בדרך ללקוח',
+        OUT_FOR_DELIVERY: 'בדרך אליך',
         DELIVERED: 'נמסר',
         CANCELLED: 'בוטל'
     };
@@ -42,7 +42,7 @@ const getAssignedCourierDetails = (courierId: string): Order['assignedCourier'] 
 };
 
 export default function OrderTrackingPage() {
-  const paramsHook = useParams(); // Use the hook
+  const paramsHook = useParams(); 
   const orderId = paramsHook.orderId as string;
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -65,12 +65,17 @@ export default function OrderTrackingPage() {
 
     switch (order.status) {
       case 'MATCHING_COURIER':
-        nextStatus = 'COURIER_ASSIGNED';
-        const randomCourierProfile = mockCourierProfiles[Math.floor(Math.random() * mockCourierProfiles.length)];
-        newCourierInfo = getAssignedCourierDetails(randomCourierProfile.id);
-        newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: `שליח ${newCourierInfo?.name} שובץ.` };
-        delay = 8000; 
-        setShowGamificationHint(true); 
+        if (order.deliveryPreference === 'takeaway' || order.deliveryPreference === 'curbside') {
+            nextStatus = 'PREPARING_AT_RESTAURANT';
+            newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: `${order.restaurantName} מכין/ה את הזמנתך לאיסוף.` };
+        } else {
+            nextStatus = 'COURIER_ASSIGNED';
+            const randomCourierProfile = mockCourierProfiles[Math.floor(Math.random() * mockCourierProfiles.length)];
+            newCourierInfo = getAssignedCourierDetails(randomCourierProfile.id);
+            newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: `שליח ${newCourierInfo?.name} שובץ.` };
+            delay = 8000; 
+            setShowGamificationHint(true);
+        }
         break;
       case 'COURIER_ASSIGNED':
         nextStatus = 'PREPARING_AT_RESTAURANT';
@@ -78,13 +83,21 @@ export default function OrderTrackingPage() {
         break;
       case 'PREPARING_AT_RESTAURANT':
         nextStatus = 'AWAITING_PICKUP';
-        newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: `ההזמנה מוכנה. שליח ${order.assignedCourier?.name || 'לא ידוע'} בדרך אל ${order.restaurantName}.` };
+        const actionText = (order.deliveryPreference === 'takeaway' || order.deliveryPreference === 'curbside') ? 'מוכנה לאיסוף!' : `מוכנה. שליח ${order.assignedCourier?.name || 'לא ידוע'} בדרך אל ${order.restaurantName}.`;
+        newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: actionText };
         delay = 7000;
         break;
       case 'AWAITING_PICKUP':
-        nextStatus = 'OUT_FOR_DELIVERY';
-        newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: `שליח ${order.assignedCourier?.name || 'לא ידוע'} אסף את ההזמנה.` };
-        delay = 10000; 
+        if (order.deliveryPreference === 'takeaway' || order.deliveryPreference === 'curbside') {
+           // For pickup orders, this might be the final "active" state before DELIVERED
+           // or the user picks it up. We'll simulate delivery for now.
+           nextStatus = 'DELIVERED';
+           newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: "ההזמנה נאספה. בתאבון!" };
+        } else {
+            nextStatus = 'OUT_FOR_DELIVERY';
+            newTimelineEvent = { status: nextStatus, timestamp: new Date().toISOString(), notes: `שליח ${order.assignedCourier?.name || 'לא ידוע'} אסף את ההזמנה.` };
+            delay = 10000; 
+        }
         break;
       case 'OUT_FOR_DELIVERY':
         nextStatus = 'DELIVERED';
@@ -103,6 +116,10 @@ export default function OrderTrackingPage() {
           };
           if (nextStatus === 'OUT_FOR_DELIVERY' && updatedOrder.assignedCourier) {
             updatedOrder.assignedCourier.currentEtaMinutes = Math.max(5, (updatedOrder.assignedCourier.currentEtaMinutes || 15) - 5); 
+          }
+          if (order.deliveryPreference === 'takeaway' || order.deliveryPreference === 'curbside') {
+            if(nextStatus === 'PREPARING_AT_RESTAURANT') updatedOrder.estimatedDeliveryTime = `מוכן בעוד כ-${10 + Math.floor(Math.random() * 5)} דק'`;
+            if(nextStatus === 'AWAITING_PICKUP') updatedOrder.estimatedDeliveryTime = `מוכן לאיסוף כעת!`;
           }
           return updatedOrder;
         });
@@ -126,7 +143,7 @@ export default function OrderTrackingPage() {
     if (orderId.includes('_scheduled_')) {
         const parts = orderId.split('_scheduled_');
         if (parts.length > 1 && parts[1]) {
-            extractedScheduledTime = decodeURIComponent(parts[1]);
+            extractedScheduledTime = decodeURIComponent(parts[1].split('?')[0]);
         }
     }
     const fetchedOrder = getMockOrderById(orderId, extractedScheduledTime);
@@ -142,7 +159,7 @@ export default function OrderTrackingPage() {
     }
     setOrder(fetchedOrder);
     
-    const storedTriviaState = localStorage.getItem(`triviaAnswered_${orderId.split('_scheduled_')[0]}`); 
+    const storedTriviaState = localStorage.getItem(`triviaAnswered_${orderId.split('_scheduled_')[0].split('?')[0]}`); 
     if (storedTriviaState === 'true') {
         setTriviaAnswered(true);
     } else {
@@ -160,7 +177,7 @@ export default function OrderTrackingPage() {
   }, [order, simulateStatusProgression]);
 
   useEffect(() => {
-    if (order && (order.status === 'OUT_FOR_DELIVERY' || order.status === 'AWAITING_PICKUP') && order.assignedCourier && (order.assignedCourier.currentEtaMinutes || 0) > 0) {
+    if (order && (order.status === 'OUT_FOR_DELIVERY' || order.status === 'AWAITING_PICKUP') && order.assignedCourier && (order.assignedCourier.currentEtaMinutes || 0) > 0 && order.deliveryPreference !== 'takeaway' && order.deliveryPreference !== 'curbside') {
       const etaInterval = setInterval(() => {
         setOrder(prev => {
           if (prev && (prev.status === 'OUT_FOR_DELIVERY' || prev.status === 'AWAITING_PICKUP') && prev.assignedCourier && (prev.assignedCourier.currentEtaMinutes || 0) > 1) {
@@ -200,6 +217,38 @@ export default function OrderTrackingPage() {
       </div>
     );
   }
+  
+  const renderPickupView = () => (
+    <Card className="shadow-xl text-center py-10 bg-green-50 border-green-300 animate-fadeIn">
+        <CardHeader className="items-center">
+            {order.deliveryPreference === 'takeaway' ? 
+                <ShoppingBag className="h-12 w-12 text-green-600 mb-3" /> : 
+                <Car className="h-12 w-12 text-green-600 mb-3" />
+            }
+            <CardTitle className="text-2xl font-semibold text-green-700">
+                הזמנתך {order.status === 'AWAITING_PICKUP' ? 'מוכנה לאיסוף!' : 'בהכנה לאיסוף'}
+            </CardTitle>
+        </CardHeader>
+        <CardContent>
+            <p className="text-lg text-green-600/90">
+                ההזמנה שלך מ<strong className="text-green-700">{order.restaurantName}</strong> {order.status === 'AWAITING_PICKUP' ? 'מוכנה כעת.' : `תהיה מוכנה בעוד כ-${order.estimatedDeliveryTime || 'מספר דקות'}.`}
+            </p>
+            <p className="text-md text-green-600/80 mt-2">נא לגשת ל{order.restaurantName} בכתובת: {order.deliveryAddress}.</p>
+            {order.deliveryPreference === 'curbside' && order.customerNotes && (
+                <p className="text-sm text-blue-600 mt-2 bg-blue-100 p-2 rounded-md">הערות לאיסוף מהרכב: {order.customerNotes}</p>
+            )}
+            {order.deliveryPreference === 'curbside' && !order.customerNotes && (
+                <p className="text-sm text-orange-600 mt-2 bg-orange-100 p-2 rounded-md">לא צוינו פרטי רכב. אנא צור קשר עם העסק בהגעה.</p>
+            )}
+        </CardContent>
+         <CardFooter className="justify-center">
+            <Button variant="outline" onClick={() => toast({description: `מספר טלפון של ${order.restaurantName} יוצג כאן.`})}>
+                צור קשר עם העסק
+            </Button>
+        </CardFooter>
+    </Card>
+  );
+
 
   const renderOrderStatusView = () => {
     switch (order.status) {
@@ -220,11 +269,17 @@ export default function OrderTrackingPage() {
             </Card>
         );
       case 'MATCHING_COURIER':
+        if (order.deliveryPreference === 'takeaway' || order.deliveryPreference === 'curbside') {
+            return renderPickupView(); // Or a slightly different "payment received, preparing for pickup"
+        }
         return <MatchingCourierView order={order} />;
       case 'COURIER_ASSIGNED':
       case 'PREPARING_AT_RESTAURANT':
       case 'AWAITING_PICKUP':
       case 'OUT_FOR_DELIVERY':
+         if (order.deliveryPreference === 'takeaway' || order.deliveryPreference === 'curbside') {
+            return renderPickupView();
+        }
         return <CourierAssignedView order={order} />;
       case 'DELIVERED':
         return <DeliveryCompleteView order={order} />;
@@ -260,17 +315,17 @@ export default function OrderTrackingPage() {
   };
 
   const showTriviaForStatus: OrderStatus[] = ['COURIER_ASSIGNED', 'PREPARING_AT_RESTAURANT', 'AWAITING_PICKUP', 'OUT_FOR_DELIVERY'];
-  const shouldShowTrivia = showTriviaForStatus.includes(order.status) && !triviaAnswered && order.status !== 'SCHEDULED';
+  const shouldShowTrivia = showTriviaForStatus.includes(order.status) && !triviaAnswered && order.status !== 'SCHEDULED' && order.deliveryPreference !== 'takeaway' && order.deliveryPreference !== 'curbside';
 
   const handleTriviaComplete = () => {
     setTriviaAnswered(true);
-    localStorage.setItem(`triviaAnswered_${orderId.split('_scheduled_')[0]}`, 'true');
+    localStorage.setItem(`triviaAnswered_${orderId.split('_scheduled_')[0].split('?')[0]}`, 'true');
   };
 
   const handleGamificationTask = () => {
     toast({
         title: "משימת בונוס!",
-        description: "שתף תמונה של הטרנד שהזמנת עם #LivePick וצבור עוד כוכבים! (הדגמה של משימה).",
+        description: "שתף תמונה של הטרנד שהזמנת עם #ZIPP וצבור עוד כוכבים! (הדגמה של משימה).",
         action: <Award className="text-yellow-500" />
     });
   }
@@ -306,7 +361,7 @@ export default function OrderTrackingPage() {
         </Card>
       )}
 
-      {showGamificationHint && !triviaAnswered && order.status !== 'SCHEDULED' && (
+      {showGamificationHint && !triviaAnswered && order.status !== 'SCHEDULED' && order.deliveryPreference !== 'takeaway' && order.deliveryPreference !== 'curbside' && (
         <Card className="bg-purple-50 border-purple-200 text-purple-700 animate-fadeInUp">
             <CardHeader className="pb-2 pt-3">
                 <CardTitle className="flex items-center"><Gamepad2 className="mr-2 h-5 w-5"/> זמן מצוין לאתגר טריוויה קצר!</CardTitle>
@@ -384,5 +439,3 @@ export default function OrderTrackingPage() {
     </div>
   );
 }
-
-    

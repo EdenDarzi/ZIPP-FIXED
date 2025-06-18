@@ -310,7 +310,7 @@ export default function CartPage() {
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="flex items-center space-x-2 rtl:space-x-reverse p-3 border rounded-md">
-                    <Checkbox id="isGift" checked={isGift} onCheckedChange={handleGiftToggle} aria-labelledby="giftLabel" />
+                    <Checkbox id="isGift" checked={isGift} onCheckedChange={(checked) => handleGiftToggle(Boolean(checked))} aria-labelledby="giftLabel" />
                     <Label htmlFor="isGift" id="giftLabel" className="flex items-center cursor-pointer">
                         <Gift className="h-5 w-5 ml-2 rtl:ml-0 rtl:mr-2 text-pink-500" /> זו מתנה?
                     </Label>
