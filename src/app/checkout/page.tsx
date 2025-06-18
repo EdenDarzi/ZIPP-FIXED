@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { CreditCard, Lock, ShoppingBag, AlertTriangle, Zap, Sparkles, DollarSign, Clock, Gift, Edit, Check, ShieldCheck, Wallet as WalletIcon, TicketPercent, Calculator } from "lucide-react"; 
+import { CreditCard, Lock, ShoppingBag, AlertTriangle, Zap, Sparkles, DollarSign, Clock, Gift, Edit, Check, ShieldCheck, Wallet as WalletIcon, TicketPercent, Calculator, Car } from "lucide-react"; 
 import Link from "next/link";
 import { useCart } from "@/context/cart-context";
 import Image from "next/image";
@@ -16,7 +16,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; // No longer needed for calculator here
 
 export default function CheckoutPage() {
   const { cart, itemCount, totalPrice, deliveryPreference, deliveryFee, discountAmount, finalPriceWithDelivery, smartCouponApplied, clearCart, scheduledDeliveryTime, getItemPriceWithAddons } = useCart();
@@ -38,7 +37,7 @@ export default function CheckoutPage() {
     }
     const giftParam = searchParams.get('isGift');
     if (giftParam === 'true') {
-        setIsGiftOrder(true);
+        setIsGiftOrderState(true);
     }
     setMockWalletBalance(parseFloat((Math.random() * 150 + 20).toFixed(2)));
   }, [searchParams]);
@@ -83,11 +82,13 @@ export default function CheckoutPage() {
       title: "התשלום עבר בהצלחה!",
       description: scheduledDeliveryTime 
         ? `ההזמנה שלך מתוכננת ל: ${scheduledDeliveryTime} ובעיבוד!` 
+        : deliveryPreference === 'takeaway' || deliveryPreference === 'curbside'
+        ? `ההזמנה שלך לאיסוף (${deliveryPreference === 'takeaway' ? 'עצמי' : 'מהרכב'}) בעיבוד!`
         : "ההזמנה שלך בעיבוד!",
       action: <Check className="text-green-500" />
     });
 
-    const mockOrderId = `swiftsrve_${Date.now()}_${scheduledDeliveryTime ? 'scheduled' : 'asap'}`;
+    const mockOrderId = `swiftsrve_${Date.now()}_${scheduledDeliveryTime ? 'scheduled' : deliveryPreference === 'takeaway' ? 'takeaway' : deliveryPreference === 'curbside' ? 'curbside' : 'asap'}`;
     
     const queryParams = new URLSearchParams();
     if (customerNotes) queryParams.append('notes', customerNotes);
@@ -114,6 +115,17 @@ export default function CheckoutPage() {
       </div>
     );
   }
+
+  const getDeliveryPreferenceText = () => {
+    switch (deliveryPreference) {
+      case 'fastest': return 'המהיר ביותר';
+      case 'smartSaver': return 'חסכוני חכם';
+      case 'arena': return 'זירת המשלוחים';
+      case 'takeaway': return 'איסוף עצמי';
+      case 'curbside': return 'איסוף מהרכב';
+      default: return 'משלוח';
+    }
+  };
 
   return (
     <div className="max-w-2xl mx-auto py-12">
@@ -165,8 +177,8 @@ export default function CheckoutPage() {
                     <span>{totalPrice.toFixed(2)}₪</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>משלוח ({deliveryPreference === 'fastest' ? 'המהיר ביותר' : deliveryPreference === 'smartSaver' ? 'חסכוני חכם' : 'זירה'})</span>
-                    <span>{deliveryFee > 0 ? `${deliveryFee.toFixed(2)}₪` : 'חינם'}</span>
+                    <span>{getDeliveryPreferenceText()}</span>
+                    <span>{(deliveryPreference === 'takeaway' || deliveryPreference === 'curbside' || deliveryFee === 0) ? 'חינם' : `${deliveryFee.toFixed(2)}₪`}</span>
                   </div>
                   {discountAmount > 0 && (
                     <div className="flex justify-between text-sm text-green-600">
@@ -275,7 +287,17 @@ export default function CheckoutPage() {
                 <DollarSign className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/> חסכוני חכם: ההזמנה שלך תימסר עם הנחה, וייתכן שתיקח קצת יותר זמן.
             </Badge>
           )}
-          {smartCouponApplied && deliveryPreference !== 'smartSaver' && (
+           {deliveryPreference === 'takeaway' && (
+             <Badge variant="secondary" className="w-full justify-start text-left py-1.5 bg-purple-100 text-purple-700 border-purple-300">
+               <ShoppingBag className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/> איסוף עצמי מהעסק! תקבל/י הודעה כשההזמנה מוכנה.
+            </Badge>
+           )}
+           {deliveryPreference === 'curbside' && (
+             <Badge variant="secondary" className="w-full justify-start text-left py-1.5 bg-indigo-100 text-indigo-700 border-indigo-300">
+               <Car className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/> איסוף עד לרכב! העסק יביא את ההזמנה לרכבך.
+            </Badge>
+           )}
+          {smartCouponApplied && deliveryPreference !== 'smartSaver' && deliveryPreference !== 'takeaway' && deliveryPreference !== 'curbside' &&(
              <Badge variant="secondary" className="w-full justify-start text-left py-1.5 bg-yellow-100 text-yellow-700 border-yellow-300">
                 <Sparkles className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/> קופון חכם של 5% הופעל על הזמנתך מעל 70₪!
             </Badge>

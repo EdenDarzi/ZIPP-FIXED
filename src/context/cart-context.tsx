@@ -120,6 +120,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           imageUrl: item.imageUrl,
           dataAiHint: item.dataAiHint,
           selectedAddons: selectedAddons || [],
+          restaurantId: item.restaurantId, 
         };
         return [...prevCart, newCartItem];
       }
@@ -190,12 +191,25 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     deliveryFee = FASTEST_DELIVERY_FEE;
   } else if (deliveryPreference === 'smartSaver') {
     currentDiscount += SMART_SAVER_DISCOUNT;
+  } else if (deliveryPreference === 'takeaway' || deliveryPreference === 'curbside') {
+    deliveryFee = 0; 
+    // Smart coupon should not apply if it's a pickup method
+    const isSmartCouponDeliveryApplicable = totalPrice >= SMART_COUPON_THRESHOLD && (deliveryPreference !== 'takeaway' && deliveryPreference !== 'curbside' && deliveryPreference !== 'smartSaver');
+    if (isSmartCouponDeliveryApplicable) {
+        currentDiscount += totalPrice * SMART_COUPON_DISCOUNT_PERCENTAGE;
+    }
   }
 
-  const smartCouponApplied = totalPrice >= SMART_COUPON_THRESHOLD && deliveryPreference !== 'smartSaver';
-  if (smartCouponApplied) {
+
+  const smartCouponApplied = totalPrice >= SMART_COUPON_THRESHOLD && deliveryPreference !== 'smartSaver' && deliveryPreference !== 'takeaway' && deliveryPreference !== 'curbside';
+  if (smartCouponApplied && deliveryPreference !== 'takeaway' && deliveryPreference !== 'curbside') { // ensure smart coupon is not applied if already handled or is pickup
     currentDiscount += totalPrice * SMART_COUPON_DISCOUNT_PERCENTAGE;
   }
+  // Ensure discount is not double-counted if smartSaver and smartCoupon threshold met
+  if (deliveryPreference === 'smartSaver' && totalPrice >= SMART_COUPON_THRESHOLD) {
+      currentDiscount = SMART_SAVER_DISCOUNT; // Prioritize smart saver, or define combined logic
+  }
+
 
   const finalPriceWithDelivery = totalPrice + deliveryFee - currentDiscount;
 

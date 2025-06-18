@@ -5,19 +5,21 @@ import { useCart } from '@/context/cart-context';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, Zap, CheckCircle, ShieldQuestion, Sparkles, DollarSign, Clock, Gift, Users, Navigation, Edit } from 'lucide-react'; 
+import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, Zap, CheckCircle, ShieldQuestion, Sparkles, DollarSign, Clock, Gift, Users, Navigation, Edit, Car, Info as InfoIcon } from 'lucide-react'; 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
-import type { DeliveryPreference } from '@/types';
+import type { DeliveryPreference, Restaurant } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input'; 
 import { Textarea } from '@/components/ui/textarea'; 
-import { useState } from 'react'; 
+import { useState, useEffect } from 'react'; 
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { getRestaurantById } from '@/lib/mock-data'; 
+
 
 export default function CartPage() {
   const {
@@ -42,6 +44,16 @@ export default function CartPage() {
   const [isGift, setIsGift] = useState(false);
   const [customerNotes, setCustomerNotes] = useState(''); 
   const { toast } = useToast();
+  const [currentRestaurant, setCurrentRestaurant] = useState<Restaurant | undefined>(undefined);
+
+  useEffect(() => {
+    if (cart.length > 0 && cart[0].restaurantId) {
+      const restaurant = getRestaurantById(cart[0].restaurantId);
+      setCurrentRestaurant(restaurant);
+    } else {
+      setCurrentRestaurant(undefined);
+    }
+  }, [cart]);
 
   const handleSetManualScheduledTime = () => {
     if (manualScheduledTime.trim()) {
@@ -153,7 +165,7 @@ export default function CartPage() {
 
           <Card className="shadow-md">
             <CardHeader>
-              <CardTitle className="text-xl font-headline text-primary">אפשרויות משלוח</CardTitle>
+              <CardTitle className="text-xl font-headline text-primary">אפשרויות משלוח ואיסוף</CardTitle>
               <CardDescription>בחר כיצד תרצה לקבל את ההזמנה שלך.</CardDescription>
             </CardHeader>
             <CardContent>
@@ -162,7 +174,7 @@ export default function CartPage() {
                 onValueChange={(value) => setDeliveryPreference(value as DeliveryPreference)}
                 className="space-y-3"
                 dir="rtl" 
-                aria-label="אפשרויות משלוח"
+                aria-label="אפשרויות משלוח ואיסוף"
               >
                 <Label htmlFor="arena-delivery" className={cn("flex items-center p-4 border rounded-md cursor-pointer hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all", {"has-[:checked]:ring-2 has-[:checked]:ring-primary has-[:checked]:ring-offset-1": deliveryPreference === 'arena'})}>
                   <RadioGroupItem value="arena" id="arena-delivery" className="ml-3 rtl:ml-0 rtl:mr-3" aria-label="זירת המשלוחים החכמה" /> 
@@ -170,7 +182,7 @@ export default function CartPage() {
                     <div className="font-semibold flex items-center">
                       <Zap className="h-5 w-5 ml-2 rtl:ml-0 rtl:mr-2 text-accent" /> זירת המשלוחים החכמה (ברירת מחדל)
                     </div>
-                    <p className="text-sm text-muted-foreground">מערכת ה-AI שלנו מאתרת ומודיעה לשליחים זמינים באזורך. הם מגיבים עם הצעות, והמערכת בוחרת את השליח המתאים ביותר למשלוח מהיר ויעיל, תוך התחשבות במיקום, זמינות ודירוג.</p>
+                    <p className="text-sm text-muted-foreground">מערכת ה-AI שלנו מאתרת שליחים זמינים. הם מגיבים עם הצעות, והמערכת בוחרת את השליח המתאים ביותר.</p>
                   </div>
                   <span className="font-semibold text-green-600 mr-2 rtl:mr-0 rtl:ml-2">חינם</span> 
                 </Label>
@@ -194,11 +206,43 @@ export default function CartPage() {
                   </div>
                   <span className="font-semibold text-green-600 mr-2 rtl:mr-0 rtl:ml-2">-3.00₪</span>
                 </Label>
+
+                {currentRestaurant?.supportsTakeaway && (
+                    <Label htmlFor="takeaway-pickup" className={cn("flex items-center p-4 border rounded-md cursor-pointer hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all", {"has-[:checked]:ring-2 has-[:checked]:ring-primary has-[:checked]:ring-offset-1": deliveryPreference === 'takeaway'})}>
+                      <RadioGroupItem value="takeaway" id="takeaway-pickup" className="ml-3 rtl:ml-0 rtl:mr-3" aria-label="איסוף עצמי" />
+                      <div className="flex-grow">
+                        <div className="font-semibold flex items-center">
+                          <ShoppingBag className="h-5 w-5 ml-2 rtl:ml-0 rtl:mr-2 text-purple-600" /> איסוף עצמי מהעסק
+                        </div>
+                        <p className="text-sm text-muted-foreground">אסוף את ההזמנה שלך ישירות מ{currentRestaurant?.name || 'העסק'} בזמן שמתאים לך.</p>
+                      </div>
+                      <span className="font-semibold text-green-600 mr-2 rtl:mr-0 rtl:ml-2">חינם</span>
+                    </Label>
+                )}
+
+                {currentRestaurant?.supportsCurbsidePickup && (
+                     <Label htmlFor="curbside-pickup" className={cn("flex items-center p-4 border rounded-md cursor-pointer hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all", {"has-[:checked]:ring-2 has-[:checked]:ring-primary has-[:checked]:ring-offset-1": deliveryPreference === 'curbside'})}>
+                      <RadioGroupItem value="curbside" id="curbside-pickup" className="ml-3 rtl:ml-0 rtl:mr-3" aria-label="איסוף מהרכב" />
+                      <div className="flex-grow">
+                        <div className="font-semibold flex items-center">
+                          <Car className="h-5 w-5 ml-2 rtl:ml-0 rtl:mr-2 text-blue-600" /> איסוף מהרכב
+                        </div>
+                        <p className="text-sm text-muted-foreground">השליח יביא את ההזמנה עד לרכב שלך. נא ציין פרטי רכב בהערות.</p>
+                      </div>
+                      <span className="font-semibold text-green-600 mr-2 rtl:mr-0 rtl:ml-2">חינם</span>
+                    </Label>
+                )}
               </RadioGroup>
               <p className="mt-4 text-sm text-muted-foreground p-3 bg-muted/30 rounded-md flex items-start">
                 <ShieldQuestion className="h-5 w-5 ml-2 rtl:ml-0 rtl:mr-2 mt-0.5 text-primary flex-shrink-0" /> 
-                <span>ב'זירת המשלוחים החכמה', שליחים באזור מתחרים על הזמנתך. מערכת ה-AI שלנו בוחרת את ההצעה האופטימלית עבורך. אם אתה ממהר, בחר 'משלוח מהיר ביותר'! לחלופין, חסוך עם 'משלוח חסכוני חכם' אם הזמן גמיש.</span>
+                <span>ב'זירת המשלוחים החכמה', שליחים באזור מתחרים על הזמנתך. מערכת ה-AI שלנו בוחרת את ההצעה האופטימלית. אם אתה ממהר, בחר 'משלוח מהיר ביותר'! לחלופין, חסוך עם 'משלוח חסכוני חכם' או בחר באפשרויות איסוף אם זמינות.</span>
               </p>
+               { (deliveryPreference === 'takeaway' || deliveryPreference === 'curbside') && (
+                 <p className="mt-2 text-sm text-blue-600 p-3 bg-blue-50 border border-blue-200 rounded-md flex items-start">
+                    <InfoIcon className="h-4 w-4 ml-2 rtl:ml-0 rtl:mr-2 mt-0.5 flex-shrink-0"/>
+                    <span>שים לב: עם בחירת איסוף, {deliveryPreference === 'takeaway' ? 'תקבל הודעה כשההזמנה מוכנה לאיסוף מהעסק.' : 'אנא ציין פרטי רכב בהערות ההזמנה כדי שהעסק יוכל לזהותך בקלות.'}</span>
+                 </p>
+               )}
             </CardContent>
           </Card>
           
@@ -207,11 +251,11 @@ export default function CartPage() {
               <CardTitle className="text-xl font-headline text-primary flex items-center">
                 <Edit className="h-5 w-5 ml-2 rtl:ml-0 rtl:mr-2" /> הערות להזמנה (אופציונלי)
               </CardTitle>
-              <CardDescription>הוסף הוראות מיוחדות למסעדה או לשליח.</CardDescription>
+              <CardDescription>הוסף הוראות מיוחדות למסעדה או לשליח (או פרטי רכב לאיסוף מהרכב).</CardDescription>
             </CardHeader>
             <CardContent>
               <Textarea
-                placeholder="לדוגמה: נא לארוז כל פריט בנפרד, בלי בצל בסלט, נא להתקשר בהגעה..."
+                placeholder="לדוגמה: נא לארוז כל פריט בנפרד, בלי בצל בסלט, נא להתקשר בהגעה... לאיסוף מהרכב: טויוטה כסופה, מספר 12-345-67"
                 value={customerNotes}
                 onChange={(e) => setCustomerNotes(e.target.value)}
                 className="min-h-[100px]"
@@ -224,9 +268,9 @@ export default function CartPage() {
           <Card className="shadow-md">
             <CardHeader>
               <CardTitle className="text-xl font-headline text-primary flex items-center">
-                <Clock className="h-5 w-5 ml-2 rtl:ml-0 rtl:mr-2" /> תכנן משלוח (אופציונלי)
+                <Clock className="h-5 w-5 ml-2 rtl:ml-0 rtl:mr-2" /> תכנן משלוח/איסוף (אופציונלי)
               </CardTitle>
-              <CardDescription>קבע תאריך ושעה עתידיים למשלוח שלך.</CardDescription>
+              <CardDescription>קבע תאריך ושעה עתידיים להזמנה שלך.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {!scheduledDeliveryTime ? (
@@ -239,22 +283,22 @@ export default function CartPage() {
                     value={manualScheduledTime}
                     onChange={(e) => setManualScheduledTime(e.target.value)}
                     className="w-full"
-                    aria-label="הזן זמן מבוקש למשלוח מתוכנן"
+                    aria-label="הזן זמן מבוקש למשלוח או איסוף מתוכנן"
                   />
-                  <Button onClick={handleSetManualScheduledTime} disabled={!manualScheduledTime.trim()} className="w-full sm:w-auto" aria-label="קבע זמן למשלוח מתוכנן">
+                  <Button onClick={handleSetManualScheduledTime} disabled={!manualScheduledTime.trim()} className="w-full sm:w-auto" aria-label="קבע זמן למשלוח או איסוף מתוכנן">
                     קבע זמן
                   </Button>
                 </>
               ) : (
                 <div className="p-3 bg-green-50 border border-green-200 rounded-md">
-                  <p className="font-semibold text-green-700 flex items-center"><Clock className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/> המשלוח שלך מתוכנן ל: {scheduledDeliveryTime}</p>
-                  <Button onClick={handleClearScheduledTime} variant="link" className="p-0 h-auto text-sm text-destructive" aria-label="נקה זמן מתוכנן למשלוח">
+                  <p className="font-semibold text-green-700 flex items-center"><Clock className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/> ההזמנה שלך מתוכננת ל: {scheduledDeliveryTime}</p>
+                  <Button onClick={handleClearScheduledTime} variant="link" className="p-0 h-auto text-sm text-destructive" aria-label="נקה זמן מתוכנן למשלוח או איסוף">
                     נקה זמן מתוכנן
                   </Button>
                 </div>
               )}
-               <p className="text-xs text-muted-foreground">שימו לב: זמינות המשלוח המתוכנן תלויה בשעות הפעילות של המסעדה והשליחים.</p>
-                 <Button onClick={handleDynamicLocationClick} variant="outline" className="w-full mt-2" aria-label="משלוח למיקום דינמי">
+               <p className="text-xs text-muted-foreground">שימו לב: זמינות ההזמנה המתוכננת תלויה בשעות הפעילות של העסק.</p>
+                 <Button onClick={handleDynamicLocationClick} variant="outline" className="w-full mt-2" aria-label="משלוח למיקום דינמי" disabled={deliveryPreference === 'takeaway' || deliveryPreference === 'curbside'}>
                     <Navigation className="h-4 w-4 ml-2 rtl:ml-0 rtl:mr-2 text-blue-500" /> משלוח למיקום דינמי
                  </Button>
             </CardContent>
@@ -300,9 +344,11 @@ export default function CartPage() {
                 </div>
               )}
               <div className="flex justify-between">
-                <span className="text-muted-foreground">דמי משלוח</span>
-                <span className={`font-medium ${deliveryFee > 0 ? 'text-primary' : 'text-green-600'}`}>
-                  {deliveryFee > 0 ? `${deliveryFee.toFixed(2)}₪` : 'חינם'}
+                <span className="text-muted-foreground">
+                  {deliveryPreference === 'takeaway' ? 'איסוף עצמי' : deliveryPreference === 'curbside' ? 'איסוף מהרכב' : 'דמי משלוח'}
+                </span>
+                <span className={`font-medium ${deliveryFee > 0 && deliveryPreference !== 'takeaway' && deliveryPreference !== 'curbside' ? 'text-primary' : 'text-green-600'}`}>
+                  {(deliveryPreference === 'takeaway' || deliveryPreference === 'curbside') ? 'חינם' : (deliveryFee > 0 ? `${deliveryFee.toFixed(2)}₪` : 'חינם')}
                 </span>
               </div>
               {discountAmount > 0 && (
@@ -314,7 +360,7 @@ export default function CartPage() {
                   <span className="font-medium text-green-600">-{discountAmount.toFixed(2)}₪</span>
                 </div>
               )}
-              {smartCouponApplied && deliveryPreference !== 'smartSaver' && ( 
+              {smartCouponApplied && deliveryPreference !== 'smartSaver' && deliveryPreference !== 'takeaway' && deliveryPreference !== 'curbside' && ( 
                 <Badge variant="secondary" className="w-full justify-center bg-green-100 text-green-700 border-green-300 py-1">
                    <Sparkles className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/> קופון חכם הופעל! 5% הנחה להזמנות מעל 70₪.
                 </Badge>
@@ -322,6 +368,16 @@ export default function CartPage() {
                {deliveryPreference === 'smartSaver' && (
                  <Badge variant="secondary" className="w-full justify-center bg-blue-100 text-blue-700 border-blue-300 py-1">
                    <DollarSign className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/> הנחת משלוח חסכוני חכם הופעלה!
+                </Badge>
+               )}
+               {deliveryPreference === 'takeaway' && (
+                 <Badge variant="secondary" className="w-full justify-center bg-purple-100 text-purple-700 border-purple-300 py-1">
+                   <ShoppingBag className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/> איסוף עצמי מהעסק!
+                </Badge>
+               )}
+               {deliveryPreference === 'curbside' && (
+                 <Badge variant="secondary" className="w-full justify-center bg-indigo-100 text-indigo-700 border-indigo-300 py-1">
+                   <Car className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/> איסוף עד לרכב!
                 </Badge>
                )}
                 {isGift && (

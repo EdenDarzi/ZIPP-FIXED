@@ -57,6 +57,8 @@ export interface Restaurant {
     bagCount?: number;
     bagPrice?: number;
   };
+  supportsTakeaway?: boolean;
+  supportsCurbsidePickup?: boolean;
 }
 
 export interface SelectedAddon {
@@ -76,6 +78,7 @@ export interface CartItem {
   imageUrl?: string;
   dataAiHint?: string;
   selectedAddons?: SelectedAddon[];
+  restaurantId?: string; // Added to know which restaurant it's from
 }
 
 export interface User {
@@ -98,6 +101,8 @@ export interface CourierProfile {
   batteryPercent?: number; 
   isActive: boolean; 
   transportationModeDetails?: string; 
+  currentDeliveriesCount?: number;
+  totalDeliveriesToday?: number;
 }
 
 export interface Location { 
@@ -138,7 +143,7 @@ export interface CourierBid {
   courierProfileSnapshot?: Partial<CourierProfile>; 
 }
 
-export type DeliveryPreference = 'arena' | 'fastest' | 'smartSaver';
+export type DeliveryPreference = 'arena' | 'fastest' | 'smartSaver' | 'takeaway' | 'curbside';
 
 export type OrderStatus =
   | 'PENDING_PAYMENT'
@@ -165,8 +170,9 @@ export interface Order {
   restaurantId: string;
   restaurantName: string;
   customerNotes?: string; 
-  estimatedDeliveryTime?: string; 
-  actualDeliveryTime?: string; 
+  pickupDetails?: string; // For curbside: "Red Toyota Corolla, license 123-45-678"
+  estimatedDeliveryTime?: string; // Also used for estimated pickup time for takeaway/curbside
+  actualDeliveryTime?: string; // Also used for actual pickup time
   scheduledDeliveryTime?: string; 
   scheduledDeliveryTimestamp?: string; 
   assignedCourier?: { 
@@ -183,7 +189,7 @@ export interface Order {
   orderTimeline?: { status: OrderStatus, timestamp: string, notes?: string }[]; 
   createdAt: string; 
   updatedAt: string; 
-  isGiftOrder?: boolean; // Added for checkout page
+  isGiftOrder?: boolean;
 }
 
 export type DayOfWeek = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
@@ -212,6 +218,8 @@ export interface RestaurantSettings {
   bannerLayout?: 'textOverImage' | 'textBelowImage';
   showRatingsOnStore?: boolean;
   showDeliveryTimeOnStore?: boolean;
+  supportsTakeaway?: boolean;
+  supportsCurbsidePickup?: boolean;
 }
 
 export interface P2PDeliveryRequestDetails {

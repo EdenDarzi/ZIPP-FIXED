@@ -86,12 +86,14 @@ export const mockRestaurants: Restaurant[] = [
     menu: mockMenuItems.filter(item => item.category === 'Pizza' || item.category === 'Drinks').map(item => ({ ...item, restaurantId: 'restaurant1' })),
     hasDeliveryArena: true,
     tags: ['Popular', 'Fast Delivery', 'Delivery Arena'],
-     livePickSaleConfig: { // Added mock config
+     livePickSaleConfig: { 
         enabled: true,
         startTime: "19:00",
         bagCount: 10,
         bagPrice: 20
-    }
+    },
+    supportsTakeaway: true,
+    supportsCurbsidePickup: true,
   },
   {
     id: 'restaurant2',
@@ -106,6 +108,8 @@ export const mockRestaurants: Restaurant[] = [
     menu: mockMenuItems.filter(item => item.category === 'Burgers' || item.category === 'Drinks').map(item => ({ ...item, restaurantId: 'restaurant2' })),
     hasDeliveryArena: false,
     tags: ['Recommended', 'Hot Now'],
+    supportsTakeaway: true,
+    supportsCurbsidePickup: false,
   },
   {
     id: 'restaurant3',
@@ -120,6 +124,8 @@ export const mockRestaurants: Restaurant[] = [
     menu: mockMenuItems.filter(item => item.category === 'Pasta' || item.category === 'Salads' || item.category === 'Drinks').map(item => ({ ...item, restaurantId: 'restaurant3' })),
     hasDeliveryArena: true,
     tags: ['New', 'Recommended', 'Delivery Arena'],
+    supportsTakeaway: false,
+    supportsCurbsidePickup: false,
   },
   {
     id: 'restaurant4',
@@ -134,6 +140,8 @@ export const mockRestaurants: Restaurant[] = [
     menu: mockMenuItems.filter(item => item.category === 'Salads' || item.category === 'Drinks').map(item => ({ ...item, restaurantId: 'restaurant4' })),
     hasDeliveryArena: true,
     tags: ['Fast Delivery', 'Delivery Arena'],
+    supportsTakeaway: true,
+    supportsCurbsidePickup: true,
   },
   {
     id: 'florist1',
@@ -151,6 +159,8 @@ export const mockRestaurants: Restaurant[] = [
     ],
     hasDeliveryArena: true,
     tags: ['Recommended', 'New'],
+    supportsTakeaway: true,
+    supportsCurbsidePickup: false,
   },
    {
     id: 'bakery1',
@@ -168,6 +178,8 @@ export const mockRestaurants: Restaurant[] = [
     ],
     hasDeliveryArena: true,
     tags: ['Popular', 'Fast Delivery'],
+    supportsTakeaway: true,
+    supportsCurbsidePickup: true,
   }
 ];
 
@@ -186,19 +198,19 @@ export const getAllItems = (): MenuItem[] => {
 
 export const mockCourierProfiles: CourierProfile[] = [
   {
-    id: 'courier1', name: 'סמי המהיר', rating: 4.8, trustScore: 92, vehicleType: 'motorcycle', areaCoverageRadiusKm: 5, currentLocation: { lat: 34.0522, lng: -118.2437 }, currentSpeedKmh: 35, batteryPercent: undefined, isActive: true, transportationModeDetails: "Yamaha NMAX 155"
+    id: 'courier1', name: 'סמי המהיר', rating: 4.8, trustScore: 92, vehicleType: 'motorcycle', areaCoverageRadiusKm: 5, currentLocation: { lat: 34.0522, lng: -118.2437 }, currentSpeedKmh: 35, batteryPercent: undefined, isActive: true, transportationModeDetails: "Yamaha NMAX 155", currentDeliveriesCount: 1, totalDeliveriesToday: 5
   },
   {
-    id: 'courier2', name: 'ריטה האמינה', rating: 4.6, trustScore: 95, vehicleType: 'car', areaCoverageRadiusKm: 7, currentLocation: { lat: 34.0550, lng: -118.2500 }, currentSpeedKmh: 45, batteryPercent: undefined, isActive: true, transportationModeDetails: "Toyota Prius"
+    id: 'courier2', name: 'ריטה האמינה', rating: 4.6, trustScore: 95, vehicleType: 'car', areaCoverageRadiusKm: 7, currentLocation: { lat: 34.0550, lng: -118.2500 }, currentSpeedKmh: 45, batteryPercent: undefined, isActive: true, transportationModeDetails: "Toyota Prius", currentDeliveriesCount: 0, totalDeliveriesToday: 3
   },
   {
-    id: 'courier3', name: 'איתן האקולוגי', rating: 4.3, trustScore: 85, vehicleType: 'bicycle',  areaCoverageRadiusKm: 3, currentLocation: { lat: 34.0500, lng: -118.2400 }, currentSpeedKmh: 15, batteryPercent: 75, isActive: true, transportationModeDetails: "Specialized Turbo Vado (e-bike)"
+    id: 'courier3', name: 'איתן האקולוגי', rating: 4.3, trustScore: 85, vehicleType: 'bicycle',  areaCoverageRadiusKm: 3, currentLocation: { lat: 34.0500, lng: -118.2400 }, currentSpeedKmh: 15, batteryPercent: 75, isActive: true, transportationModeDetails: "Specialized Turbo Vado (e-bike)", currentDeliveriesCount: 2, totalDeliveriesToday: 8
   },
   {
-    id: 'courier4', name: 'שרה המהירה', rating: 4.9, trustScore: 90, vehicleType: 'scooter', areaCoverageRadiusKm: 4, currentLocation: { lat: 34.0480, lng: -118.2450 }, currentSpeedKmh: 22, batteryPercent: 88, isActive: true, transportationModeDetails: "Xiaomi Mi Electric Scooter Pro 2"
+    id: 'courier4', name: 'שרה המהירה', rating: 4.9, trustScore: 90, vehicleType: 'scooter', areaCoverageRadiusKm: 4, currentLocation: { lat: 34.0480, lng: -118.2450 }, currentSpeedKmh: 22, batteryPercent: 88, isActive: true, transportationModeDetails: "Xiaomi Mi Electric Scooter Pro 2", currentDeliveriesCount: 0, totalDeliveriesToday: 2
   },
    {
-    id: 'courier5', name: 'וולי ההולך', rating: 4.1, trustScore: 80, vehicleType: 'foot', areaCoverageRadiusKm: 1.5, currentLocation: { lat: 34.0510, lng: -118.2420 }, isActive: true, transportationModeDetails: "נעלי ספורט נוחות"
+    id: 'courier5', name: 'וולי ההולך', rating: 4.1, trustScore: 80, vehicleType: 'foot', areaCoverageRadiusKm: 1.5, currentLocation: { lat: 34.0510, lng: -118.2420 }, isActive: true, transportationModeDetails: "נעלי ספורט נוחות", currentDeliveriesCount: 1, totalDeliveriesToday: 4
   }
 ];
 
@@ -250,8 +262,32 @@ export const mockBidsForOrder: (orderId: string) => CourierBid[] = (orderId) => 
 export const getMockOrderById = (orderId: string, scheduledDeliveryTime?: string): Order | undefined => {
   const baseOrderId = orderId.split('_scheduled_')[0];
   if (baseOrderId.startsWith('mockOrder_')) {
-    const restaurant = mockRestaurants[0];
-    const items = [ { ...restaurant.menu[0], quantity: 1, selectedAddons: restaurant.menu[0].addons?.[0].options.filter(o => o.selectedByDefault).map(o => ({groupId: restaurant.menu[0].addons![0].id!, groupTitle: restaurant.menu[0].addons![0].title, optionId: o.id!, optionName: o.name, optionPrice: o.price })) || [] }, { ...restaurant.menu.find(m => m.category === 'Drinks')!, quantity: 2, selectedAddons: [] } ].map(item => ({ id: `cartItem_${item.id}_${Date.now()}`, menuItemId: item.id, name: item.name, price: item.price, quantity: item.quantity, imageUrl: item.imageUrl, dataAiHint: item.dataAiHint, selectedAddons: item.selectedAddons }));
+    const restaurant = mockRestaurants[0]; // Default to first restaurant for simplicity
+    const items: CartItem[] = [ 
+        { 
+            id: `cartItem_${restaurant.menu[0].id}_${Date.now()}`, 
+            menuItemId: restaurant.menu[0].id, 
+            name: restaurant.menu[0].name, 
+            price: restaurant.menu[0].price, 
+            quantity: 1, 
+            imageUrl: restaurant.menu[0].imageUrl, 
+            dataAiHint: restaurant.menu[0].dataAiHint, 
+            selectedAddons: restaurant.menu[0].addons?.[0].options.filter(o => o.selectedByDefault).map(o => ({groupId: restaurant.menu[0].addons![0].id!, groupTitle: restaurant.menu[0].addons![0].title, optionId: o.id!, optionName: o.name, optionPrice: o.price })) || [],
+            restaurantId: restaurant.id,
+        }, 
+        { 
+            id: `cartItem_drink_${Date.now()}`,
+            menuItemId: mockMenuItems.find(m => m.category === 'Drinks')!.id, 
+            name: mockMenuItems.find(m => m.category === 'Drinks')!.name, 
+            price: mockMenuItems.find(m => m.category === 'Drinks')!.price, 
+            quantity: 2, 
+            imageUrl: mockMenuItems.find(m => m.category === 'Drinks')!.imageUrl, 
+            dataAiHint: mockMenuItems.find(m => m.category === 'Drinks')!.dataAiHint, 
+            selectedAddons: [],
+            restaurantId: restaurant.id,
+        }
+    ];
+    
     let totalAmount = 0;
     items.forEach(item => {
         let itemPrice = item.price;
@@ -441,4 +477,7 @@ export const mockExistingSettings: RestaurantSettings = {
   bannerLayout: 'textOverImage',
   showRatingsOnStore: true,
   showDeliveryTimeOnStore: true,
+  supportsTakeaway: true,
+  supportsCurbsidePickup: false,
 };
+

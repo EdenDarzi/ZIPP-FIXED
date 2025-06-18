@@ -20,7 +20,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import type { RestaurantSettings, OperatingHour, DayOfWeek } from '@/types';
 import { mockExistingSettings } from '@/lib/mock-data';
-import { UploadCloud, Info, Loader2, MessageSquare, Users } from 'lucide-react';
+import { UploadCloud, Info, Loader2, MessageSquare, Users, ShoppingBag, Car } from 'lucide-react';
 import Image from 'next/image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
@@ -49,6 +49,8 @@ const settingsFormSchema = z.object({
     }, { message: "שעת סגירה חייבת להיות מאוחרת משעת הפתיחה עבור ימים פתוחים.", path: ["operatingHours"] }),
   isOpenNow: z.boolean(),
   specialsStatus: z.string().optional(),
+  supportsTakeaway: z.boolean().default(false),
+  supportsCurbsidePickup: z.boolean().default(false),
 });
 
 const daysOfWeek: DayOfWeek[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -72,6 +74,8 @@ const typedMockExistingSettings: RestaurantSettings = mockExistingSettings || {
     })),
     isOpenNow: false,
     specialsStatus: '',
+    supportsTakeaway: false,
+    supportsCurbsidePickup: false,
 };
 
 
@@ -93,6 +97,8 @@ export default function RestaurantSettingsPage() {
         })),
         isOpenNow: typedMockExistingSettings.isOpenNow,
         specialsStatus: typedMockExistingSettings.specialsStatus || '',
+        supportsTakeaway: typedMockExistingSettings.supportsTakeaway || false,
+        supportsCurbsidePickup: typedMockExistingSettings.supportsCurbsidePickup || false,
     }
   });
 
@@ -181,7 +187,7 @@ export default function RestaurantSettingsPage() {
                 <span>עבור עסקים חדשים, במיוחד עסקים קטנים (מאפיות, פרחים, חנויות פופ-אפ), LivePick AI יכול לעזור לבנות תפריט/קטלוג ראשוני, עיצוב בסיסי והצעות מחיר - תוך דקות (בקרוב!).</span>
               </div>
               <Alert variant="default" className="bg-green-50 border-green-200">
-                  <Users className="h-4 w-4 text-green-600" /> {/* Changed icon */}
+                  <Users className="h-4 w-4 text-green-600" /> 
                   <AlertTitle className="text-green-700">תמיכה בלקוחות הקצה שלך</AlertTitle>
                   <AlertDescription className="text-green-600/90">
                     זכור, אתה אחראי למתן תמיכה ללקוחות המזמינים מהעסק שלך. השתמש בכלי ניהול ההזמנות (כגון צ'אט עם לקוח) כדי לסייע להם בכל שאלה או בעיה הקשורה להזמנתם. הפלטפורמה מספקת תמיכה כללית על תפעול האפליקציה.
@@ -312,8 +318,8 @@ export default function RestaurantSettingsPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>סטטוס תפעולי</CardTitle>
-              <CardDescription>נהל זמינות נוכחית ומבצעים.</CardDescription>
+              <CardTitle>סטטוס תפעולי ואפשרויות איסוף</CardTitle>
+              <CardDescription>נהל זמינות נוכחית, מבצעים, ותמיכה באפשרויות איסוף.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <FormField
@@ -333,6 +339,50 @@ export default function RestaurantSettingsPage() {
                         checked={field.value}
                         onCheckedChange={field.onChange}
                         aria-label="סטטוס פתיחת העסק"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="supportsTakeaway"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel htmlFor="supportsTakeawaySwitch" className="text-base cursor-pointer flex items-center"><ShoppingBag className="ml-2 h-4 w-4 text-purple-600" />אפשר איסוף עצמי (Takeaway)</FormLabel>
+                      <FormDescription>
+                        האם לקוחות יכולים להגיע לאסוף הזמנות ישירות מהעסק?
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        id="supportsTakeawaySwitch"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        aria-label="אפשר איסוף עצמי"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="supportsCurbsidePickup"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel htmlFor="supportsCurbsidePickupSwitch" className="text-base cursor-pointer flex items-center"><Car className="ml-2 h-4 w-4 text-blue-600" />אפשר איסוף מהרכב (Curbside Pickup)</FormLabel>
+                      <FormDescription>
+                        האם אתם מציעים שירות הבאת ההזמנה לרכב הלקוח?
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        id="supportsCurbsidePickupSwitch"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        aria-label="אפשר איסוף מהרכב"
                       />
                     </FormControl>
                   </FormItem>
