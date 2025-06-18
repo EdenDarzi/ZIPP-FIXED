@@ -17,6 +17,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
+import type { DailyMealPlan } from '@/types'; // Ensure DailyMealPlan is imported if used for type casting
 
 // Define Zod schemas for input and output structures
 /**
@@ -87,33 +88,35 @@ const weeklyMenuPlannerPrompt = ai.definePrompt({
   output: { schema: WeeklyMenuOutputSchema },
   prompt: `You are an AI Weekly Meal Planner for LivePick.
 Your task is to create a structured meal plan for a user based on their calorie target, number of days, and preferences.
+All text output must be in Hebrew.
 
 User ID: {{{userId}}}
 Target Daily Calories: {{{targetDailyCalories}}} calories
 Number of Days: {{{numberOfDays}}}
 {{#if preferences}}User Preferences/Restrictions: "{{{preferences}}}"{{/if}}
 
-For each day in the plan (from Day 1 to Day {{{numberOfDays}}}):
-1.  Create meals for 'Breakfast', 'Lunch', and 'Dinner'. You can optionally add 1-2 'Snack' meals if it helps meet the calorie target.
+For each day in the plan (from יום 1 to יום {{{numberOfDays}}}):
+1.  Create meals for 'ארוחת בוקר', 'ארוחת צהריים', and 'ארוחת ערב'. You can optionally add 1-2 'נשנוש' meals if it helps meet the calorie target.
 2.  For each meal:
-    *   'dishName': Provide a specific, appealing, and reasonably simple dish name. Assume dishes can be sourced from typical restaurants or easily prepared.
+    *   'dishName': Provide a specific, appealing, and reasonably simple dish name in Hebrew. Assume dishes can be sourced from typical restaurants or easily prepared.
     *   'estimatedCalories': Assign a plausible calorie count for the dish.
 3.  'totalEstimatedCalories': Sum the calories for all meals in that day. This sum should be reasonably close to the 'targetDailyCalories' (e.g., within 10-15%).
 4.  Ensure variety across the days and meals. Avoid excessive repetition of the same dishes.
-5.  If preferences are provided (e.g., "vegetarian", "low-carb", "no seafood"), strictly adhere to them. If "quick meals" is mentioned, suggest simpler dishes.
+5.  If preferences are provided (e.g., "צמחוני", "דל פחמימות", "ללא פירות ים"), strictly adhere to them. If "ארוחות מהירות" is mentioned, suggest simpler dishes.
 6.  Prioritize common, generally healthy food choices.
 
-Example dishes for inspiration (adapt to calorie needs and preferences):
-*   Breakfast: Oatmeal with Berries & Nuts, Scrambled Eggs with Whole Wheat Toast, Greek Yogurt with Granola, Smoothie (Fruit & Veg).
-*   Lunch: Grilled Chicken Salad, Quinoa Bowl with Veggies & Chickpeas, Lentil Soup with Bread, Tuna Sandwich on Whole Wheat.
-*   Dinner: Baked Salmon with Roasted Asparagus & Brown Rice, Tofu Stir-fry with Mixed Vegetables, Lean Beef Steak with Sweet Potato, Chicken Breast with Steamed Broccoli.
-*   Snacks: Apple with Almond Butter, Handful of Almonds, Rice Cakes with Avocado, Hard-boiled Egg, Veggie Sticks with Hummus.
+Example dishes for inspiration (adapt to calorie needs and preferences, and translate to Hebrew for output):
+*   Breakfast: Oatmeal with Berries & Nuts (שיבולת שועל עם פירות יער ואגוזים), Scrambled Eggs with Whole Wheat Toast (ביצים מקושקשות עם טוסט מחיטה מלאה), Greek Yogurt with Granola (יוגורט יווני עם גרנולה), Smoothie (Fruit & Veg) (שייק פירות וירקות).
+*   Lunch: Grilled Chicken Salad (סלט עוף בגריל), Quinoa Bowl with Veggies & Chickpeas (קערת קינואה עם ירקות קלויים וגרגירי חומוס), Lentil Soup with Bread (מרק עדשים עם לחם), Tuna Sandwich on Whole Wheat (כריך טונה בלחם מחיטה מלאה).
+*   Dinner: Baked Salmon with Roasted Asparagus & Brown Rice (סלמון אפוי עם אספרגוס ואורז מלא), Tofu Stir-fry with Mixed Vegetables (טופו מוקפץ עם ירקות), Lean Beef Steak with Sweet Potato (סטייק רזה עם בטטה), Chicken Breast with Steamed Broccoli (חזה עוף עם ברוקולי מאודה).
+*   Snacks: Apple with Almond Butter (תפוח עם חמאת שקדים), Handful of Almonds (חופן שקדים), Rice Cakes with Avocado (פריכיות אורז עם אבוקדו), Hard-boiled Egg (ביצה קשה), Veggie Sticks with Hummus (מקלות ירקות עם חומוס).
 
-Finally, provide brief 'summaryNotes' (1-3 sentences) with general advice related to the plan, such as a reminder about hydration, the importance of variety, or adjusting portion sizes if needed.
+Finally, provide brief 'summaryNotes' (1-3 sentences) in Hebrew with general advice related to the plan, such as a reminder about hydration, the importance of variety, or adjusting portion sizes if needed.
 
 Output the entire response as a single JSON object that strictly adheres to the WeeklyMenuOutputSchema.
 The 'plan' should be an array of DailyMealPlanSchema objects.
-Ensure 'day' labels are like "Day 1", "Day 2", etc.
+Ensure 'day' labels are like "יום 1", "יום 2", etc.
+Meal types should be 'ארוחת בוקר', 'ארוחת צהריים', 'ארוחת ערב', 'נשנוש'.
 `,
 });
 
@@ -127,27 +130,40 @@ const weeklyMenuPlannerFlow = ai.defineFlow(
     const { output } = await weeklyMenuPlannerPrompt(input);
     if (!output || !output.plan || output.plan.length === 0) {
       // Fallback in case the AI fails to generate a structured plan
-      const fallbackDayPlan: DailyMealPlan = { // Ensure type matches
-        day: "יום 1 (דוגמה)",
+      const fallbackDayPlan: DailyMealPlan = { 
+        day: "יום 1 (הדגמה)",
         meals: [
-          { mealType: 'Breakfast', dishName: "ארוחת בוקר מאוזנת", estimatedCalories: Math.round(input.targetDailyCalories * 0.25) },
-          { mealType: 'Lunch', dishName: "צלחת צהריים בריאה", estimatedCalories: Math.round(input.targetDailyCalories * 0.35) },
-          { mealType: 'Dinner', dishName: "אופציה לארוחת ערב משביעה", estimatedCalories: Math.round(input.targetDailyCalories * 0.40) },
+          { mealType: 'Breakfast', dishName: "ארוחת בוקר לדוגמה", estimatedCalories: Math.round(input.targetDailyCalories * 0.25) },
+          { mealType: 'Lunch', dishName: "ארוחת צהריים לדוגמה", estimatedCalories: Math.round(input.targetDailyCalories * 0.35) },
+          { mealType: 'Dinner', dishName: "ארוחת ערב לדוגמה", estimatedCalories: Math.round(input.targetDailyCalories * 0.40) },
         ],
         totalEstimatedCalories: input.targetDailyCalories
       };
       return {
-        plan: Array(input.numberOfDays).fill(null).map((_, i) => ({...fallbackDayPlan, day: `יום ${i+1} (דוגמה)`})),
-        summaryNotes: "לא הצלחנו ליצור תוכנית מפורטת. זוהי דוגמה למבנה. אנא נסה/י לשנות את הקלט או נסה/י שוב מאוחר יותר. זכור/י להתמקד במזונות מלאים ובקרת מנות."
+        plan: Array(input.numberOfDays).fill(null).map((_, i) => ({...fallbackDayPlan, day: `יום ${i+1} (הדגמה)`})),
+        summaryNotes: "לא הצלחנו ליצור תוכנית מפורטת כרגע. זוהי דוגמה למבנה. אנא נסה/י לשנות את הקלט או נסה/י שוב מאוחר יותר. זכור/י להתמקד במזונות מלאים ובקרת מנות."
       };
     }
-    // Ensure the plan length matches numberOfDays, or truncate/pad if necessary (simple version)
+    // Ensure the plan length matches numberOfDays, or adjust if necessary
     if (output.plan.length !== input.numberOfDays) {
-        console.warn(`AI generated plan for ${output.plan.length} days, user requested ${input.numberOfDays}. Adjusting.`);
+        console.warn(`AI generated plan for ${output.plan.length} days, user requested ${input.numberOfDays}.`);
         if (output.plan.length > input.numberOfDays) {
             output.plan = output.plan.slice(0, input.numberOfDays);
         } else {
-            // Could add more days with a generic message, but for now just return what we have.
+            // If AI generated fewer days than requested, pad with generic days.
+            const numMissingDays = input.numberOfDays - output.plan.length;
+            for (let i = 0; i < numMissingDays; i++) {
+                 const fallbackDayPlan: DailyMealPlan = {
+                    day: `יום ${output.plan.length + i + 1} (השלמה)`,
+                    meals: [
+                      { mealType: 'Breakfast', dishName: "ארוחה לדוגמה", estimatedCalories: Math.round(input.targetDailyCalories * 0.25) },
+                      { mealType: 'Lunch', dishName: "ארוחה לדוגמה", estimatedCalories: Math.round(input.targetDailyCalories * 0.35) },
+                      { mealType: 'Dinner', dishName: "ארוחה לדוגמה", estimatedCalories: Math.round(input.targetDailyCalories * 0.40) },
+                    ],
+                    totalEstimatedCalories: input.targetDailyCalories
+                  };
+                output.plan.push(fallbackDayPlan);
+            }
         }
     }
 

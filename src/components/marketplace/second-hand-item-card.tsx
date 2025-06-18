@@ -26,27 +26,26 @@ export default function SecondHandItemCard({ item }: { item: SecondHandItem }) {
 
   const handleContactSeller = () => {
     toast({
-      title: 'צור קשר עם המוכר (דמו)',
-      description: `פרטי יצירת הקשר של ${item.sellerName}: ${item.contactDetails || 'לא סופקו פרטים נוספים'}. לחצן WhatsApp/טלפון יתווסף בקרוב.`,
+      title: 'צור קשר עם המוכר',
+      description: `פרטי יצירת הקשר של ${item.sellerName}: ${item.contactDetails || 'לא סופקו פרטים נוספים'}. לחצן WhatsApp/טלפון ישיר יתווסף (הדגמה).`,
     });
   };
 
   const handleRequestDelivery = () => {
     toast({
       title: "מחפש שליחים...",
-      description: `הבקשה למשלוח הפריט "${item.title}" נשלחה. תקבל/י עדכון למעקב בקרוב. (מזהה בקשה לדוגמה: MP-${item.id})`,
+      description: `הבקשה למשלוח הפריט "${item.title}" נשלחה. תקבל/י עדכון למעקב בקרוב. (מזהה בקשה לדוגמה: MP-${item.id}) (הדגמה).`,
     });
   };
 
   const handleViewDetails = (e: React.MouseEvent) => {
-    // Prevent navigation if the click is on a button within the card
     if ((e.target as HTMLElement).closest('button')) {
       e.preventDefault();
       return;
     }
     toast({
-      title: "צפייה בפרטי מוצר (בקרוב)",
-      description: `יופנה לדף פרטי המוצר "${item.title}". (תכונה בפיתוח)`,
+      title: "צפייה בפרטי מוצר",
+      description: `עמוד פרטי המוצר "${item.title}" יפתח. (הדגמה - אין כרגע עמוד ייעודי).`,
     });
     // In a real app: router.push(`/marketplace/${item.id}`);
   };
@@ -117,9 +116,9 @@ export default function SecondHandItemCard({ item }: { item: SecondHandItem }) {
                 <AlertDialogTitle>הזמן שליחות LivePick עבור "{item.title}"</AlertDialogTitle>
                 <AlertDialogDescription className="space-y-2 pt-2">
                   <p><strong>מאיפה?</strong> {item.location}</p>
-                  <p><strong>לאן?</strong> כתובתך (תוזן אוטומטית או תתבקש בהמשך - דמו)</p>
-                  <p><strong>עלות משלוח מוערכת:</strong> ₪25 - ₪45 (דמו, תחושב סופית בעת ההזמנה)</p>
-                  <p className="text-xs text-muted-foreground pt-2">בלחיצה על "מצא לי שליח", נתחיל לחפש שליח זמין לאיסוף הפריט והבאתו אליך. תקבל/י עדכונים על התקדמות המשלוח.</p>
+                  <p><strong>לאן?</strong> כתובתך (תוזן אוטומטית או תתבקש בהמשך).</p>
+                  <p><strong>עלות משלוח מוערכת:</strong> ₪25 - ₪45 (תחושב סופית בעת ההזמנה)</p>
+                  <p className="text-xs text-muted-foreground pt-2">בלחיצה על "מצא לי שליח", נתחיל לחפש שליח זמין לאיסוף הפריט והבאתו אליך. תקבל/י עדכונים על התקדמות המשלוח. (הדגמה)</p>
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

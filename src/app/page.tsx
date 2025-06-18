@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Utensils, ShoppingCart, Brain, ArrowLeft, MapPin, Search, Sparkles, Heart, History, Award, Flame, Gift, Gem, UsersIcon, MapIcon as FoodRadarIcon, ShoppingBag as LivePickSaleIcon, TrendingUp as LiveTrendIcon, MessageCircle, ExternalLink, Info, ShoppingBasket, Gamepad2, Library, ListChecks, Route, Send, PackagePlus, AlertTriangle } from "lucide-react";
+import { Utensils, ShoppingCart, Brain, ArrowLeft, MapPin, Search, Sparkles, Heart, History, Award, Flame, Gift, Gem, UsersIcon, MapIcon as FoodRadarIcon, ShoppingBag as LivePickSaleIcon, TrendingUp as LiveTrendIcon, MessageCircle, ExternalLink, Info, ShoppingBasket, Gamepad2, ListChecks, Route, Send, PackagePlus, Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import RestaurantCard from "@/components/restaurants/restaurant-card";
@@ -24,7 +24,7 @@ export default function HomePage() {
 
   const [culinarySuggestion, setCulinarySuggestion] = useState<string | null>(null);
   const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(true);
-  const [showLivePickSaleBanner, setShowLivePickSaleBanner] = useState(false); 
+  const [showLivePickSaleBanner, setShowLivePickSaleBanner] = useState(true); // Always show for demo
   const [availableCouriers, setAvailableCouriers] = useState<number | null>(null);
   const { toast } = useToast();
 
@@ -33,6 +33,8 @@ export default function HomePage() {
       setIsLoadingSuggestion(true);
       try {
         const input: CulinaryAssistantInput = { userId: "mockUser123", currentDay: new Date().toLocaleString('he-IL', { weekday: 'long' }) };
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 600));
         const result = await getCulinarySuggestion(input);
         setCulinarySuggestion(result.suggestion);
       } catch (error) {
@@ -44,20 +46,19 @@ export default function HomePage() {
     }
     fetchSuggestion();
 
-    const currentHour = new Date().getHours();
-    // if (currentHour >= 19 && currentHour < 23) { // Original logic for sale active hours
-    //   setShowLivePickSaleBanner(true);
-    // }
-    setShowLivePickSaleBanner(true); // Demo: always show banner for now
+    // Simulate fetching available couriers
+    const courierTimeout = setTimeout(() => {
+      setAvailableCouriers(Math.floor(Math.random() * 20) + 8); // Simulate 8-27 couriers
+    }, 800);
 
-    setAvailableCouriers(Math.floor(Math.random() * 20) + 8); // Simulate 8-27 couriers
+    return () => clearTimeout(courierTimeout);
 
   }, []);
 
   const handlePartnershipsClick = () => {
     toast({
-        title: "גלה שיתופי פעולה",
-        description: "בקרוב תוכלו לראות כאן רשימה מלאה של שיתופי פעולה והטבות בלעדיות. (הדגמה)",
+        title: "שיתופי פעולה והטבות",
+        description: "בקרוב יוצגו כאן שיתופי פעולה והטבות בלעדיות. (הדגמה של אזור זה)",
     });
   };
 
@@ -110,8 +111,8 @@ export default function HomePage() {
                     <CardContent className="p-6 flex items-center justify-center text-center">
                         <LivePickSaleIcon className="h-10 w-10 mr-4 animate-bounce" />
                         <div>
-                            <CardTitle className="text-2xl font-headline">🔥 מבצעי LivePick פעילים!</CardTitle>
-                            <CardDescription className="text-red-100">שקיות הפתעה מסוף היום זמינות עכשיו במחירים מיוחדים! לחץ לפרטים.</CardDescription>
+                            <CardTitle className="text-2xl font-headline">🔥 מבצעי LivePick Sale פעילים!</CardTitle>
+                            <CardDescription className="text-red-100">שקיות הפתעה מסוף היום זמינות עכשיו במחירים מיוחדים! (הדגמה)</CardDescription>
                         </div>
                     </CardContent>
                 </Link>
@@ -129,7 +130,7 @@ export default function HomePage() {
           </CardHeader>
           <CardContent>
             {isLoadingSuggestion ? (
-              <p className="text-muted-foreground animate-pulse">ה-AI שלנו חושב על משהו מיוחד בשבילך...</p>
+              <p className="text-muted-foreground animate-pulse flex items-center"><Loader2 className="h-4 w-4 mr-2 animate-spin"/>ה-AI שלנו חושב על משהו מיוחד בשבילך...</p>
             ) : (
               <p className="text-lg text-foreground/90">{culinarySuggestion}</p>
             )}
@@ -146,15 +147,12 @@ export default function HomePage() {
         <Card className="hover:shadow-lg hover:border-green-500/50 transition-all cursor-default h-full flex flex-col items-center justify-center text-center p-6 bg-green-500/5 border-green-500/20">
            <Route className="h-12 w-12 text-green-600 mb-3" />
            <CardTitle className="text-xl font-semibold text-green-700">שליחים פעילים באזורך כעת!</CardTitle>
-           {availableCouriers !== null ? (
-             <>
-               <CardDescription className="text-md text-green-600/90 mt-1">
-                 כרגע יש כ-<strong className="text-2xl">{availableCouriers}</strong> שליחים זמינים!
-               </CardDescription>
-               <p className="text-xs text-muted-foreground/70 mt-1">(הנתון המוצג הוא להדגמה ומשתנה)</p>
-             </>
+           {availableCouriers === null ? (
+             <CardDescription className="text-md text-green-600/90 mt-1 animate-pulse flex items-center justify-center"><Loader2 className="h-4 w-4 mr-1 animate-spin"/>בודק זמינות...</CardDescription>
            ) : (
-             <CardDescription className="text-md text-green-600/90 mt-1 animate-pulse">בודק זמינות שליחים...</CardDescription>
+             <CardDescription className="text-md text-green-600/90 mt-1">
+               כרגע יש כ-<strong className="text-2xl">{availableCouriers}</strong> שליחים זמינים!
+             </CardDescription>
            )}
         </Card>
         <Card className="hover:shadow-lg hover:border-blue-500/50 transition-all cursor-default h-full flex flex-col items-center justify-center text-center p-6 bg-blue-500/5 border-blue-500/20">
@@ -182,14 +180,14 @@ export default function HomePage() {
            <Card className="hover:shadow-lg hover:border-primary/50 transition-all cursor-pointer h-full flex flex-col items-center justify-center text-center p-4">
             <Gem className="h-10 w-10 text-purple-500 mb-2" />
             <CardTitle className="text-lg font-semibold">LivePick VIP</CardTitle>
-            <CardDescription className="text-xs">חווית פרימיום והטבות בלעדיות. גלה עוד!</CardDescription>
+            <CardDescription className="text-xs">חווית פרימיום והטבות בלעדיות.</CardDescription>
           </Card>
         </Link>
         <Link href="/affiliate" passHref>
           <Card className="hover:shadow-lg hover:border-primary/50 transition-all cursor-pointer h-full flex flex-col items-center justify-center text-center p-4">
             <UsersIcon className="h-10 w-10 text-green-500 mb-2" />
             <CardTitle className="text-lg font-semibold">תוכנית שותפים</CardTitle>
-            <CardDescription className="text-xs">הרווח כסף והטבות על המלצות. הצטרף עכשיו!</CardDescription>
+            <CardDescription className="text-xs">הרווח כסף והטבות על המלצות.</CardDescription>
           </Card>
         </Link>
       </section>
@@ -284,7 +282,7 @@ export default function HomePage() {
         ) : (
            <Card className="text-center py-10">
             <CardContent>
-                <AlertTriangle className="h-12 w-12 mx-auto text-muted-foreground mb-3 opacity-50"/>
+                <Search className="h-12 w-12 mx-auto text-muted-foreground mb-3 opacity-50"/>
                 <p className="text-muted-foreground">לא נמצאו עסקים להצגה כרגע. אנא נסה מאוחר יותר.</p>
             </CardContent>
            </Card>
@@ -394,3 +392,4 @@ export default function HomePage() {
   );
 }
     
+

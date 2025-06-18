@@ -1,7 +1,9 @@
 
+'use client';
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { LifeBuoy, MessageSquare, HelpCircle, BookOpen, Search, FileText, Video, Phone, Mail } from "lucide-react";
+import { LifeBuoy, MessageSquare, HelpCircle, BookOpen, Search, FileText, Video, Phone, Mail, Info } from "lucide-react";
 import Link from "next/link";
 import {
   Accordion,
@@ -10,18 +12,18 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast"; // Import useToast
+import { useToast } from "@/hooks/use-toast"; 
 
 export default function SupportPage() {
-  const { toast } = useToast(); // Initialize useToast
+  const { toast } = useToast(); 
 
   const handleSearchKnowledgeBase = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const searchTerm = formData.get("knowledgeBaseSearch") as string;
     toast({
-      title: "חיפוש במאגר הידע (הדגמה)",
-      description: `מחפש תוצאות עבור: "${searchTerm}". (הפונקציונליות בפיתוח).`
+      title: "חיפוש במאגר הידע",
+      description: `מחפש תוצאות עבור: "${searchTerm}". (הדגמה של תהליך חיפוש).`
     });
   };
 
@@ -29,14 +31,22 @@ export default function SupportPage() {
     if (method === 'chat') {
       toast({
         title: "מתחיל צ'אט עם התמיכה...",
-        description: "ממשק הצ'אט עם נציג תמיכה יטען כאן. (הדגמה)",
+        description: "ממשק הצ'אט עם נציג תמיכה יטען כאן. (הדגמה של תהליך).",
       });
     } else {
       toast({
         title: "פותח טופס פנייה במייל...",
-        description: "טופס ליצירת קשר עם התמיכה באמצעות אימייל יטען כאן. (הדגמה)",
+        description: "טופס ליצירת קשר עם התמיכה באמצעות אימייל יטען כאן. (הדגמה של תהליך).",
       });
     }
+  };
+
+  const handleViewAllFaqs = () => {
+     toast({title:"מאגר שאלות נפוצות", description: "כל השאלות הנפוצות יוצגו כאן. (הדגמה)"});
+  };
+
+  const handleViewAllGuides = () => {
+     toast({title:"מאגר מדריכים", description: "כל המדריכים והמאמרים יוצגו כאן. (הדגמה)"});
   };
 
 
@@ -64,7 +74,6 @@ export default function SupportPage() {
                 />
                 <Button type="submit" variant="outline" size="sm">חפש</Button>
               </div>
-              <p className="text-xs text-muted-foreground text-center">תוצאות החיפוש הן להדגמה בלבד.</p>
             </form>
           </Card>
 
@@ -93,7 +102,7 @@ export default function SupportPage() {
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
-              <Button variant="outline" className="mt-4" onClick={() => toast({title:"מאגר שאלות נפוצות", description: "כל השאלות הנפוצות יוצגו כאן בקרוב."})}>עיין בכל השאלות</Button>
+              <Button variant="outline" className="mt-4" onClick={handleViewAllFaqs}>עיין בכל השאלות</Button>
             </Card>
             
             <Card className="text-center p-6 hover:shadow-md transition-shadow flex flex-col">
@@ -101,11 +110,11 @@ export default function SupportPage() {
               <h3 className="text-lg font-semibold mb-2">מדריכים ומאמרים</h3>
               <p className="text-sm text-muted-foreground mb-4 flex-grow">למד כיצד להפיק את המרב מ-LivePick עם מדריכים מפורטים על כל הפיצ'רים.</p>
               <ul className="text-sm text-left space-y-1 list-none">
-                <li className="flex items-center"><FileText className="h-4 w-4 mr-2 text-primary/70"/> <Link href="#" className="hover:underline text-primary" onClick={(e)=>{e.preventDefault(); toast({title:"מדריך למשתמש חדש", description:"המדריך יפורסם בקרוב."})}}>מדריך למשתמש חדש</Link></li>
-                <li className="flex items-center"><Video className="h-4 w-4 mr-2 text-primary/70"/> <Link href="#" className="hover:underline text-primary" onClick={(e)=>{e.preventDefault(); toast({title:"סרטון: TrendScanner", description:"הסרטון יפורסם בקרוב."})}}>סרטון: איך להשתמש ב-TrendScanner</Link></li>
-                 <li className="flex items-center"><FileText className="h-4 w-4 mr-2 text-primary/70"/> <Link href="#" className="hover:underline text-primary" onClick={(e)=>{e.preventDefault(); toast({title:"מדריך: הגדרת עסק", description:"המדריך יפורסם בקרוב."})}}>מדריך: הגדרת העסק שלך</Link></li>
+                <li className="flex items-center"><FileText className="h-4 w-4 mr-2 text-primary/70"/> <Link href="#" className="hover:underline text-primary" onClick={(e)=>{e.preventDefault(); toast({title:"מדריך למשתמש חדש", description:"המדריך יפורסם."})}}>מדריך למשתמש חדש</Link></li>
+                <li className="flex items-center"><Video className="h-4 w-4 mr-2 text-primary/70"/> <Link href="#" className="hover:underline text-primary" onClick={(e)=>{e.preventDefault(); toast({title:"סרטון: TrendScanner", description:"הסרטון יפורסם."})}}>סרטון: איך להשתמש ב-TrendScanner</Link></li>
+                 <li className="flex items-center"><FileText className="h-4 w-4 mr-2 text-primary/70"/> <Link href="#" className="hover:underline text-primary" onClick={(e)=>{e.preventDefault(); toast({title:"מדריך: הגדרת עסק", description:"המדריך יפורסם."})}}>מדריך: הגדרת העסק שלך</Link></li>
               </ul>
-              <Button variant="outline" className="mt-4" onClick={() => toast({title:"מאגר מדריכים", description: "כל המדריכים והמאמרים יוצגו כאן בקרוב."})}>עיין בכל המדריכים</Button>
+              <Button variant="outline" className="mt-4" onClick={handleViewAllGuides}>עיין בכל המדריכים</Button>
             </Card>
           </div>
           
@@ -138,8 +147,13 @@ export default function SupportPage() {
             </p>
           </Card>
         </CardContent>
+         <CardFooter className="p-4 border-t">
+             <p className="text-xs text-muted-foreground flex items-center">
+                <Info className="h-4 w-4 mr-2 text-blue-500 flex-shrink-0"/>
+                <span>הערה: פנייה לעסקים או שליחים בנוגע להזמנות ספציפיות מתבצעת דרך דף ההזמנה או פורטל הניהול הרלוונטי.</span>
+            </p>
+         </CardFooter>
       </Card>
     </div>
   );
 }
-

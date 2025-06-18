@@ -4,11 +4,10 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from '@/components/ui/sheet';
-import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { MessageSquare, Send, Loader2, Bot } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { getChatResponse, ChatAssistantInputType } from '@/ai/flows/chat-assistant-flow'; // Adjust path as needed
+import { getChatResponse, ChatAssistantInputType } from '@/ai/flows/chat-assistant-flow';
 import { ScrollArea } from '../ui/scroll-area';
 
 interface ChatMessage {
@@ -38,6 +37,8 @@ export default function AiChatAssistant() {
 
     try {
       const input: ChatAssistantInputType = { userInput: newUserMessage.text };
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
       const result = await getChatResponse(input);
       const aiResponse: ChatMessage = {
         sender: 'ai',
@@ -91,7 +92,7 @@ export default function AiChatAssistant() {
             {chatHistory.map((msg, index) => (
               <div
                 key={index}
-                className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
+                className={`flex flex-col mb-1 ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
               >
                 <div
                   className={`max-w-[80%] p-3 rounded-lg text-sm ${
@@ -102,7 +103,7 @@ export default function AiChatAssistant() {
                 >
                   <p className="whitespace-pre-wrap">{msg.text}</p>
                 </div>
-                 <p className={`text-xs mt-1 ${msg.sender === 'user' ? 'text-primary/70 text-right' : 'text-muted-foreground/70 text-left'}`}>
+                 <p className={`text-xs mt-0.5 ${msg.sender === 'user' ? 'text-primary/70 mr-1' : 'text-muted-foreground/70 ml-1'}`}>
                     {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                  </p>
               </div>

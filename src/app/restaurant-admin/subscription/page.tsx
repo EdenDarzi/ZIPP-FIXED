@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Award, CheckCircle, CreditCard, Star, Zap } from 'lucide-react';
+import { Award, CheckCircle, CreditCard, Star, Zap, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 
@@ -26,15 +26,15 @@ export default function RestaurantSubscriptionPage() {
 
   const handleManageSubscription = () => {
     toast({
-      title: 'ניהול מנוי (הדגמה)',
-      description: 'יופנה לפורטל חיצוני לניהול פרטי חיוב ושינוי תוכנית (בקרוב).',
+      title: 'ניהול מנוי',
+      description: 'יופנה לפורטל חיצוני לניהול פרטי חיוב ושינוי תוכנית. (הדגמה של תהליך)',
     });
   };
 
   const handleUpgradePlan = () => {
      toast({
-      title: 'שדרוג תוכנית (הדגמה)',
-      description: 'הצגת אפשרויות שדרוג לתוכניות מתקדמות יותר (בקרוב).',
+      title: 'שדרוג תוכנית',
+      description: 'הצגת אפשרויות שדרוג לתוכניות מתקדמות יותר. (הדגמה של תהליך)',
     });
   };
 
@@ -75,16 +75,16 @@ export default function RestaurantSubscriptionPage() {
             נהל מנוי ופרטי חיוב
           </Button>
           <Button variant="outline" onClick={handleUpgradePlan} className="w-full sm:flex-1">
-            שדרג תוכנית (בקרוב)
+            שדרג תוכנית
           </Button>
         </CardFooter>
       </Card>
        <Card className="bg-blue-50 border-blue-200">
         <CardHeader className="pb-2 pt-3">
-          <CardTitle className="text-md text-blue-700">תזכורת חשובה:</CardTitle>
+          <CardTitle className="text-md text-blue-700 flex items-center"><Info className="mr-2 h-4 w-4"/> תזכורת חשובה:</CardTitle>
         </CardHeader>
         <CardContent className="text-sm text-blue-600">
-          <p>המנוי מאפשר לך גישה מלאה לכל הפיצ'רים המתקדמים של הפלטפורמה לניהול וקידום העסק שלך. אנו ממליצים לעבור על כל ההגדרות והאפשרויות כדי למקסם את התועלת.</p>
+          <p>המנוי מאפשר לך גישה מלאה לכל הפיצ'רים המתקדמים של הפלטפורמה לניהול וקידום העסק שלך. אנו ממליצים לעבור על כל ההגדרות והאפשרויות כדי למקסם את התועלת. (הדגמה של תוכן זה).</p>
         </CardContent>
       </Card>
     </div>

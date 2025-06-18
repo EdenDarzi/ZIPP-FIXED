@@ -21,7 +21,7 @@ export default function VipProgramPage() {
   const handleJoinClick = () => {
     toast({
       title: "ברוכים הבאים ל-LivePick VIP!",
-      description: "בקשתך להצטרפות ל-VIP התקבלה ותעובד בקרוב. (הדגמה של תהליך ההצטרפות).",
+      description: "בקשתך להצטרפות ל-VIP התקבלה ותעובד בקרוב. (תהליך ההצטרפות הינו הדגמה).",
     });
   };
 
@@ -79,4 +79,3 @@ export default function VipProgramPage() {
     </div>
   );
 }
-

@@ -30,7 +30,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { NutritionalGoal, DishRecommendation } from '@/types';
 import { getNutritionalAdvice, NutritionalAdvisorInput, NutritionalAdvisorOutput } from '@/ai/flows/nutritional-advisor-flow';
 import { generateWeeklyMenu, WeeklyMenuInput, WeeklyMenuOutput } from '@/ai/flows/weekly-menu-planner-flow';
-import { Loader2, Sparkles, Utensils, Lightbulb, HeartPulse, Share2, CalendarDays, Info, ListChecks, ShoppingBasket, BarChart3, CheckCircle, Apple, Activity as ActivityIcon, PackageSearch } from 'lucide-react';
+import { Loader2, Sparkles, Utensils, Lightbulb, HeartPulse, Share2, CalendarDays, Info, ListChecks, ShoppingBasket, BarChart3, CheckCircle, Apple, Activity as ActivityIcon, PackageSearch, UserCheck } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 const nutritionalGoals: { value: NutritionalGoal; label: string }[] = [
@@ -98,7 +98,6 @@ export default function NutritionalAdvisorPage() {
         goal: values.goal as NutritionalGoal,
         preferences: values.preferences,
       };
-      // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1500));
       const result = await getNutritionalAdvice(input);
       setAdvisorResponse(result);
@@ -129,7 +128,6 @@ export default function NutritionalAdvisorPage() {
             numberOfDays: parseInt(values.numberOfDays, 10),
             preferences: dishPreferences,
         };
-        // Simulate API call delay
         await new Promise(resolve => setTimeout(resolve, 2000));
         const result = await generateWeeklyMenu(input);
         setWeeklyMenuResponse(result);
@@ -151,37 +149,37 @@ export default function NutritionalAdvisorPage() {
   const handleShareRecommendations = () => {
     if (!advisorResponse || !advisorResponse.recommendations || advisorResponse.recommendations.length === 0) return;
     toast({
-      title: "שיתוף המלצות (הדגמה)",
-      description: "ההמלצות שלך שותפו! (מנגנון השיתוף יפותח).",
+      title: "שיתוף המלצות",
+      description: "ההמלצות שלך שותפו! (הדגמה של תהליך שיתוף).",
     });
   };
   
   const handleShareWeeklyMenu = () => {
     if (!weeklyMenuResponse || !weeklyMenuResponse.plan || weeklyMenuResponse.plan.length === 0) return;
     toast({
-      title: "שיתוף תפריט שבועי (הדגמה)",
-      description: "התפריט השבועי שלך שותף! (אפשרויות שיתוף עם בן/בת זוג או מאמן יפותחו).",
+      title: "שיתוף תפריט שבועי",
+      description: "התפריט השבועי שלך שותף! אפשרויות שיתוף עם בן/בת זוג או מאמן יפותחו. (הדגמה)",
     });
   };
 
   const handleOrderWeeklyMenu = () => {
     if (!weeklyMenuResponse || !weeklyMenuResponse.plan || weeklyMenuResponse.plan.length === 0) return;
     toast({
-        title: "הזמנת תפריט שבועי (הדגמה)",
-        description: "ההזמנה שלך נשלחה! המשלוחים יחולקו בצורה חכמה לפי ימים וארוחות. (זוהי הדגמה של תהליך).",
+        title: "הזמנת תפריט שבועי",
+        description: "ההזמנה שלך נשלחה! המשלוחים יחולקו בצורה חכמה לפי ימים וארוחות. (הדגמה של תהליך).",
     });
   };
 
   const handleCreateSmartBasket = () => {
     if (!weeklyMenuResponse || !weeklyMenuResponse.plan || weeklyMenuResponse.plan.length === 0) return;
      toast({
-        title: "יצירת סל קניות חכם (הדגמה)",
-        description: "סל קניות חכם נוצר מהתפריט השבועי. (אפשרויות לבחירת מסעדות או קניית מצרכים יפותחו).",
+        title: "יצירת סל קניות חכם",
+        description: "סל קניות חכם נוצר מהתפריט השבועי. אפשרויות לבחירת מסעדות או קניית מצרכים יפותחו. (הדגמה)",
     });
   };
 
   const handleFinishedMeal = () => {
-    toast({ title: "הארוחה עודכנה (הדגמה)", description: "הארוחה סומנה כאכולה! נתוני המעקב שלך עודכנו. (זוהי הדגמה)." });
+    toast({ title: "הארוחה עודכנה", description: "הארוחה סומנה כאכולה! נתוני המעקב שלך עודכנו. (הדגמה)." });
   };
   
   const handleReplaceMenu = async () => {
@@ -189,20 +187,19 @@ export default function NutritionalAdvisorPage() {
        toast({ title: "אין תפריט להחלפה", description: "אנא צור תפריט תחילה.", variant: "destructive" });
        return;
      }
-    toast({ title: "מחליף תפריט... (הדגמה)", description: "ה-AI שלנו מנסה ליצור עבורך תפריט חלופי. אנא המתן." });
-    setIsLoadingWeeklyMenu(true); // Use the same loading state
-    // Re-use the current form values for weekly menu to generate a new one
+    toast({ title: "מחליף תפריט...", description: "ה-AI שלנו מנסה ליצור עבורך תפריט חלופי. אנא המתן." });
+    setIsLoadingWeeklyMenu(true);
     const currentMenuValues = menuForm.getValues();
     const dishPreferences = dishForm.getValues('preferences');
     try {
         const input: WeeklyMenuInput = {
-            userId: 'mockUserWeeklyMenu123_replace', // Different user for variation
+            userId: 'mockUserWeeklyMenu123_replace', 
             targetDailyCalories: Number(currentMenuValues.targetDailyCalories),
             numberOfDays: parseInt(currentMenuValues.numberOfDays, 10),
             preferences: dishPreferences,
         };
-        await new Promise(resolve => setTimeout(resolve, 2500)); // Simulate longer delay for replacement
-        const result = await generateWeeklyMenu(input); // This will generate a potentially different menu
+        await new Promise(resolve => setTimeout(resolve, 2500)); 
+        const result = await generateWeeklyMenu(input); 
         setWeeklyMenuResponse(result);
         toast({ title: "תפריט חדש נוצר!", description: "התפריט השבועי שלך הוחלף בהצלחה."});
     } catch (error) {
@@ -215,22 +212,22 @@ export default function NutritionalAdvisorPage() {
 
   const handleConnectHealthApp = (appName: string) => {
     toast({
-        title: `חיבור ל-${appName} (הדגמה)`,
-        description: `החיבור לאפליקציית ${appName} בפיתוח ויאפשר סנכרון נתוני בריאות.`,
+        title: `חיבור ל-${appName}`,
+        description: `החיבור לאפליקציית ${appName} יאפשר סנכרון נתוני בריאות. (הדגמה של פונקציונליות עתידית).`,
     });
   };
 
   const handleSelectRoutine = (routineName: string) => {
     toast({
-        title: `שגרת "${routineName}" נבחרה (הדגמה)`,
-        description: `ה-AI יבנה לך כעת תפריט שבועי מותאם לשגרה זו. (הפונקציונליות בפיתוח).`,
+        title: `שגרת "${routineName}" נבחרה`,
+        description: `ה-AI יבנה לך כעת תפריט שבועי מותאם לשגרה זו. (הדגמה של פונקציונליות עתידית).`,
     });
   };
   
   const handleViewChallenges = () => {
      toast({
-        title: "אתגרי תזונה (הדגמה)",
-        description: "עמוד אתגרי התזונה שלך עם משימות ופרסים יוצג כאן. (הפונקציונליות בפיתוח).",
+        title: "אתגרי תזונה",
+        description: "עמוד אתגרי התזונה שלך עם משימות ופרסים יוצג כאן. (הדגמה של פונקציונליות עתידית).",
     });
   };
 
@@ -360,7 +357,7 @@ export default function NutritionalAdvisorPage() {
           <CalendarDays className="h-12 w-12 text-primary mx-auto mb-3" />
           <CardTitle className="text-3xl font-headline text-primary">תכנון תפריט שבועי חכם</CardTitle>
           <PageCardDescription>
-            הגדר/י את יעד הקלוריות היומי שלך וקבל/י הצעות לתפריט שבועי מותאם אישית מה-AI. התפריט ינסה להתאים את עצמו לזמינות מסעדות באזורך (הדגמה).
+            הגדר/י את יעד הקלוריות היומי שלך וקבל/י הצעות לתפריט שבועי מותאם אישית מה-AI. התפריט ינסה להתאים את עצמו לזמינות מסעדות באזורך.
           </PageCardDescription>
         </CardHeader>
         <CardContent>
@@ -437,7 +434,7 @@ export default function NutritionalAdvisorPage() {
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
-                <p className="text-xs text-muted-foreground text-center">הערה: ההמלצות מותאמות לזמינות מסעדות באזורך (הדגמה).</p>
+                <p className="text-xs text-muted-foreground text-center">המלצות המנות מותאמות לזמינות מסעדות באזורך (הדגמה).</p>
                 <Accordion type="single" collapsible className="w-full" defaultValue="day-1">
                     {weeklyMenuResponse.plan.map((dailyPlan, index) => (
                         <AccordionItem value={`day-${index + 1}`} key={index}>
@@ -499,11 +496,11 @@ export default function NutritionalAdvisorPage() {
         <CardContent className="space-y-4 text-center">
             <div className="p-6 border border-dashed rounded-md bg-muted/20">
                 <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-2 opacity-50" />
-                <p className="text-sm text-muted-foreground">כאן יוצגו גרפים של הצריכה היומית/שבועית שלך.</p>
-                <p className="text-xs text-muted-foreground">(הדגמת קונספט - פונקציונליות בפיתוח)</p>
+                <p className="text-sm text-muted-foreground">כאן יוצגו גרפים של הצריכה היומית/שבועית שלך (הדגמה).</p>
+                <p className="text-xs text-muted-foreground">למשל: צריכת קלוריות מול יעד, חלוקת מאקרונוטריאנטים.</p>
             </div>
             <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md text-yellow-700 text-sm text-left">
-                <p className="font-semibold flex items-center"><Info className="ml-1 h-4 w-4"/> התראה לדוגמה:</p>
+                <p className="font-semibold flex items-center"><Info className="ml-1 h-4 w-4"/> התראה מדומה:</p>
                  <p>היום צרכת פחות מדי חלבון. האם תרצה/י שנוסיף מנה עשירה בחלבון להזמנה הבאה שלך? (לחץ <Button variant="link" size="sm" className="p-0 h-auto text-yellow-700" onClick={() => toast({title:"הצעה נוספה!", description:"מנת חלבון מומלצת נוספה לעגלה שלך (הדגמה)."})}>כאן</Button> להצעה).</p>
             </div>
             <Button onClick={handleFinishedMeal} variant="outline">
@@ -522,11 +519,11 @@ export default function NutritionalAdvisorPage() {
                     <PageCardDescription>חבר את חשבון LivePick שלך לאפליקציות בריאות לקבלת המלצות מדויקות יותר המבוססות על רמות הפעילות, שריפת הקלוריות ושעות השינה שלך.</PageCardDescription>
                 </CardHeader>
                 <CardContent className="text-center space-y-3">
-                    <div className="flex justify-center gap-4">
-                        <Button variant="outline" onClick={() => handleConnectHealthApp('Apple Health')}><Apple className="ml-2 h-4 w-4" /> חבר ל-Apple Health</Button>
-                        <Button variant="outline" onClick={() => handleConnectHealthApp('Google Fit')}><Sparkles className="ml-2 h-4 w-4" /> חבר ל-Google Fit</Button>
+                    <div className="flex flex-col sm:flex-row justify-center gap-4">
+                        <Button variant="outline" onClick={() => handleConnectHealthApp('Apple Health')} className="flex-1 sm:flex-none"><Apple className="ml-2 h-4 w-4" /> חבר ל-Apple Health</Button>
+                        <Button variant="outline" onClick={() => handleConnectHealthApp('Google Fit')} className="flex-1 sm:flex-none"><UserCheck className="ml-2 h-4 w-4" /> חבר ל-Google Fit</Button>
                     </div>
-                     <p className="text-xs text-muted-foreground">(הדגמת קונספט - פונקציונליות בפיתוח)</p>
+                     <p className="text-xs text-muted-foreground">הפיצ'ר יאפשר סנכרון נתונים להתאמה אישית של התפריט (הדגמה).</p>
                 </CardContent>
             </Card>
             <Card className="shadow-md">
@@ -539,7 +536,7 @@ export default function NutritionalAdvisorPage() {
                 <CardContent className="text-center space-y-2">
                     <p className="text-sm">לדוגמה: "ימי אכילה קבועים", "שבוע ניקוי רעלים", "שבוע חלבון גבוה", "שבוע ארוחות מהירות".</p>
                     <Button variant="outline" onClick={() => handleSelectRoutine('ימי אכילה קבועים')}>בחר שגרה (הדגמה)</Button>
-                    <p className="text-xs text-muted-foreground">(הדגמת קונספט - פונקציונליות בפיתוח)</p>
+                    <p className="text-xs text-muted-foreground">ה-AI יתאים עבורך תפריטים לפי השגרה שתבחר (הדגמה).</p>
                 </CardContent>
             </Card>
              <Card className="shadow-md">
@@ -551,8 +548,8 @@ export default function NutritionalAdvisorPage() {
                 </CardHeader>
                 <CardContent className="text-center space-y-2">
                     <p className="text-sm">לדוגמה: "השלמת שבוע זהב" = משלוח מתנה. "אכול 3 ירקות שונים ביום".</p>
-                    <Button variant="outline" onClick={handleViewChallenges}>הצג אתגרים (הדגמה)</Button>
-                    <p className="text-xs text-muted-foreground">(הדגמת קונספט - פונקציונליות בפיתוח)</p>
+                    <Button variant="outline" onClick={handleViewChallenges}>הצג אתגרים</Button>
+                    <p className="text-xs text-muted-foreground">הרווח פרסים על עמידה ביעדי תזונה (הדגמה).</p>
                 </CardContent>
             </Card>
        </div>
@@ -560,4 +557,3 @@ export default function NutritionalAdvisorPage() {
     </div>
   );
 }
-    

@@ -97,10 +97,9 @@ const culinaryAssistantFlow = ai.defineFlow(
 
     const { output } = await culinaryAssistantPrompt(input);
     if (!output) {
-        // Fallback suggestion
-        return { suggestion: `משתמש יקר (${input.userId}), יש לנו מגוון רחב של מאכלים לבחירתך! למה לא תבדוק את המסעדות החדשות באזור?` };
+        // Fallback suggestion in Hebrew
+        return { suggestion: `משתמש יקר (${input.userId}), LivePick מציעה מגוון רחב של מאכלים לבחירתך! למה לא לבדוק את המסעדות החדשות באזור או לחפש את המנה האהובה עליך?` };
     }
     return output;
   }
 );
-

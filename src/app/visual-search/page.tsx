@@ -37,7 +37,7 @@ export default function AiTrendScannerPage() {
         const dataUri = reader.result as string;
         setImagePreview(dataUri);
         setImageDataUri(dataUri);
-        setAiResponse(null); // Clear previous results when new image is selected
+        setAiResponse(null); 
       };
       reader.readAsDataURL(file);
     }
@@ -51,10 +51,9 @@ export default function AiTrendScannerPage() {
     setIsLoading(true);
     setAiResponse(null);
     try {
-      // Simulate API call delay for demo
       await new Promise(resolve => setTimeout(resolve, 1500));
       const input: IdentifyDishInputType = { imageDataUri, userQuery };
-      const result = await identifyDishFromImage(input); // This is the mock call
+      const result = await identifyDishFromImage(input); 
       setAiResponse(result);
       if (!result.identifiedDishName || result.identifiedDishName === "לא זוהתה מנה") {
         toast({ title: "לא הצלחנו לזהות", description: "לא הצלחנו לזהות את המנה בתמונה. נסה תמונה ברורה יותר.", variant: "default" });
@@ -74,16 +73,16 @@ export default function AiTrendScannerPage() {
   const handleShareResults = () => {
     if (!aiResponse) return;
     toast({
-      title: "שיתוף ממצאי טרנד (דמו)",
-      description: `זיהוי: ${aiResponse.identifiedDishName}. הצעה כללית: ${aiResponse.generalSuggestion.substring(0,50)}...`,
+      title: "שיתוף ממצאי טרנד",
+      description: `זיהוי: ${aiResponse.identifiedDishName}. הצעה כללית: ${aiResponse.generalSuggestion.substring(0,50)}... (הדגמה של תהליך שיתוף).`,
     });
   };
 
   const handlePostToMyCorner = () => {
     if(!aiResponse) return;
     toast({
-        title: "פרסום ב'פינה שלי' (בקרוב!)",
-        description: `התגלית שלך "${aiResponse.identifiedDishName}" תשותף ב'פינה' האישית שלך. צבור עוקבים וזכה בקופונים! (הדמיה)`,
+        title: "פרסום ב'פינה שלי'",
+        description: `התגלית שלך "${aiResponse.identifiedDishName}" תשותף ב'פינה' האישית שלך. צבור עוקבים וזכה בקופונים! (הדגמה של פונקציונליות זו).`,
         action: <Star className="text-yellow-500"/>
     });
   };
@@ -182,7 +181,7 @@ export default function AiTrendScannerPage() {
                         objectFit="cover"
                         data-ai-hint={aiResponse.businessOpportunity.suggestedItemName?.toLowerCase().split(' ').slice(0,2).join(' ') || "food concept"}
                     />
-                    <p className="absolute bottom-1 right-1 text-xs bg-black/50 text-white px-1 rounded">תצוגת AI (דמו)</p>
+                    <p className="absolute bottom-1 right-1 text-xs bg-black/50 text-white px-1 rounded">תצוגת AI (הדגמה)</p>
                 </div>
                 <p className="text-xs text-green-500 mt-2"><strong>נימוק:</strong> {aiResponse.businessOpportunity.rationale}</p>
               </div>
@@ -192,8 +191,8 @@ export default function AiTrendScannerPage() {
             </p>
           </CardContent>
            <CardFooter className="pt-3 border-t">
-              <Button onClick={handlePostToMyCorner} variant="outline" className="w-full" aria-label="הוסף לפינה שלי ושתף (בקרוב)">
-                <Camera className="mr-2 h-4 w-4" /> הוסף ל'פינה שלי' ושתף (בקרוב)
+              <Button onClick={handlePostToMyCorner} variant="outline" className="w-full" aria-label="הוסף לפינה שלי ושתף">
+                <Camera className="mr-2 h-4 w-4" /> הוסף ל'פינה שלי' ושתף
               </Button>
             </CardFooter>
         </Card>
@@ -201,4 +200,3 @@ export default function AiTrendScannerPage() {
     </div>
   );
 }
-    

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { PlusCircle, Search, Filter, Store, PackageSearch } from 'lucide-react';
+import { PlusCircle, Search, Filter, Store, PackageSearch, SlidersHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import SecondHandItemCard from '@/components/marketplace/second-hand-item-card';
 import { useToast } from '@/hooks/use-toast';
@@ -23,7 +23,6 @@ export default function MarketplacePage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // In a real app, you'd fetch this from a backend
     setItems(mockSecondHandItems.filter(item => !item.isSold));
   }, []);
 
@@ -42,12 +41,11 @@ export default function MarketplacePage() {
       );
     }
 
-    // Sorting
     if (sortBy === 'price-asc') {
       tempItems.sort((a, b) => a.price - b.price);
     } else if (sortBy === 'price-desc') {
       tempItems.sort((a, b) => b.price - a.price);
-    } else { // newest by default
+    } else { 
       tempItems.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
     }
 
@@ -56,8 +54,8 @@ export default function MarketplacePage() {
 
   const handleMoreFilters = () => {
     toast({
-      title: "פילטרים נוספים (בקרוב)",
-      description: "אפשרויות סינון מתקדמות כגון טווח מחירים, דירוג מוכר ועוד יתווספו בקרוב."
+      title: "פילטרים נוספים",
+      description: "אפשרויות סינון מתקדמות כגון טווח מחירים, דירוג מוכר ועוד יתווספו. (הדגמה)"
     });
   };
 
@@ -124,7 +122,7 @@ export default function MarketplacePage() {
                     </Select>
                 </div>
                  <Button variant="outline" className="w-full sm:w-auto bg-background shadow-sm" onClick={handleMoreFilters}>
-                    <Filter className="mr-2 h-4 w-4" /> עוד פילטרים
+                    <SlidersHorizontal className="mr-2 h-4 w-4" /> עוד פילטרים
                 </Button>
             </div>
         </CardContent>
@@ -147,7 +145,7 @@ export default function MarketplacePage() {
       )}
       {items.length > 12 && (
          <div className="text-center mt-8">
-            <Button variant="outline" disabled>טען עוד (בקרוב)</Button>
+            <Button variant="outline" onClick={() => toast({description: "טעינת מוצרים נוספים (הדגמה)."})}>טען עוד</Button>
         </div>
       )}
     </div>

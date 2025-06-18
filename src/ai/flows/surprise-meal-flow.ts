@@ -77,6 +77,7 @@ Your task is to invent:
 Keep the tone fun, enthusiastic, and engaging. Make the user smile and feel excited about their "discovery."
 Ensure all output fields (itemName, restaurantName, itemDescription, playfulReasoning) are populated.
 Output ONLY the JSON object as specified by the schema.
+All text output should be in Hebrew.
 `,
 });
 

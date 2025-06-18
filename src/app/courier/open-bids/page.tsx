@@ -6,13 +6,15 @@ import type { OrderDetailsForBidding, DeliveryVehicle } from '@/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { MapPin, Clock, Package, DollarSign, ArrowRight, AlertTriangle, Bike, Car, Footprints, Info, ListFilter, SlidersHorizontal } from 'lucide-react';
+import { MapPin, Clock, Package, DollarSign, ArrowRight, AlertTriangle, Bike, Car, Footprints, Info, ListFilter, SlidersHorizontal, Search } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { Label } from '@/components/ui/label';
 
-// Helper to get vehicle icon
+
 const VehicleIcon = ({ type }: { type: DeliveryVehicle | undefined }) => {
   if (type === 'motorcycle') return <Bike className="inline h-4 w-4" title="אופנוע" />;
   if (type === 'scooter') return <Bike className="inline h-4 w-4" title="קטנוע" />; 
@@ -23,16 +25,46 @@ const VehicleIcon = ({ type }: { type: DeliveryVehicle | undefined }) => {
 };
 
 export default function OpenBidsPage() {
-  const openOrders: OrderDetailsForBidding[] = mockOpenOrdersForBidding;
-  const [sortBy, setSortBy] = useState('reward'); // 'reward', 'distance', 'time'
-  // Add more state for filtering if needed
+  const [openOrders, setOpenOrders] = useState<OrderDetailsForBidding[]>([]);
+  const [filteredOrders, setFilteredOrders] = useState<OrderDetailsForBidding[]>([]);
+  const [sortBy, setSortBy] = useState('reward'); 
+  const [searchTerm, setSearchTerm] = useState('');
+  const { toast } = useToast();
 
-  const sortedOrders = [...openOrders].sort((a, b) => {
-    if (sortBy === 'reward') return b.baseCommission - a.baseCommission;
-    if (sortBy === 'distance') return (a.estimatedRouteDistanceKm || a.estimatedDistanceKm) - (b.estimatedRouteDistanceKm || b.estimatedDistanceKm);
+  useEffect(() => {
+    // Simulate fetching data
+    setOpenOrders(mockOpenOrdersForBidding);
+  }, []);
+
+  useEffect(() => {
+    let tempOrders = [...openOrders];
+
+    // Search filter
+    if (searchTerm) {
+      tempOrders = tempOrders.filter(order =>
+        order.restaurantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.deliveryAddress.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.itemsDescription.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Sort
+    if (sortBy === 'reward') {
+      tempOrders.sort((a, b) => b.baseCommission - a.baseCommission);
+    } else if (sortBy === 'distance') {
+      tempOrders.sort((a, b) => (a.estimatedRouteDistanceKm || a.estimatedDistanceKm) - (b.estimatedRouteDistanceKm || b.estimatedDistanceKm));
+    }
     // Add time sort logic if available in data
-    return 0;
-  });
+
+    setFilteredOrders(tempOrders);
+  }, [openOrders, searchTerm, sortBy]);
+  
+  const handleMoreFilters = () => {
+    toast({
+      title: "פילטרים נוספים",
+      description: "אפשרויות סינון מתקדמות כמו סוג רכב נדרש, מרחק מקסימלי וכו' יתווספו. (הדגמה)"
+    });
+  };
 
 
   return (
@@ -46,12 +78,26 @@ export default function OpenBidsPage() {
 
       <Card className="p-4 bg-muted/30">
         <CardHeader className="p-0 pb-3">
-            <CardTitle className="text-lg flex items-center"><ListFilter className="mr-2 h-5 w-5"/> סינון ומיון הצעות</CardTitle>
+            <CardTitle className="text-lg flex items-center"><ListFilter className="mr-2 h-5 w-5"/> סינון וחיפוש הצעות</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 items-end">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 items-end">
                 <div className="space-y-1">
-                    <label htmlFor="sortBy" className="text-xs font-medium text-muted-foreground">מיין לפי</label>
+                    <Label htmlFor="searchTermBids" className="text-xs font-medium text-muted-foreground">חיפוש חופשי</Label>
+                     <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            id="searchTermBids"
+                            type="search"
+                            placeholder="חפש מסעדה, כתובת, פריטים..."
+                            className="pl-10 bg-background shadow-sm"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                </div>
+                <div className="space-y-1">
+                    <Label htmlFor="sortBy" className="text-xs font-medium text-muted-foreground">מיין לפי</Label>
                     <Select value={sortBy} onValueChange={setSortBy}>
                         <SelectTrigger id="sortBy" className="w-full bg-background shadow-sm">
                             <SelectValue placeholder="בחר מיון..." />
@@ -64,20 +110,20 @@ export default function OpenBidsPage() {
                     </Select>
                 </div>
                 <div className="space-y-1">
-                     <label htmlFor="filterDistance" className="text-xs font-medium text-muted-foreground">מרחק מקסימלי (ק"מ)</label>
+                     <Label htmlFor="filterDistance" className="text-xs font-medium text-muted-foreground">מרחק מקסימלי (ק"מ)</Label>
                     <Input type="number" id="filterDistance" placeholder="לדוגמה: 5" className="bg-background shadow-sm" disabled />
                 </div>
-                 <Button variant="outline" className="w-full sm:w-auto bg-background shadow-sm" disabled>
-                    <SlidersHorizontal className="mr-2 h-4 w-4" /> עוד פילטרים (בקרוב)
+                 <Button variant="outline" className="w-full sm:w-auto bg-background shadow-sm" onClick={handleMoreFilters}>
+                    <SlidersHorizontal className="mr-2 h-4 w-4" /> עוד פילטרים
                 </Button>
             </div>
         </CardContent>
       </Card>
 
 
-      {sortedOrders.length > 0 ? (
+      {filteredOrders.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sortedOrders.map((order) => {
+          {filteredOrders.map((order) => {
             const restaurant = getRestaurantById(order.restaurantName === 'פיצה פאלאס' ? 'restaurant1' : order.restaurantName === 'בורגר בוננזה' ? 'restaurant2' : 'restaurant3'); 
             return (
             <Card key={order.orderId} className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col">
@@ -132,8 +178,12 @@ export default function OpenBidsPage() {
       ) : (
         <div className="text-center py-12">
           <Package className="h-24 w-24 mx-auto text-muted-foreground mb-6" />
-          <h2 className="text-2xl font-bold text-primary mb-4">אין כרגע הצעות פתוחות</h2>
-          <p className="text-muted-foreground">אנא בדוק/י שוב בקרוב להזדמנויות משלוח חדשות.</p>
+          <h2 className="text-2xl font-bold text-primary mb-4">
+            {searchTerm ? "לא נמצאו הצעות התואמות לחיפוש שלך." : "אין כרגע הצעות פתוחות"}
+          </h2>
+          <p className="text-muted-foreground">
+            {searchTerm ? "נסה לשנות את מונחי החיפוש או הפילטרים." : "אנא בדוק/י שוב בקרוב להזדמנויות משלוח חדשות."}
+          </p>
         </div>
       )}
       <p className="text-center text-sm text-muted-foreground mt-8">

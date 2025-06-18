@@ -17,7 +17,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import type { NutritionalGoal, DishRecommendation } from '@/types'; // Assuming these types are defined as per the Zod schemas below or elsewhere
+import type { NutritionalGoal, DishRecommendation } from '@/types'; 
 
 /**
  * @description Zod enum for predefined nutritional goals.
@@ -125,6 +125,7 @@ Ensure your response strictly follows the output schema, providing an array for 
 If no preferences are given, make generally suitable suggestions for the goal.
 If preferences are given (e.g., "vegetarian", "no nuts"), ensure your recommendations respect these.
 Be creative and helpful!
+All text output should be in Hebrew.
 `,
 });
 
@@ -147,11 +148,9 @@ const nutritionalAdvisorFlow = ai.defineFlow(
           estimatedProteinGrams: 25,
           reasoning: "זוהי אופציה בריאה כללית. אנא דייק/י את העדפותיך לייעוץ ספציפי יותר!"
         }],
-        generalAdvice: "זכור/י לשמור על שתייה מרובה ולהקשיב לאותות הרעב של גופך!"
+        generalAdvice: "זכור/י לשמור על שתייה מרובה ולהקשיב לאותות הרעב של גופך! התמדה היא המפתח להשגת יעדי התזונה שלך."
       };
     }
     return output;
   }
 );
-
-    

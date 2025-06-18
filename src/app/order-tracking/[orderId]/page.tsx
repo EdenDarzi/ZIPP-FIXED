@@ -266,8 +266,8 @@ export default function OrderTrackingPage() {
 
   const handleGamificationTask = () => {
     toast({
-        title: "משימת בונוס! (הדגמה)",
-        description: "שתף תמונה של הטרנד שהזמנת עם #LivePick וצבור עוד כוכבים! (פרטי המשימה יופיעו כאן).",
+        title: "משימת בונוס!",
+        description: "שתף תמונה של הטרנד שהזמנת עם #LivePick וצבור עוד כוכבים! (הדגמה של משימה).",
         action: <Award className="text-yellow-500" />
     });
   }
@@ -306,12 +306,12 @@ export default function OrderTrackingPage() {
       {showGamificationHint && !triviaAnswered && order.status !== 'SCHEDULED' && (
         <Card className="bg-purple-50 border-purple-200 text-purple-700 animate-fadeInUp">
             <CardHeader className="pb-2 pt-3">
-                <CardTitle className="flex items-center"><Gamepad2 className="mr-2 h-5 w-5"/> זמן מצוין לאתגר טריוויה!</CardTitle>
+                <CardTitle className="flex items-center"><Gamepad2 className="mr-2 h-5 w-5"/> זמן מצוין לאתגר טריוויה קצר!</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 pb-3">
                 <p>בזמן שההזמנה שלך מתקדמת, למה לא לנסות את חידון הטריוויה שלנו (בהמשך העמוד אם זמין) או להשלים משימת בונוס קטנה כדי לצבור נקודות וכוכבים?</p>
                 <Button variant="link" onClick={handleGamificationTask} className="p-0 text-purple-700">
-                    בדוק משימת בונוס (הדגמה)
+                    בדוק משימת בונוס
                 </Button>
             </CardContent>
         </Card>
@@ -381,4 +381,3 @@ export default function OrderTrackingPage() {
     </div>
   );
 }
-

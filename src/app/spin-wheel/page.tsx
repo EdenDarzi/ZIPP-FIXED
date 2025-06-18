@@ -44,6 +44,7 @@ export default function SpinWheelPage() {
 
 
   useEffect(() => {
+    // This effect runs only on the client
     const lastSpinTimestamp = localStorage.getItem('lastLivePickSpin');
     if (lastSpinTimestamp) {
       const lastSpinDate = new Date(parseInt(lastSpinTimestamp, 10));
@@ -58,6 +59,7 @@ export default function SpinWheelPage() {
   }, []);
 
   useEffect(() => {
+    // This effect also runs only on the client
     if (!canSpin && nextSpinTime) {
       const calculateTimeLeft = () => {
         const now = new Date().getTime();
@@ -89,7 +91,7 @@ export default function SpinWheelPage() {
     setIsSpinning(true);
     setSpinResult(null);
 
-    const randomSpins = Math.floor(Math.random() * 3) + 5; // 5-8 full spins
+    const randomSpins = Math.floor(Math.random() * 3) + 5; 
     const randomStopSegment = Math.floor(Math.random() * WHEEL_SEGMENTS);
     const segmentAngle = 360 / WHEEL_SEGMENTS;
     const offsetForPointer = segmentAngle / 2; 
@@ -111,7 +113,7 @@ export default function SpinWheelPage() {
       if (result.isWin) {
         toast({
           title: `🎉 זכית ב: ${result.name}! 🎉`,
-          description: result.description || 'ההטבה נוספה לחשבונך (דמו).',
+          description: result.description || 'ההטבה נוספה לחשבונך (הדגמה).',
           duration: 7000,
           className: cn(result.colorClass, result.textColorClass || 'text-white', 'border-2', result.textColorClass ? result.textColorClass.replace('text-','border-') : 'border-white/50' ),
         });
@@ -127,15 +129,15 @@ export default function SpinWheelPage() {
 
   const handleRedeem = () => {
     toast({
-      title: "הטבה מומשה (דמו)",
+      title: "הטבה מומשה (הדגמה)",
       description: `ההטבה "${spinResult?.name}" הופעלה עבורך. תראה אותה בעגלה/בתשלום בהזמנה הבאה מאותו עסק.`,
     });
   };
   
   const handleShareForTry = () => {
     toast({
-        title: "שיתוף (בקרוב!)",
-        description: "שתף עם חבר ותקבל ניסיון נוסף לסובב את הגלגל! (פונקציונליות בפיתוח)",
+        title: "שיתוף",
+        description: "שתף עם חבר ותקבל ניסיון נוסף לסובב את הגלגל! (הדגמה של פונקציונליות זו).",
     });
   }
 
@@ -224,7 +226,7 @@ export default function SpinWheelPage() {
               {spinResult.redeemable && (
                 <CardFooter className="p-0 pt-3 sm:pt-4">
                   <Button onClick={handleRedeem} className={cn("w-full text-md sm:text-lg py-2.5", spinResult.isWin ? 'bg-white/20 hover:bg-white/30 text-white border-white/50' : 'bg-accent hover:bg-accent/90 text-accent-foreground' )}>
-                    נצל את ההטבה (דמו)
+                    נצל את ההטבה (הדגמה)
                   </Button>
                 </CardFooter>
               )}
@@ -262,7 +264,7 @@ export default function SpinWheelPage() {
                     <p className="text-sm text-muted-foreground">תוכל לסובב שוב בקרוב!</p>
                 )}
                 <Button variant="outline" size="sm" onClick={handleShareForTry} className="text-xs">
-                    <Share2 className="mr-1.5 h-3.5 w-3.5"/> שתף עם חבר לניסיון נוסף (בקרוב)
+                    <Share2 className="mr-1.5 h-3.5 w-3.5"/> שתף עם חבר לניסיון נוסף
                 </Button>
             </div>
           )}
@@ -275,7 +277,7 @@ export default function SpinWheelPage() {
         </CardFooter>
       </Card>
        <p className="text-xs text-muted-foreground px-4">
-        אפקט הסיבוב הוא להדגמה. משחק מלא עם אנימציות מתקדמות, סאונד, ניהול פרסים אמיתי בצד השרת ומגבלות שימוש מתקדמות יפותח בהמשך.
+        האפליקציה מדגימה את הקונספט של גלגל המזל. משחק מלא עם אנימציות מתקדמות, סאונד, ניהול פרסים אמיתי בצד השרת ומגבלות שימוש מתקדמות יפותח בהמשך.
       </p>
        <style jsx global>{`
         @keyframes ping-once {

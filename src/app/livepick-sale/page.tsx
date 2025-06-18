@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ShoppingBag, AlertTriangle, Clock, ArrowLeft, PlusCircle, Store } from 'lucide-react';
+import { ShoppingBag, AlertTriangle, Clock, ArrowLeft, PlusCircle, Store, Info } from 'lucide-react';
 import Image from 'next/image';
 import { mockLivePickSaleItems } from '@/lib/mock-data';
 import type { LivePickSaleItem as SwiftSaleItem } from '@/types'; 
@@ -18,19 +18,14 @@ export default function LivePickSalePage() {
   const { addToCart } = useCart(); 
   const { toast } = useToast();
   const [isSaleActiveNow, setIsSaleActiveNow] = useState(false);
-  const SALE_START_HOUR = 19; // 7 PM
-  const SALE_END_HOUR = 23; // 11 PM (exclusive for end, active until 22:59)
+  const SALE_START_HOUR = 19; // 7 PM (example)
+  const SALE_END_HOUR = 23; // 11 PM (example, active until 22:59)
 
   useEffect(() => {
-    const currentHour = new Date().getHours();
-    // const saleActive = currentHour >= SALE_START_HOUR && currentHour < SALE_END_HOUR; // Original logic
-    const saleActive = currentHour >= 0 && currentHour <= 23; // For demo: always active
-    setIsSaleActiveNow(saleActive);
-    if (saleActive) { 
-        setActiveItems(mockLivePickSaleItems.filter(item => item.isActive && item.quantityAvailable > 0));
-    } else {
-        setActiveItems([]);
-    }
+    // For demo purposes, we'll assume the sale is always active when this page is visited.
+    // In a real app, this logic would be more robust and potentially server-driven.
+    setIsSaleActiveNow(true); 
+    setActiveItems(mockLivePickSaleItems.filter(item => item.isActive && item.quantityAvailable > 0));
   }, []);
 
   const handleAddToCart = (item: SwiftSaleItem) => {
@@ -47,7 +42,7 @@ export default function LivePickSalePage() {
     addToCart(cartItem as any, 1); 
     toast({
         title: "שקית הפתעה נוספה לעגלה!",
-        description: `שקית "${item.name}" מ-${item.restaurantName} בדרך אליך.`,
+        description: `שקית "${item.name}" מ-${item.restaurantName} נוספה.`,
     });
   };
 
@@ -58,7 +53,7 @@ export default function LivePickSalePage() {
           <ShoppingBag className="h-16 w-16 mx-auto mb-4 animate-bounce" />
           <CardTitle className="text-3xl md:text-4xl font-headline">LivePick Sale - שקיות הפתעה חמות מסוף היום!</CardTitle>
           <CardDescription className="text-lg text-red-100 mt-2">
-            תפסו דילים מדהימים על מוצרים איכותיים שעסקים, שווקים ודוכנים מציעים בהנחה בסוף היום. הפחתת בזבוז, מקסימום חיסכון!
+            תפסו דילים מדהימים על מוצרים איכותיים שעסקים, שווקים ודוכנים מציעים בהנחה בסוף היום. הפחתת בזבוז, מקסימוum חיסכון!
           </CardDescription>
         </CardHeader>
          <CardContent>
@@ -70,12 +65,12 @@ export default function LivePickSalePage() {
         </CardContent>
       </Card>
 
-      {!isSaleActiveNow && (
+      {!isSaleActiveNow && ( // This block might not be reached if sale is always active for demo
         <Card className="text-center py-12">
           <CardContent className="flex flex-col items-center gap-4">
             <Clock className="h-16 w-16 text-muted-foreground" />
             <p className="text-xl text-muted-foreground">מבצעי LivePick Sale סגורים כעת.</p>
-            <p className="text-sm">הצטרפו אלינו בין השעות {String(SALE_START_HOUR).padStart(2, '0')}:00 - {String(SALE_END_HOUR).padStart(2, '0')}:00 כדי למצוא דילים חמים, או בדקו עסקים אחרים.</p>
+            <p className="text-sm">המבצע פעיל בין השעות {String(SALE_START_HOUR).padStart(2, '0')}:00 - {String(SALE_END_HOUR).padStart(2, '0')}:00 (הדגמה). בדקו עסקים אחרים או חזרו מאוחר יותר!</p>
           </CardContent>
         </Card>
       )}
@@ -85,7 +80,7 @@ export default function LivePickSalePage() {
           <CardContent className="flex flex-col items-center gap-4">
             <AlertTriangle className="h-16 w-16 text-muted-foreground" />
             <p className="text-xl text-muted-foreground">אוי! נראה שכל שקיות ההפתעה להיום נחטפו.</p>
-            <p className="text-sm">בדקו שוב מחר או חפשו בעסקים אחרים!</p>
+            <p className="text-sm">בדקו שוב מאוחר יותר או חפשו בעסקים אחרים!</p>
           </CardContent>
         </Card>
       )}
@@ -129,8 +124,9 @@ export default function LivePickSalePage() {
           ))}
         </div>
       )}
-       <p className="text-xs text-muted-foreground text-center mt-4">
-        כל שקית מגיעה עם תגית "הפתעה טעימה במחיר של פחות מקפה". התכולה משתנה!
+       <p className="text-xs text-muted-foreground text-center mt-4 flex items-center justify-center">
+        <Info className="h-4 w-4 mr-2 text-blue-500"/>
+        כל שקית מגיעה עם תגית "הפתעה טעימה במחיר של פחות מקפה". התכולה משתנה! (הדגמה)
       </p>
     </div>
   );

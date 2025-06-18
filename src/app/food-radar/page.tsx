@@ -2,11 +2,10 @@
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { MapIcon, Utensils, Clock, TrendingUp as LiveTrendIcon, Users, Search as SearchIcon } from 'lucide-react';
+import { MapIcon, Utensils, Clock, TrendingUp as LiveTrendIcon, Users, Search as SearchIcon, Info } from 'lucide-react';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 
-// Mock data for recent orders & live trends
 const mockRecentActivities = [
   { id: '1', itemName: 'פיצה פפרוני חריפה', restaurantName: 'פיצה האט', timeAgo: 'ממש עכשיו', locationHint: 'רחוב הרצל', type: 'order', dataAiHint: 'pizza pepperoni map' },
   { id: '2', itemName: 'סושי קומבינציה', restaurantName: 'סושי בר', timeAgo: 'לפני 2 דקות', locationHint: 'שדרות רוטשילד', type: 'order', dataAiHint: 'sushi combination map' },
@@ -38,12 +37,12 @@ export default function FoodRadarPage() {
               objectFit="cover"
               data-ai-hint="live map food orders trends"
             />
-            <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-              <p className="text-white text-xl font-semibold">תצוגת מפת טרנדים חיה (בקרוב!)</p>
+            <div className="absolute inset-0 flex items-center justify-center bg-black/30 p-4">
+              <p className="text-white text-xl font-semibold">תצוגת מפת טרנדים חיה (הדמיה)</p>
             </div>
           </div>
 
-          <h2 className="text-2xl font-semibold mb-6 text-accent">פיד פעילות חיה באזור שלך (דמו):</h2>
+          <h2 className="text-2xl font-semibold mb-6 text-accent">פיד פעילות חיה באזור שלך (הדגמה):</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {mockRecentActivities.map(item => (
               <Card key={item.id} className="p-4 text-left shadow-md hover:shadow-lg transition-shadow">
@@ -88,8 +87,9 @@ export default function FoodRadarPage() {
               </Card>
             ))}
           </div>
-          <p className="text-sm text-muted-foreground mt-8">
-            שימו לב: פיצ'ר זה נמצא בפיתוח ויציג נתונים אמיתיים ואנונימיים בקרוב.
+          <p className="text-sm text-muted-foreground mt-8 flex items-center justify-center">
+            <Info className="h-4 w-4 mr-2 text-blue-500"/>
+            זהו פיד פעילות מדומה. במערכת חיה, נתונים יוצגו באופן אנונימי ויתעדכנו בזמן אמת.
           </p>
         </CardContent>
       </Card>

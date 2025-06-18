@@ -23,12 +23,12 @@ const Header = () => {
   const handleLanguageToggle = () => {
     toast({ 
         title: "החלפת שפה", 
-        description: "אפשרות להחלפה בין עברית, אנגלית, רוסית וערבית תתווסף בעתיד. (הדגמה)"
+        description: "אפשרות להחלפה בין עברית, אנגלית, רוסית וערבית תתווסף. (הדגמה של פונקציונליות זו)."
     });
   };
 
   const handleTravelModeToggle = () => {
-    toast({ title: "מצב נסיעות (בטא)", description: "המלצות מותאמות למיקום ושירותים בינלאומיים יגיעו בקרוב! (הפונקציונליות בפיתוח)" });
+    toast({ title: "מצב נסיעות", description: "המלצות מותאמות למיקום ושירותים בינלאומיים יגיעו. (הדגמה של פונקציונליות זו)." });
   };
 
   const navLinks = [
@@ -87,13 +87,13 @@ const Header = () => {
           
           <Tooltip delayDuration={300}>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="sm" onClick={handleTravelModeToggle} className="hidden lg:inline-flex items-center" title="מצב נסיעות (בטא)">
+              <Button variant="ghost" size="sm" onClick={handleTravelModeToggle} className="hidden lg:inline-flex items-center" title="מצב נסיעות">
                 <Briefcase className="h-4 w-4 text-blue-500 sm:mr-1" />
                 <span className="hidden lg:inline text-xs">מצב נסיעות</span> 
               </Button>
             </TooltipTrigger>
              <TooltipContent className="lg:hidden p-2 text-xs">
-                <p>מצב נסיעות (בטא)</p>
+                <p>מצב נסיעות</p>
             </TooltipContent>
           </Tooltip>
 
@@ -103,8 +103,8 @@ const Header = () => {
                 <Button variant="ghost" asChild size="icon" className="relative" title="התראות">
                   <Link href="/notifications" aria-label="התראות"><span className="relative flex items-center justify-center w-full h-full">
                     <Bell className="h-5 w-5" />
-                    {/* Placeholder for notification count badge - e.g., if you have an unread count state */}
-                    {/* {unreadNotificationCount > 0 && <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-xs">{unreadNotificationCount}</Badge>} */}
+                    {/* Placeholder for notification count badge */}
+                    { Math.random() > 0.7 && <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-xs">2</Badge>}
                   </span></Link>
                 </Button>
             </TooltipTrigger>
@@ -138,14 +138,14 @@ const Header = () => {
           
           <Tooltip delayDuration={300}>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="sm" onClick={handleLanguageToggle} className="flex items-center" aria-label="החלף שפה (פונקציונליות בפיתוח)" title="החלף שפה (פונקציונליות בפיתוח)">
+              <Button variant="ghost" size="sm" onClick={handleLanguageToggle} className="flex items-center" aria-label="החלף שפה" title="החלף שפה">
                 <span className="flex items-center">
                     <Languages className="h-4 w-4 sm:mr-1" />
                     <span className="hidden sm:inline">EN</span>
                 </span>
               </Button>
             </TooltipTrigger>
-            <TooltipContent className="sm:hidden p-2 text-xs"><p>English (פונקציונליות בפיתוח)</p></TooltipContent>
+            <TooltipContent className="sm:hidden p-2 text-xs"><p>English</p></TooltipContent>
           </Tooltip>
         </nav>
       </div>
@@ -155,4 +155,3 @@ const Header = () => {
 };
 
 export default Header;
-    

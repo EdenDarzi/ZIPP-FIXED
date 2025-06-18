@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Award, CheckCircle, CreditCard, ListChecks, Zap } from 'lucide-react'; // Replaced Star with ListChecks
+import { Award, CheckCircle, CreditCard, ListChecks, Zap, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 
@@ -25,15 +25,15 @@ export default function CourierSubscriptionPage() {
 
   const handleManageSubscriptionPayment = () => {
     toast({
-      title: 'ניהול פרטי תשלום (הדגמה)',
-      description: 'יופנה לפורטל תשלומים לעדכון אמצעי חיוב עבור המנוי (בקרוב).',
+      title: 'ניהול פרטי תשלום',
+      description: 'יופנה לפורטל תשלומים לעדכון אמצעי חיוב עבור המנוי. (הדגמה של תהליך)',
     });
   };
   
   const handleViewTerms = () => {
      toast({
-      title: 'תנאי מנוי (הדגמה)',
-      description: 'הצגת תנאי המנוי המלאים (בקרוב).',
+      title: 'תנאי מנוי',
+      description: 'הצגת תנאי המנוי המלאים. (הדגמה)',
     });
   };
 
@@ -81,12 +81,12 @@ export default function CourierSubscriptionPage() {
       </Card>
        <Card className="bg-yellow-50 border-yellow-300">
         <CardHeader className="pb-2 pt-3">
-          <CardTitle className="text-md text-yellow-700">פרטי המנוי נשמרים באופן מאובטח.</CardTitle>
+          <CardTitle className="text-md text-yellow-700 flex items-center"><Info className="mr-2 h-4 w-4"/> פרטי המנוי נשמרים באופן מאובטח.</CardTitle>
         </CardHeader>
         <CardContent className="text-sm text-yellow-600">
           <p>
             ההצטרפות כמנוי מבטיחה לך גישה רציפה להזדמנויות משלוח, כלים לשיפור הביצועים ותמיכה זמינה.
-            אנו מעריכים את השותפות שלך!
+            אנו מעריכים את השותפות שלך! (הדגמה של אזור תוכן זה).
           </p>
         </CardContent>
       </Card>

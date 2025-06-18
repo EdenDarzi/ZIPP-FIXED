@@ -76,7 +76,7 @@ export default function PublishSecondHandForm() {
     setTimeout(() => {
       toast({
         title: 'המוצר נשלח לפרסום!',
-        description: `"${values.title}" יופיע בלוח יד 2 לאחר אישור קצר (זהו דמו).`,
+        description: `"${values.title}" יופיע בלוח יד 2 לאחר אישור קצר (זהו תהליך הדגמה).`,
       });
       setIsLoading(false);
       form.reset();
@@ -86,8 +86,8 @@ export default function PublishSecondHandForm() {
 
   const handleMockImageUpload = (fieldName: 'imageUrl1' | 'imageUrl2' | 'imageUrl3') => {
     toast({
-        title: 'העלאת תמונה (בקרוב)',
-        description: 'אפשרות להעלאת קבצים ישירות מהמכשיר תתווסף בקרוב. בינתיים, אנא השתמש/י בקישור (URL) לתמונה.',
+        title: 'העלאת תמונה',
+        description: 'אפשרות להעלאת קבצים ישירות מהמכשיר תתווסף. בינתיים, אנא השתמש/י בקישור (URL) לתמונה. (הדגמה)',
     });
   };
 
@@ -121,7 +121,7 @@ export default function PublishSecondHandForm() {
         <Card>
             <CardHeader className="p-4">
                 <CardTitle className="text-base font-semibold flex items-center"><ImageIcon className="mr-2 h-5 w-5 text-primary"/> תמונות המוצר (עד 3)</CardTitle>
-                <FormDescription className="text-xs">השתמש בקישורי URL ישירים לתמונות.</FormDescription>
+                <FormDescription className="text-xs">השתמש בקישורי URL ישירים לתמונות. העלאת קבצים תתאפשר בהמשך.</FormDescription>
             </CardHeader>
             <CardContent className="p-4 space-y-4">
                 {[1, 2, 3].map(i => (
@@ -131,7 +131,7 @@ export default function PublishSecondHandForm() {
                         <FormLabel className="text-sm">קישור לתמונה {i}</FormLabel>
                         <div className="flex items-center gap-2">
                             <FormControl><Input placeholder={`https://example.com/image${i}.jpg`} {...field as any} /></FormControl>
-                            <Button type="button" variant="outline" size="icon" onClick={() => handleMockImageUpload(`imageUrl${i}` as any)} title="העלה קובץ (בקרוב)">
+                            <Button type="button" variant="outline" size="icon" onClick={() => handleMockImageUpload(`imageUrl${i}` as any)} title="העלה קובץ">
                                 <UploadCloud className="h-4 w-4"/>
                             </Button>
                         </div>
@@ -142,7 +142,7 @@ export default function PublishSecondHandForm() {
                     <FormItem>
                         <FormLabel className="text-xs">רמז AI לתמונה {i} (אופציונלי)</FormLabel>
                         <FormControl><Input placeholder="לדוגמה: כיסא עץ, סמארטפון שחור" {...field as any} className="text-xs h-8"/></FormControl>
-                        <FormDescription className="text-xs">אם התמונה היא Placeholder, עזור ל-AI ליצור תמונה מתאימה בעתיד.</FormDescription>
+                        <FormDescription className="text-xs">אם התמונה היא Placeholder, עזור ל-AI ליצור תמונה מתאימה.</FormDescription>
                         <FormMessage />
                     </FormItem>
                     )}/>

@@ -144,9 +144,9 @@ const identifyDishFlow = ai.defineFlow(
     const { output } = await identifyDishPrompt(input);
     if (!output) {
       return {
-        identifiedDishName: "לא זוהתה מנה",
+        identifiedDishName: "פריט מזון זוהה",
         isTrend: false,
-        generalSuggestion: "מצטערים, לא הצלחתי לנתח את התמונה כרגע. אנא נסה/י תמונה אחרת או חפש/י ידנית ב-LivePick."
+        generalSuggestion: "מצטערים, לא הצלחנו לנתח את התמונה במלואה כרגע. אנא נסה/י תמונה אחרת או חפש/י ידנית ב-LivePick כדי למצוא מנות דומות או מסעדות בסביבתך."
       }
     }
     return output;

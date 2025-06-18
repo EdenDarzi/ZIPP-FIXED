@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  font-family: 'PT Sans', sans-serif;
+  font-family: 'PT Sans', var(--font-pt-sans), sans-serif;
 }
 
 @layer base {
@@ -41,6 +41,7 @@ body {
     --sidebar-accent-foreground: 24 90% 98%;
     --sidebar-border: 208 20% 85%;
     --sidebar-ring: 197 71% 50%;
+    --font-pt-sans: 'PT Sans', sans-serif;
   }
   .dark {
     --background: 210 10% 15%; /* Dark Gray */
@@ -75,6 +76,7 @@ body {
     --sidebar-accent-foreground: 24 90% 98%;
     --sidebar-border: 210 10% 25%;
     --sidebar-ring: 197 71% 65%;
+    --font-pt-sans: 'PT Sans', sans-serif;
   }
 }
 

@@ -59,7 +59,7 @@ export default function CartPage() {
     if (checked) {
         toast({
             title: "משלוח מתנה!",
-            description: "ההזמנה תסומן כמתנה. (הדגמת סימון, אפשרויות נוספות כמו כרטיס ברכה יופיעו בתשלום).",
+            description: "ההזמנה תסומן כמתנה. אפשרויות נוספות כמו כרטיס ברכה יופיעו בתשלום.",
         });
     }
   };
@@ -67,7 +67,7 @@ export default function CartPage() {
   const handleDynamicLocationClick = () => {
     toast({
         title: "משלוח למיקום דינמי",
-        description: "שירות זה יאפשר לשליח לעקוב אחר מיקומך בזמן אמת! (הפונקציונליות בפיתוח).",
+        description: "השירות יאפשר לשליח לעקוב אחר מיקומך בזמן אמת (פונקציונליות בפיתוח).",
         duration: 5000,
     });
   };
@@ -75,7 +75,7 @@ export default function CartPage() {
   const handleGroupOrderClick = () => {
     toast({
         title: "הזמנה קבוצתית",
-        description: "שירות זה יאפשר לך להזמין חברים להוסיף פריטים ולחלק את החשבון! (הפונקציונליות בפיתוח).",
+        description: "השירות יאפשר לך להזמין חברים להוסיף פריטים ולחלק את החשבון (פונקציונליות בפיתוח).",
         duration: 5000,
     });
   };
@@ -254,7 +254,7 @@ export default function CartPage() {
                 </div>
               )}
                <p className="text-xs text-muted-foreground">שימו לב: זמינות המשלוח המתוכנן תלויה בשעות הפעילות של המסעדה והשליחים.</p>
-                 <Button onClick={handleDynamicLocationClick} variant="outline" className="w-full mt-2" aria-label="משלוח למיקום דינמי (פונקציונליות בפיתוח)">
+                 <Button onClick={handleDynamicLocationClick} variant="outline" className="w-full mt-2" aria-label="משלוח למיקום דינמי">
                     <Navigation className="h-4 w-4 ml-2 rtl:ml-0 rtl:mr-2 text-blue-500" /> משלוח למיקום דינמי
                  </Button>
             </CardContent>
@@ -271,7 +271,7 @@ export default function CartPage() {
                         <Gift className="h-5 w-5 ml-2 rtl:ml-0 rtl:mr-2 text-pink-500" /> זו מתנה?
                     </Label>
                 </div>
-                <Button onClick={handleGroupOrderClick} variant="outline" className="w-full" aria-label="התחל הזמנה קבוצתית (פונקציונליות בפיתוח)">
+                <Button onClick={handleGroupOrderClick} variant="outline" className="w-full" aria-label="התחל הזמנה קבוצתית">
                     <Users className="h-4 w-4 ml-2 rtl:ml-0 rtl:mr-2 text-purple-500" /> התחל הזמנה קבוצתית
                  </Button>
             </CardContent>
@@ -359,4 +359,3 @@ export default function CartPage() {
     </div>
   );
 }
-

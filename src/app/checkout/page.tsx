@@ -39,8 +39,8 @@ export default function CheckoutPage() {
     setDiscreetDelivery(checked);
     if (checked) {
         toast({
-            title: "משלוח דיסקרטי הופעל (הדגמה)",
-            description: "אפשרויות למשלוח אנונימי (ללא שם שולח, אינטראקציה גנרית של שליח) יתווספו בהמשך.",
+            title: "משלוח דיסקרטי הופעל",
+            description: "אפשרויות למשלוח אנונימי (ללא שם שולח, אינטראקציה גנרית של שליח) יתווספו בהמשך. (הדגמה)",
             duration: 5000,
         });
     }
@@ -73,7 +73,6 @@ export default function CheckoutPage() {
 
     const mockOrderId = `livepick_${Date.now()}_${scheduledDeliveryTime ? 'scheduled' : 'asap'}`; 
     
-    // Pass customerNotes and isGiftOrder to the tracking page
     const queryParams = new URLSearchParams();
     if (customerNotes) queryParams.append('notes', customerNotes);
     if (isGiftOrder) queryParams.append('isGift', 'true');
@@ -224,4 +223,3 @@ export default function CheckoutPage() {
     </div>
   );
 }
-
