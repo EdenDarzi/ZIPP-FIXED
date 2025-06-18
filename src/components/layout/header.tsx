@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, TrendingUp, Languages, Send, HeartPulse, MapIcon, Briefcase, Gem, Users, Store, Bell, Heart, PackageSearch } from 'lucide-react'; 
+import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, TrendingUp, Languages, Send, HeartPulse, MapIcon, Briefcase, Gem, Users, Store, Bell, Heart, PackageSearch, ShieldCheck } from 'lucide-react'; 
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
 import { Badge } from '@/components/ui/badge';
@@ -46,6 +46,7 @@ const Header = () => {
     { href: "/vip", label: "VIP", icon: Gem, showAlways: false, showSm: false, showMd: true, showLg: true, showXl: true },
     { href: "/courier/dashboard", label: "שליחים", icon: Truck, showAlways: false, showSm: false, showMd: false, showLg: false, showXl: true },
     { href: "/restaurant-admin", label: "ניהול עסק", icon: ChefHat, showAlways: false, showSm: false, showMd: false, showLg: false, showXl: true },
+    { href: "/super-admin", label: "סופר אדמין", icon: ShieldCheck, showAlways: false, showSm: false, showMd: false, showLg: false, showXl: true, className: "text-purple-600" },
   ];
 
 
@@ -65,6 +66,7 @@ const Header = () => {
                   asChild 
                   size="sm" 
                   className={`
+                    ${link.className || ''}
                     ${link.showAlways ? 'inline-flex' : 'hidden'}
                     ${link.showSm && !link.showAlways ? 'sm:inline-flex' : ''}
                     ${link.showMd && !link.showSm ? 'md:inline-flex' : ''}

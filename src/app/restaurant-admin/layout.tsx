@@ -6,6 +6,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { LayoutDashboard, Settings, ListChecks, Palette, ShoppingBasket, BarChart3, ChefHat, LogOut, Users as CourierIcon, Route, Lightbulb, Megaphone, CreditCard, Wallet } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast'; // Import useToast
+import { useRouter } from 'next/navigation'; // Import useRouter
 
 const adminNavItems = [
   { href: '/restaurant-admin', label: 'לוח בקרה', icon: LayoutDashboard },
@@ -18,12 +20,16 @@ const adminNavItems = [
   { href: '/restaurant-admin/analytics', label: 'ניתוחים', icon: BarChart3 },
   { href: '/restaurant-admin/courier-management', label: 'ניהול שליחים (צפייה)', icon: CourierIcon },
   { href: '/restaurant-admin/trending-insights', label: 'תובנות טרנדים', icon: Lightbulb },
-  { href: '/restaurant-admin/subscription', label: 'כספים וארנק', icon: Wallet },
+  { href: '/restaurant-admin/wallet', label: 'ארנק עסקי וחיובים', icon: Wallet }, // Changed from subscription
 ];
 
 export default function RestaurantAdminLayout({ children }: { children: ReactNode }) {
-  // In a real app, you'd get the business name from context/session
-  const businessName = "העסק שלי";
+  const businessName = "העסק שלי"; // In a real app, get from context/session
+  // const router = useRouter(); // Can't use in Server Component directly if needed for logout
+  // const { toast } = useToast(); // Can't use in Server Component
+
+  // The logout button below will simply navigate. Proper logout requires client-side logic or a server action.
+  // For the demo, we'll keep the Link which will redirect to login.
 
   return (
     <div className="flex min-h-screen bg-muted/40">
@@ -53,9 +59,9 @@ export default function RestaurantAdminLayout({ children }: { children: ReactNod
         </ScrollArea>
         <div className="mt-auto p-4 border-t">
             <Button variant="outline" className="w-full justify-start" asChild>
-              <Link href="/">
+              <Link href="/auth/login">
                 <span className="flex items-center">
-                  <LogOut className="mr-2 h-4 w-4" /> יציאה מממשק הניהול
+                  <LogOut className="mr-2 h-4 w-4" /> התנתק (מדומה)
                 </span>
               </Link>
             </Button>

@@ -16,7 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation'; 
-import { Eye, EyeOff, LogIn } from 'lucide-react';
+import { Eye, EyeOff, LogIn, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 
 const formSchema = z.object({
@@ -39,11 +39,49 @@ export default function LoginForm() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
+
+    // Mock login logic
+    if (values.password === 'password') { // Common password for demo
+      if (values.email === 'admin@livepick.com' || values.email === 'restaurant@livepick.com') {
+        toast({
+          title: 'התחברות מוצלחת (מנהל עסק)',
+          description: 'ברוך שובך לפורטל ניהול העסק!',
+          action: <LogIn className="text-green-500" />
+        });
+        router.push('/restaurant-admin');
+        return;
+      } else if (values.email === 'courier@livepick.com') {
+        toast({
+          title: 'התחברות מוצלחת (שליח)',
+          description: 'ברוך שובך לפורטל השליחים!',
+          action: <LogIn className="text-green-500" />
+        });
+        router.push('/courier/dashboard');
+        return;
+      } else if (values.email === 'superadmin@livepick.com') {
+        toast({
+          title: 'התחברות מוצלחת (סופר אדמין)',
+          description: 'ברוך שובך לפורטל ניהול המערכת!',
+          action: <ShieldCheck className="text-purple-500" />
+        });
+        router.push('/super-admin');
+        return;
+      } else {
+        toast({
+          title: 'התחברות מוצלחת (לקוח)',
+          description: 'ברוך שובך ל-LivePick!',
+          action: <LogIn className="text-green-500" />
+        });
+        router.push('/'); 
+        return;
+      }
+    }
+
     toast({
-      title: 'התחברות מוצלחת',
-      description: 'ברוך שובך ל-SwiftServe!',
+      title: 'שגיאת התחברות',
+      description: 'שם משתמש או סיסמה אינם נכונים. (הדגמה)',
+      variant: 'destructive',
     });
-    router.push('/'); 
   }
 
   return (
@@ -79,7 +117,7 @@ export default function LoginForm() {
                     type="button" 
                     variant="ghost" 
                     size="icon" 
-                    className="absolute left-1 top-1/2 -translate-y-1/2 h-7 w-7" /* Adjusted for RTL */
+                    className="absolute left-1 top-1/2 -translate-y-1/2 h-7 w-7"
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
                   >
@@ -92,7 +130,7 @@ export default function LoginForm() {
           )}
         />
         <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-          <LogIn className="ml-2 h-4 w-4" /> התחבר {/* Adjusted for RTL */}
+          <LogIn className="ml-2 h-4 w-4" /> התחבר
         </Button>
       </form>
     </Form>

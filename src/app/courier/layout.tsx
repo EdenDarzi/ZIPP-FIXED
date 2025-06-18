@@ -2,7 +2,7 @@
 import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { LayoutDashboard, ListChecks, PackageCheck, BarChart3, UserCog, CreditCard, Wallet } from 'lucide-react'; 
+import { LayoutDashboard, ListChecks, PackageCheck, BarChart3, UserCog, CreditCard, Wallet, LogOut } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
 
 const courierNavItems = [
@@ -10,8 +10,8 @@ const courierNavItems = [
   { href: '/courier/open-bids', label: 'הצעות פתוחות', icon: ListChecks },
   { href: '/courier/active-orders', label: 'הזמנות פעילות', icon: PackageCheck },
   { href: '/courier/performance', label: 'ביצועים והכנסות', icon: BarChart3 },
+  { href: '/courier/wallet', label: 'ארנק ותשלומים', icon: Wallet }, // Changed from subscription
   { href: '/courier/profile', label: 'פרופיל והגדרות', icon: UserCog },
-  { href: '/courier/subscription', label: 'הכנסות וארנק', icon: Wallet },
 ];
 
 export default function CourierLayout({ children }: { children: ReactNode }) {
@@ -35,6 +35,13 @@ export default function CourierLayout({ children }: { children: ReactNode }) {
                 </Link>
               </Button>
             ))}
+             <Button variant="outline" size="sm" asChild className="border-destructive text-destructive hover:bg-destructive/10">
+              <Link href="/auth/login">
+                <span className="flex items-center">
+                  <LogOut className="mr-2 h-4 w-4" /> התנתק (מדומה)
+                </span>
+              </Link>
+            </Button>
           </div>
         </div>
       </nav>

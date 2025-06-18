@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { User, Edit3, KeyRound, Mail, Phone, Home, CreditCardIcon, ListOrderedIcon, ShieldCheckIcon } from "lucide-react";
+import { User, Edit3, KeyRound, Mail, Phone, Home, CreditCardIcon, ListOrderedIcon, ShieldCheckIcon, LogOut } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 // Mock user data - in a real app, this would come from context/API
 const mockUser = {
@@ -19,6 +20,7 @@ const mockUser = {
 
 export default function UserProfilePage() {
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleUpdateProfile = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,6 +35,15 @@ export default function UserProfilePage() {
       title: "שינוי סיסמה",
       description: "תוכל לשנות את סיסמתך בעמוד 'אבטחה והתראות', אליו ניתן להגיע מתפריט החשבון.",
     });
+  };
+
+  const handleLogout = () => {
+    toast({
+      title: "התנתקת בהצלחה (לקוח)",
+      description: "להתראות, נשמח לראותך שוב בקרוב!",
+    });
+    // In a real app, you would clear session/token here
+    router.push('/auth/login');
   };
 
 
@@ -71,6 +82,11 @@ export default function UserProfilePage() {
             </div>
           </form>
         </CardContent>
+         <CardFooter className="border-t pt-4">
+          <Button variant="destructive" onClick={handleLogout}>
+            <LogOut className="mr-2 h-4 w-4" /> התנתק
+          </Button>
+        </CardFooter>
       </Card>
 
       <Separator />
@@ -96,17 +112,17 @@ export default function UserProfilePage() {
 
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center"><CreditCardIcon className="mr-2 h-5 w-5 text-primary"/> אמצעי תשלום</CardTitle>
+            <CardTitle className="text-lg flex items-center"><CreditCardIcon className="mr-2 h-5 w-5 text-primary"/> ארנק ואמצעי תשלום</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground mb-3">הוסף או הסר כרטיסי אשראי ושיטות תשלום אחרות.</p>
+            <p className="text-sm text-muted-foreground mb-3">נהל את אמצעי התשלום והארנק שלך.</p>
              <div className="p-3 border rounded-md bg-muted/20 text-xs text-muted-foreground">
                 ויזה **** **** **** 1234
             </div>
           </CardContent>
           <CardFooter>
             <Button variant="outline" className="w-full" asChild>
-                <Link href="/account/payment-methods">נהל אמצעי תשלום</Link>
+                <Link href="/account/payment-methods">נהל ארנק ותשלומים</Link>
             </Button>
           </CardFooter>
         </Card>
