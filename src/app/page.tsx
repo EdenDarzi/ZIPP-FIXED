@@ -12,7 +12,7 @@ import type { Restaurant } from "@/types";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { getCulinarySuggestion, CulinaryAssistantInput } from "@/ai/flows/culinary-assistant-flow"; 
-import SurpriseFeatureCard from "@/components/surprise/surprise-feature-card";
+
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -110,7 +110,7 @@ export default function HomePage() {
           <Button size="lg" variant="outline" asChild className="shadow-md transition-transform hover:scale-105 px-8 py-3 text-lg border-primary text-primary hover:bg-primary/5">
             <Link href="/auth/register">
                <span className="flex items-center justify-center w-full">
-                 <ArrowLeft className="ml-2 h-5 w-5" />
+                 <ArrowLeft className="mr-2 h-5 w-5" />
                  הרשמה מהירה
                </span>
             </Link>
@@ -155,7 +155,6 @@ export default function HomePage() {
         </Card>
       </section>
       
-      <SurpriseFeatureCard />
 
       <section className="grid md:grid-cols-2 gap-8 animate-fadeInUp animation-delay-680"> {/* Increased gap */}
         <Card className="premium-card-hover h-full flex flex-col items-center justify-center text-center p-6 bg-green-500/5 border-green-500/20">
@@ -403,3 +402,4 @@ export default function HomePage() {
   );
 }
     
+
