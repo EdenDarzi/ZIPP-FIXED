@@ -2,13 +2,37 @@
 'use client'; // Marking as client component to use hooks like useToast
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShieldCheck, Users, BarChart3, Settings, ChefHat, Truck, Home, AlertCircle, CheckCircle } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ShieldCheck, Users, BarChart3, Settings, ChefHat, Truck, Home, AlertCircle, CheckCircle, KeyRound, UserCog, VenetianMask, Server, Settings2, Activity, Link as LinkIcon, Eye, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+
+const mockIpRestrictions = [
+    { id: 'user123', type: 'עסק', ip: '192.168.1.100', status: 'פעיל' },
+    { id: 'courier789', type: 'שליח', ip: '203.0.113.45', status: 'פעיל' },
+];
+
+const mockSubscriptions = [
+    { id: 'restaurant456', name: 'מסעדת הכוכב', type: 'עסק', plan: 'Pro Business', status: 'פעיל', renewal: '2024-08-15' },
+    { id: 'courier007', name: 'יוסי השליח', type: 'שליח', plan: 'Premium Courier', status: 'פג תוקף', renewal: '2024-07-01' },
+    { id: 'business789', name: 'חנות הפרחים', type: 'עסק', plan: 'Basic Business', status: 'מושהה', renewal: '2024-09-01' },
+];
+
 
 export default function SuperAdminDashboardPage() {
   const { toast } = useToast();
+  const [ipUserId, setIpUserId] = useState('');
+  const [ipAddress, setIpAddress] = useState('');
+  const [subUserId, setSubUserId] = useState('');
+  const [subPlan, setSubPlan] = useState('');
+  const [subStatus, setSubStatus] = useState('');
+
 
   const handlePlaceholderClick = (featureName: string) => {
     toast({
@@ -25,9 +49,30 @@ export default function SuperAdminDashboardPage() {
 
   const adminTools = [
     { label: 'ניהול משתמשים גלובלי', icon: Users, action: () => handlePlaceholderClick('ניהול משתמשים') },
-    { label: 'הגדרות מערכת כלליות', icon: Settings, action: () => handlePlaceholderClick('הגדרות מערכת') },
-    { label: 'ניתוחי פלטפורמה מקיפים', icon: BarChart3, action: () => handlePlaceholderClick('ניתוחי פלטפורMA') },
+    { label: 'ניתוחי פלטפורמה מקיפים', icon: BarChart3, action: () => handlePlaceholderClick('ניתוחי פלטפורמה') },
+    { label: 'יומני מערכת וביקורת', icon: Server, action: () => handlePlaceholderClick('יומני מערכת') },
   ];
+
+  const handleAddIpRestriction = () => {
+    if (!ipUserId || !ipAddress) {
+        toast({ title: "שדות חסרים", description: "אנא מלא מזהה משתמש וכתובת IP.", variant: "destructive" });
+        return;
+    }
+    toast({ title: "הגבלת IP עודכנה (דמו)", description: `הגבלת IP עבור משתמש ${ipUserId} לכתובת ${ipAddress} עודכנה במערכת.` });
+    setIpUserId('');
+    setIpAddress('');
+  };
+
+  const handleUpdateSubscription = () => {
+     if (!subUserId || !subPlan || !subStatus) {
+        toast({ title: "שדות חסרים", description: "אנא מלא מזהה משתמש, תוכנית וסטטוס.", variant: "destructive" });
+        return;
+    }
+    toast({ title: "מנוי עודכן (דמו)", description: `מנוי עבור משתמש ${subUserId} עודכן לתוכנית ${subPlan} בסטטוס ${subStatus}.` });
+    setSubUserId('');
+    setSubPlan('');
+    setSubStatus('');
+  };
 
   return (
     <div className="space-y-6">
@@ -50,7 +95,7 @@ export default function SuperAdminDashboardPage() {
         <CardContent className="grid md:grid-cols-3 gap-4">
           {quickLinks.map(link => (
             <Card key={link.href} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
+              <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center"><link.icon className="mr-2 h-5 w-5 text-primary" /> {link.label}</CardTitle>
               </CardHeader>
               <CardContent>
@@ -66,10 +111,114 @@ export default function SuperAdminDashboardPage() {
         </CardContent>
       </Card>
 
+      <div className="grid md:grid-cols-2 gap-6">
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center text-xl"><KeyRound className="mr-2 h-5 w-5 text-primary"/> ניהול גישה ואבטחה</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <h3 className="text-lg font-semibold">הגבלת כניסה לפי IP (מדומה)</h3>
+                <div className="space-y-2 p-3 border rounded-md bg-muted/30">
+                    <div className="grid grid-cols-2 gap-3">
+                        <div>
+                            <Label htmlFor="ipUserId">מזהה משתמש (עסק/שליח)</Label>
+                            <Input id="ipUserId" placeholder="user_id_123" value={ipUserId} onChange={(e) => setIpUserId(e.target.value)} />
+                        </div>
+                        <div>
+                            <Label htmlFor="ipAddress">כתובת IP מורשית</Label>
+                            <Input id="ipAddress" placeholder="123.123.123.123" value={ipAddress} onChange={(e) => setIpAddress(e.target.value)} />
+                        </div>
+                    </div>
+                    <Button onClick={handleAddIpRestriction} size="sm" className="w-full">הוסף/עדכן הגבלת IP</Button>
+                </div>
+                <h4 className="text-md font-medium pt-2">הגבלות IP קיימות (דוגמה):</h4>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>משתמש</TableHead><TableHead>סוג</TableHead><TableHead>כתובת IP</TableHead><TableHead>סטטוס</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {mockIpRestrictions.map(r => (
+                            <TableRow key={r.id}>
+                                <TableCell className="text-xs">{r.id}</TableCell>
+                                <TableCell className="text-xs">{r.type}</TableCell>
+                                <TableCell className="text-xs">{r.ip}</TableCell>
+                                <TableCell className="text-xs"><Badge variant={r.status === 'פעיל' ? 'default' : 'outline'} className={r.status === 'פעיל' ? 'bg-green-100 text-green-700' : ''}>{r.status}</Badge></TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                 <Button variant="outline" size="sm" className="w-full" onClick={() => handlePlaceholderClick("ניהול חוקי חומת אש (WAF)")}><Settings2 className="mr-2"/> חוקי WAF (בקרוב)</Button>
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center text-xl"><UserCog className="mr-2 h-5 w-5 text-primary"/> ניהול מנויים ומפעילים</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <h3 className="text-lg font-semibold">עדכון סטטוס מנוי (מדומה)</h3>
+                 <div className="space-y-2 p-3 border rounded-md bg-muted/30">
+                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+                        <div>
+                            <Label htmlFor="subUserId">מזהה משתמש</Label>
+                            <Input id="subUserId" placeholder="business_id_456" value={subUserId} onChange={(e) => setSubUserId(e.target.value)} />
+                        </div>
+                        <div>
+                            <Label htmlFor="subPlan">בחר תוכנית</Label>
+                             <Select value={subPlan} onValueChange={setSubPlan}>
+                                <SelectTrigger id="subPlan"><SelectValue placeholder="בחר תוכנית..." /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="basic_business">עסק בסיסי</SelectItem>
+                                    <SelectItem value="pro_business">עסק Pro</SelectItem>
+                                    <SelectItem value="standard_courier">שליח רגיל</SelectItem>
+                                    <SelectItem value="premium_courier">שליח פרימיום</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                         <div>
+                            <Label htmlFor="subStatus">בחר סטטוס</Label>
+                             <Select value={subStatus} onValueChange={setSubStatus}>
+                                <SelectTrigger id="subStatus"><SelectValue placeholder="בחר סטטוס..." /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="active">פעיל</SelectItem>
+                                    <SelectItem value="suspended">מושהה</SelectItem>
+                                    <SelectItem value="expired">פג תוקף</SelectItem>
+                                    <SelectItem value="cancelled">בוטל</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                    <Button onClick={handleUpdateSubscription} size="sm" className="w-full">עדכן מנוי</Button>
+                </div>
+                <h4 className="text-md font-medium pt-2">מנויים לדוגמה:</h4>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>שם/מזהה</TableHead><TableHead>סוג</TableHead><TableHead>תוכנית</TableHead><TableHead>סטטוס</TableHead><TableHead>חידוש</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {mockSubscriptions.map(s => (
+                            <TableRow key={s.id}>
+                                <TableCell className="text-xs">{s.name}</TableCell>
+                                <TableCell className="text-xs">{s.type}</TableCell>
+                                <TableCell className="text-xs">{s.plan}</TableCell>
+                                <TableCell className="text-xs"><Badge variant={s.status === 'פעיל' ? 'default' : s.status === 'פג תוקף' ? 'destructive' : 'secondary'} className={s.status === 'פעיל' ? 'bg-green-100 text-green-700' : ''}>{s.status}</Badge></TableCell>
+                                <TableCell className="text-xs">{s.renewal}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                <Button variant="outline" size="sm" className="w-full" onClick={() => handlePlaceholderClick("הגדרות תוכניות מנויים גלובליות")}><VenetianMask className="mr-2"/> תוכניות מנויים (בקרוב)</Button>
+            </CardContent>
+        </Card>
+      </div>
+
       <Card>
         <CardHeader>
-          <CardTitle>כלי ניהול מרכזיים (בקרוב)</CardTitle>
-          <CardDescription>פיצ'רים אלו בפיתוח ויאפשרו ניהול מתקדם של הפלטפורמה.</CardDescription>
+          <CardTitle>כלי ניהול מערכת נוספים (בקרוב)</CardTitle>
         </CardHeader>
         <CardContent className="grid md:grid-cols-3 gap-4">
           {adminTools.map(tool => (
@@ -92,10 +241,15 @@ export default function SuperAdminDashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">כל המערכות פועלות כשורה</div>
-            <p className="text-xs text-muted-foreground">עדכון אחרון: ממש עכשיו</p>
+            <p className="text-xs text-muted-foreground">בדיקה אחרונה: ממש עכשיו. תעבורת רשת: מתונה. עומס שרתים: נמוך.</p>
           </CardContent>
+          <CardFooter>
+            <Button variant="link" size="sm" onClick={() => handlePlaceholderClick("דף סטטוס מערכת מלא")}><LinkIcon className="h-3 w-3 mr-1"/>דף סטטוס מלא</Button>
+          </CardFooter>
         </Card>
 
     </div>
   );
 }
+
+    

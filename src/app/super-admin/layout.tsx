@@ -3,10 +3,8 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { LayoutDashboard, Home, ChefHat, Truck, Users, Settings, BarChart3, LogOut, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, Home, ChefHat, Truck, Users, Settings, BarChart3, LogOut, ShieldCheck, KeyRound, UserCog, Server, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useToast } from '@/hooks/use-toast'; // Import useToast
-import { useRouter } from 'next/navigation'; // Import useRouter
 
 
 const SuperAdminNavItems = [
@@ -15,24 +13,16 @@ const SuperAdminNavItems = [
   { href: '/restaurant-admin', label: 'פורטל ניהול עסקים', icon: ChefHat },
   { href: '/courier/dashboard', label: 'פורטל שליחים', icon: Truck },
   { isSeparator: true },
-  { href: '#', label: 'ניהול משתמשים (כללי)', icon: Users, disabled: true },
-  { href: '#', label: 'הגדרות מערכת גלובליות', icon: Settings, disabled: true },
-  { href: '#', label: 'ניתוחים גלובליים', icon: BarChart3, disabled: true },
+  { href: '#', label: 'ניהול משתמשים (כללי)', icon: Users, disabled: true, comingSoon: true },
+  { href: '#', label: 'הגדרות מערכת', icon: Settings, disabled: true, comingSoon: true },
+  { href: '#', label: 'ניהול גישה (IP, 2FA)', icon: KeyRound, disabled: true, comingSoon: true },
+  { href: '#', label: 'ניהול מנויים', icon: UserCog, disabled: true, comingSoon: true },
+  { href: '#', label: 'ניתוחים גלובליים', icon: BarChart3, disabled: true, comingSoon: true },
+  { href: '#', label: 'יומני מערכת', icon: Server, disabled: true, comingSoon: true },
+  { href: '#', label: 'סטטוס שירותים', icon: Activity, disabled: true, comingSoon: true },
 ];
 
 export default function SuperAdminLayout({ children }: { children: ReactNode }) {
-  // const { toast } = useToast(); // This line will cause an error as hooks can only be used in client components
-  // const router = useRouter(); // This line will also cause an error
-
-  // For server components, actions like logout need to be handled differently,
-  // typically via server actions or API routes. For this demo, we'll keep it simple.
-  // If this were a client component, the following would be valid:
-  /*
-  const handleLogout = () => {
-    toast({ title: "התנתקת (סופר אדמין)", description: "התנתקת בהצלחה ממערכת הניהול הראשית." });
-    router.push('/auth/login');
-  };
-  */
   
   return (
     <div className="flex min-h-screen bg-muted/40">
@@ -58,11 +48,11 @@ export default function SuperAdminLayout({ children }: { children: ReactNode }) 
                   item.disabled && "opacity-50 cursor-not-allowed"
                 )}
                 disabled={item.disabled}
-                onClick={item.disabled ? (e) => {e.preventDefault(); /* toast({title: "בקרוב!", description: "פיצ'ר זה עדיין בפיתוח."}) */ } : undefined}
               >
                 <Link href={item.href || '#'}>
-                  <item.icon className="mr-3 h-5 w-5" /> {/* Adjusted margin for RTL */}
+                  <item.icon className="mr-3 h-5 w-5" />
                   {item.label}
+                  {item.comingSoon && <Badge variant="outline" className="ml-auto text-xs bg-yellow-100 text-yellow-700 border-yellow-300">בקרוב</Badge>}
                 </Link>
               </Button>
             ))}
@@ -70,7 +60,6 @@ export default function SuperAdminLayout({ children }: { children: ReactNode }) 
         </ScrollArea>
         <div className="mt-auto p-4 border-t">
             <Button variant="outline" className="w-full justify-start" asChild>
-              {/* For demo, direct link. Real app would use a server action for logout */}
               <Link href="/auth/login"> 
                 <span className="flex items-center">
                   <LogOut className="mr-2 h-4 w-4" /> יציאה (מדומה)
@@ -95,3 +84,5 @@ export default function SuperAdminLayout({ children }: { children: ReactNode }) 
     </div>
   );
 }
+
+    
