@@ -1,10 +1,12 @@
 
+'use client'; // Required for useRouter and useToast
+
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { LayoutDashboard, Settings, ListChecks, Palette, ShoppingBasket, BarChart3, ChefHat, LogOut, Users as CourierIcon, Route, Lightbulb, Megaphone, CreditCard, Wallet, Banknote } from 'lucide-react'; // Updated Wallet to Banknote
+import { LayoutDashboard, Settings, ListChecks, Palette, ShoppingBasket, BarChart3, ChefHat, LogOut, Users as CourierIcon, Route, Lightbulb, Megaphone, CreditCard, Wallet, Banknote } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast'; 
 import { useRouter } from 'next/navigation'; 
@@ -17,10 +19,10 @@ const adminNavItems = [
   { href: '/restaurant-admin/orders', label: 'ניהול הזמנות', icon: ShoppingBasket },
   { href: '/restaurant-admin/delivery-management', label: 'ניהול משלוחים', icon: Route },
   { href: '/restaurant-admin/promotions', label: 'ניהול מבצעים', icon: Megaphone },
-  { href: '/restaurant-admin/analytics', label: 'ניתוחים והכנסות', icon: BarChart3 }, // Updated label
+  { href: '/restaurant-admin/analytics', label: 'ניתוחים והכנסות', icon: BarChart3 }, 
   { href: '/restaurant-admin/courier-management', label: 'ניהול שליחים (צפייה)', icon: CourierIcon },
   { href: '/restaurant-admin/trending-insights', label: 'תובנות טרנדים', icon: Lightbulb },
-  { href: '/restaurant-admin/wallet', label: 'ארנק עסקי וחיובים', icon: Banknote }, // Updated icon
+  { href: '/restaurant-admin/wallet', label: 'ארנק עסקי וחיובים', icon: Banknote }, 
 ];
 
 export default function RestaurantAdminLayout({ children }: { children: ReactNode }) {
@@ -42,8 +44,8 @@ export default function RestaurantAdminLayout({ children }: { children: ReactNod
                 key={item.label}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2.5 text-muted-foreground transition-all hover:text-primary hover:bg-primary/10 my-1', // Increased py
-                  // Add active link styling here if using usePathname
+                  'flex items-center gap-3 rounded-lg px-3 py-2.5 text-muted-foreground transition-all hover:text-primary hover:bg-primary/10 my-1', 
+                  
                 )}
               >
                 <item.icon className="h-4 w-4" />
@@ -64,7 +66,7 @@ export default function RestaurantAdminLayout({ children }: { children: ReactNod
       </aside>
       <div className="flex flex-col flex-1">
         <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-background px-6 sticky top-0 z-30 md:hidden">
-            {/* Mobile Nav Trigger - To be implemented if needed */}
+            
             <Link href="/restaurant-admin" className="flex items-center gap-2 text-lg font-semibold text-primary font-headline">
                  <ChefHat className="h-6 w-6" />
                  <span>{businessName}</span>
