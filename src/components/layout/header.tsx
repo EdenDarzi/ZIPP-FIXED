@@ -21,12 +21,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useState, useEffect } from 'react';
 
 
 const Header = () => {
   const { cart } = useCart();
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const { toast } = useToast();
+  const [showNotificationDot, setShowNotificationDot] = useState(false);
+
+  useEffect(() => {
+    // Logic to show notification dot, runs only on client
+    if (Math.random() > 0.7) {
+      setShowNotificationDot(true);
+    }
+  }, []);
+
 
   const handleLanguageToggle = () => {
     toast({ 
@@ -136,7 +146,7 @@ const Header = () => {
                 <Button variant="ghost" asChild size="icon" className="relative" title="התראות">
                   <Link href="/notifications" aria-label="התראות"><span className="relative flex items-center justify-center w-full h-full">
                     <Bell className="h-5 w-5" />
-                    { Math.random() > 0.7 && <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-xs">2</Badge>}
+                    {showNotificationDot && <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-xs">2</Badge>}
                   </span></Link>
                 </Button>
             </TooltipTrigger>
