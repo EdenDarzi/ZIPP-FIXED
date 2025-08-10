@@ -1,0 +1,18 @@
+[build]
+command = """
+node -v
+corepack enable
+corepack prepare npm@10.8.1 --activate
+npm -v
+npm ci || npm install --legacy-peer-deps
+npx prisma generate
+if [ -n \"$DATABASE_URL\" ]; then npx prisma migrate deploy; else echo 'No DATABASE_URL, skipping migrations'; fi
+npm run build
+"""
+publish = ".next"
+
+[build.environment]
+NODE_VERSION = "20"
+
+[[plugins]]
+package = "@netlify/plugin-nextjs" 
