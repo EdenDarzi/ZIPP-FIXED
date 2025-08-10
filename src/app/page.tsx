@@ -11,13 +11,15 @@ import { mockRestaurants } from "@/lib/mock-data";
 import type { Restaurant } from "@/types";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
-import { getCulinarySuggestion, CulinaryAssistantInput } from "@/ai/flows/culinary-assistant-flow"; 
+import { getCulinarySuggestion, CulinaryAssistantInputType } from "@/ai/flows/culinary-assistant-flow"; 
 
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useLanguage } from "@/context/language-context";
 
 export default function HomePage() {
+  const { t, currentLanguage } = useLanguage();
   const allRestaurants: Restaurant[] = mockRestaurants;
   const recommendedForYou = allRestaurants.filter(r => r.tags?.includes('Recommended')).slice(0, 3);
   const newInArea = allRestaurants.filter(r => r.tags?.includes('New')).slice(0, 3);
@@ -33,13 +35,13 @@ export default function HomePage() {
     async function fetchSuggestion() {
       setIsLoadingSuggestion(true);
       try {
-        const input: CulinaryAssistantInput = { userId: "mockUser123", currentDay: new Date().toLocaleString('he-IL', { weekday: 'long' }) };
+        const input: CulinaryAssistantInputType = { userId: "mockUser123", currentDay: new Date().toLocaleString('he-IL', { weekday: 'long' }) };
         await new Promise(resolve => setTimeout(resolve, 600)); 
         const result = await getCulinarySuggestion(input);
         setCulinarySuggestion(result.suggestion);
       } catch (error) {
         console.error("Failed to get culinary suggestion:", error);
-        setCulinarySuggestion("גלה את המסעדות והעסקים המדהימים שלנו היום!"); 
+        setCulinarySuggestion(t('ai.chef.suggestion')); 
       } finally {
         setIsLoadingSuggestion(false);
       }

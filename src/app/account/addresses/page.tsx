@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Home, Edit2, Trash2, PlusCircle, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/context/language-context";
 
 const mockAddresses = [
   { id: 'addr1', label: 'בית', street: 'רחוב הבית 12', city: 'תל אביב', zip: '6522011', isPrimary: true },
@@ -14,40 +15,41 @@ const mockAddresses = [
 
 export default function UserAddressesPage() {
   const { toast } = useToast();
+  const { t, currentLanguage } = useLanguage();
 
   const handleAddNewAddress = () => {
     toast({
-      title: "הוספת כתובת חדשה (בקרוב)",
-      description: "טופס להוספת כתובת חדשה יופיע כאן בעתיד.",
+      title: t('addNewAddressTitle', 'הוספת כתובת חדשה (בקרוב)'),
+      description: t('addNewAddressDesc', 'טופס להוספת כתובת חדשה יופיע כאן בעתיד.'),
     });
   };
 
   const handleEditAddress = (addressId: string) => {
     toast({
-      title: "עריכת כתובת (בקרוב)",
-      description: `טופס לעריכת כתובת ${addressId} יופיע כאן.`,
+      title: t('editAddressTitle', 'עריכת כתובת (בקרוב)'),
+      description: t('editAddressDesc', `טופס לעריכת כתובת ${addressId} יופיע כאן.`),
     });
   };
 
   const handleDeleteAddress = (addressId: string) => {
     toast({
-      title: "מחיקת כתובת (דמו)",
-      description: `כתובת ${addressId} "נמחקה".`,
+      title: t('deleteAddressTitle', 'מחיקת כתובת (דמו)'),
+      description: t('deleteAddressDesc', `כתובת ${addressId} "נמחקה".`),
       variant: "destructive"
     });
   };
 
   return (
-    <Card>
+    <Card dir={currentLanguage === 'he' || currentLanguage === 'ar' ? 'rtl' : 'ltr'}>
       <CardHeader>
-        <CardTitle className="text-2xl font-headline flex items-center"><MapPin className="mr-2 h-6 w-6 text-primary"/> ניהול כתובות שמורות</CardTitle>
-        <CardDescription>הוסף, ערוך או הסר כתובות למשלוח מהיר יותר.</CardDescription>
+        <CardTitle className="text-2xl font-headline flex items-center"><MapPin className="mr-2 h-6 w-6 text-primary"/> {t('manageAddresses', 'ניהול כתובות שמורות')}</CardTitle>
+        <CardDescription>{t('manageAddressesDesc', 'הוסף, ערוך או הסר כתובות למשלוח מהיר יותר.')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {mockAddresses.length === 0 && (
           <div className="text-center py-10 text-muted-foreground">
             <MapPin className="mx-auto h-12 w-12 mb-3" />
-            <p>אין לך עדיין כתובות שמורות.</p>
+            <p>{t('noSavedAddresses', 'אין לך עדיין כתובות שמורות.')}</p>
           </div>
         )}
         {mockAddresses.map(addr => (
@@ -57,16 +59,16 @@ export default function UserAddressesPage() {
                 <div className="flex items-center mb-1">
                   <Home className="mr-2 h-5 w-5 text-primary" />
                   <h3 className="font-semibold text-lg">{addr.label}</h3>
-                  {addr.isPrimary && <Badge variant="default" className="mr-2 bg-green-500 text-white"><Star className="h-3 w-3 mr-1"/>ראשית</Badge>}
+                  {addr.isPrimary && <Badge variant="default" className="mr-2 bg-green-500 text-white"><Star className="h-3 w-3 mr-1"/>{t('primaryAddress', 'ראשית')}</Badge>}
                 </div>
                 <p className="text-sm text-muted-foreground">{addr.street}, {addr.city}</p>
-                <p className="text-xs text-muted-foreground">מיקוד: {addr.zip}</p>
+                <p className="text-xs text-muted-foreground">{t('zipCode', 'מיקוד')}: {addr.zip}</p>
               </div>
               <div className="flex space-x-1 rtl:space-x-reverse">
-                <Button variant="ghost" size="icon" onClick={() => handleEditAddress(addr.id)} title="ערוך כתובת">
+                <Button variant="ghost" size="icon" onClick={() => handleEditAddress(addr.id)} title={t('editAddress', 'ערוך כתובת')}>
                   <Edit2 className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => handleDeleteAddress(addr.id)} className="text-destructive hover:text-destructive" title="מחק כתובת">
+                <Button variant="ghost" size="icon" onClick={() => handleDeleteAddress(addr.id)} className="text-destructive hover:text-destructive" title={t('deleteAddress', 'מחק כתובת')}>
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
@@ -76,7 +78,7 @@ export default function UserAddressesPage() {
       </CardContent>
       <CardFooter className="border-t pt-4">
         <Button onClick={handleAddNewAddress} className="w-full sm:w-auto">
-          <PlusCircle className="mr-2 h-4 w-4" /> הוסף כתובת חדשה
+          <PlusCircle className="mr-2 h-4 w-4" /> {t('addNewAddress', 'הוסף כתובת חדשה')}
         </Button>
       </CardFooter>
     </Card>

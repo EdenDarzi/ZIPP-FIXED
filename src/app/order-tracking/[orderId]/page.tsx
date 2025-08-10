@@ -14,7 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, AlertTriangle, Info, Clock, Award, Gamepad2, Edit, Gift, CalendarClock, ShoppingBag, Car } from 'lucide-react'; 
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast'; 
 import { cn } from '@/lib/utils';
 
@@ -61,7 +61,7 @@ export default function OrderTrackingPage() {
     let nextStatus: OrderStatus | null = null;
     let delay = 5000 + Math.random() * 5000; 
     let newCourierInfo: Order['assignedCourier'] | undefined = order.assignedCourier;
-    let newTimelineEvent: Order['orderTimeline'][0] | undefined;
+    let newTimelineEvent: NonNullable<Order['orderTimeline']>[0] | undefined;
 
     switch (order.status) {
       case 'MATCHING_COURIER':

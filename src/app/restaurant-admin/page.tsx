@@ -7,6 +7,7 @@ import { DollarSign, ListOrdered, ShoppingCart, Users, AlertTriangle, Settings, 
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useToast } from '@/hooks/use-toast';
 
 interface Stats {
   todayOrders: number | null;
@@ -20,6 +21,7 @@ interface Stats {
 }
 
 export default function RestaurantAdminDashboard() {
+  const { toast } = useToast();
   const [stats, setStats] = useState<Stats>({
     todayOrders: null,
     pendingOrders: null,

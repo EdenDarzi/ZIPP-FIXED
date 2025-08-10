@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,7 +22,7 @@ import { UserPlus, Eye, EyeOff, UploadCloud, FileText, MapPin } from 'lucide-rea
 import { useState } from 'react';
 import type { DeliveryVehicle } from '@/types';
 
-const vehicleTypes: { value: DeliveryVehicle; label: string }[] = [
+const vehicleTypes: { value: string; label: string }[] = [
   { value: 'motorcycle', label: 'אופנוע' },
   { value: 'car', label: 'רכב פרטי' },
   { value: 'bicycle', label: 'אופניים (רגילים/חשמליים)' },

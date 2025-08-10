@@ -1,32 +1,17 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Wallet as WalletIcon, DollarSign, TrendingUp, Download, ListChecks, RefreshCcw, FileText, Percent, ShoppingCart, Banknote, ExternalLink, Info } from 'lucide-react';
+import { Wallet as WalletIcon, DollarSign, TrendingUp, Download, ListChecks, RefreshCcw, FileText, Percent, ShoppingCart, Banknote, ExternalLink, Info, Loader2 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { Wallet, Transaction } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import Link from 'next/link';
 import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
 import { DatePickerWithRange } from '@/components/ui/date-range-picker';
 import type { DateRange } from 'react-day-picker';
-
-
-const mockBusinessWallet: Wallet = {
-  userId: 'restaurant1',
-  userType: 'business',
-  balance: 1234.56, // After platform fees
-  lastUpdatedAt: new Date().toISOString(),
-  transactions: [
-    { id: 'btx1', date: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), description: 'הכנסה מהזמנה #ORD789', amount: 75.50, type: 'order_payment', status: 'completed', relatedOrderId: 'ORD789' },
-    { id: 'btx2', date: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), description: 'עמלת פלטפורמה - הזמנה #ORD788', amount: -7.80, type: 'fee', status: 'completed', relatedOrderId: 'ORD788' },
-    { id: 'btx3', date: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), description: 'הכנסה מהזמנה #ORD788', amount: 60.20, type: 'order_payment', status: 'completed', relatedOrderId: 'ORD788' },
-    { id: 'btx4', date: new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString(), description: 'משיכה לחשבון בנק', amount: -500.00, type: 'withdrawal', status: 'completed' },
-    { id: 'btx5', date: new Date(Date.now() - 28 * 60 * 60 * 1000).toISOString(), description: 'תשלום עבור קמפיין "מבצעי קיץ"', amount: -50.00, type: 'campaign_payment', status: 'completed', relatedCampaignId: 'SUMMER24' },
-  ]
-};
 
 const mockDailySalesData = [
   { date: '20/07', sales: 450 }, { date: '21/07', sales: 620 }, { date: '22/07', sales: 550 },
@@ -34,24 +19,52 @@ const mockDailySalesData = [
 ];
 const chartConfigSales: ChartConfig = { sales: { label: "מכירות (₪)", color: "hsl(var(--primary))" } };
 
-
 export default function RestaurantWalletPage() {
-  const [wallet, setWallet] = useState<Wallet>(mockBusinessWallet);
+  const [wallet, setWallet] = useState<Wallet | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const { toast } = useToast();
 
-  const totalSalesThisPeriod = wallet.transactions
-    .filter(tx => tx.type === 'order_payment' && tx.status === 'completed')
-    .reduce((sum, tx) => sum + tx.amount, 0);
+  const fetchWalletData = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch('/api/restaurant/wallet');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch wallet data');
+      }
+      const data: Wallet = await response.json();
+      setWallet(data);
+    } catch (e: any) {
+      setError(e.message);
+      toast({
+        title: "Error fetching wallet data",
+        description: e.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchWalletData();
+  }, []);
+
+  const totalSalesThisPeriod = wallet?.transactions
+    .filter((tx: Transaction) => tx.type === 'order_payment' && tx.status === 'completed')
+    .reduce((sum: number, tx: Transaction) => sum + tx.amount, 0) ?? 0;
     
-  const platformFeesThisPeriod = wallet.transactions
-    .filter(tx => tx.type === 'fee' && tx.status === 'completed')
-    .reduce((sum, tx) => sum + Math.abs(tx.amount), 0);
+  const platformFeesThisPeriod = wallet?.transactions
+    .filter((tx: Transaction) => tx.type === 'fee' && tx.status === 'completed')
+    .reduce((sum: number, tx: Transaction) => sum + Math.abs(tx.amount), 0) ?? 0;
 
   const handleWithdraw = () => {
     toast({
       title: "משיכת כספים (בקרוב)",
-      description: `ניתן יהיה למשוך את היתרה ₪${wallet.balance.toFixed(2)} לחשבון הבנק המקושר. (הדגמה)`,
+      description: `ניתן יהיה למשוך את היתרה ₪${wallet?.balance.toFixed(2)} לחשבון הבנק המקושר. (הדגמה)`,
       duration: 5000,
     });
   };
@@ -69,6 +82,33 @@ export default function RestaurantWalletPage() {
     // Here you would typically refetch or filter data based on newRange
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="ml-2">טוען נתוני ארנק...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="text-center">
+        <CardHeader>
+          <CardTitle className="text-destructive">שגיאה בטעינת הארנק</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>{error}</p>
+          <Button onClick={fetchWalletData} className="mt-4">נסה שוב</Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!wallet) {
+    return <p>לא נמצא ארנק.</p>;
+  }
+
   return (
     <div className="space-y-6">
       <Card className="shadow-lg">
@@ -79,8 +119,8 @@ export default function RestaurantWalletPage() {
                 </CardTitle>
                 <CardDescription>נתח, חשב, וגדל את ההכנסות דרך הארנק העסקי. נהל תשלומים, עמלות ומשיכות.</CardDescription>
             </div>
-             <Button variant="outline" size="sm" onClick={() => { /* Simulate refresh */ toast({title: "מרענן נתונים...", description:"(הדגמה)"})}} className="mt-2 sm:mt-0">
-                <RefreshCcw className="mr-2 h-4 w-4"/> רענן נתונים
+             <Button variant="outline" size="sm" onClick={fetchWalletData} className="mt-2 sm:mt-0" disabled={isLoading}>
+                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCcw className="mr-2 h-4 w-4"/>} רענן נתונים
             </Button>
         </CardHeader>
          <CardContent>
@@ -162,7 +202,7 @@ export default function RestaurantWalletPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {wallet.transactions.slice(0, 10).map((tx) => ( // Display first 10 for brevity
+                  {wallet.transactions.slice(0, 10).map((tx: Transaction) => ( // Display first 10 for brevity
                     <TableRow key={tx.id}>
                       <TableCell className="text-xs">{new Date(tx.date).toLocaleString('he-IL')}</TableCell>
                       <TableCell className="font-medium text-sm">{tx.description}</TableCell>

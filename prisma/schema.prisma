@@ -1,0 +1,304 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model - base for all user types
+model User {
+  id          String   @id @default(uuid())
+  fullName    String
+  email       String   @unique
+  password    String
+  role        String   // CUSTOMER, RESTAURANT_OWNER, COURIER, ADMIN
+  phone       String?
+  city        String?
+  address     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  restaurants       Restaurant[]       @relation("RestaurantOwner")
+  courierProfile    CourierProfile?
+  orders            Order[]            @relation("CustomerOrders")
+  wallet            Wallet?
+  subscriptions     Subscription[]
+
+  @@map("users")
+}
+
+// Restaurant model
+model Restaurant {
+  id           String   @id @default(uuid())
+  name         String
+  description  String?
+  address      String
+  city         String
+  phone        String
+  email        String
+  location     Json     // { lat: number, lng: number }
+  ownerId      String
+  owner        User     @relation("RestaurantOwner", fields: [ownerId], references: [id])
+  rating       Float    @default(0)
+  totalOrders  Int      @default(0)
+  isActive     Boolean  @default(true)
+  tags         Json?    // Array of restaurant tags
+  imageUrl     String?
+  coverImageUrl String?
+  openingHours Json?    // Opening hours data
+  deliveryFee  Float    @default(0)
+  minOrder     Float    @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  orders       Order[]
+  menuItems    MenuItem[]
+
+  @@map("restaurants")
+}
+
+// MenuItem model
+model MenuItem {
+  id               String   @id @default(uuid())
+  name             String
+  description      String
+  price            Float
+  category         String
+  imageUrl         String?
+  isAvailable      Boolean  @default(true)
+  preparationTime  Int?     // in minutes
+  calories         Int?
+  restaurantId     String
+  restaurant       Restaurant @relation(fields: [restaurantId], references: [id])
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  orderItems       OrderItem[]
+
+  @@map("menu_items")
+}
+
+// Order model
+model Order {
+  id                      String   @id @default(uuid())
+  orderNumber             String?  @unique
+  customerId              String
+  customer                User     @relation("CustomerOrders", fields: [customerId], references: [id])
+  restaurantId            String
+  restaurant              Restaurant @relation(fields: [restaurantId], references: [id])
+  courierId               String?
+  courierProfile          CourierProfile? @relation(fields: [courierId], references: [id])
+  status                  String   // Order status enum
+  totalPrice              Float
+  subtotal                Float
+  deliveryFee             Float
+  discountAmount          Float    @default(0)
+  deliveryAddress         String
+  deliveryLocation        Json?    // { lat: number, lng: number }
+  customerNotes           String?
+  estimatedDistanceKm     Float?
+  estimatedRouteDistanceKm Float?
+  baseCommission          Float?
+  itemsDescription        String?
+  expectedPickupTime      String?
+  orderValue              Float?
+  requiredVehicleType     String?
+  coordinates             Json?
+  estimatedDeliveryTime   DateTime?
+  trackingCode            String?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  // Relations
+  orderItems              OrderItem[]
+  courierBids             CourierBid[]
+  orderTracking           OrderTracking[]
+
+  @@map("orders")
+}
+
+// OrderItem model
+model OrderItem {
+  id          String   @id @default(uuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItemId  String
+  menuItem    MenuItem @relation(fields: [menuItemId], references: [id])
+  quantity    Int
+  unitPrice   Float
+  totalPrice  Float
+  addons      Json?    // Selected addons/customizations
+
+  @@map("order_items")
+}
+
+// CourierProfile model
+model CourierProfile {
+  id                  String   @id @default(uuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id])
+  fullName            String
+  phone               String
+  email               String
+  vehicleType         String   // BICYCLE, SCOOTER, MOTORCYCLE, CAR, etc.
+  city                String
+  rating              Float    @default(0)
+  trustScore          Float    @default(0)
+  totalDeliveries     Int      @default(0)
+  maxCapacity         Int?
+  batteryLevel        Int?
+  estimatedRange      Float?
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  orders              Order[]
+  courierLocation     CourierLocation?
+  courierBids         CourierBid[]
+
+  @@map("courier_profiles")
+}
+
+// CourierLocation model
+model CourierLocation {
+  id         String         @id @default(uuid())
+  courierId  String         @unique
+  courier    CourierProfile @relation(fields: [courierId], references: [id])
+  lat        Float
+  lng        Float
+  accuracy   Float?
+  heading    Float?
+  speed      Float?
+  status     String         // AVAILABLE, BUSY, OFFLINE, ON_DELIVERY
+  updatedAt  DateTime       @updatedAt
+
+  @@map("courier_locations")
+}
+
+// Courier model (for API compatibility)
+model Courier {
+  id              String   @id @default(uuid())
+  fullName        String
+  phone           String
+  email           String
+  vehicleType     String
+  city            String
+  rating          Float?   @default(0)
+  trustScore      Float?   @default(0)
+  totalDeliveries Int?     @default(0)
+  maxCapacity     Int?
+  batteryLevel    Int?
+  estimatedRange  Float?
+  createdAt       DateTime @default(now())
+
+  // Relations
+  bids            CourierBid[]
+
+  @@map("couriers")
+}
+
+// CourierBid model
+model CourierBid {
+  id           String         @id @default(uuid())
+  orderId      String
+  order        Order          @relation(fields: [orderId], references: [id])
+  courierId    String
+  courier      Courier        @relation(fields: [courierId], references: [id])
+  courierProfileId String?
+  courierProfile   CourierProfile? @relation(fields: [courierProfileId], references: [id])
+  amount       Float
+  etaMinutes   Int
+  isFastPickup Boolean
+  status       String
+  createdAt    DateTime       @default(now())
+
+  @@map("courier_bids")
+}
+
+// OrderTracking model
+model OrderTracking {
+  id            String   @id @default(uuid())
+  orderId       String
+  order         Order    @relation(fields: [orderId], references: [id])
+  status        String
+  description   String
+  location      String?  // JSON string of location
+  estimatedTime Int?     // minutes
+  timestamp     DateTime @default(now())
+
+  @@map("order_tracking")
+}
+
+// Wallet model
+model Wallet {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id])
+  balance      Float    @default(0)
+  currency     String   @default("ILS")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  transactions WalletTransaction[]
+
+  @@map("wallets")
+}
+
+// WalletTransaction model
+model WalletTransaction {
+  id          String   @id @default(uuid())
+  walletId    String
+  wallet      Wallet   @relation(fields: [walletId], references: [id])
+  amount      Float
+  type        String   // CREDIT, DEBIT, REFUND, etc.
+  description String
+  reference   String?  // Order ID, payment reference, etc.
+  date        DateTime @default(now())
+
+  @@map("wallet_transactions")
+}
+
+// SubscriptionPlan model
+model SubscriptionPlan {
+  id           String   @id @default(uuid())
+  name         String
+  type         String   // CUSTOMER, BUSINESS, COURIER
+  pricingType  String   // MONTHLY_FLAT, PER_ORDER, etc.
+  amount       Float
+  currency     String   @default("ILS")
+  billingCycle String?  // MONTHLY, YEARLY
+  features     Json?    // Array of features
+  benefits     Json?    // Array of benefits
+  description  String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  subscriptions Subscription[]
+
+  @@map("subscription_plans")
+}
+
+// Subscription model
+model Subscription {
+  id         String           @id @default(uuid())
+  userId     String
+  user       User             @relation(fields: [userId], references: [id])
+  planId     String
+  plan       SubscriptionPlan @relation(fields: [planId], references: [id])
+  status     String           // ACTIVE, CANCELLED, EXPIRED
+  startDate  DateTime
+  endDate    DateTime?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@map("subscriptions")
+}

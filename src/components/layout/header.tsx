@@ -2,11 +2,13 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, TrendingUp, Languages, Send, HeartPulse, MapIcon, Briefcase, Users, Store, Bell, Heart, PackageSearch, ShieldCheck, Sparkles, Settings2, Award, Flame, PackagePlus, Route, ListChecks } from 'lucide-react';
+import { ShoppingCart, UserCircle, Home, Utensils, Brain, Truck, ChefHat, TrendingUp, Languages, Send, HeartPulse, MapIcon, Briefcase, Users, Store, Bell, Heart, PackageSearch, ShieldCheck, Sparkles, Settings2, Award, Flame, PackagePlus, Route, ListChecks, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/context/language-context';
+import type { Language } from '@/context/language-context';
 import {
   Tooltip,
   TooltipContent,
@@ -29,6 +31,7 @@ const Header = () => {
   const { cart } = useCart();
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const { toast } = useToast();
+  const { currentLanguage, languages, changeLanguage, t } = useLanguage();
   const [showNotificationDot, setShowNotificationDot] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
@@ -48,29 +51,38 @@ const Header = () => {
   }, [isClient]);
 
 
-  const handleLanguageToggle = () => {
+  const handleLanguageChange = (language: Language) => {
+    changeLanguage(language);
     toast({
-        title: "החלפת שפה (הדגמה)",
-        description: "אפשרות להחלפה בין עברית, אנגלית, רוסית וערבית תתווסף. (הדגמה של פונקציונליות זו)."
+      title: t('language.changed'),
+      description: `${t('common.success')} - ${languages[language].nativeName}`,
     });
   };
 
   const handleTravelModeToggle = () => {
-    toast({ title: "מצב נסיעות (הדגמה)", description: "המלצות מותאמות למיקום ושירותים בינלאומיים יגיעו. (הדגמה של פונקציונליות זו)." });
+    toast({ 
+      title: t('travelModeDemo', 'מצב נסיעות (הדגמה)'), 
+      description: t('travelModeDesc', 'המלצות מותאמות למיקום ושירותים בינלאומיים יגיעו. (הדגמה של פונקציונליות זו).') 
+    });
+  };
+
+  // Get current language info
+  const getCurrentLanguageInfo = () => {
+    return languages[currentLanguage];
   };
 
   const navLinks = [
-    { href: "/", label: "בית", icon: Home, showAlways: true, showSm: true, showMd: true, showLg: true, showXl: true },
-    { href: "/restaurants", label: "עסקים", icon: Utensils, showAlways: true, showSm: true, showMd: true, showLg: true, showXl: true },
-    { href: "/marketplace", label: "יד 2", icon: Store, showAlways: false, showSm: false, showMd: false, showLg: true, showXl: true },
-    { href: "/send-package", label: "שלח חבילה", icon: Send, showAlways: false, showSm: false, showMd: false, showLg: true, showXl: true },
-    { href: "/livepick-sale", label: "ZIPP Sale", icon: PackageSearch, showAlways: false, showSm: true, showMd: true, showLg: true, showXl: true },
-    { href: "/visual-search", label: "סורק טרנדים", icon: TrendingUp, showAlways: true, showSm: true, showMd: true, showLg: true, showXl: true },
-    { href: "/favorites", label: "מועדפים", icon: Heart, showAlways: false, showSm: false, showMd: true, showLg: true, showXl: true },
-    { href: "/affiliate", label: "שותפים", icon: Users, showAlways: false, showSm: false, showMd: true, showLg: true, showXl: true },
-    { href: "/courier/dashboard", label: "שליחים", icon: Truck, showAlways: false, showSm: false, showMd: false, showLg: false, showXl: true },
-    { href: "/restaurant-admin", label: "ניהול עסק", icon: ChefHat, showAlways: false, showSm: false, showMd: false, showLg: false, showXl: true },
-    { href: "/super-admin", label: "סופר אדמין", icon: ShieldCheck, showAlways: false, showSm: false, showMd: false, showLg: false, showXl: true, className: "text-purple-600" },
+    { href: "/", label: t('nav.home', 'בית'), icon: Home, showAlways: true, showSm: true, showMd: true, showLg: true, showXl: true },
+    { href: "/restaurants", label: t('nav.restaurants', 'עסקים'), icon: Utensils, showAlways: true, showSm: true, showMd: true, showLg: true, showXl: true },
+    { href: "/marketplace", label: t('nav.marketplace', 'יד 2'), icon: Store, showAlways: false, showSm: false, showMd: false, showLg: true, showXl: true },
+    { href: "/send-package", label: t('nav.sendPackage', 'שלח חבילה'), icon: Send, showAlways: false, showSm: false, showMd: false, showLg: true, showXl: true },
+    { href: "/livepick-sale", label: t('nav.zippSale', 'ZIPP Sale'), icon: PackageSearch, showAlways: false, showSm: true, showMd: true, showLg: true, showXl: true },
+    { href: "/visual-search", label: t('nav.trendScanner', 'סורק טרנדים'), icon: TrendingUp, showAlways: true, showSm: true, showMd: true, showLg: true, showXl: true },
+    { href: "/favorites", label: t('nav.favorites', 'מועדפים'), icon: Heart, showAlways: false, showSm: false, showMd: true, showLg: true, showXl: true },
+    { href: "/affiliate", label: t('nav.partners', 'שותפים'), icon: Users, showAlways: false, showSm: false, showMd: true, showLg: true, showXl: true },
+    { href: "/courier/dashboard", label: t('nav.couriers', 'שליחים'), icon: Truck, showAlways: false, showSm: false, showMd: false, showLg: false, showXl: true },
+    { href: "/restaurant-admin", label: t('nav.businessManagement', 'ניהול עסק'), icon: ChefHat, showAlways: false, showSm: false, showMd: false, showLg: false, showXl: true },
+    { href: "/super-admin", label: t('nav.superAdmin', 'סופר אדמין'), icon: ShieldCheck, showAlways: false, showSm: false, showMd: false, showLg: false, showXl: true, className: "text-purple-600" },
   ];
 
 
@@ -182,29 +194,56 @@ const Header = () => {
                 </span></Link>
               </Button>
             </TooltipTrigger>
-            <TooltipContent className="p-2 text-xs"><p>עגלת קניות ({itemCount})</p></TooltipContent>
+            <TooltipContent className="p-2 text-xs"><p>{t('header.cart')} ({itemCount})</p></TooltipContent>
           </Tooltip>
 
           <Tooltip delayDuration={300}>
             <TooltipTrigger asChild>
-              <Button variant="outline" size="sm" asChild title="החשבון שלי / כניסה" className="hover:border-primary hover:bg-primary/5">
-                <Link href="/account/profile"><span className="flex items-center"><UserCircle className="h-4 w-4 mr-0 sm:mr-2" /><span className="hidden sm:inline">החשבון שלי</span></span></Link>
+              <Button variant="outline" size="sm" asChild title={t('header.myAccount')} className="hover:border-primary hover:bg-primary/5">
+                <Link href="/account/profile"><span className="flex items-center"><UserCircle className="h-4 w-4 mr-0 sm:mr-2" /><span className="hidden sm:inline">{t('header.myAccount')}</span></span></Link>
               </Button>
             </TooltipTrigger>
-            <TooltipContent className="sm:hidden p-2 text-xs"><p>החשבון שלי</p></TooltipContent>
+            <TooltipContent className="sm:hidden p-2 text-xs"><p>{t('header.myAccount')}</p></TooltipContent>
           </Tooltip>
 
-          <Tooltip delayDuration={300}>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="sm" onClick={handleLanguageToggle} className="flex items-center hover:bg-primary/10" aria-label="החלף שפה" title="החלף שפה">
-                <span className="flex items-center">
-                    <Languages className="h-4 w-4 sm:mr-1" />
-                    <span className="hidden sm:inline">EN</span>
-                </span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent className="sm:hidden p-2 text-xs"><p>English</p></TooltipContent>
-          </Tooltip>
+          <DropdownMenu dir={currentLanguage === 'he' || currentLanguage === 'ar' ? 'rtl' : 'ltr'}>
+            <Tooltip delayDuration={300}>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="flex items-center hover:bg-primary/10" aria-label={t('header.language')} title={t('header.language')}>
+                    <span className="flex items-center">
+                      <Languages className="h-4 w-4 sm:mr-1" />
+                      <span className="hidden sm:inline">{getCurrentLanguageInfo().flag} {getCurrentLanguageInfo().nativeName}</span>
+                      <span className="inline sm:hidden">{getCurrentLanguageInfo().flag}</span>
+                    </span>
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent className="sm:hidden p-2 text-xs">
+                <p>{t('header.language')}</p>
+              </TooltipContent>
+            </Tooltip>
+            <DropdownMenuContent align="end" className="w-48 shadow-lg border-border">
+              <DropdownMenuLabel className="font-semibold">{t('header.language')}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {Object.values(languages).map((lang) => (
+                <DropdownMenuItem 
+                  key={lang.code}
+                  onClick={() => handleLanguageChange(lang.code)}
+                  className={cn(
+                    "flex items-center w-full cursor-pointer hover:bg-muted/50",
+                    currentLanguage === lang.code && "bg-muted font-medium"
+                  )}
+                >
+                  <span className="ml-2 text-lg">{lang.flag}</span>
+                  <span className="flex-1">{lang.nativeName}</span>
+                  {currentLanguage === lang.code && (
+                    <Check className="h-4 w-4 text-primary" />
+                  )}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </nav>
       </div>
       </TooltipProvider>

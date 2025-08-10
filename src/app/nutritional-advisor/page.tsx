@@ -28,8 +28,8 @@ import { Card, CardContent, CardDescription as PageCardDescription, CardHeader, 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useToast } from '@/hooks/use-toast';
 import type { NutritionalGoal, DishRecommendation } from '@/types';
-import { getNutritionalAdvice, NutritionalAdvisorInput, NutritionalAdvisorOutput } from '@/ai/flows/nutritional-advisor-flow';
-import { generateWeeklyMenu, WeeklyMenuInput, WeeklyMenuOutput } from '@/ai/flows/weekly-menu-planner-flow';
+import { getNutritionalAdvice, NutritionalAdvisorInputType, NutritionalAdvisorOutputType } from '@/ai/flows/nutritional-advisor-flow';
+import { generateWeeklyMenu, WeeklyMenuInputType, WeeklyMenuOutputType } from '@/ai/flows/weekly-menu-planner-flow';
 import { Loader2, Sparkles, Utensils, Lightbulb, HeartPulse, Share2, CalendarDays, Info, ListChecks, ShoppingBasket, BarChart3, CheckCircle, Apple, Activity as ActivityIcon, PackageSearch, UserCheck } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
@@ -68,10 +68,10 @@ type WeeklyMenuFormValues = z.infer<typeof weeklyMenuFormSchema>;
 export default function NutritionalAdvisorPage() {
   const { toast } = useToast();
   const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
-  const [advisorResponse, setAdvisorResponse] = useState<NutritionalAdvisorOutput | null>(null);
+  const [advisorResponse, setAdvisorResponse] = useState<NutritionalAdvisorOutputType | null>(null);
   
   const [isLoadingWeeklyMenu, setIsLoadingWeeklyMenu] = useState(false);
-  const [weeklyMenuResponse, setWeeklyMenuResponse] = useState<WeeklyMenuOutput | null>(null);
+  const [weeklyMenuResponse, setWeeklyMenuResponse] = useState<WeeklyMenuOutputType | null>(null);
 
   const dishForm = useForm<DishRecommendFormValues>({
     resolver: zodResolver(dishRecommendFormSchema),
@@ -93,7 +93,7 @@ export default function NutritionalAdvisorPage() {
     setIsLoadingRecommendations(true);
     setAdvisorResponse(null);
     try {
-      const input: NutritionalAdvisorInput = {
+      const input: NutritionalAdvisorInputType = {
         userId: 'mockUserNutrition123',
         goal: values.goal as NutritionalGoal,
         preferences: values.preferences,
@@ -122,7 +122,7 @@ export default function NutritionalAdvisorPage() {
     const dishPreferences = dishForm.getValues('preferences'); 
 
     try {
-        const input: WeeklyMenuInput = {
+        const input: WeeklyMenuInputType = {
             userId: 'mockUserWeeklyMenu123',
             targetDailyCalories: Number(values.targetDailyCalories),
             numberOfDays: parseInt(values.numberOfDays, 10),
@@ -192,7 +192,7 @@ export default function NutritionalAdvisorPage() {
     const currentMenuValues = menuForm.getValues();
     const dishPreferences = dishForm.getValues('preferences');
     try {
-        const input: WeeklyMenuInput = {
+        const input: WeeklyMenuInputType = {
             userId: 'mockUserWeeklyMenu123_replace', 
             targetDailyCalories: Number(currentMenuValues.targetDailyCalories),
             numberOfDays: parseInt(currentMenuValues.numberOfDays, 10),

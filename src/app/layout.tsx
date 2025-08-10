@@ -1,16 +1,12 @@
-
-'use client'; // Required for useEffect
-
 import type { Metadata } from 'next';
 import './globals.css';
 import { PT_Sans } from 'next/font/google';
 import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
-import { CartProvider } from '@/context/cart-context';
 import { cn } from '@/lib/utils';
 import AiChatAssistant from '@/components/layout/ai-chat-assistant';
-import React, { useEffect, useState } from 'react';
+import { Providers } from './providers';
 
 const ptSans = PT_Sans({
   subsets: ['latin', 'cyrillic'],
@@ -18,47 +14,18 @@ const ptSans = PT_Sans({
   variable: '--font-pt-sans',
 });
 
+export const metadata: Metadata = {
+  title: 'ZIPP - Your fast and reliable delivery solution',
+  description: 'Your fast and reliable delivery solution',
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [timeBasedTheme, setTimeBasedTheme] = useState('theme-day');
-
-  useEffect(() => {
-    const hour = new Date().getHours();
-    if (hour >= 6 && hour < 18) {
-      setTimeBasedTheme('theme-day');
-    } else if (hour >= 18 && hour < 21) {
-      setTimeBasedTheme('theme-evening');
-    } else {
-      setTimeBasedTheme('theme-night');
-    }
-
-    if (document) {
-        document.title = 'ZIPP - פלטפורמת המשלוחים החכמה שלך'; 
-        const metaDesc = document.querySelector('meta[name="description"]');
-        if (metaDesc) {
-            metaDesc.setAttribute('content', 'הזמינו משלוח ממסעדות, חנויות ובתי קפה עם ZIPP. גלו טרנדים, שתפו וזכו בפרסים!'); 
-        }
-    }
-
-    // Register Service Worker for PWA
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(registration => {
-            console.log('ServiceWorker registration successful with scope: ', registration.scope);
-          })
-          .catch(err => {
-            console.log('ServiceWorker registration failed: ', err);
-          });
-      });
-    }
-  }, []);
-
   return (
-    <html lang="he" dir="rtl" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -72,8 +39,8 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="ZIPP" /> 
       </head>
-      <body className={cn('font-body antialiased min-h-screen flex flex-col bg-background text-foreground', ptSans.variable, timeBasedTheme)}>
-        <CartProvider>
+      <body className={cn('font-body antialiased min-h-screen flex flex-col bg-background text-foreground', ptSans.variable)}>
+        <Providers>
           <Header />
           <main className="flex-grow container mx-auto px-4 py-8">
             {children}
@@ -81,7 +48,7 @@ export default function RootLayout({
           <Footer />
           <Toaster />
           <AiChatAssistant />
-        </CartProvider>
+        </Providers>
       </body>
     </html>
   );

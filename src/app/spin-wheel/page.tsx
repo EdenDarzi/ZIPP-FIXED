@@ -8,6 +8,12 @@ import { useToast } from '@/hooks/use-toast';
 import { Gift, Loader2, Play, TicketPercent, CakeSlice, Truck, Share2, Sparkles, AlertTriangle, CalendarClock, Info, Award } from 'lucide-react'; // Updated Gamepad2 to Award
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { useLanguage } from '@/context/language-context';
+
+// Constants for the spin wheel
+const WHEEL_SEGMENTS = 6;
+const DAILY_SPIN_COOLDOWN_HOURS = 24;
+const SPIN_DURATION_MS = 3000;
 
 interface SpinWheelPrize {
   id: string;
@@ -20,21 +26,18 @@ interface SpinWheelPrize {
   textColorClass?: string; 
 }
 
-const mockPrizes: SpinWheelPrize[] = [
-  { id: 'discount10', name: '10% הנחה', description: 'על ההזמנה הבאה שלך (מעל 50₪) מאותו עסק', icon: TicketPercent, isWin: true, redeemable: true, colorClass: 'bg-green-500', textColorClass: 'text-green-100' },
-  { id: 'freeDessert', name: 'קינוח מתנה', description: 'ממסעדות משתתפות בהזמנה הבאה מאותו עסק', icon: CakeSlice, isWin: true, redeemable: true, colorClass: 'bg-pink-500', textColorClass: 'text-pink-100' },
-  { id: 'freeDelivery', name: 'משלוח חינם', description: 'עד עלות של 15₪ להזמנה הבאה מאותו עסק', icon: Truck, isWin: true, redeemable: true, colorClass: 'bg-blue-500', textColorClass: 'text-blue-100' },
-  { id: 'tryAgain', name: 'לא נורא, נסה שוב בהזמנה הבאה מאותו עסק!', icon: AlertTriangle, isWin: false, colorClass: 'bg-gray-400', textColorClass: 'text-gray-100' },
-  { id: 'dailySurprise', name: 'הפתעה יומית סודית!', description: 'קוד קופון יישלח אליך בקרוב!', icon: Gift, isWin: true, redeemable: true, colorClass: 'bg-purple-500', textColorClass: 'text-purple-100' },
-  { id: 'discount5', name: '5% הנחה', description: 'על ההזמנה הבאה שלך מאותו עסק', icon: TicketPercent, isWin: true, redeemable: true, colorClass: 'bg-teal-500', textColorClass: 'text-teal-100' },
-];
-
-const WHEEL_SEGMENTS = 8; 
-const SPIN_DURATION_MS = 2800; 
-const DAILY_SPIN_COOLDOWN_HOURS = 24; 
-
 export default function SpinWheelPage() {
   const { toast } = useToast();
+  const { t, currentLanguage } = useLanguage();
+  
+  const mockPrizes: SpinWheelPrize[] = [
+    { id: 'discount10', name: t('discount10', '10% הנחה'), description: t('discount10Desc', 'על ההזמנה הבאה שלך (מעל 50₪) מאותו עסק'), icon: TicketPercent, isWin: true, redeemable: true, colorClass: 'bg-green-500', textColorClass: 'text-green-100' },
+    { id: 'freeDessert', name: t('freeDessert', 'קינוח מתנה'), description: t('freeDessertDesc', 'ממסעדות משתתפות בהזמנה הבאה מאותו עסק'), icon: CakeSlice, isWin: true, redeemable: true, colorClass: 'bg-pink-500', textColorClass: 'text-pink-100' },
+    { id: 'freeDelivery', name: t('freeDelivery', 'משלוח חינם'), description: t('freeDeliveryDesc', 'עד עלות של 15₪ להזמנה הבאה מאותו עסק'), icon: Truck, isWin: true, redeemable: true, colorClass: 'bg-blue-500', textColorClass: 'text-blue-100' },
+    { id: 'tryAgain', name: t('tryAgain', 'לא נורא, נסה שוב בהזמנה הבאה מאותו עסק!'), icon: AlertTriangle, isWin: false, colorClass: 'bg-gray-400', textColorClass: 'text-gray-100' },
+    { id: 'dailySurprise', name: t('dailySurprise', 'הפתעה יומית סודית!'), description: t('dailySurpriseDesc', 'קוד קופון יישלח אליך בקרוב!'), icon: Gift, isWin: true, redeemable: true, colorClass: 'bg-purple-500', textColorClass: 'text-purple-100' },
+    { id: 'discount5', name: t('discount5', '5% הנחה'), description: t('discount5Desc', 'על ההזמנה הבאה שלך מאותו עסק'), icon: TicketPercent, isWin: true, redeemable: true, colorClass: 'bg-teal-500', textColorClass: 'text-teal-100' },
+  ];
   const [isSpinning, setIsSpinning] = useState(false);
   const [spinResult, setSpinResult] = useState<SpinWheelPrize | null>(null);
   const [canSpin, setCanSpin] = useState(true);
@@ -83,7 +86,7 @@ export default function SpinWheelPage() {
 
   const handleSpin = () => {
     if (!canSpin || isSpinning) {
-      toast({ title: "ניסיון יומי נוצל", description: `תוכל לסובב שוב בעוד ${timeLeftForNextSpin || 'זמן מה'}.`, variant: "default" });
+      toast({ title: t('dailyAttemptUsed', 'ניסיון יומי נוצל'), description: t('spinAgainIn', `תוכל לסובב שוב בעוד ${timeLeftForNextSpin || t('someTime', 'זמן מה')}.`), variant: "default" });
       return;
     }
     setIsSpinning(true);
@@ -110,8 +113,8 @@ export default function SpinWheelPage() {
 
       if (result.isWin) {
         toast({
-          title: `🎉 זכית ב: ${result.name}! 🎉`,
-          description: result.description || 'ההטבה נוספה לחשבונך (הדגמה).',
+          title: t('youWon', `🎉 זכית ב: ${result.name}! 🎉`),
+          description: result.description || t('benefitAdded', 'ההטבה נוספה לחשבונך (הדגמה).'),
           duration: 7000,
           className: cn(result.colorClass, result.textColorClass || 'text-white', 'border-2', result.textColorClass ? result.textColorClass.replace('text-','border-') : 'border-white/50' ),
         });
@@ -149,11 +152,11 @@ export default function SpinWheelPage() {
   });
 
   return (
-    <div className="max-w-2xl mx-auto py-8 space-y-8 text-center">
+    <div className="max-w-2xl mx-auto py-8 space-y-8 text-center" dir={currentLanguage === 'he' || currentLanguage === 'ar' ? 'rtl' : 'ltr'}>
       <Card className="shadow-2xl bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/10 overflow-hidden border-2 border-primary/30 rounded-xl premium-card-hover">
         <CardHeader className="items-center pt-6 pb-4 bg-card/50">
           <h1 className="text-3xl sm:text-4xl font-headline text-primary px-2">
-            מרגיש/ה בר מזל? 🍀 סובב את הגלגל – ותגלה מה מחכה לך היום!
+            {t('spinWheelTitle', 'מרגיש/ה בר מזל? 🍀 סובב את הגלגל – ותגלה מה מחכה לך היום!')}
           </h1>
         </CardHeader>
         <CardContent className="space-y-8 flex flex-col items-center px-4 sm:px-6 py-8">
@@ -204,7 +207,7 @@ export default function SpinWheelPage() {
           
            {isSpinning && (
             <div className="text-primary font-semibold text-lg flex items-center py-3">
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" /> מסתובב... בהצלחה!
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" /> {t('spinning', 'מסתובב... בהצלחה!')}
             </div>
            )}
 
@@ -224,7 +227,7 @@ export default function SpinWheelPage() {
               {spinResult.redeemable && (
                 <CardFooter className="p-0 pt-3 sm:pt-4">
                   <Button onClick={handleRedeem} className={cn("w-full text-md sm:text-lg py-2.5", spinResult.isWin ? 'bg-white/20 hover:bg-white/30 text-white border-white/50' : 'bg-accent hover:bg-accent/90 text-accent-foreground' )}>
-                    נצל את ההטבה (הדגמה)
+                    {t('redeemBenefit', 'נצל את ההטבה (הדגמה)')}
                   </Button>
                 </CardFooter>
               )}
@@ -240,7 +243,7 @@ export default function SpinWheelPage() {
                 isSpinning || !canSpin ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 focus:ring-blue-400 hover:shadow-xl transform hover:scale-105",
                 "font-headline group btn-gradient-hover-primary" 
             )}
-            aria-label={canSpin ? "סובב עכשיו" : "תוכל לסובב שוב מאוחר יותר"}
+            aria-label={canSpin ? t('spinNow', 'סובב עכשיו') : t('spinLater', 'תוכל לסובב שוב מאוחר יותר')}
           >
             {isSpinning ? (
               <Loader2 className="h-7 w-7 animate-spin" />
@@ -256,13 +259,13 @@ export default function SpinWheelPage() {
                 {timeLeftForNextSpin ? (
                     <p className="text-sm text-muted-foreground flex flex-col items-center">
                     <CalendarClock className="h-5 w-5 mb-1 text-primary"/>
-                    אפשר סיבוב אחד ביום. נסה שוב בעוד: <strong className="text-primary block text-lg font-mono">{timeLeftForNextSpin}</strong>
+                    {t('oneSpinPerDay', 'אפשר סיבוב אחד ביום. נסה שוב בעוד')}: <strong className="text-primary block text-lg font-mono">{timeLeftForNextSpin}</strong>
                     </p>
                 ) : (
-                    <p className="text-sm text-muted-foreground">תוכל לסובב שוב בקרוב!</p>
+                    <p className="text-sm text-muted-foreground">{t('canSpinSoon', 'תוכל לסובב שוב בקרוב!')}</p>
                 )}
                 <Button variant="outline" size="sm" onClick={handleShareForTry} className="text-xs">
-                    <Share2 className="mr-1.5 h-3.5 w-3.5"/> שתף עם חבר לניסיון נוסף
+                    <Share2 className="mr-1.5 h-3.5 w-3.5"/> {t('shareForExtra', 'שתף עם חבר לניסיון נוסף')}
                 </Button>
             </div>
           )}
@@ -270,12 +273,12 @@ export default function SpinWheelPage() {
         <CardFooter className="pt-6 border-t bg-card/50 justify-center pb-4">
           <p className="text-xs text-muted-foreground">
             <Info className="inline h-3 w-3 mr-1"/>
-            אפשר סיבוב אחד ביום – כל פרס אמיתי. <Link href="/terms" className="hover:text-primary underline">תקנון הגלגל והמבצעים</Link>. בהצלחה!
+            {t('wheelRules', 'אפשר סיבוב אחד ביום – כל פרס אמיתי')}. <Link href="/terms" className="hover:text-primary underline">{t('wheelTerms', 'תקנון הגלגל והמבצעים')}</Link>. {t('goodLuck', 'בהצלחה!')}
           </p>
         </CardFooter>
       </Card>
        <p className="text-xs text-muted-foreground px-4">
-        האפליקציה מדגימה את הקונספט של גלגל המזל. משחק מלא עם אנימציות מתקדמות, סאונד, ניהול פרסים אמיתי בצד השרת ומגבלות שימוש מתקדמות יפותח בהמשך.
+        {t('wheelDisclaimer', 'האפליקציה מדגימה את הקונספט של גלגל המזל. משחק מלא עם אנימציות מתקדמות, סאונד, ניהול פרסים אמיתי בצד השרת ומגבלות שימוש מתקדמות יפותח בהמשך.')}
       </p>
        <style jsx global>{`
         @keyframes ping-once {

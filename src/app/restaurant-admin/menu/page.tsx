@@ -187,7 +187,7 @@ export default function MenuManagementPage() {
     const submittedItem: MenuItemType = {
       id: editingItem?.id || `item-${Date.now()}`, 
       restaurantId: restaurant.id, 
-      name: values.name, description: values.description, price: Number(values.price), imageUrl: values.imageUrl, dataAiHint: values.dataAiHint, category: finalCategory, isAvailable: values.isAvailable, addons: values.addons?.map(ag => ({ ...ag, id: ag.id || `addon-group-${Date.now()}-${Math.random().toString(36).substring(2,7)}`, minSelection: ag.minSelection ? Number(ag.minSelection) : undefined, maxSelection: ag.maxSelection ? Number(ag.maxSelection) : undefined, options: ag.options.map(opt => ({ ...opt, id: opt.id || `addon-choice-${Date.now()}-${Math.random().toString(36).substring(2,7)}`, price: Number(opt.price) })) }))
+      name: values.name, description: values.description, price: Number(values.price), imageUrl: values.imageUrl || '', dataAiHint: values.dataAiHint, category: finalCategory, isAvailable: values.isAvailable, addons: values.addons?.map(ag => ({ ...ag, id: ag.id || `addon-group-${Date.now()}-${Math.random().toString(36).substring(2,7)}`, minSelection: ag.minSelection ? Number(ag.minSelection) : undefined, maxSelection: ag.maxSelection ? Number(ag.maxSelection) : undefined, options: ag.options.map(opt => ({ ...opt, id: opt.id || `addon-choice-${Date.now()}-${Math.random().toString(36).substring(2,7)}`, price: Number(opt.price) })) }))
     };
 
     if (editingItem) {

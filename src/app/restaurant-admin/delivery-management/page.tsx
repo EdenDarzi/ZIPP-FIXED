@@ -9,26 +9,28 @@ import { Switch } from '@/components/ui/switch';
 import { MapPin, DollarSign, Clock, Edit2, Info, Settings } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/context/language-context';
 
 export default function DeliveryManagementPage() {
   const { toast } = useToast();
+  const { t, currentLanguage } = useLanguage();
 
   const handleSaveSettings = () => {
     toast({
-      title: "הגדרות נשמרו (דמו)",
-      description: "הגדרות המשלוח שלך נשמרו בהצלחה.",
+      title: t('settingsSaved', 'הגדרות נשמרו (דמו)'),
+      description: t('deliverySettingsSaved', 'הגדרות המשלוח שלך נשמרו בהצלחה.'),
     });
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" dir={currentLanguage === 'he' || currentLanguage === 'ar' ? 'rtl' : 'ltr'}>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-headline flex items-center">
             <Settings className="mr-2 h-6 w-6 text-primary" />
-            ניהול והגדרות משלוחים
+            {t('deliveryManagement', 'ניהול והגדרות משלוחים')}
           </CardTitle>
-          <CardDescription>הגדר את אזורי המשלוח, תמחור וזמני הכנה של העסק שלך.</CardDescription>
+          <CardDescription>{t('deliveryManagementDesc', 'הגדר את אזורי המשלוח, תמחור וזמני הכנה של העסק שלך.')}</CardDescription>
         </CardHeader>
       </Card>
 

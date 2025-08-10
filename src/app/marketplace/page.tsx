@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -46,7 +45,7 @@ export default function MarketplacePage() {
     } else if (sortBy === 'price-desc') {
       tempItems.sort((a, b) => b.price - a.price);
     } else { 
-      tempItems.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+      tempItems.sort((a, b) => new Date(b.publishedAt ? b.publishedAt : 0).getTime() - new Date(a.publishedAt ? a.publishedAt : 0).getTime());
     }
 
     setFilteredItems(tempItems);

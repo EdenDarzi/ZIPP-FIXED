@@ -103,10 +103,17 @@ export default function SuperAdminDashboardPage() {
         return;
     }
     const updatedSub: Subscription = { id: subUserId, name: 'משתמש מעודכן', type: 'לא ידוע', plan: subPlan, status: subStatus, renewal: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('he-IL')};
-    setSubscriptions(prev => prev.map(s => s.id === subUserId ? updatedSub : s.id === subUserId ? updatedSub : (prev.find(p => p.id === subUserId) ? prev.map(p => p.id === subUserId ? updatedSub : p) : [...prev, updatedSub] )));
-    if (!subscriptions.find(s => s.id === subUserId)) {
-      setSubscriptions(prev => [...prev, updatedSub]);
-    }
+    
+    setSubscriptions(prev => {
+      const existingIndex = prev.findIndex(s => s.id === subUserId);
+      if (existingIndex >= 0) {
+        const newArray = [...prev];
+        newArray[existingIndex] = updatedSub;
+        return newArray;
+      } else {
+        return [...prev, updatedSub];
+      }
+    });
 
     toast({ title: "מנוי עודכן (דמו)", description: `מנוי עבור משתמש ${subUserId} עודכן לתוכנית ${subPlan} בסטטוס ${subStatus}.` });
     setSubUserId('');

@@ -1,5 +1,34 @@
+import { DeliveryVehicle } from './delivery';
+import type { Subscription, SubscriptionPlan, SubscriptionPlanType, SubscriptionPricingType, SubscriptionBillingCycle, SubscriptionStatus } from './subscription';
+import type { IsraeliPaymentMethod, CreditCardDetails, BitDetails, BankTransferDetails, PayboxDetails, WalletBalance, WalletTransaction, DigitalWallet } from './israeli-payment';
 
+// Direct exports to avoid module resolution issues
+export * from './delivery';
+export * from './page-params';
+export * from './wallet';
+export * from './marketplace';
+export * from './admin';
+export * from './courier';
+export * from './restaurant';
 
+export type { 
+    Subscription, 
+    SubscriptionPlan, 
+    SubscriptionPlanType, 
+    SubscriptionPricingType, 
+    SubscriptionBillingCycle, 
+    SubscriptionStatus, 
+    IsraeliPaymentMethod, 
+    CreditCardDetails, 
+    BitDetails, 
+    BankTransferDetails, 
+    PayboxDetails, 
+    WalletBalance, 
+    WalletTransaction, 
+    DigitalWallet 
+};
+
+// Export common menu and restaurant types directly in this file
 export interface MenuItemOption {
   name: string;
   priceModifier: number; // e.g., +1.00 for extra cheese
@@ -20,6 +49,26 @@ export interface MenuItemAddonGroup {
   maxSelection?: number; 
   options: MenuItemAddonChoice[];
   required?: boolean; 
+}
+
+// Courier types
+export interface CourierProfile {
+  id: string;
+  name: string;
+  rating: number;
+  trustScore: number;
+  vehicleType: DeliveryVehicle;
+  areaCoverageRadiusKm: number;
+  currentLocation?: {
+    lat: number;
+    lng: number;
+  };
+  isActive: boolean;
+  transportationModeDetails?: string;
+  currentDeliveriesCount?: number;
+  totalDeliveriesToday?: number;
+  currentSpeedKmh?: number;
+  batteryPercent?: number;
 }
 
 export interface MenuItem {
@@ -85,24 +134,6 @@ export interface User {
   id:string;
   email: string;
   name?: string;
-}
-
-export type DeliveryVehicle = 'motorcycle' | 'car' | 'bicycle' | 'foot' | 'scooter';
-
-export interface CourierProfile {
-  id: string;
-  name: string;
-  rating: number; 
-  trustScore: number; 
-  vehicleType: DeliveryVehicle;
-  areaCoverageRadiusKm: number; 
-  currentLocation: { lat: number; lng: number }; 
-  currentSpeedKmh?: number; 
-  batteryPercent?: number; 
-  isActive: boolean; 
-  transportationModeDetails?: string; 
-  currentDeliveriesCount?: number;
-  totalDeliveriesToday?: number;
 }
 
 export interface Location { 
@@ -316,71 +347,3 @@ export interface LivePickSaleItem {
     isActive: boolean; 
 }
 
-export type SecondHandItemCategory = 'טלפונים' | 'מחשבים' | 'בגדים' | 'אוזניות' | 'אחר';
-
-export interface SecondHandItem {
-  id: string;
-  userId: string; 
-  sellerName: string; 
-  title: string;
-  category: SecondHandItemCategory;
-  price: number;
-  description: string;
-  images: { url: string; dataAiHint?: string }[]; 
-  location: string; 
-  publishedAt: string; 
-  isSold: boolean;
-  sellerRating?: number; 
-  contactMethod?: 'whatsapp' | 'phone' | 'app-chat'; 
-  contactDetails?: string; 
-}
-
-export type TransactionType = 
-  | 'deposit'
-  | 'withdrawal'
-  | 'purchase' // General purchase from wallet
-  | 'refund'
-  | 'commission' // Courier earnings from a delivery
-  | 'bonus' // Courier/User bonus
-  | 'fee' // Platform fee, service fee
-  | 'order_payment' // Business receiving payment for an order
-  | 'payout' // Business/Courier payout to bank
-  | 'subscription_fee' // For business/courier subscriptions
-  | 'COURIER_PAYOUT' // Alias for courier commission
-  | 'COURIER_BONUS' // Alias for courier bonus
-  | 'BUSINESS_PAYOUT' // Alias for business payout
-  | 'PLATFORM_FEE' // Alias for platform fee
-  | 'SUBSCRIPTION_FEE' // Alias for subscription fee
-  | 'campaign_payment'; // Business payment for marketing campaign
-
-export type TransactionStatus = 'pending' | 'completed' | 'failed' | 'cancelled' | 'processing' | 'refunded';
-
-export interface Transaction {
-  id: string;
-  timestamp?: string; // Generic timestamp for all uses
-  date: string; // Keep for display if needed, or derive from timestamp
-  description: string;
-  amount: number; 
-  type: TransactionType;
-  status: TransactionStatus;
-  relatedOrderId?: string;
-  relatedCampaignId?: string; 
-  relatedEntityId?: string; 
-  relatedEntityType?: 'order' | 'courier_payment' | 'business_payout' | 'campaign';
-}
-
-export interface Wallet {
-  userId: string;
-  userType: 'client' | 'courier' | 'business';
-  balance: number;
-  currency?: string; 
-  transactions: Transaction[]; 
-  lastUpdatedAt: string;
-}
-
-export interface RegionalSurcharge {
-  id: string;
-  region: string;
-  surcharge: number;
-}
-    

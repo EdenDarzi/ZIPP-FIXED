@@ -1,10 +1,8 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -17,10 +15,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { getItemRecommendations, ItemRecommendationInput } from '@/ai/flows/item-recommendation';
+import { getItemRecommendations, ItemRecommendationInputType } from '@/ai/flows/item-recommendation';
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lightbulb, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const formSchema = z.object({
   userId: z.string().min(1, { message: 'שדה מזהה משתמש הוא חובה.' }),
@@ -46,7 +45,7 @@ export default function RecommendationForm() {
     setIsLoading(true);
     setRecommendations([]);
     try {
-      const input: ItemRecommendationInput = {
+      const input: ItemRecommendationInputType = {
         userId: values.userId,
         orderHistory: values.orderHistory ? values.orderHistory.split(',').map(item => item.trim()).filter(item => item) : [],
         userPreferences: values.userPreferences,

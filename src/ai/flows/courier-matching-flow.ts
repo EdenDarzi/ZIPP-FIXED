@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview AI flow for matching the best courier to an order based on a scoring algorithm.
@@ -17,8 +16,9 @@
  */
 
 import { ai } from '@/ai/genkit';
-import type { DeliveryVehicle } from '@/types';
+import type { DeliveryVehicle, CourierBid, OrderDetailsForBidding, CourierProfile } from '@/types';
 import { z } from 'genkit';
+import { deliveryVehicleTypes } from '@/types/delivery';
 
 // Define Zod schemas based on TypeScript types
 /**
@@ -32,7 +32,7 @@ const LocationSchema = z.object({
 /**
  * @description Zod enum for delivery vehicle types.
  */
-const DeliveryVehicleEnum = z.enum(['motorcycle', 'car', 'bicycle', 'foot', 'scooter']);
+const DeliveryVehicleEnum = z.enum(deliveryVehicleTypes);
 
 /**
  * @description Zod schema for a courier's profile.
@@ -219,7 +219,7 @@ const courierMatchingFlow = ai.defineFlow(
         };
     }
 
-    const rankedCouriers = rankCouriers(eligibleCouriers, orderDetails);
+    const rankedCouriers = rankCouriers(eligibleCouriers as CourierBid[], orderDetails as OrderDetailsForBidding);
     const bestCourierBid = rankedCouriers[0];
 
     const promptForReasoning = `

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -9,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { DollarSign, Edit2, Settings, MapPin, CloudRain, Moon, AlertTriangle, Zap, Percent, Shield, Info, Briefcase, BarChart3, X, PlusCircle, Wallet, Checkbox, Calculator } from 'lucide-react';
+import { DollarSign, Edit2, Settings, MapPin, CloudRain, Moon, AlertTriangle, Zap, Percent, Shield, Info, Briefcase, BarChart3, X, PlusCircle, Wallet, Calculator } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Table,
   TableBody,
@@ -19,7 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import type { RegionalSurcharge as RegionalSurchargeType } from '@/types';
+import type { RegionalSurcharge as RegionalSurchargeType } from "@/types";
 
 // Mock pricing parameters for the calculator demo (should align with page state)
 const MOCK_PRICING_PARAMS_FOR_CALC = {
@@ -50,8 +50,8 @@ export default function TariffManagementPage() {
   const [expressFee, setExpressFee] = useState(10);
   const [insuranceFeePercent, setInsuranceFeePercent] = useState(2);
   const [regionalSurcharges, setRegionalSurcharges] = useState<RegionalSurchargeType[]>([
-    { id: 'eilat1', region: 'אילת', surcharge: 20 },
-    { id: 'north_remote', region: 'צפון רחוק (מעל 80קמ)', surcharge: 15 },
+    { id: 'eilat1', region: 'אילת', surcharge: 20, isActive: true },
+    { id: 'north_remote', region: 'צפון רחוק (מעל 80קמ)', surcharge: 15, isActive: false },
   ]);
   const [newRegion, setNewRegion] = useState('');
   const [newRegionSurcharge, setNewRegionSurcharge] = useState<number | string>('');
@@ -83,11 +83,8 @@ export default function TariffManagementPage() {
   };
   
   const handleAddRegionalSurcharge = () => {
-    if (!newRegion.trim() || (typeof newRegionSurcharge === 'string' && !newRegionSurcharge.trim()) || Number(newRegionSurcharge) <= 0) {
-        toast({ title: "שדות חסרים או לא תקינים", description: "אנא הזן שם אזור ותוספת מחיר חיובית.", variant: "destructive"});
-        return;
-    }
-    setRegionalSurcharges(prev => [...prev, { id: `rs_${Date.now()}`, region: newRegion, surcharge: Number(newRegionSurcharge) }]);
+    if (!newRegion || !newRegionSurcharge) return;
+    setRegionalSurcharges(prev => [...prev, { id: `rs_${Date.now()}`, region: newRegion, surcharge: Number(newRegionSurcharge), isActive: true }]);
     setNewRegion('');
     setNewRegionSurcharge('');
   };

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,7 +18,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { requestP2PDelivery, P2PDeliveryRequestInput } from '@/ai/flows/p2p-delivery-request-flow';
+import { requestP2PDelivery, P2PDeliveryRequestInputType } from '@/ai/flows/p2p-delivery-request-flow';
 import { useState } from 'react';
 import { PackagePlus, ShoppingBag, Loader2, Send, User, Phone } from 'lucide-react';
 
@@ -78,8 +77,9 @@ export default function SendPackagePage() {
     setIsLoading(true);
     setSubmissionResult(null);
     try {
-      const input: P2PDeliveryRequestInput = {
+      const input: P2PDeliveryRequestInputType = {
         ...values,
+        isPurchaseRequired: values.isPurchaseRequired ?? false,
         estimatedBudget: values.estimatedBudget ? Number(values.estimatedBudget) : undefined,
       };
       const result = await requestP2PDelivery(input);
@@ -220,4 +220,3 @@ export default function SendPackagePage() {
   );
 }
 
-    

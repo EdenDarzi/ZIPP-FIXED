@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview An AI flow for initiating a Peer-to-Peer (P2P) or custom errand delivery request.
@@ -85,7 +84,13 @@ export async function requestP2PDelivery(input: P2PDeliveryRequestInputType): Pr
       inputSchema: P2PDeliveryRequestInputSchema,
       outputSchema: P2PDeliveryRequestOutputSchema,
     },
-    async (flowInput) => {
+    async (flowInput): Promise<{
+      requestId: string;
+      status: 'REQUESTED' | 'MATCHING_COURIER' | 'FAILED_VALIDATION';
+      estimatedCost?: number;
+      estimatedPickupEtaMinutes?: number;
+      message: string;
+    }> => {
       // Mock AI interaction to generate a "summary" or "understanding"
       // This prompt doesn't do much heavy lifting in the mock, but shows where AI could be used.
       const summaryPrompt = ai.definePrompt({
@@ -115,14 +120,15 @@ export async function requestP2PDelivery(input: P2PDeliveryRequestInputType): Pr
       const requestId = `p2p_${Date.now()}`;
       const isRequestValid = flowInput.pickupAddress.length > 4 && flowInput.destinationAddress.length > 4 && flowInput.packageDescription.length > 2;
 
+      let message = '';
       if (!isRequestValid) {
+        message = "בקשה לא תקינה. אנא בדוק את כתובת האיסוף, היעד ותיאור החבילה.";
         return {
           requestId: "",
           status: 'FAILED_VALIDATION',
-          message: "בקשה לא תקינה. אנא בדוק את כתובת האיסוף, היעד ותיאור החבילה.",
+          message,
         };
       }
-      
       // Simulate cost and ETA based on simple logic (very basic)
       const mockDistanceKm = Math.floor(Math.random() * 10) + 1; // 1 to 10 km
       let estimatedCost = 10 + (mockDistanceKm * 1.5); // Base + per km
@@ -130,13 +136,13 @@ export async function requestP2PDelivery(input: P2PDeliveryRequestInputType): Pr
         estimatedCost += 5; // Small fee for purchasing service
       }
       const estimatedPickupEtaMinutes = 10 + Math.floor(Math.random() * 20); // 10 to 30 mins
-
+      message = 'הבקשה התקבלה וממתינה לשידוך של שליח.';
       return {
         requestId,
-        status: 'MATCHING_COURIER', // Assume direct to matching for now
-        estimatedCost: parseFloat(estimatedCost.toFixed(2)),
+        status: 'MATCHING_COURIER',
+        estimatedCost,
         estimatedPickupEtaMinutes,
-        message: `הבקשה שלך (ID: ${requestId.slice(-6)}) התקבלה! אנו מחפשים כעת שליח. עלות משוערת: ₪${estimatedCost.toFixed(2)}. זמן הגעה משוער לאיסוף: ${estimatedPickupEtaMinutes} דקות.`,
+        message,
       };
     }
   );

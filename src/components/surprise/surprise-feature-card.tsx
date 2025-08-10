@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -6,21 +5,21 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { getSurpriseMealSuggestion, SurpriseMealInput, SurpriseMealOutput } from '@/ai/flows/surprise-meal-flow';
+import { getSurpriseMealSuggestion, SurpriseMealInputType, SurpriseMealOutputType } from '@/ai/flows/surprise-meal-flow';
 import { Gift, Sparkles, Loader2, Utensils, Share2 } from 'lucide-react'; // Added Share2
 import { Label } from '../ui/label';
 
 export default function SurpriseFeatureCard() {
   const { toast } = useToast();
   const [preferences, setPreferences] = useState('');
-  const [surpriseResult, setSurpriseResult] = useState<SurpriseMealOutput | null>(null);
+  const [surpriseResult, setSurpriseResult] = useState<SurpriseMealOutputType | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleGetSurprise = async () => {
     setIsLoading(true);
     setSurpriseResult(null);
     try {
-      const input: SurpriseMealInput = {
+      const input: SurpriseMealInputType = {
         userId: 'mockUserSurpriseMe123', 
         preferences: preferences,
       };

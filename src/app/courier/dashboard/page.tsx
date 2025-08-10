@@ -162,7 +162,7 @@ export default function CourierDashboardPage() {
             <CardTitle className="text-xl">מחפש/ת את המשלוח הבא?</CardTitle>
         </CardHeader>
         <CardContent>
-            <Button size="xl" className="bg-accent hover:bg-accent/90 text-accent-foreground text-lg px-10 py-7 shadow-lg relative overflow-hidden group btn-gradient-hover-accent">
+            <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground text-lg px-10 py-7 shadow-lg relative overflow-hidden group btn-gradient-hover-accent">
               <Link href="/courier/open-bids" className="flex items-center">
                 <Zap className="mr-3 h-6 w-6 text-yellow-300 group-hover:animate-pulse absolute left-4 opacity-75"/> 
                 <Search className="mr-3 h-6 w-6"/> 

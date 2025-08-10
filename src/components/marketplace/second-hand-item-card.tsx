@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -52,16 +51,20 @@ export default function SecondHandItemCard({ item }: { item: SecondHandItem }) {
 
 
   return (
-    <Card className="overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col h-full group">
-      <Link href={`/marketplace`} onClick={handleViewDetails} className="block" aria-label={`הצג פרטים על ${item.title}`}>
-        <div className="relative w-full h-48">
+    <Card className="w-full max-w-sm mx-auto" data-ai-id={`second-hand-item-${item.id}`}>
+      <CardHeader className="p-0">
+        <div className="relative">
           <Image
-            src={item.images[0]?.url || 'https://placehold.co/600x400.png?text=Missing+Image'}
             alt={item.title}
-            layout="fill"
-            objectFit="cover"
-            className="group-hover:scale-105 transition-transform duration-300"
-            data-ai-hint={item.images[0]?.dataAiHint || "second hand item"}
+            className="object-cover w-full h-48"
+            height={300}
+            src={item.images?.[0]?.url || 'https://placehold.co/600x400.png?text=Missing+Image'}
+            style={{
+              aspectRatio: "400/300",
+              objectFit: "cover",
+            }}
+            width={400}
+            data-ai-hint={item.images?.[0]?.dataAiHint || "second hand item"}
           />
           {item.isSold && (
             <Badge variant="destructive" className="absolute top-2 right-2 text-sm px-3 py-1 shadow-lg">
@@ -69,22 +72,19 @@ export default function SecondHandItemCard({ item }: { item: SecondHandItem }) {
             </Badge>
           )}
         </div>
-        <CardHeader className="pb-2 pt-3">
-          <CardTitle className="text-lg font-headline group-hover:text-primary transition-colors truncate">
-            {item.title}
-          </CardTitle>
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>פורסם: {new Date(item.publishedAt).toLocaleDateString('he-IL')}</span>
-            <Badge variant="outline" className="capitalize">{item.category}</Badge>
-          </div>
-        </CardHeader>
-      </Link>
+      </CardHeader>
       <CardContent className="flex-grow pt-0 pb-3 space-y-1.5">
+        <CardTitle className="text-lg font-headline group-hover:text-primary transition-colors truncate">
+          {item.title}
+        </CardTitle>
+        <div className="flex items-center text-xs text-muted-foreground">
+          <MapPin className="h-3 w-3 mr-1" />
+          {item.location}
+          <span className="mx-1">•</span>
+          <span>פורסם: {new Date(item.publishedAt || 0).toLocaleDateString('he-IL')}</span>
+        </div>
         <p className="text-xl font-semibold text-primary flex items-center">
           <DollarSign className="h-5 w-5 mr-1 text-green-600" /> {item.price.toFixed(2)}₪
-        </p>
-        <p className="text-sm text-muted-foreground flex items-center truncate">
-          <MapPin className="h-4 w-4 mr-1 text-accent flex-shrink-0" /> {item.location}
         </p>
          <p className="text-sm text-muted-foreground flex items-center">
           <Tag className="h-4 w-4 mr-1 text-muted-foreground flex-shrink-0" /> מוכר: {item.sellerName}

@@ -3,7 +3,9 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Wallet, CreditCard, DollarSign, BarChart3, Settings, TrendingUp, Send, History, AlertCircle, Info, Users, RefreshCw } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Wallet, CreditCard, DollarSign, BarChart3, Settings, TrendingUp, Send, History, AlertCircle, Info, Users, RefreshCw, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
@@ -74,7 +76,7 @@ export default function CourierEarningsWalletPage() {
         setWalletBalance(parseFloat((Math.random() * 300 + 50).toFixed(2)));
         setDailyEarnings(parseFloat((Math.random() * 100 + 20).toFixed(2)));
         setWeeklyEarnings(parseFloat((Math.random() * 500 + 100).toFixed(2)));
-        toast({ title: 'נתונים עודכנו!', icon: <CheckCircle className="text-green-500" /> });
+        toast({ title: 'נתונים עודכנו!', description: 'כל הנתונים הפיננסיים עודכנו בהצלחה' });
     }, 1200);
   };
 

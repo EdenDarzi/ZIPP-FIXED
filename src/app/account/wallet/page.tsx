@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -6,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Wallet as WalletIcon, ArrowLeft, Download, Filter, CalendarDays, Loader2, PackageSearch } from "lucide-react";
 import Link from "next/link";
-import type { Transaction, TransactionType } from "@/types";
+import type { Wallet, Transaction, TransactionType } from "@/types";
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -14,25 +13,25 @@ import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import type { DateRange } from "react-day-picker";
 import { useToast } from "@/hooks/use-toast";
 
-const mockTransactions: Transaction[] = [
-  { id: 'txn1', timestamp: new Date(Date.now() - 1*24*60*60*1000).toISOString(), type: 'purchase', amount: -75.50, description: 'הזמנה מפיצה פאלאס (#ord123)', status: 'completed', relatedOrderId: 'ord123' },
-  { id: 'txn2', timestamp: new Date(Date.now() - 2*24*60*60*1000).toISOString(), type: 'deposit', amount: 100.00, description: 'טעינת ארנק מכרטיס ויזה 1234', status: 'completed' },
-  { id: 'txn3', timestamp: new Date(Date.now() - 3*24*60*60*1000).toISOString(), type: 'refund', amount: 25.00, description: 'זיכוי עבור פריט חסר מהזמנה #ord098', status: 'completed', relatedOrderId: 'ord098' },
-  { id: 'txn4', timestamp: new Date(Date.now() - 5*24*60*60*1000).toISOString(), type: 'purchase', amount: -55.00, description: 'הזמנה מבורגר בוננזה (#ord456)', status: 'completed', relatedOrderId: 'ord456' },
-  { id: 'txn5', timestamp: new Date().toISOString(), type: 'bonus', amount: 10.00, description: 'בונוס הצטרפות ל-LivePick VIP', status: 'pending' },
-];
+const transactionTypeTranslations: Record<TransactionType | 'subscription_fee', string> = {
+  deposit: 'הפקדה',
+  withdrawal: 'משיכה',
+  payout: 'תשלום',
+  reward: 'פרס',
+  purchase: 'רכישה',
+  bonus: 'בונוס',
+  commission: 'עמלה',
+  order_payment: 'תשלום הזמנה',
+  fee: 'עמלה',
+  refund: 'זיכוי',
+  COURIER_PAYOUT: 'תשלום לשליח',
+  COURIER_BONUS: 'בונוס לשליח',
+  campaign_payment: 'תשלום קמפיין',
+  subscription_fee: 'דמי מנוי'
+};
 
 const getTransactionTypeHebrew = (type: TransactionType): string => {
-  const map: Record<TransactionType, string> = {
-    deposit: 'הפקדה',
-    withdrawal: 'משיכה',
-    purchase: 'רכישה',
-    refund: 'זיכוי',
-    commission_payment: 'תשלום עמלה',
-    bonus: 'בונוס',
-    fee: 'עמלה',
-  };
-  return map[type] || type;
+  return transactionTypeTranslations[type] || type;
 };
 
 const getTransactionStatusVariant = (status: Transaction['status']): "default" | "secondary" | "outline" | "destructive" => {
@@ -45,27 +44,37 @@ const getTransactionStatusVariant = (status: Transaction['status']): "default" |
     }
 }
 
-export default function UserWalletHistoryPage() {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+export default function WalletPage() {
+  const [wallet, setWallet] = useState<Wallet | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const { toast } = useToast();
 
   useEffect(() => {
-    setIsLoading(true);
-    // Simulate fetching transactions
-    setTimeout(() => {
-      let filteredTransactions = mockTransactions;
-      if (dateRange?.from && dateRange?.to) {
-        filteredTransactions = mockTransactions.filter(txn => {
-          const txnDate = new Date(txn.timestamp);
-          return txnDate >= dateRange.from! && txnDate <= dateRange.to!;
+    const fetchWalletData = async () => {
+      setIsLoading(true);
+      try {
+        // We will implement date range filtering later
+        const response = await fetch('/api/wallet');
+        if (!response.ok) {
+          throw new Error('Failed to fetch wallet data');
+        }
+        const data: Wallet = await response.json();
+        setWallet(data);
+      } catch (error) {
+        console.error(error);
+        toast({
+          title: "שגיאה בטעינת הארנק",
+          description: "לא הצלחנו לטעון את נתוני הארנק. נסה שוב מאוחר יותר.",
+          variant: "destructive",
         });
+      } finally {
+        setIsLoading(false);
       }
-      setTransactions(filteredTransactions);
-      setIsLoading(false);
-    }, 800);
-  }, [dateRange]);
+    };
+
+    fetchWalletData();
+  }, [dateRange, toast]);
 
   const handleDownloadStatement = () => {
     toast({
@@ -80,6 +89,8 @@ export default function UserWalletHistoryPage() {
       description: "אפשרויות סינון מתקדמות לפי סוג עסקה, סכום וכו'. (הדגמה)",
     });
   }
+  
+  const transactions = wallet?.transactions || [];
 
   return (
     <Card>
@@ -95,6 +106,24 @@ export default function UserWalletHistoryPage() {
         <CardDescription>עקוב אחר כל הפעולות הכספיות שלך ב-LivePick. 💳 כל מה שצריך – במקום אחד!</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        <Card className="p-4 bg-secondary">
+            <CardHeader className="p-0 pb-2">
+                 <CardTitle className="text-lg flex items-center">
+                    <WalletIcon className="mr-2 h-5 w-5"/>
+                    יתרה נוכחית
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+                {isLoading ? (
+                    <div className="h-8 w-24 bg-muted rounded-md animate-pulse" />
+                ) : (
+                    <p className="text-3xl font-bold font-headline">
+                        {wallet?.balance.toFixed(2) || '0.00'} ₪
+                    </p>
+                )}
+            </CardContent>
+        </Card>
+
         <Card className="p-4 bg-muted/30">
             <CardHeader className="p-0 pb-3">
                  <CardTitle className="text-lg">סינון היסטוריה</CardTitle>
@@ -136,7 +165,7 @@ export default function UserWalletHistoryPage() {
             <TableBody>
               {transactions.map((txn) => (
                 <TableRow key={txn.id}>
-                  <TableCell className="text-xs">{new Date(txn.timestamp).toLocaleString('he-IL')}</TableCell>
+                  <TableCell className="text-xs">{new Date(txn.date).toLocaleString('he-IL')}</TableCell>
                   <TableCell>{getTransactionTypeHebrew(txn.type)}</TableCell>
                   <TableCell className="text-xs max-w-[200px] truncate" title={txn.description}>{txn.description}</TableCell>
                   <TableCell>

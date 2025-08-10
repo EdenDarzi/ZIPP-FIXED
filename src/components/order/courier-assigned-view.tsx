@@ -121,7 +121,7 @@ export function CourierAssignedView({ order }: CourierAssignedViewProps) {
         <Button variant="outline" className="w-full">
           <Phone className="mr-2 h-4 w-4" /> התקשר לשליח
         </Button>
-        <Button variant="destructive-outline" className="w-full">
+        <Button variant="outline" className="w-full border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground">
           <ShieldAlert className="mr-2 h-4 w-4" /> דווח על בעיה
         </Button>
       </CardFooter>

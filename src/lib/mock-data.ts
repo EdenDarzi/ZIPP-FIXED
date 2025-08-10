@@ -1,5 +1,4 @@
-
-import type { Restaurant, MenuItem, OrderDetailsForBidding, CourierProfile, CourierBid, Order, DeliveryPreference, RestaurantTag, Location, DeliveryVehicle, LivePickSaleItem, SecondHandItem, SecondHandItemCategory, RestaurantSettings, OperatingHour, DayOfWeek } from '@/types';
+import type { Restaurant, MenuItem, OrderDetailsForBidding, CourierProfile, CourierBid, Order, DeliveryPreference, RestaurantTag, Location, DeliveryVehicle, LivePickSaleItem, SecondHandItem, SecondHandItemCategory, RestaurantSettings, OperatingHour, DayOfWeek, CartItem, AssignedCourierInfo } from '@/types';
 
 const mockMenuItems: Omit<MenuItem, 'restaurantId'>[] = [
   {
@@ -267,6 +266,7 @@ export const getMockOrderById = (orderId: string, scheduledDeliveryTime?: string
   if (isTakeaway) deliveryPreference = 'takeaway';
   else if (isCurbside) deliveryPreference = 'curbside';
   else if (orderId.includes('_asap_')) deliveryPreference = 'fastest';
+  else if (orderId.includes('_smartsaver_')) deliveryPreference = 'smartSaver';
 
 
   if (baseOrderId.startsWith('ZIPPORD_') || baseOrderId.startsWith('mockOrder_')) { // Changed from swiftsrve_
@@ -407,11 +407,14 @@ export const mockSecondHandItems: SecondHandItem[] = [
   {
     id: 'sh1',
     userId: 'userJaneDoe',
+    sellerId: 'userJaneDoe',
     sellerName: 'ג׳יין דואו',
     title: 'iPhone 12 - שמור כמו חדש, 128GB',
     category: 'טלפונים',
     price: 900,
     description: 'אייפון 12 במצב מעולה, ללא שריטות. מגיע עם קופסה מקורית וכבל טעינה. סוללה 88%.',
+    imageUrl: 'https://placehold.co/600x400.png',
+    postedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     images: [
       { url: 'https://placehold.co/600x400.png', dataAiHint: 'iphone used' },
       { url: 'https://placehold.co/600x400.png', dataAiHint: 'iphone back' },
@@ -426,11 +429,14 @@ export const mockSecondHandItems: SecondHandItem[] = [
   {
     id: 'sh2',
     userId: 'userJohnSmith',
+    sellerId: 'userJohnSmith',
     sellerName: 'יוחנן סמית',
     title: 'אוזניות Sony WH-1000XM4 במצב חדש',
     category: 'אוזניות',
     price: 650,
     description: 'אוזניות סוני מעולות עם ביטול רעשים אקטיבי. שימוש מועט מאוד, נמכרות עקב שדרוג.',
+    imageUrl: 'https://placehold.co/600x400.png',
+    postedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
     images: [{ url: 'https://placehold.co/600x400.png', dataAiHint: 'sony headphones' }],
     location: 'תל אביב',
     publishedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), 
@@ -441,11 +447,14 @@ export const mockSecondHandItems: SecondHandItem[] = [
   {
     id: 'sh3',
     userId: 'userSarahL',
+    sellerId: 'userSarahL',
     sellerName: 'שרה לוי',
     title: 'שמלת קיץ פרחונית - מידה M',
     category: 'בגדים',
     price: 80,
     description: 'שמלת קיץ קלילה ונוחה, נלבשה פעם אחת בלבד. מצב כמו חדש. בד נעים ונושם.',
+    imageUrl: 'https://placehold.co/600x400.png',
+    postedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
     images: [{ url: 'https://placehold.co/600x400.png', dataAiHint: 'summer dress' }],
     location: 'חיפה',
     publishedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), 
@@ -455,11 +464,14 @@ export const mockSecondHandItems: SecondHandItem[] = [
     {
     id: 'sh4',
     userId: 'userMikeB',
+    sellerId: 'userMikeB',
     sellerName: 'מייק בראון',
     title: 'מחשב נייד Dell XPS 13 (2020)',
     category: 'מחשבים',
     price: 2200,
     description: 'דל XPS 13, מעבד i7 דור 10, 16GB RAM, 512GB SSD. מצב מצוין, סוללה טובה. שימש בעיקר ללימודים.',
+    imageUrl: 'https://placehold.co/600x400.png',
+    postedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     images: [{ url: 'https://placehold.co/600x400.png', dataAiHint: 'dell laptop' }],
     location: 'ירושלים',
     publishedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), 

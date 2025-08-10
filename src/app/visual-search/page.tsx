@@ -87,8 +87,8 @@ export default function AiTrendScannerPage() {
       // Simulate AI processing delay
       await new Promise(resolve => setTimeout(resolve, 2000));
       const input: IdentifyDishInputType = {
-        imageDataUri: activeTab === 'image' ? imageDataUri : null,
-        videoDataUri: activeTab === 'video' ? videoDataUri : null, // AI will treat as image for now
+        imageDataUri: activeTab === 'image' && imageDataUri ? imageDataUri : undefined,
+        videoDataUri: activeTab === 'video' && videoDataUri ? videoDataUri : undefined, // AI will treat as image for now
         trendDescription: trendDescription || undefined,
         userQuery: userQuery || undefined,
       };

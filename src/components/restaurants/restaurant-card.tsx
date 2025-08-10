@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react'; 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useLanguage } from "@/context/language-context";
 
 
 interface RestaurantCardProps {
@@ -26,6 +27,18 @@ const tagIconMap: Record<RestaurantTag, React.ElementType> = {
   'Delivery Arena': Zap,
 };
 
+const getTranslatedTag = (tag: RestaurantTag, t: (key: string) => string): string => {
+  const tagTranslations: Record<RestaurantTag, string> = {
+    'Recommended': t('tag.recommended'),
+    'Hot Now': t('tag.hot'),
+    'New': t('tag.new'),
+    'Popular': t('tag.popular'),
+    'Fast Delivery': t('tag.fastDelivery'),
+    'Delivery Arena': t('tag.deliveryArena'),
+  };
+  return tagTranslations[tag] || tag;
+};
+
 const tagColorMap: Record<RestaurantTag, string> = {
     'Recommended': 'bg-purple-100 text-purple-700 border-purple-300 hover:bg-purple-200/80',
     'Hot Now': 'bg-red-100 text-red-700 border-red-300 hover:bg-red-200/80',
@@ -37,6 +50,7 @@ const tagColorMap: Record<RestaurantTag, string> = {
 
 
 export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
+  const { t } = useLanguage();
   const [reviewCount, setReviewCount] = useState<number | null>(null);
   const [isZippChoice, setIsZippChoice] = useState(false); // Changed variable name
 
@@ -67,11 +81,11 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
                 <Tooltip>
                   <TooltipTrigger asChild>
                      <Badge variant="default" className="py-1.5 px-3 text-xs bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white shadow-lg border border-white/30">
-                        <Award className="h-4 w-4 ml-1.5" /> ZIPP Choice 
+                        <Award className="h-4 w-4 ml-1.5" /> {t('tag.choice')}
                     </Badge>
                   </TooltipTrigger>
                   <TooltipContent side="top" align="start" className="bg-popover text-popover-foreground p-2 text-xs rounded-md shadow-lg">
-                    <p>מומלץ במיוחד על ידי צוות ZIPP!</p> 
+                    <p>{t('tag.choice.tooltip')}</p> 
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -83,11 +97,11 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Badge variant="secondary" className={cn("py-1 px-2.5 text-xs shadow-sm", tagColorMap[tag])}>
-                                    <Icon className="h-3.5 w-3.5 ml-1" /> {tag}
+                                    <Icon className="h-3.5 w-3.5 ml-1" /> {getTranslatedTag(tag, t)}
                                 </Badge>
                             </TooltipTrigger>
                             <TooltipContent side="top" align="start" className="bg-popover text-popover-foreground p-2 text-xs rounded-md shadow-lg">
-                                <p>{tag} - מאפיין מיוחד של העסק</p>
+                                <p>{t('tag.tooltip', { tag: getTranslatedTag(tag, t) })}</p>
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
@@ -109,9 +123,9 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
           <Star className="h-4 w-4 ml-2 text-yellow-500 fill-yellow-500" /> 
           <span>{restaurant.rating.toFixed(1)}</span>
            {reviewCount !== null ? (
-            <span className="mr-1 text-xs">({reviewCount} ביקורות)</span>
+            <span className="mr-1 text-xs">({reviewCount} {t('restaurant.reviews')})</span>
            ) : (
-            <span className="mr-1 text-xs animate-pulse">(טוען...)</span> 
+            <span className="mr-1 text-xs animate-pulse">({t('common.loading')})</span> 
            )}
         </div>
         <div className="flex items-center text-muted-foreground">
@@ -127,7 +141,7 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
         <Button asChild className="w-full bg-primary text-primary-foreground transition-transform duration-300 group-hover:scale-105 btn-gradient-hover-primary">
           <Link href={`/restaurants/${restaurant.id}`}>
             <span className="flex items-center justify-center w-full">
-              <ArrowLeft className="h-4 w-4 mr-2" />הצג תפריט
+              <ArrowLeft className="h-4 w-4 mr-2" />{t('restaurant.viewMenu')}
             </span>
           </Link>
         </Button>

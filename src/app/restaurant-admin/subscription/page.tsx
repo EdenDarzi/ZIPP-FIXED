@@ -3,7 +3,8 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Award, CheckCircle, CreditCard, Star, Zap, Info, Wallet, DollarSign, TrendingUp, Settings, FileText, BarChart3, RefreshCw } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Award, CheckCircle, CreditCard, Star, Zap, Info, Wallet, DollarSign, TrendingUp, Settings, FileText, BarChart3, RefreshCw, History } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
@@ -66,7 +67,7 @@ export default function RestaurantFinanceWalletPage() {
         setWalletBalance(parseFloat((Math.random() * 5000 + 1000).toFixed(2)));
         setPendingPayout(parseFloat((Math.random() * 500).toFixed(2)));
         setLastMonthRevenue(parseFloat((Math.random() * 15000 + 5000).toFixed(2)));
-        toast({ title: 'נתונים עודכנו!', icon: <CheckCircle className="text-green-500" /> });
+        toast({ title: 'נתונים עודכנו!', description: 'כל הנתונים הפיננסיים עודכנו בהצלחה' });
     }, 1200);
   };
 

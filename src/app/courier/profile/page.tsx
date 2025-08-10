@@ -64,11 +64,11 @@ export default function CourierProfilePage() {
   };
 
   const VehicleIconDisplay = ({ type }: { type: DeliveryVehicle | undefined }) => {
-    if (type === 'motorcycle') return <Bike className="h-5 w-5 text-primary" title="אופנוע"/>;
-    if (type === 'car') return <Car className="h-5 w-5 text-primary" title="רכב"/>;
-    if (type === 'bicycle') return <Bike className="h-5 w-5 text-primary" title="אופניים"/>;
-    if (type === 'foot') return <Footprints className="h-5 w-5 text-primary" title="הולך רגל"/>;
-    if (type === 'scooter') return <Bike className="h-5 w-5 text-primary" title="קטנוע"/>;
+    if (type === 'motorcycle') return <Bike className="h-5 w-5 text-primary" />;
+    if (type === 'car') return <Car className="h-5 w-5 text-primary" />;
+    if (type === 'bicycle') return <Bike className="h-5 w-5 text-primary" />;
+    if (type === 'foot') return <Footprints className="h-5 w-5 text-primary" />;
+    if (type === 'scooter') return <Bike className="h-5 w-5 text-primary" />;
     return null;
   };
 

@@ -16,11 +16,11 @@ import { Label } from '@/components/ui/label';
 
 
 const VehicleIcon = ({ type }: { type: DeliveryVehicle | undefined }) => {
-  if (type === 'motorcycle') return <Bike className="inline h-4 w-4" title="אופנוע" />;
-  if (type === 'scooter') return <Bike className="inline h-4 w-4" title="קטנוע" />; 
-  if (type === 'car') return <Car className="inline h-4 w-4" title="רכב" />;
-  if (type === 'bicycle') return <Bike className="inline h-4 w-4" title="אופניים" />;
-  if (type === 'foot') return <Footprints className="inline h-4 w-4" title="הולך רגל" />;
+  if (type === 'motorcycle') return <Bike className="inline h-4 w-4" />;
+  if (type === 'scooter') return <Bike className="inline h-4 w-4" />; 
+  if (type === 'car') return <Car className="inline h-4 w-4" />;
+  if (type === 'bicycle') return <Bike className="inline h-4 w-4" />;
+  if (type === 'foot') return <Footprints className="inline h-4 w-4" />;
   return null;
 };
 

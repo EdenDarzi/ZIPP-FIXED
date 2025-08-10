@@ -1,27 +1,27 @@
-
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import Image from 'next/image';
 import { mockCourierProfiles } from '@/lib/mock-data';
 import type { CourierProfile, DeliveryVehicle } from '@/types';
 import { Bike, Car, Footprints, UserCheck, UserX, MapPin, TrendingUp, Clock, Star, Map as MapIconLucide, Gift, AlertTriangle, Users, Loader2 } from 'lucide-react';
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { cn } from '@/lib/utils';
-import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 
 const VehicleIcon = ({ type, className }: { type: DeliveryVehicle | undefined, className?: string }) => {
   const iconProps = { className: cn(className || "inline h-4 w-4 mr-1", "text-muted-foreground") };
-  if (type === 'motorcycle') return <Bike {...iconProps} title="אופנוע" />;
-  if (type === 'scooter') return <Bike {...iconProps} title="קטנוע" />;
-  if (type === 'car') return <Car {...iconProps} title="רכב" />;
-  if (type === 'bicycle') return <Bike {...iconProps} title="אופניים"/>;
-  if (type === 'foot') return <Footprints {...iconProps} title="הולך רגל"/>;
+  if (type === 'motorcycle') return <Bike {...iconProps} />;
+  if (type === 'scooter') return <Bike {...iconProps} />;
+  if (type === 'car') return <Car {...iconProps} />;
+  if (type === 'bicycle') return <Bike {...iconProps} />;
+  if (type === 'foot') return <Footprints {...iconProps} />;
   return null;
 };
 
@@ -162,7 +162,7 @@ export default function CourierManagementDashboard() {
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">
                         <MapPin className="inline h-3 w-3 mr-1"/>
-                        {courier.currentLocation.lat.toFixed(2)}, {courier.currentLocation.lng.toFixed(2)}
+                        {courier.currentLocation?.lat.toFixed(2)}, {courier.currentLocation?.lng.toFixed(2)}
                     </TableCell>
                      <TableCell>
                         <Star className="inline h-3 w-3 mr-1 text-yellow-400 fill-yellow-400"/>
@@ -187,7 +187,7 @@ export default function CourierManagementDashboard() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="relative aspect-[16/9] bg-muted rounded-lg overflow-hidden border data-ai-hint='map delivery zones interface'">
-                    <Image src="https://placehold.co/400x225.png" alt="מפת אזורי משלוח (placeholder)" layout="fill" objectFit="cover" />
+                    <Image src="https://placehold.co/400x225.png" alt="מפת אזורי משלוח (placeholder)" fill style={{objectFit: 'cover'}} />
                     <div className="absolute inset-0 flex items-center justify-center bg-black/30">
                         <p className="text-white text-sm font-semibold">כלי ניהול אזורים (בקרוב)</p>
                     </div>

@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Bar, BarChart as RechartsBarChart, Line, LineChart as RechartsLineChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
-import { DollarSign, Package, Clock, Star, TrendingUp, Award, CalendarDays, BarChartHorizontalBig, Wallet as WalletIcon, History, Download, AlertCircle, Info, Loader2 } from 'lucide-react'; 
+import { DollarSign, Package, Clock, Star, TrendingUp, Award, CalendarDays, BarChartHorizontalBig, Wallet as WalletIcon, History, Download, AlertCircle, Info, Loader2, FileText } from 'lucide-react'; 
 import { DatePickerWithRange } from '@/components/ui/date-range-picker';
 import type { DateRange } from 'react-day-picker';
 import { Badge } from '@/components/ui/badge';
