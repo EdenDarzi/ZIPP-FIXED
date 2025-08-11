@@ -9,7 +9,7 @@ npx prisma generate
 if [ -n \"$DATABASE_URL\" ]; then npx prisma migrate deploy; else echo 'No DATABASE_URL, skipping migrations'; fi
 npm run build
 """
-publish = ".next"
+publish = ".netlify/build"
 
 [build.environment]
 NODE_VERSION = "20"

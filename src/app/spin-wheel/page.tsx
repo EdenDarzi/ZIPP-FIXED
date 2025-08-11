@@ -407,12 +407,12 @@ export default function SpinWheelPage() {
             <button
         onClick={handleSpin}
         disabled={isSpinning || !canSpin}
-        className={cn(
+                  className={cn(
           "spin-button bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-4 px-10 rounded-full shadow-lg text-xl transition-all duration-200 ease-in-out",
           (isSpinning || !canSpin) && "opacity-50 cursor-not-allowed transform-none shadow-none",
           (!isSpinning && canSpin) && "hover:scale-105 hover:shadow-purple-500/50"
-        )}
-        style={{
+                  )}
+                  style={{
           boxShadow: (!isSpinning && canSpin) ? '0 0 20px #a78bfa, 0 0 30px #a78bfa' : 'none'
         }}
       >
@@ -439,11 +439,11 @@ export default function SpinWheelPage() {
               <h2 className="text-3xl font-bold" style={{ color: winningPrize.color }}>
                 {winningPrize.name}
               </h2>
+                </div>
             </div>
-          </div>
                 )}
-      </div>
-
+          </div>
+          
       {/* Timer de cooldown */}
       {!canSpin && timeLeftForNextSpin && (
         <div className="mt-6 p-4 bg-gray-800 rounded-lg border border-gray-700 text-center max-w-sm mx-auto">
@@ -457,8 +457,8 @@ export default function SpinWheelPage() {
           <p className="text-gray-400 text-sm">
             {t('spinWheel.canSpinSoon')}
           </p>
-        </div>
-      )}
+            </div>
+           )}
 
       <style jsx global>{`
         /* Animation for result display */
