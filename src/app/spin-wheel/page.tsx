@@ -161,7 +161,7 @@ export default function SpinWheelPage() {
       if (!canSpin) {
         toast({ 
           title: t('spinWheel.dailyAttemptUsed'), 
-          description: t('spinWheel.spinAgainIn').replace('{time}', timeLeftForNextSpin || ''), 
+          description: t('spinWheel.spinAgainIn', { time: timeLeftForNextSpin || '' }), 
           variant: "default" 
         });
       }
