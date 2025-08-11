@@ -110,14 +110,18 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
             </div>
         </div>
         <CardHeader className="pt-4 pb-2 px-4"> 
-          <CardTitle className="text-xl font-headline group-hover:text-primary transition-colors duration-300">{restaurant.name}</CardTitle>
-          <CardDescription className="text-sm h-10 overflow-hidden text-ellipsis mt-1">{restaurant.description}</CardDescription>
+          <CardTitle className="text-xl font-headline group-hover:text-primary transition-colors duration-300">
+            {restaurant.name.startsWith('restaurant.') ? t(restaurant.name) : restaurant.name}
+          </CardTitle>
+          <CardDescription className="text-sm h-10 overflow-hidden text-ellipsis mt-1">
+            {restaurant.description.startsWith('restaurant.') ? t(restaurant.description) : restaurant.description}
+          </CardDescription>
         </CardHeader>
       </Link>
       <CardContent className="flex-grow space-y-2.5 text-sm pt-0 pb-3 px-4"> 
         <div className="flex items-center text-muted-foreground">
           <CuisineIcon className="h-4 w-4 ml-2 text-accent" /> 
-          <span>{restaurant.cuisineType}</span>
+          <span>{restaurant.cuisineType.startsWith('restaurant.') ? t(restaurant.cuisineType) : restaurant.cuisineType}</span>
         </div>
         <div className="flex items-center text-muted-foreground">
           <Star className="h-4 w-4 ml-2 text-yellow-500 fill-yellow-500" /> 
