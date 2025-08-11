@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import ThemeToggle from '@/components/layout/theme-toggle';
 
 
 const Header = () => {
@@ -92,7 +93,7 @@ const Header = () => {
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <Link href="/" className="flex flex-col items-start" aria-label="ZIPP - דף הבית">
           <span className="text-2xl font-bold text-primary font-headline">ZIPP</span>
-          <span className="text-xs text-muted-foreground -mt-1">הבית של המשלוחים</span>
+          <span className="text-xs text-muted-foreground -mt-1">{t('site.tagline')}</span>
         </Link>
         <nav className="flex items-center space-x-0.5 sm:space-x-1 flex-wrap justify-end">
           {navLinks.map(link => (
@@ -109,7 +110,7 @@ const Header = () => {
                     ${link.showMd && !link.showSm ? 'md:inline-flex' : ''}
                     ${link.showLg && !link.showMd ? 'lg:inline-flex' : ''}
                     ${link.showXl && !link.showLg ? 'xl:inline-flex' : ''}
-                    hover:bg-primary/10
+                    hover:bg-primary/20 dark:hover:bg-primary/10 hover:text-primary transition-colors
                   `)}
                   title={link.label}
                 >
@@ -129,49 +130,52 @@ const Header = () => {
             <Tooltip delayDuration={300}>
               <TooltipTrigger asChild>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="inline-flex items-center hover:bg-accent/10" title="כלים חכמים">
+                  <Button variant="ghost" size="sm" className="inline-flex items-center hover:bg-accent/20 dark:hover:bg-accent/10 hover:text-accent transition-colors" title="כלים חכמים">
                     <Sparkles className="h-4 w-4 sm:mr-1 text-accent" />
-                    <span className="hidden sm:inline">כלים חכמים</span>
+                    <span className="hidden sm:inline">{t('tools.smart')}</span>
                   </Button>
                 </DropdownMenuTrigger>
               </TooltipTrigger>
               <TooltipContent className="sm:hidden p-2 text-xs">
-                <p>כלים חכמים</p>
+                <p>{t('tools.smart')}</p>
               </TooltipContent>
             </Tooltip>
             <DropdownMenuContent align="end" className="w-56 shadow-lg border-border">
-              <DropdownMenuLabel className="font-semibold">פיצ'רים מבוססי AI ועוד</DropdownMenuLabel>
+              <DropdownMenuLabel className="font-semibold">{t('smartTools.title')}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/recommendations" className="flex items-center w-full cursor-pointer hover:bg-muted/50">
-                  <Brain className="ml-2 h-4 w-4 text-primary" /> המלצות AI
+                <Link href="/recommendations" className="flex items-center w-full cursor-pointer hover:bg-muted/80 dark:hover:bg-muted/50 transition-colors">
+                  <Brain className="ml-2 h-4 w-4 text-primary" /> {t('smartTools.aiRecommendations')}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/nutritional-advisor" className="flex items-center w-full cursor-pointer hover:bg-muted/50">
-                  <HeartPulse className="ml-2 h-4 w-4 text-green-500" /> יועץ תזונה
+                <Link href="/nutritional-advisor" className="flex items-center w-full cursor-pointer hover:bg-muted/80 dark:hover:bg-muted/50 transition-colors">
+                  <HeartPulse className="ml-2 h-4 w-4 text-green-500" /> {t('smartTools.nutritionalAdvisor')}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/food-radar" className="flex items-center w-full cursor-pointer hover:bg-muted/50">
-                  <MapIcon className="ml-2 h-4 w-4 text-orange-500" /> רדאר אוכל וטרנדים
+                <Link href="/food-radar" className="flex items-center w-full cursor-pointer hover:bg-muted/80 dark:hover:bg-muted/50 transition-colors">
+                  <MapIcon className="ml-2 h-4 w-4 text-orange-500" /> {t('smartTools.foodRadar')}
                 </Link>
               </DropdownMenuItem>
                <DropdownMenuItem asChild>
-                <Link href="/spin-wheel" className="flex items-center w-full cursor-pointer hover:bg-muted/50">
-                  <Award className="ml-2 h-4 w-4 text-teal-500" /> גלגל ההפתעות
+                <Link href="/spin-wheel" className="flex items-center w-full cursor-pointer hover:bg-muted/80 dark:hover:bg-muted/50 transition-colors">
+                  <Award className="ml-2 h-4 w-4 text-teal-500" /> {t('smartTools.surpriseWheel')}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleTravelModeToggle} className="flex items-center w-full cursor-pointer hover:bg-muted/50">
-                <Briefcase className="ml-2 h-4 w-4 text-blue-500" /> מצב נסיעות
+              <DropdownMenuItem onClick={handleTravelModeToggle} className="flex items-center w-full cursor-pointer hover:bg-muted/80 dark:hover:bg-muted/50 transition-colors">
+                <Briefcase className="ml-2 h-4 w-4 text-blue-500" /> {t('smartTools.travelMode')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
+          {/* Theme toggle */}
+          <ThemeToggle />
+
            <Tooltip delayDuration={300}>
              <TooltipTrigger asChild>
-                <Button variant="ghost" asChild size="icon" className="relative hover:bg-primary/10" title="התראות">
+                <Button variant="ghost" asChild size="icon" className="relative hover:bg-primary/20 dark:hover:bg-primary/10 hover:text-primary transition-colors" title="התראות">
                   <Link href="/notifications" aria-label="התראות"><span className="relative flex items-center justify-center w-full h-full">
                     <Bell className="h-5 w-5" />
                     {isClient && showNotificationDot && <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-xs animate-pulse">2</Badge>}
@@ -183,7 +187,7 @@ const Header = () => {
 
           <Tooltip delayDuration={300}>
             <TooltipTrigger asChild>
-              <Button variant="ghost" asChild size="icon" className="relative hover:bg-primary/10" title="עגלת קניות">
+              <Button variant="ghost" asChild size="icon" className="relative hover:bg-primary/20 dark:hover:bg-primary/10 hover:text-primary transition-colors" title="עגלת קניות">
                 <Link href="/cart" aria-label={`עגלת קניות, ${itemCount} פריטים`}><span className="relative flex items-center justify-center w-full h-full">
                   <ShoppingCart className="h-5 w-5" />
                   {itemCount > 0 && (
@@ -199,7 +203,7 @@ const Header = () => {
 
           <Tooltip delayDuration={300}>
             <TooltipTrigger asChild>
-              <Button variant="outline" size="sm" asChild title={t('header.myAccount')} className="hover:border-primary hover:bg-primary/5">
+              <Button variant="outline" size="sm" asChild title={t('header.myAccount')} className="hover:border-primary hover:bg-primary/10 dark:hover:bg-primary/5 hover:text-primary transition-colors">
                 <Link href="/account/profile"><span className="flex items-center"><UserCircle className="h-4 w-4 mr-0 sm:mr-2" /><span className="hidden sm:inline">{t('header.myAccount')}</span></span></Link>
               </Button>
             </TooltipTrigger>
@@ -210,7 +214,7 @@ const Header = () => {
             <Tooltip delayDuration={300}>
               <TooltipTrigger asChild>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="flex items-center hover:bg-primary/10" aria-label={t('header.language')} title={t('header.language')}>
+                  <Button variant="ghost" size="sm" className="flex items-center hover:bg-primary/20 dark:hover:bg-primary/10 hover:text-primary transition-colors" aria-label={t('header.language')} title={t('header.language')}>
                     <span className="flex items-center">
                       <Languages className="h-4 w-4 sm:mr-1" />
                       <span className="hidden sm:inline">{getCurrentLanguageInfo().flag} {getCurrentLanguageInfo().nativeName}</span>
@@ -231,7 +235,7 @@ const Header = () => {
                   key={lang.code}
                   onClick={() => handleLanguageChange(lang.code)}
                   className={cn(
-                    "flex items-center w-full cursor-pointer hover:bg-muted/50",
+                    "flex items-center w-full cursor-pointer hover:bg-muted/80 dark:hover:bg-muted/50 transition-colors",
                     currentLanguage === lang.code && "bg-muted font-medium"
                   )}
                 >
