@@ -1518,19 +1518,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     if (defaultValue && typeof defaultValue === 'object') {
       Object.entries(defaultValue).forEach(([paramKey, paramValue]) => {
         const value = String(paramValue);
-        // Handle RTL/LTR embedding for parameters
-        const direction = LANGUAGES[currentLanguage].direction;
-        const oppositeDir = direction === 'rtl' ? 'ltr' : 'rtl';
-        
-        // If parameter seems to be in opposite direction (e.g. English in RTL text)
-        if (/^[A-Za-z]/.test(value)) {
-          translation = translation.replace(
-            `{{${paramKey}}}`,
-            `<span dir="${oppositeDir}">${value}</span>`
-          );
-        } else {
-          translation = translation.replace(`{{${paramKey}}}`, value);
-        }
+        // Simple parameter replacement without HTML tags to avoid React rendering issues
+        translation = translation.replace(`{${paramKey}}`, value);
+        translation = translation.replace(`{{${paramKey}}}`, value);
       });
     }
     
