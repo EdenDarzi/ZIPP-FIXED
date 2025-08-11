@@ -5,9 +5,12 @@ const bundleAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 });
 
+const isDockerBuild = process.env.BUILD_TARGET === 'docker';
+
 const nextConfig: NextConfig = {
   /* config options here */
-  output: 'standalone', // For Docker deployment
+  // Only use standalone output for Docker builds; Netlify plugin manages its own output
+  ...(isDockerBuild ? { output: 'standalone' as const } : {}),
   // Production optimizations
   compress: true,
   poweredByHeader: false,
