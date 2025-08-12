@@ -15,6 +15,8 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { AutoTranslateText } from '@/components/translation/auto-translate-text';
+import { useLanguage } from '@/context/language-context';
 
 interface SuggestedBusiness {
   name: string;

@@ -8,6 +8,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useToast } from '@/hooks/use-toast';
+import { AutoTranslateText } from '@/components/translation/auto-translate-text';
+import { useLanguage } from '@/context/language-context';
 
 interface Stats {
   todayOrders: number | null;
@@ -22,6 +24,7 @@ interface Stats {
 
 export default function RestaurantAdminDashboard() {
   const { toast } = useToast();
+  const { isRTL } = useLanguage();
   const [stats, setStats] = useState<Stats>({
     todayOrders: null,
     pendingOrders: null,

@@ -14,15 +14,15 @@ export default function RegisterPage() {
     <div className="flex justify-center items-center min-h-[calc(100vh-200px)] py-12" dir={currentLanguage === 'he' || currentLanguage === 'ar' ? 'rtl' : 'ltr'}>
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-headline text-primary">{t('createAccount', 'צור חשבון')}</CardTitle>
-          <CardDescription>{t('joinLivePick', 'הצטרף ל-LivePick והתחל להזמין עוד היום!')}</CardDescription>
+          <CardTitle className="text-3xl font-headline text-primary">{t('auth.registerTitle')}</CardTitle>
+          <CardDescription>{t('auth.registerSubtitle')}</CardDescription>
         </CardHeader>
         <CardContent>
           <RegisterForm />
           <p className="mt-6 text-center text-sm text-muted-foreground">
-            {t('alreadyHaveAccount', 'יש לך כבר חשבון?')}{' '}
+            {t('auth.alreadyHaveAccount')}{' '}
             <Button variant="link" asChild className="p-0 text-primary">
-              <Link href="/auth/login"><span>{t('login', 'התחבר')}</span></Link>
+              <Link href="/auth/login"><span>{t('auth.login')}</span></Link>
             </Button>
           </p>
         </CardContent>

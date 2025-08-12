@@ -1,17 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { getAuth } from '@clerk/nextjs/server';
+import { getAuthUser } from '@/lib/auth-middleware';
 
 export async function GET(req: NextRequest) {
-  const { userId } = getAuth(req);
-
-  if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const auth = getAuthUser(req);
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
     const wallet = await prisma.wallet.findUnique({
-      where: { userId },
+      where: { userId: auth.userId },
       include: {
         transactions: {
           orderBy: {
@@ -25,7 +22,7 @@ export async function GET(req: NextRequest) {
       // If wallet doesn't exist, create one for the user
       const newWallet = await prisma.wallet.create({
         data: {
-          userId: userId,
+          userId: auth.userId,
           balance: 0,
           currency: 'ILS',
         },

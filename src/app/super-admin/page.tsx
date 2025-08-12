@@ -13,6 +13,8 @@ import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
+import { AutoTranslateText } from '@/components/translation/auto-translate-text';
+import { useLanguage } from '@/context/language-context';
 
 interface IpRestriction {
     id: string;

@@ -28,9 +28,17 @@ function applyThemeClass(theme: Theme) {
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('system');
+  const [mounted, setMounted] = useState(false);
+
+  // Mark as mounted to avoid hydration issues
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Load saved theme on mount
   useEffect(() => {
+    if (!mounted) return;
+    
     try {
       const saved = (localStorage.getItem('zipp-theme') as Theme) || 'system';
       setThemeState(saved);
@@ -38,16 +46,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // noop
     }
-  }, []);
+  }, [mounted]);
 
   // Listen to system changes when theme is system
   useEffect(() => {
-    if (theme !== 'system') return;
+    if (!mounted || theme !== 'system') return;
+    
     const media = window.matchMedia('(prefers-color-scheme: dark)');
     const handler = () => applyThemeClass('system');
     media.addEventListener?.('change', handler);
     return () => media.removeEventListener?.('change', handler);
-  }, [theme]);
+  }, [theme, mounted]);
 
   const setTheme = (next: Theme) => {
     setThemeState(next);
@@ -62,9 +71,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const toggleTheme = () => setTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark');
 
   const resolvedTheme = useMemo<'light' | 'dark'>(() => {
+    if (!mounted) return 'light'; // Default durante hidratação
     if (theme === 'system') return getSystemPrefersDark() ? 'dark' : 'light';
     return theme;
-  }, [theme]);
+  }, [theme, mounted]);
 
   const value: ThemeContextValue = {
     theme,

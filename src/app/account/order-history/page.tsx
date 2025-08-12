@@ -9,13 +9,26 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import type { OrderStatus } from "@/types";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from 'react';
 
-const mockOrderHistory = [
-  { id: 'hist123', date: '2024-07-15', restaurantName: 'פיצה פאלאס', total: 75.50, status: 'DELIVERED' as OrderStatus, scheduled: false },
-  { id: 'hist456', date: '2024-07-10', restaurantName: 'בורגר בוננזה', total: 55.00, status: 'DELIVERED' as OrderStatus, scheduled: true },
-  { id: 'hist789', date: '2024-07-01', restaurantName: 'סלט סנסיישנס', total: 42.00, status: 'CANCELLED' as OrderStatus, scheduled: false },
-  { id: 'hist101', date: '2024-06-25', restaurantName: 'פסטה פרפקשן', total: 98.00, status: 'DELIVERED' as OrderStatus, scheduled: false },
-];
+interface OrderRow { id: string; date: string | Date; restaurantName: string; total: number; status: OrderStatus; scheduled?: boolean }
+const useOrders = () => {
+  const [orders, setOrders] = useState<OrderRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch('/api/account/order-history');
+        if (!res.ok) throw new Error('Falha');
+        const data = await res.json();
+        setOrders(data);
+      } finally { setLoading(false); }
+    };
+    load();
+  }, []);
+  return { orders, loading };
+}
 
 const getStatusTextAndIcon = (status: OrderStatus, scheduled: boolean): { text: string; variant: "default" | "secondary" | "destructive" | "outline"; icon?: React.ElementType } => {
     switch (status) {
@@ -33,6 +46,7 @@ const getStatusTextAndIcon = (status: OrderStatus, scheduled: boolean): { text: 
 
 export default function UserOrderHistoryPage() {
   const { toast } = useToast();
+  const { orders, loading } = useOrders();
 
   const handleViewOrderDetails = (orderId: string) => {
     toast({
@@ -55,7 +69,7 @@ export default function UserOrderHistoryPage() {
         <CardDescription>צפה בכל ההזמנות הקודמות שלך והזמן שוב בקלות.</CardDescription>
       </CardHeader>
       <CardContent>
-        {mockOrderHistory.length === 0 ? (
+        {(orders.length === 0 && !loading) ? (
           <div className="text-center py-12 text-muted-foreground">
             <PackageSearch className="mx-auto h-16 w-16 mb-4" />
             <p className="text-lg">אין עדיין הזמנות בהיסטוריה שלך.</p>
@@ -73,7 +87,7 @@ export default function UserOrderHistoryPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockOrderHistory.map((order) => {
+              {orders.map((order) => {
                 const statusInfo = getStatusTextAndIcon(order.status, order.scheduled);
                 const Icon = statusInfo.icon;
                 return (
@@ -92,14 +106,14 @@ export default function UserOrderHistoryPage() {
                         )}
                       >
                         {Icon && <Icon className="inline h-3 w-3 mr-1"/>}
-                        {statusInfo.text}
+                       {statusInfo.text}
                       </Badge>
                     </TableCell>
                     <TableCell className="space-x-1 rtl:space-x-reverse">
                       <Button variant="ghost" size="icon" onClick={() => handleViewOrderDetails(order.id)} title="צפה בפרטים">
                         <Eye className="h-4 w-4" />
                       </Button>
-                      {order.status === 'DELIVERED' && (
+                       {order.status === 'DELIVERED' && (
                         <Button variant="ghost" size="icon" onClick={() => handleReorder(order.id)} title="הזמן שוב">
                           <RotateCcw className="h-4 w-4" />
                         </Button>
@@ -113,7 +127,7 @@ export default function UserOrderHistoryPage() {
         )}
       </CardContent>
       <CardFooter>
-        {mockOrderHistory.length > 10 && <Button variant="outline" disabled>טען הזמנות נוספות (בקרוב)</Button>}
+        {orders.length > 10 && <Button variant="outline" disabled>טען הזמנות נוספות (בקרוב)</Button>}
       </CardFooter>
     </Card>
   );
