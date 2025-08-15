@@ -544,8 +544,8 @@ export default function HomePage() {
         <Image
           src="https://placehold.co/1200x400.png"
           alt="קולאז' משלוחי אוכל טעימים"
-          layout="fill"
-          objectFit="cover"
+          fill
+          style={{objectFit: 'cover'}}
           data-ai-hint="food delivery collage promotion"
           className="transition-transform duration-500 ease-in-out hover:scale-105"
         />

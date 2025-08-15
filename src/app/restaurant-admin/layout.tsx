@@ -9,39 +9,46 @@ import { Separator } from '@/components/ui/separator';
 import { LayoutDashboard, Settings, ListChecks, Palette, ShoppingBasket, BarChart3, ChefHat, LogOut, Users as CourierIcon, Route, Lightbulb, Megaphone, CreditCard, Wallet, Banknote } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast'; 
-import { useRouter } from 'next/navigation'; 
+import { useRouter } from 'next/navigation';
+import { AutoTranslateText } from '@/components/translation/auto-translate-text';
+import { useLanguage } from '@/context/language-context'; 
 
 const adminNavItems = [
-  { href: '/restaurant-admin', label: 'לוח בקרה', icon: LayoutDashboard },
-  { href: '/restaurant-admin/settings', label: 'הגדרות עסק', icon: Settings },
-  { href: '/restaurant-admin/menu', label: 'ניהול מוצרים/שירותים', icon: ListChecks },
-  { href: '/restaurant-admin/design', label: 'עיצוב החנות', icon: Palette },
-  { href: '/restaurant-admin/orders', label: 'ניהול הזמנות', icon: ShoppingBasket },
-  { href: '/restaurant-admin/delivery-management', label: 'ניהול משלוחים', icon: Route },
-  { href: '/restaurant-admin/promotions', label: 'ניהול מבצעים', icon: Megaphone },
-  { href: '/restaurant-admin/analytics', label: 'ניתוחים והכנסות', icon: BarChart3 }, 
-  { href: '/restaurant-admin/courier-management', label: 'ניהול שליחים (צפייה)', icon: CourierIcon },
-  { href: '/restaurant-admin/trending-insights', label: 'תובנות טרנדים', icon: Lightbulb },
-  { href: '/restaurant-admin/wallet', label: 'ארנק עסקי וחיובים', icon: Banknote }, 
+  { href: '/restaurant-admin', labelKey: 'restaurantAdmin.dashboard', labelFallback: 'Dashboard', icon: LayoutDashboard },
+  { href: '/restaurant-admin/settings', labelKey: 'restaurantAdmin.businessSettings', labelFallback: 'Business Settings', icon: Settings },
+  { href: '/restaurant-admin/menu', labelKey: 'restaurantAdmin.manageProducts', labelFallback: 'Manage Products/Services', icon: ListChecks },
+  { href: '/restaurant-admin/design', labelKey: 'restaurantAdmin.storeDesign', labelFallback: 'Store Design', icon: Palette },
+  { href: '/restaurant-admin/orders', labelKey: 'restaurantAdmin.orderManagement', labelFallback: 'Order Management', icon: ShoppingBasket },
+  { href: '/restaurant-admin/delivery-management', labelKey: 'restaurantAdmin.deliveryManagement', labelFallback: 'Delivery Management', icon: Route },
+  { href: '/restaurant-admin/promotions', labelKey: 'restaurantAdmin.promotionManagement', labelFallback: 'Promotion Management', icon: Megaphone },
+  { href: '/restaurant-admin/analytics', labelKey: 'restaurantAdmin.analyticsRevenue', labelFallback: 'Analytics & Revenue', icon: BarChart3 }, 
+  { href: '/restaurant-admin/courier-management', labelKey: 'restaurantAdmin.courierManagement', labelFallback: 'Courier Management (View)', icon: CourierIcon },
+  { href: '/restaurant-admin/trending-insights', labelKey: 'restaurantAdmin.trendInsights', labelFallback: 'Trend Insights', icon: Lightbulb },
+  { href: '/restaurant-admin/wallet', labelKey: 'restaurantAdmin.businessWallet', labelFallback: 'Business Wallet & Billing', icon: Banknote }, 
 ];
 
 export default function RestaurantAdminLayout({ children }: { children: ReactNode }) {
-  const businessName = "העסק שלי"; 
+  const { isRTL } = useLanguage(); 
 
   return (
-    <div className="flex min-h-screen bg-muted/40">
+    <div className="flex min-h-screen bg-muted/40" dir={isRTL ? 'rtl' : 'ltr'}>
       <aside className="hidden md:flex flex-col w-64 bg-background border-r">
         <div className="p-4 border-b">
           <Link href="/restaurant-admin" className="flex items-center gap-2 text-lg font-semibold text-primary font-headline">
             <ChefHat className="h-7 w-7" />
-            <span>{businessName}</span>
+            <span>
+              <AutoTranslateText 
+                translationKey="restaurantAdmin.myBusiness" 
+                fallback="My Business"
+              />
+            </span>
           </Link>
         </div>
         <ScrollArea className="flex-1">
           <nav className="grid items-start px-4 text-sm font-medium">
             {adminNavItems.map((item) => (
               <Link
-                key={item.label}
+                key={item.labelKey}
                 href={item.href}
                 className={cn(
                   'flex items-center gap-3 rounded-lg px-3 py-2.5 text-muted-foreground transition-all hover:text-primary hover:bg-primary/10 my-1', 
@@ -49,7 +56,10 @@ export default function RestaurantAdminLayout({ children }: { children: ReactNod
                 )}
               >
                 <item.icon className="h-4 w-4" />
-                {item.label}
+                <AutoTranslateText 
+                  translationKey={item.labelKey} 
+                  fallback={item.labelFallback}
+                />
               </Link>
             ))}
           </nav>
@@ -58,7 +68,11 @@ export default function RestaurantAdminLayout({ children }: { children: ReactNod
             <Button variant="outline" className="w-full justify-start" asChild>
               <Link href="/auth/login">
                 <span className="flex items-center">
-                  <LogOut className="mr-2 h-4 w-4" /> התנתק (מדומה)
+                  <LogOut className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} /> 
+                  <AutoTranslateText 
+                    translationKey="restaurantAdmin.logout" 
+                    fallback="Logout (Demo)"
+                  />
                 </span>
               </Link>
             </Button>
@@ -69,7 +83,12 @@ export default function RestaurantAdminLayout({ children }: { children: ReactNod
             
             <Link href="/restaurant-admin" className="flex items-center gap-2 text-lg font-semibold text-primary font-headline">
                  <ChefHat className="h-6 w-6" />
-                 <span>{businessName}</span>
+                 <span>
+                   <AutoTranslateText 
+                     translationKey="restaurantAdmin.myBusiness" 
+                     fallback="My Business"
+                   />
+                 </span>
             </Link>
         </header>
         <main className="flex-1 p-4 sm:px-6 sm:py-0 md:p-6 bg-muted/40">

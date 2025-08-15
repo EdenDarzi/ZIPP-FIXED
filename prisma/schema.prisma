@@ -29,6 +29,7 @@ model User {
   addresses         Address[]
   paymentMethods    PaymentMethod[]
   securitySettings  UserSecuritySettings?
+  marketplaceItems  MarketplaceItem[]  @relation("MarketplaceSeller")
 
   @@map("users")
 }
@@ -361,4 +362,36 @@ model Subscription {
   updatedAt  DateTime         @updatedAt
 
   @@map("subscriptions")
+}
+
+// MarketplaceItem model (Yad 2 products)
+model MarketplaceItem {
+  id             String   @id @default(uuid())
+  title          String
+  description    String
+  price          Float
+  category       String
+  condition      String?  // NEW, USED, REFURBISHED
+  location       String
+  contactDetails String
+  imageUrl1      String?
+  dataAiHint1    String?
+  imageUrl2      String?
+  dataAiHint2    String?
+  imageUrl3      String?
+  dataAiHint3    String?
+  sellerId       String
+  seller         User     @relation("MarketplaceSeller", fields: [sellerId], references: [id])
+  isActive       Boolean  @default(true)
+  isSold         Boolean  @default(false)
+  publishedAt    DateTime @default(now())
+  soldAt         DateTime?
+  views          Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("marketplace_items")
+  @@index([category])
+  @@index([location])
+  @@index([isActive, isSold])
 }

@@ -2,7 +2,8 @@
 'use client'; 
 
 import RestaurantCard from '@/components/restaurants/restaurant-card';
-import { mockRestaurants, mockLivePickSaleItems } from '@/lib/mock-data';
+import { mockLivePickSaleItems } from '@/lib/mock-data';
+import { enhancedRestaurants, cuisineTypes } from '@/lib/enhanced-restaurant-data';
 import type { Restaurant, LivePickSaleItem } from '@/types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -17,12 +18,13 @@ import Image from 'next/image';
 
 export default function RestaurantsPage() {
   const { t } = useLanguage();
-  const restaurants: Restaurant[] = mockRestaurants;
+  const restaurants: Restaurant[] = enhancedRestaurants;
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
   const [cuisineFilter, setCuisineFilter] = useState('all');
   const [ratingFilter, setRatingFilter] = useState('all');
   const [distanceFilter, setDistanceFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('rating'); // rating, delivery-time, name, newest
   const [activeZippSaleItems, setActiveZippSaleItems] = useState<LivePickSaleItem[]>([]);
 
   useEffect(() => {
@@ -33,18 +35,57 @@ export default function RestaurantsPage() {
   }, []);
 
 
-  const cuisineTypes = [t('restaurants.filters.all'), ...Array.from(new Set(restaurants.map(r => r.cuisineType.startsWith('restaurant.') ? t(r.cuisineType) : r.cuisineType)))];
+  const availableCuisineTypes = ['הכל', ...Array.from(new Set(restaurants.map(r => r.cuisineType)))];
 
   const filteredRestaurants = restaurants.filter(restaurant => {
-    const restaurantName = restaurant.name.startsWith('restaurant.') ? t(restaurant.name) : restaurant.name;
-    const restaurantCuisine = restaurant.cuisineType.startsWith('restaurant.') ? t(restaurant.cuisineType) : restaurant.cuisineType;
+    // Enhanced search functionality
+    const searchLower = searchTerm.toLowerCase();
+    const matchesSearch = searchTerm === '' || 
+                          restaurant.name.toLowerCase().includes(searchLower) ||
+                          restaurant.cuisineType.toLowerCase().includes(searchLower) ||
+                          restaurant.description.toLowerCase().includes(searchLower) ||
+                          restaurant.location.toLowerCase().includes(searchLower) ||
+                          restaurant.tags?.some(tag => tag.toLowerCase().includes(searchLower)) ||
+                          restaurant.menu.some(item => 
+                            item.name.toLowerCase().includes(searchLower) ||
+                            item.description.toLowerCase().includes(searchLower) ||
+                            item.category.toLowerCase().includes(searchLower)
+                          );
     
-    const matchesSearch = restaurantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          restaurantCuisine.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCuisine = cuisineFilter === 'all' || cuisineFilter === t('restaurants.filters.all') || 
-                          restaurantCuisine === cuisineFilter || restaurant.cuisineType === cuisineFilter;
+    const matchesCuisine = cuisineFilter === 'all' || cuisineFilter === 'הכל' || 
+                          restaurant.cuisineType === cuisineFilter;
+    
     const matchesRating = ratingFilter === 'all' || restaurant.rating >= parseFloat(ratingFilter);
-    return matchesSearch && matchesCuisine && matchesRating;
+    
+    // Future: Distance filter would be implemented here
+    const matchesDistance = distanceFilter === 'all'; // For now, all restaurants match
+    
+    return matchesSearch && matchesCuisine && matchesRating && matchesDistance;
+  });
+
+  // Sort restaurants
+  const sortedRestaurants = [...filteredRestaurants].sort((a, b) => {
+    switch (sortBy) {
+      case 'rating':
+        return b.rating - a.rating;
+      case 'delivery-time':
+        // Extract numbers from delivery time strings for comparison
+        const getDeliveryMinutes = (timeStr: string) => {
+          const match = timeStr.match(/(\d+)/);
+          return match ? parseInt(match[1]) : 999;
+        };
+        return getDeliveryMinutes(a.deliveryTimeEstimate) - getDeliveryMinutes(b.deliveryTimeEstimate);
+      case 'name':
+        return a.name.localeCompare(b.name);
+      case 'newest':
+        // Restaurants with 'New' tag first, then by rating
+        const aIsNew = a.tags?.includes('New') ? 1 : 0;
+        const bIsNew = b.tags?.includes('New') ? 1 : 0;
+        if (aIsNew !== bIsNew) return bIsNew - aIsNew;
+        return b.rating - a.rating;
+      default:
+        return 0;
+    }
   });
 
   const handleMoreFiltersClick = () => {
@@ -140,8 +181,8 @@ export default function RestaurantsPage() {
                         <SelectValue placeholder={t('restaurants.filters.allTypes')} />
                     </SelectTrigger>
                     <SelectContent>
-                        {cuisineTypes.map(cuisine => (
-                            <SelectItem key={cuisine} value={cuisine === t('restaurants.filters.all') ? 'all' : cuisine}>{cuisine}</SelectItem>
+                        {availableCuisineTypes.map(cuisine => (
+                            <SelectItem key={cuisine} value={cuisine === 'הכל' ? 'all' : cuisine}>{cuisine}</SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
@@ -176,16 +217,40 @@ export default function RestaurantsPage() {
                     </SelectContent>
                 </Select>
             </div>
-            <Button variant="outline" className="w-full bg-white/70 dark:bg-gray-900/60 border border-white/40 dark:border-white/10 shadow-sm rounded-xl hover:ring-1 hover:ring-primary/40" onClick={handleMoreFiltersClick} aria-label={t('restaurants.filters.more')}>
-                <Filter className="mr-2 h-4 w-4" />{t('restaurants.filters.more')}
-            </Button>
+            <div className="space-y-1">
+                <label htmlFor="sortFilter" className="text-sm font-medium text-muted-foreground">מיון לפי</label>
+                 <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger id="sortFilter" className="w-full bg-white/70 dark:bg-gray-900/60 border border-white/40 dark:border-white/10 shadow-sm rounded-xl">
+                        <SelectValue placeholder="בחר מיון..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="rating">דירוג גבוה</SelectItem>
+                        <SelectItem value="delivery-time">זמן משלוח קצר</SelectItem>
+                        <SelectItem value="name">שם (א-ת)</SelectItem>
+                        <SelectItem value="newest">חדשים ביותר</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
         </div>
         </CardContent>
       </Card>
 
-      {filteredRestaurants.length > 0 ? (
+      {/* Results Summary */}
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-muted-foreground">
+          נמצאו {sortedRestaurants.length} תוצאות
+          {searchTerm && ` עבור "${searchTerm}"`}
+          {cuisineFilter !== 'all' && cuisineFilter !== 'הכל' && ` בקטגוריה "${cuisineFilter}"`}
+        </div>
+        <Button variant="outline" size="sm" onClick={handleMoreFiltersClick}>
+          <Filter className="mr-2 h-4 w-4" />
+          מסננים נוספים
+        </Button>
+      </div>
+
+      {sortedRestaurants.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> 
-          {filteredRestaurants.map((restaurant) => (
+          {sortedRestaurants.map((restaurant) => (
             <RestaurantCard key={restaurant.id} restaurant={restaurant} />
           ))}
         </div>

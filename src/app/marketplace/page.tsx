@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { mockSecondHandItems, secondHandCategories } from '@/lib/mock-data';
-import type { SecondHandItem, SecondHandItemCategory } from '@/types';
+import { secondHandCategories } from '@/lib/mock-data';
+import type { SecondHandItemCategory } from '@/types';
+import type { MarketplaceItem, MarketplaceApiResponse } from '@/types/marketplace';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -16,16 +17,40 @@ import { Label } from '@/components/ui/label';
 
 export default function MarketplacePage() {
   const { t } = useLanguage();
-  const [items, setItems] = useState<SecondHandItem[]>([]);
-  const [filteredItems, setFilteredItems] = useState<SecondHandItem[]>([]);
+  const [items, setItems] = useState<MarketplaceItem[]>([]);
+  const [filteredItems, setFilteredItems] = useState<MarketplaceItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<SecondHandItemCategory | 'all'>('all');
   const [sortBy, setSortBy] = useState('newest');
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    setItems(mockSecondHandItems.filter(item => !item.isSold));
+    fetchProducts();
   }, []);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/marketplace/products');
+      const data: MarketplaceApiResponse = await response.json();
+      
+      if (response.ok) {
+        setItems(data.products);
+      } else {
+        throw new Error('Failed to fetch products');
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      toast({
+        title: 'שגיאה',
+        description: 'שגיאה בטעינת המוצרים',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     let tempItems = [...items];
@@ -47,7 +72,7 @@ export default function MarketplacePage() {
     } else if (sortBy === 'price-desc') {
       tempItems.sort((a, b) => b.price - a.price);
     } else { 
-      tempItems.sort((a, b) => new Date(b.publishedAt ? b.publishedAt : 0).getTime() - new Date(a.publishedAt ? a.publishedAt : 0).getTime());
+      tempItems.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
     }
 
     setFilteredItems(tempItems);
@@ -130,10 +155,17 @@ export default function MarketplacePage() {
         </CardContent>
       </Card>
 
-      {filteredItems.length > 0 ? (
+      {loading ? (
+        <Card className="text-center py-12 premium-card-hover">
+            <CardContent className="flex flex-col items-center gap-4">
+                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
+                <p className="text-xl text-muted-foreground">טוען מוצרים...</p>
+            </CardContent>
+        </Card>
+      ) : filteredItems.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"> {/* Increased gap */}
           {filteredItems.map((item) => (
-            <SecondHandItemCard key={item.id} item={item} />
+            <SecondHandItemCard key={item.id} item={item as any} />
           ))}
         </div>
       ) : (

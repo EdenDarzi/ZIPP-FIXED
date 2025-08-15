@@ -203,6 +203,36 @@ const translations: Record<Language, Record<string, string>> = {
     'marketplace.loadMore': 'טען עוד',
     'marketplace.loadMore.toast': 'טעינת מוצרים נוספים (הדגמה).',
     
+    // Marketplace Publish Form
+    'marketplace.publish.title': 'פרסם מוצר חדש ביד 2',
+    'marketplace.publish.subtitle': 'מלא את פרטי המוצר שברצונך למכור. פריטים יאושרו לפני הפרסום (דמו).',
+    'marketplace.publish.backToBoard': 'חזרה ללוח יד 2',
+    'marketplace.publish.form.title': 'כותרת המוצר',
+    'marketplace.publish.form.titlePlaceholder': 'לדוגמה: ספה פינתית במצב טוב',
+    'marketplace.publish.form.category': 'קטגוריה',
+    'marketplace.publish.form.categoryPlaceholder': 'בחר קטגוריה...',
+    'marketplace.publish.form.price': 'מחיר (₪)',
+    'marketplace.publish.form.pricePlaceholder': 'לדוגמה: 150',
+    'marketplace.publish.form.description': 'תיאור המוצר',
+    'marketplace.publish.form.descriptionPlaceholder': 'פרט על מצב המוצר, גודל, סיבת מכירה וכו\'.',
+    'marketplace.publish.form.images': 'תמונות המוצר (עד 3)',
+    'marketplace.publish.form.imagesDesc': 'השתמש בקישורי URL ישירים לתמונות. העלאת קבצים תתאפשר בהמשך.',
+    'marketplace.publish.form.imageUrl': 'קישור לתמונה',
+    'marketplace.publish.form.aiHint': 'רמז AI לתמונה (אופציונלי)',
+    'marketplace.publish.form.aiHintPlaceholder': 'לדוגמה: כיסא עץ, סמארטפון שחור',
+    'marketplace.publish.form.aiHintDesc': 'אם התמונה היא Placeholder, עזור ל-AI ליצור תמונה מתאימה.',
+    'marketplace.publish.form.location': 'עיר / אזור איסוף',
+    'marketplace.publish.form.locationPlaceholder': 'לדוגמה: תל אביב, אזור המרכז',
+    'marketplace.publish.form.contact': 'פרטי יצירת קשר (טלפון / מייל)',
+    'marketplace.publish.form.contactPlaceholder': 'הטלפון או המייל שלך ליצירת קשר',
+    'marketplace.publish.form.contactDesc': 'פרט זה יוצג לקונים פוטנציאליים.',
+    'marketplace.publish.form.submit': 'פרסם את המוצר',
+    'marketplace.publish.form.submitting': 'מפרסם מוצר...',
+    'marketplace.publish.success.title': 'המוצר נשלח לפרסום!',
+    'marketplace.publish.success.description': 'יופיע בלוח יד 2 לאחר אישור קצר (זהו תהליך הדגמה).',
+    'marketplace.publish.imageUpload.title': 'העלאת תמונה',
+    'marketplace.publish.imageUpload.description': 'אפשרות להעלאת קבצים ישירות מהמכשיר תתווסף. בינתיים, אנא השתמש/י בקישור (URL) לתמונה. (הדגמה)',
+    
     // Send Package Page
     'sendPackage.title': 'שלח חבילה / בצע שליחות',
     'sendPackage.subtitle': 'שלח כל דבר, לכל מקום. מלא את הפרטים ונמצא לך שליח.',
@@ -726,7 +756,21 @@ const translations: Record<Language, Record<string, string>> = {
     'footer.orderNow': 'הזמן עכשיו',
     'footer.trackOrder': 'עקוב אחר הזמנה',
     'footer.copyright': '© 2025 ZIPP. כל הזכויות שמורות.',
-    'footer.tagline': 'פלטפורמת המשלוחים החכמה שלך, מבוססת AI.'
+    'footer.tagline': 'פלטפורמת המשלוחים החכמה שלך, מבוססת AI.',
+    
+    // Super Admin
+    'superAdmin.title': 'ZIPP - מנהל על',
+    'superAdmin.mainDashboard': 'לוח בקרה ראשי',
+    'superAdmin.customerView': 'תצוגת לקוח (דף הבית)',
+    'superAdmin.businessPortal': 'פורטל ניהול עסקים',
+    'superAdmin.courierPortal': 'פורטל שליחים',
+    'superAdmin.business': 'עסק',
+    'superAdmin.courier': 'שליח',
+    'superAdmin.active': 'פעיל',
+    'superAdmin.inactive': 'לא פעיל',
+    'superAdmin.expired': 'פג תוקף',
+    'superAdmin.suspended': 'מושהה',
+    'superAdmin.cancelled': 'בוטל',
   },
   
   en: {
@@ -766,6 +810,20 @@ const translations: Record<Language, Record<string, string>> = {
     'footer.trackOrder': 'Track Order',
     'footer.allRightsReserved': '© 2025 ZIPP. All rights reserved.',
     'footer.tagline': 'Your smart delivery platform, powered by AI.',
+    
+    // Super Admin
+    'superAdmin.title': 'ZIPP - Super Admin',
+    'superAdmin.mainDashboard': 'Main Dashboard',
+    'superAdmin.customerView': 'Customer View (Home)',
+    'superAdmin.businessPortal': 'Business Management Portal',
+    'superAdmin.courierPortal': 'Courier Portal',
+    'superAdmin.business': 'Business',
+    'superAdmin.courier': 'Courier',
+    'superAdmin.active': 'Active',
+    'superAdmin.inactive': 'Inactive',
+    'superAdmin.expired': 'Expired',
+    'superAdmin.suspended': 'Suspended',
+    'superAdmin.cancelled': 'Cancelled',
     
     // Pages
     'pages.favorites.title': 'My Favorites',
@@ -2017,7 +2075,21 @@ const translations: Record<Language, Record<string, string>> = {
     'wallet.applyFiltersTitle': 'Применить фильтры (Скоро)',
     'wallet.applyFiltersDesc': 'Расширенные опции фильтрации по типу транзакции, сумме и т.д. (Демо)',
     'wallet.errorLoading': 'Ошибка загрузки кошелька',
-    'wallet.errorLoadingDesc': 'Не удалось загрузить данные вашего кошелька. Попробуйте еще раз позже.'
+    'wallet.errorLoadingDesc': 'Не удалось загрузить данные вашего кошелька. Попробуйте еще раз позже.',
+    
+    // Super Admin
+    'superAdmin.title': 'ZIPP - Супер Админ',
+    'superAdmin.mainDashboard': 'Главная панель',
+    'superAdmin.customerView': 'Вид клиента (Главная)',
+    'superAdmin.businessPortal': 'Портал управления бизнесом',
+    'superAdmin.courierPortal': 'Портал курьеров',
+    'superAdmin.business': 'Бизнес',
+    'superAdmin.courier': 'Курьер',
+    'superAdmin.active': 'Активный',
+    'superAdmin.inactive': 'Неактивный',
+    'superAdmin.expired': 'Истек',
+    'superAdmin.suspended': 'Приостановлен',
+    'superAdmin.cancelled': 'Отменен'
   },
   
   ar: {
@@ -2605,7 +2677,21 @@ const translations: Record<Language, Record<string, string>> = {
     'wallet.applyFiltersTitle': 'تطبيق المرشحات (قريباً)',
     'wallet.applyFiltersDesc': 'خيارات تصفية متقدمة حسب نوع المعاملة والمبلغ وما إلى ذلك. (تجريبي)',
     'wallet.errorLoading': 'خطأ في تحميل المحفظة',
-    'wallet.errorLoadingDesc': 'لم نتمكن من تحميل بيانات محفظتك. يرجى المحاولة مرة أخرى لاحقاً.'
+    'wallet.errorLoadingDesc': 'لم نتمكن من تحميل بيانات محفظتك. يرجى المحاولة مرة أخرى لاحقاً.',
+    
+    // Super Admin
+    'superAdmin.title': 'ZIPP - مدير فائق',
+    'superAdmin.mainDashboard': 'لوحة القيادة الرئيسية',
+    'superAdmin.customerView': 'عرض العميل (الرئيسية)',
+    'superAdmin.businessPortal': 'بوابة إدارة الأعمال',
+    'superAdmin.courierPortal': 'بوابة المرسلين',
+    'superAdmin.business': 'عمل',
+    'superAdmin.courier': 'مرسل',
+    'superAdmin.active': 'نشط',
+    'superAdmin.inactive': 'غير نشط',
+    'superAdmin.expired': 'منتهي الصلاحية',
+    'superAdmin.suspended': 'معلق',
+    'superAdmin.cancelled': 'ملغي'
   }
 };
 
