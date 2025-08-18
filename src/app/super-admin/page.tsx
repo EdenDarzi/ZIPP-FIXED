@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ShieldCheck, Users, BarChart3, Settings, ChefHat, Truck, Home, AlertCircle, CheckCircle, KeyRound, UserCog, VenetianMask, Server, Settings2, Activity, Link as LinkIcon, Eye, Trash2, Loader2, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -45,6 +46,7 @@ const initialMockSubscriptions: Subscription[] = [
 
 
 export default function SuperAdminDashboardPage() {
+  const router = useRouter();
   const { toast } = useToast();
   const { isRTL } = useLanguage();
   const [ipUserId, setIpUserId] = useState('');
@@ -83,9 +85,9 @@ export default function SuperAdminDashboardPage() {
   ];
 
   const adminTools = [
-    { labelKey: 'superAdmin.globalUserManagement', labelFallback: 'Global User Management', icon: Users, action: () => handlePlaceholderClick('User Management') },
-    { labelKey: 'superAdmin.comprehensivePlatformAnalytics', labelFallback: 'Comprehensive Platform Analytics', icon: BarChart3, action: () => handlePlaceholderClick('Platform Analytics') },
-    { labelKey: 'superAdmin.systemLogsAudit', labelFallback: 'System Logs & Audit', icon: Server, action: () => handlePlaceholderClick('System Logs') },
+    { labelKey: 'superAdmin.globalUserManagement', labelFallback: 'Global User Management', icon: Users, action: () => window.location.href = '/super-admin/user-management' },
+    { labelKey: 'superAdmin.comprehensivePlatformAnalytics', labelFallback: 'Comprehensive Platform Analytics', icon: BarChart3, action: () => window.location.href = '/super-admin/global-analytics' },
+    { labelKey: 'superAdmin.systemLogsAudit', labelFallback: 'System Logs & Audit', icon: Server, action: () => window.location.href = '/super-admin/system-logs' },
   ];
 
   const handleAddIpRestriction = () => {
@@ -315,14 +317,14 @@ export default function SuperAdminDashboardPage() {
                 </Table>}
                  <Button 
                    variant="outline" 
-                   className="w-full bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200 text-amber-700 hover:from-amber-100 hover:to-yellow-100 hover:border-amber-300 transition-all duration-200 shadow-sm rounded-lg" 
-                   onClick={() => handlePlaceholderClick("WAF Rules Management")}
+                   className="w-full bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 text-green-700 hover:from-green-100 hover:to-emerald-100 hover:border-green-300 transition-all duration-200 shadow-sm rounded-lg" 
+                   onClick={() => router.push('/super-admin/system-settings')}
                  >
                    <div className="flex items-center gap-2">
-                     <div className="p-1.5 bg-amber-100 rounded-lg">
+                     <div className="p-1.5 bg-green-100 rounded-lg">
                        <Settings2 className="h-4 w-4" />
                      </div>
-                     <AutoTranslateText translationKey="superAdmin.wafRulesComingSoon" fallback="WAF Rules (Coming Soon)" />
+                     <AutoTranslateText translationKey="superAdmin.wafRules" fallback="WAF & Security Rules" />
                    </div>
                  </Button>
             </CardContent>
@@ -457,14 +459,14 @@ export default function SuperAdminDashboardPage() {
                 </Table>}
                 <Button 
                   variant="outline" 
-                  className="w-full bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200 text-amber-700 hover:from-amber-100 hover:to-yellow-100 hover:border-amber-300 transition-all duration-200 shadow-sm rounded-lg" 
-                  onClick={() => handlePlaceholderClick("Global Subscription Plans Settings")}
+                  className="w-full bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 text-green-700 hover:from-green-100 hover:to-emerald-100 hover:border-green-300 transition-all duration-200 shadow-sm rounded-lg" 
+                  onClick={() => router.push('/super-admin/subscription-management')}
                 >
                   <div className="flex items-center gap-2">
-                    <div className="p-1.5 bg-amber-100 rounded-lg">
+                    <div className="p-1.5 bg-green-100 rounded-lg">
                       <VenetianMask className="h-4 w-4" />
                     </div>
-                    <AutoTranslateText translationKey="superAdmin.subscriptionPlansComingSoon" fallback="Subscription Plans (Coming Soon)" />
+                    <AutoTranslateText translationKey="superAdmin.subscriptionPlans" fallback="Subscription Plans Management" />
                   </div>
                 </Button>
             </CardContent>
@@ -501,14 +503,14 @@ export default function SuperAdminDashboardPage() {
                           fallback={tool.labelFallback}
                         />
                       </h3>
-                      <p className="text-sm text-muted-foreground mt-1">Coming Soon</p>
+                      <p className="text-sm text-muted-foreground mt-1">Available</p>
                     </div>
                   </div>
                 </div>
                 <div className="p-4 bg-gradient-to-r from-orange-500/5 to-red-500/5">
                   <div className="text-center">
-                    <Badge variant="outline" className="bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-700 border-amber-200">
-                      In Development
+                    <Badge variant="default" className="bg-gradient-to-r from-green-500 to-emerald-500 text-white">
+                      Available
                     </Badge>
                   </div>
                 </div>
@@ -582,11 +584,11 @@ export default function SuperAdminDashboardPage() {
           <CardFooter className="p-6 pt-0">
             <Button 
               variant="outline" 
-              className="w-full bg-gradient-to-r from-slate-50 to-gray-50 border-slate-200 text-slate-700 hover:from-slate-100 hover:to-gray-100 hover:border-slate-300 transition-all duration-200 shadow-sm rounded-lg" 
-              onClick={() => handlePlaceholderClick("Full System Status Page")}
+              className="w-full bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 text-green-700 hover:from-green-100 hover:to-emerald-100 hover:border-green-300 transition-all duration-200 shadow-sm rounded-lg" 
+              onClick={() => router.push('/super-admin/service-status')}
             >
               <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-slate-100 rounded-lg">
+                <div className="p-1.5 bg-green-100 rounded-lg">
                   <LinkIcon className="h-4 w-4" />
                 </div>
                 <AutoTranslateText 

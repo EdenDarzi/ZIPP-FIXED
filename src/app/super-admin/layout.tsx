@@ -21,13 +21,13 @@ export default function SuperAdminLayout({ children }: { children: ReactNode }) 
     { href: '/courier/dashboard', labelKey: 'superAdmin.courierPortal', labelFallback: 'Courier Portal', icon: Truck },
     { isSeparator: true },
     { href: '/super-admin/tariff-management', labelKey: 'superAdmin.deliveryTariffs', labelFallback: 'Delivery Tariff Management', icon: DollarSign },
-    { href: '#', labelKey: 'superAdmin.userManagement', labelFallback: 'User Management (General)', icon: Users, disabled: true, comingSoon: true },
-    { href: '#', labelKey: 'superAdmin.systemSettings', labelFallback: 'System Settings', icon: Settings, disabled: true, comingSoon: true },
-    { href: '#', labelKey: 'superAdmin.accessManagement', labelFallback: 'Access Management (IP, 2FA)', icon: KeyRound, disabled: true, comingSoon: true },
-    { href: '#', labelKey: 'superAdmin.subscriptionManagement', labelFallback: 'Subscription Management', icon: UserCog, disabled: true, comingSoon: true },
-    { href: '#', labelKey: 'superAdmin.globalAnalytics', labelFallback: 'Global Analytics', icon: BarChart3, disabled: true, comingSoon: true },
-    { href: '#', labelKey: 'superAdmin.systemLogs', labelFallback: 'System Logs', icon: Server, disabled: true, comingSoon: true },
-    { href: '#', labelKey: 'superAdmin.serviceStatus', labelFallback: 'Service Status', icon: Activity, disabled: true, comingSoon: true },
+    { href: '/super-admin/user-management', labelKey: 'superAdmin.userManagement', labelFallback: 'User Management (General)', icon: Users },
+    { href: '/super-admin/system-settings', labelKey: 'superAdmin.systemSettings', labelFallback: 'System Settings', icon: Settings },
+    { href: '/super-admin/access-management', labelKey: 'superAdmin.accessManagement', labelFallback: 'Access Management (IP, 2FA)', icon: KeyRound },
+    { href: '/super-admin/subscription-management', labelKey: 'superAdmin.subscriptionManagement', labelFallback: 'Subscription Management', icon: UserCog },
+    { href: '/super-admin/global-analytics', labelKey: 'superAdmin.globalAnalytics', labelFallback: 'Global Analytics', icon: BarChart3 },
+    { href: '/super-admin/system-logs', labelKey: 'superAdmin.systemLogs', labelFallback: 'System Logs', icon: Server },
+    { href: '/super-admin/service-status', labelKey: 'superAdmin.serviceStatus', labelFallback: 'Service Status', icon: Activity },
   ];
   
   return (

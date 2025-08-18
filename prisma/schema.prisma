@@ -24,6 +24,7 @@ model User {
   restaurants       Restaurant[]       @relation("RestaurantOwner")
   courierProfile    CourierProfile?
   orders            Order[]            @relation("CustomerOrders")
+  p2pDeliveries     P2PDelivery[]      @relation("P2PCustomer")
   wallet            Wallet?
   subscriptions     Subscription[]
   addresses         Address[]
@@ -165,6 +166,8 @@ model CourierProfile {
   orders              Order[]
   courierLocation     CourierLocation?
   courierBids         CourierBid[]
+  p2pDeliveries       P2PDelivery[]      @relation("P2PCourier")
+  p2pBids             P2PCourierBid[]    @relation("P2PBids")
 
   @@map("courier_profiles")
 }
@@ -394,4 +397,128 @@ model MarketplaceItem {
   @@index([category])
   @@index([location])
   @@index([isActive, isSold])
+}
+
+// P2PDelivery model (Send Package / Run Errands)
+model P2PDelivery {
+  id                    String   @id @default(uuid())
+  orderNumber           String   @unique
+  customerId            String
+  customer              User     @relation("P2PCustomer", fields: [customerId], references: [id])
+  courierId             String?
+  courierProfile        CourierProfile? @relation("P2PCourier", fields: [courierId], references: [id])
+  
+  // Pickup Details
+  pickupAddress         String
+  pickupStreet          String?
+  pickupHouseNumber     String?
+  pickupCity            String?
+  pickupLocation        String?  // JSON: { lat: number, lng: number }
+  pickupContactName     String?
+  pickupContactPhone    String?
+  
+  // Destination Details
+  destinationAddress    String
+  destinationStreet     String?
+  destinationHouseNumber String?
+  destinationCity       String?
+  destinationLocation   String?  // JSON: { lat: number, lng: number }
+  destinationContactName String?
+  destinationContactPhone String?
+  
+  // Package Details
+  packageDescription    String
+  specialInstructions   String?
+  
+  // Purchase Details (if courier needs to buy items)
+  isPurchaseRequired    Boolean  @default(false)
+  shoppingList          String?  // JSON: Array of items to purchase
+  estimatedBudget       Float?
+  actualPurchaseAmount  Float?
+  purchaseReceipt       String?  // JSON: Receipt details
+  
+  // Delivery Details
+  status                String   // PENDING, ASSIGNED, PICKED_UP, IN_TRANSIT, DELIVERED, CANCELLED
+  priority              String   @default("NORMAL") // NORMAL, URGENT, EXPRESS
+  deliveryFee           Float
+  totalAmount           Float
+  discountAmount        Float    @default(0)
+  
+  // Timing
+  requestedPickupTime   DateTime?
+  requestedDeliveryTime DateTime?
+  actualPickupTime      DateTime?
+  actualDeliveryTime    DateTime?
+  estimatedDuration     Int?     // minutes
+  
+  // Tracking
+  trackingCode          String?  @unique
+  currentLocation       String?  // JSON: Current courier location
+  
+  // Payment
+  paymentStatus         String   @default("PENDING") // PENDING, PAID, REFUNDED
+  paymentMethod         String?
+  paymentReference      String?
+  
+  // Ratings & Feedback
+  customerRating        Int?
+  courierRating         Int?
+  customerFeedback      String?
+  courierFeedback       String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  // Relations
+  bids                  P2PCourierBid[]
+  tracking              P2PTracking[]
+  
+  @@map("p2p_deliveries")
+  @@index([customerId])
+  @@index([courierId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// P2PCourierBid model (Couriers can bid on P2P deliveries)
+model P2PCourierBid {
+  id           String         @id @default(uuid())
+  deliveryId   String
+  delivery     P2PDelivery    @relation(fields: [deliveryId], references: [id], onDelete: Cascade)
+  courierId    String
+  courier      CourierProfile @relation("P2PBids", fields: [courierId], references: [id])
+  
+  bidAmount    Float
+  etaMinutes   Int            // Estimated time to complete delivery
+  message      String?        // Optional message from courier
+  status       String         @default("PENDING") // PENDING, ACCEPTED, REJECTED, EXPIRED
+  
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  
+  @@map("p2p_courier_bids")
+  @@index([deliveryId])
+  @@index([courierId])
+}
+
+// P2PTracking model (Real-time tracking for P2P deliveries)
+model P2PTracking {
+  id            String      @id @default(uuid())
+  deliveryId    String
+  delivery      P2PDelivery @relation(fields: [deliveryId], references: [id], onDelete: Cascade)
+  
+  status        String
+  description   String
+  location      String?     // JSON: { lat: number, lng: number, address: string }
+  timestamp     DateTime    @default(now())
+  
+  // Additional tracking data
+  courierLocation String?   // JSON: Courier's current location
+  estimatedArrival DateTime?
+  photo         String?     // Photo proof (URL)
+  signature     String?     // Digital signature (for important deliveries)
+  
+  @@map("p2p_tracking")
+  @@index([deliveryId])
+  @@index([timestamp])
 }

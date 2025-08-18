@@ -14,6 +14,7 @@ import { useLanguage } from "@/context/language-context";
 import { useAuth } from "@/context/auth-context";
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AutoTranslateText } from '@/components/translation/auto-translate-text';
 
 interface ProfileForm {
   fullName: string;
@@ -24,8 +25,7 @@ interface ProfileForm {
 export default function UserProfilePage() {
   const { toast } = useToast();
   const router = useRouter();
-  const { t, currentLanguage } = useLanguage();
-  const isRTL = currentLanguage === 'he' || currentLanguage === 'ar';
+  const { t, currentLanguage, isRTL } = useLanguage();
   const { user, refetchUser, logout } = useAuth();
   const [form, setForm] = useState<ProfileForm>({ fullName: "", email: "", phone: "" });
   const [nameUnlocked, setNameUnlocked] = useState(false);
@@ -292,52 +292,112 @@ export default function UserProfilePage() {
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center"><Home className="mr-2 h-5 w-5 text-primary"/> כתובות שמורות</CardTitle>
+            <CardTitle className="text-lg flex items-center">
+              <Home className="mr-2 h-5 w-5 text-primary"/> 
+              <AutoTranslateText 
+                text="Saved Addresses" 
+                fallback="כתובות שמורות"
+              />
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground mb-3">נהל את כתובות המשלוח שלך לגישה מהירה.</p>
+            <p className="text-sm text-muted-foreground mb-3">
+              <AutoTranslateText 
+                text="Manage your delivery addresses for quick access." 
+                fallback="נהל את כתובות המשלוח שלך לגישה מהירה."
+              />
+            </p>
             <div className="p-3 border rounded-md bg-muted/20 text-xs text-muted-foreground">
-                רחוב הדוגמה 1, תל אביב (ראשי)<br/>
-                עבודה - רחוב המשרד 5, רמת גן
+              <AutoTranslateText 
+                text="Example Street 1, Tel Aviv (Main)" 
+                fallback="רחוב הדוגמה 1, תל אביב (ראשי)"
+              /><br/>
+              <AutoTranslateText 
+                text="Work - Office Street 5, Ramat Gan" 
+                fallback="עבודה - רחוב המשרד 5, רמת גן"
+              />
             </div>
           </CardContent>
           <CardFooter>
              <Button variant="outline" className="w-full" asChild>
-                <Link href="/account/addresses">נהל כתובות</Link>
+                <Link href="/account/addresses">
+                  <AutoTranslateText 
+                    text="Manage Addresses" 
+                    fallback="נהל כתובות"
+                  />
+                </Link>
             </Button>
           </CardFooter>
         </Card>
 
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center"><CreditCardIcon className="mr-2 h-5 w-5 text-primary"/> ארנק ואמצעי תשלום</CardTitle>
+            <CardTitle className="text-lg flex items-center">
+              <CreditCardIcon className="mr-2 h-5 w-5 text-primary"/> 
+              <AutoTranslateText 
+                text="Wallet and Payment Methods" 
+                fallback="ארנק ואמצעי תשלום"
+              />
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground mb-3">נהל את אמצעי התשלום והארנק שלך.</p>
+            <p className="text-sm text-muted-foreground mb-3">
+              <AutoTranslateText 
+                text="Manage your payment methods and wallet." 
+                fallback="נהל את אמצעי התשלום והארנק שלך."
+              />
+            </p>
              <div className="p-3 border rounded-md bg-muted/20 text-xs text-muted-foreground">
-                ויזה **** **** **** 1234
+                <AutoTranslateText 
+                  text="Visa **** **** **** 1234" 
+                  fallback="ויזה **** **** **** 1234"
+                />
             </div>
           </CardContent>
           <CardFooter>
             <Button variant="outline" className="w-full" asChild>
-                <Link href="/account/payment-methods">נהל ארנק ותשלומים</Link>
+                <Link href="/account/payment-methods">
+                  <AutoTranslateText 
+                    text="Manage Wallet and Payments" 
+                    fallback="נהל ארנק ותשלומים"
+                  />
+                </Link>
             </Button>
           </CardFooter>
         </Card>
 
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center"><ListOrderedIcon className="mr-2 h-5 w-5 text-primary"/> היסטוריית הזמנות</CardTitle>
+            <CardTitle className="text-lg flex items-center">
+              <ListOrderedIcon className="mr-2 h-5 w-5 text-primary"/> 
+              <AutoTranslateText 
+                text="Order History" 
+                fallback="היסטוריית הזמנות"
+              />
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground mb-3">צפה בכל ההזמנות הקודמות שלך והזמן שוב בקלות.</p>
+            <p className="text-sm text-muted-foreground mb-3">
+              <AutoTranslateText 
+                text="View all your previous orders and reorder easily." 
+                fallback="צפה בכל הזמנות הקודמות שלך והזמן שוב בקלות."
+              />
+            </p>
             <div className="p-3 border rounded-md bg-muted/20 text-xs text-muted-foreground">
-                הזמנה #12345 - פיצה פאלאס - ₪75.50 (נמסר)
+              <AutoTranslateText 
+                text="Order #12345 - Pizza Palace - ₪75.50 (Delivered)" 
+                fallback="הזמנה #12345 - פיצה פאלאס - ₪75.50 (נמסר)"
+              />
             </div>
           </CardContent>
           <CardFooter>
              <Button variant="outline" className="w-full" asChild>
-                <Link href="/account/order-history">צפה בהיסטוריה המלאה</Link>
+                <Link href="/account/order-history">
+                  <AutoTranslateText 
+                    text="View Full History" 
+                    fallback="צפה בהיסטוריה המלאה"
+                  />
+                </Link>
             </Button>
           </CardFooter>
         </Card>
