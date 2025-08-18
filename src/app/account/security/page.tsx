@@ -8,16 +8,57 @@ import { ShieldCheck, KeyRound, BellRing, AtSign, Fingerprint, Smartphone } from
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 import { useLanguage } from "@/context/language-context";
+import { useEffect, useState } from 'react';
 
 export default function UserSecurityPage() {
   const { toast } = useToast();
   const { t, currentLanguage } = useLanguage();
+  const [settings, setSettings] = useState({ twoFactorEnabled: false, emailLoginAlerts: true, smsSuspiciousAlerts: false, promotionalNotifications: true });
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch('/api/account/security');
+        if (!res.ok) throw new Error('Falha');
+        const data = await res.json();
+        setSettings({
+          twoFactorEnabled: data.twoFactorEnabled,
+          emailLoginAlerts: data.emailLoginAlerts,
+          smsSuspiciousAlerts: data.smsSuspiciousAlerts,
+          promotionalNotifications: data.promotionalNotifications,
+        });
+      } catch {}
+    };
+    fetchSettings();
+  }, []);
+
+  const updateSettings = async (partial: Partial<typeof settings>) => {
+    const next = { ...settings, ...partial };
+    setSettings(next);
+    try {
+      await fetch('/api/account/security', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(partial) });
+    } catch {}
+  };
 
   const handleToggle = (featureName: string, enabled: boolean) => {
     toast({
       title: t('featureToggled', `${featureName} ${enabled ? t('enabled', 'הופעל') : t('disabled', 'כובה')} (דמו)`),
       description: t('featureSettingUpdated', `הגדרת ${featureName.toLowerCase()} עודכנה (זוהי הדגמה בלבד).`),
     });
+    switch (featureName) {
+      case t('twoFactorAuth', 'אימות דו-שלבי'):
+        updateSettings({ twoFactorEnabled: enabled });
+        break;
+      case 'התראות אימייל על כניסות':
+        updateSettings({ emailLoginAlerts: enabled });
+        break;
+      case 'התראות SMS על פעילות חשודה':
+        updateSettings({ smsSuspiciousAlerts: enabled });
+        break;
+      case 'התראות על מבצעים':
+        updateSettings({ promotionalNotifications: enabled });
+        break;
+    }
   };
 
   const handleChangePassword = () => {
@@ -41,7 +82,7 @@ export default function UserSecurityPage() {
               <Label htmlFor="twoFactorAuthSwitch" className="text-base flex items-center cursor-pointer"><Fingerprint className="mr-2 h-4 w-4 text-primary"/>{t('twoFactorAuth', 'אימות דו-שלבי (2FA)')}</Label>
               <p className="text-sm text-muted-foreground">{t('addSecurityLayer', 'הוסף שכבת אבטחה נוספת לחשבונך.')}</p>
             </div>
-            <Switch id="twoFactorAuthSwitch" onCheckedChange={(checked) => handleToggle(t('twoFactorAuth', 'אימות דו-שלבי'), checked)} />
+            <Switch id="twoFactorAuthSwitch" checked={settings.twoFactorEnabled} onCheckedChange={(checked) => handleToggle(t('twoFactorAuth', 'אימות דו-שלבי'), checked)} />
           </div>
           <Button onClick={handleChangePassword} variant="outline">
             <KeyRound className="mr-2 h-4 w-4" /> {t('changePasswordSoon', 'שנה סיסמה (בקרוב)')}
@@ -57,21 +98,21 @@ export default function UserSecurityPage() {
               <Label htmlFor="loginAlertsSwitch" className="text-base flex items-center cursor-pointer"><AtSign className="mr-2 h-4 w-4 text-blue-500"/> {t('emailAlertsOnNewLogins', 'התראות אימייל על כניסות חדשות')}</Label>
               <p className="text-sm text-muted-foreground">{t('getNotifiedByEmail', 'קבל התראה באימייל כאשר יש כניסה לחשבונך ממכשיר חדש.')}</p>
             </div>
-            <Switch id="loginAlertsSwitch" defaultChecked onCheckedChange={(checked) => handleToggle('התראות אימייל על כניסות', checked)} />
+            <Switch id="loginAlertsSwitch" checked={settings.emailLoginAlerts} onCheckedChange={(checked) => handleToggle('התראות אימייל על כניסות', checked)} />
           </div>
            <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
             <div className="space-y-0.5">
               <Label htmlFor="suspiciousAlertsSmsSwitch" className="text-base flex items-center cursor-pointer"><Smartphone className="mr-2 h-4 w-4 text-orange-500"/> {t('smsAlertsOnSuspiciousActivity', 'התראות SMS על פעילות חשודה')}</Label>
               <p className="text-sm text-muted-foreground">{t('getSmsAlertIfSuspiciousActivity', 'קבל התראת SMS אם נזהה פעילות שאינה אופיינית בחשבונך.')}</p>
             </div>
-            <Switch id="suspiciousAlertsSmsSwitch" onCheckedChange={(checked) => handleToggle('התראות SMS על פעילות חשודה', checked)} />
+            <Switch id="suspiciousAlertsSmsSwitch" checked={settings.smsSuspiciousAlerts} onCheckedChange={(checked) => handleToggle('התראות SMS על פעילות חשודה', checked)} />
           </div>
            <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
             <div className="space-y-0.5">
               <Label htmlFor="promotionalNotificationsSwitch" className="text-base flex items-center cursor-pointer"><BellRing className="mr-2 h-4 w-4 text-green-500"/> {t('notificationsAboutDealsAndUpdates', 'התראות על מבצעים ועדכונים')}</Label>
               <p className="text-sm text-muted-foreground">{t('stayUpdatedOnNewDeals', "הישאר מעודכן במבצעים חדשים, פיצ'רים וחדשות מ-LivePick.")}</p>
             </div>
-            <Switch id="promotionalNotificationsSwitch" defaultChecked onCheckedChange={(checked) => handleToggle('התראות על מבצעים', checked)} />
+            <Switch id="promotionalNotificationsSwitch" checked={settings.promotionalNotifications} onCheckedChange={(checked) => handleToggle('התראות על מבצעים', checked)} />
           </div>
         </div>
       </CardContent>

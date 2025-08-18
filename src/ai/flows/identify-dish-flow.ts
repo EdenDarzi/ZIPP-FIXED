@@ -84,7 +84,28 @@ export type IdentifyDishOutputType = z.infer<typeof IdentifyDishOutputSchema>;
 
 
 export async function identifyDishFromImage(input: IdentifyDishInputType): Promise<IdentifyDishOutputType> {
-  return identifyDishFlow(input);
+  // Check if AI is available
+  const hasApiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+  if (!hasApiKey) {
+    return {
+      identifiedDishName: "זיהוי תמונה זמנית לא זמין",
+      isTrend: false,
+      generalSuggestion: "מצטער, שירות זיהוי התמונה זמנית לא זמין. אנא נסה לחפש ידנית במסעדות שלנו!",
+      suggestedBusinesses: []
+    };
+  }
+  
+  try {
+    return await identifyDishFlow(input);
+  } catch (error) {
+    console.error('Identify dish error:', error);
+    return {
+      identifiedDishName: "שגיאה בזיהוי תמונה",
+      isTrend: false,
+      generalSuggestion: "מצטער, נתקלתי בבעיה בזיהוי התמונה. אנא נסה שוב מאוחר יותר.",
+      suggestedBusinesses: []
+    };
+  }
 }
 
 const identifyDishPrompt = ai.definePrompt({

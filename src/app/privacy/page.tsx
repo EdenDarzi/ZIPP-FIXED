@@ -1,17 +1,32 @@
 
+'use client';
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ShieldCheck } from "lucide-react";
+import { AutoTranslateText } from '@/components/translation/auto-translate-text';
+import { useLanguage } from '@/context/language-context';
 
 export default function PrivacyPolicyPage() {
+  const { isRTL } = useLanguage();
+  
   return (
-    <div className="container mx-auto py-12 max-w-3xl">
+    <div className="container mx-auto py-12 max-w-3xl" dir={isRTL ? 'rtl' : 'ltr'}>
       <Card className="shadow-lg">
         <CardHeader className="text-center">
           <ShieldCheck className="mx-auto h-12 w-12 text-primary mb-4" />
-          <CardTitle className="text-3xl font-headline text-primary">מדיניות פרטיות</CardTitle>
-          <CardDescription>מדיניות הפרטיות של פלטפורמת LivePick.</CardDescription>
+          <AutoTranslateText 
+            translationKey="privacy.title" 
+            fallback="Privacy Policy"
+            as={CardTitle}
+            className="text-3xl font-headline text-primary"
+          />
+          <AutoTranslateText 
+            translationKey="privacy.subtitle" 
+            fallback="ZIPP Platform Privacy Policy."
+            as={CardDescription}
+          />
         </CardHeader>
-        <CardContent className="prose prose-sm sm:prose-base max-w-none text-right" dir="rtl">
+        <CardContent className={`prose prose-sm sm:prose-base max-w-none ${isRTL ? 'text-right' : 'text-left'}`}>
           <h2>1. איסוף מידע</h2>
           <p>אנו אוספים מידע שאתה מספק לנו בעת ההרשמה והשימוש בפלטפורמה, כגון שם, כתובת אימייל, מספר טלפון, היסטוריית הזמנות, והעדפות. כמו כן, אנו עשויים לאסוף מידע טכני באופן אוטומטי (כתובת IP, סוג דפדפן וכו').</p>
           

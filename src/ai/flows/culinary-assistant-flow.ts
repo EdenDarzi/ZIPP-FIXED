@@ -55,7 +55,22 @@ export type CulinaryAssistantOutputType = z.infer<typeof CulinaryAssistantOutput
  * @throws {Error} If the AI flow fails to generate a suggestion.
  */
 export async function getCulinarySuggestion(input: CulinaryAssistantInputType): Promise<CulinaryAssistantOutputType> {
-  return culinaryAssistantFlow(input);
+  // Check if AI is available
+  const hasApiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+  if (!hasApiKey) {
+    return {
+      suggestion: "מה דעתך על פיצה טרייה או המבורגר טעים? בדוק את המסעדות הפופולריות שלנו!"
+    };
+  }
+  
+  try {
+    return await culinaryAssistantFlow(input);
+  } catch (error) {
+    console.error('Culinary assistant error:', error);
+    return {
+      suggestion: "מה דעתך על פיצה טרייה או המבורגר טעים? בדוק את המסעדות הפופולריות שלנו!"
+    };
+  }
 }
 
 const culinaryAssistantPrompt = ai.definePrompt({

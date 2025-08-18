@@ -94,10 +94,10 @@ export default function ZippSalePage() {
             <Card key={item.id} className="flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow premium-card-hover">
               <div className="relative h-48 w-full">
                 <Image
-                  src={item.imageUrl || 'https://placehold.co/600x400.png?text=הפתעה!'}
+                  src={item.imageUrl || 'https://placehold.co/600x400.png?text=Surprise!'}
                   alt={item.name}
-                  layout="fill"
-                  objectFit="cover"
+                  fill
+                  style={{objectFit: 'cover'}}
                   data-ai-hint={item.dataAiHint || "surprise bag food bakery items"}
                 />
                 <Badge variant="destructive" className="absolute top-2 right-2 text-sm px-3 py-1">

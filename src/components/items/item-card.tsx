@@ -28,8 +28,8 @@ export default function ItemCard({ item, restaurantId }: ItemCardProps) {
           <Image
             src={item.imageUrl}
             alt={item.name}
-            layout="fill"
-            objectFit="cover"
+            fill
+            style={{objectFit: 'cover'}}
             className="group-hover:scale-105 transition-transform duration-300"
             data-ai-hint={item.dataAiHint || "food dish"}
           />

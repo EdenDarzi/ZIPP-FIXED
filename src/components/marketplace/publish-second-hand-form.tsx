@@ -24,6 +24,8 @@ import { Loader2, UploadCloud, Send, Image as ImageIcon } from 'lucide-react';
 import type { SecondHandItemCategory } from '@/types';
 import { secondHandCategories } from '@/lib/mock-data';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useLanguage } from '@/context/language-context';
+import type { CreateMarketplaceItemRequest } from '@/types/marketplace';
 
 const formSchema = z.object({
   title: z.string().min(3, { message: 'כותרת המוצר חייבת להכיל לפחות 3 תווים.' }),
@@ -51,6 +53,7 @@ export default function PublishSecondHandForm() {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useLanguage();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -70,24 +73,47 @@ export default function PublishSecondHandForm() {
     },
   });
 
-  function onSubmit(values: FormValues) {
+  async function onSubmit(values: FormValues) {
     setIsLoading(true);
-    console.log('Second-hand item to publish:', values);
-    setTimeout(() => {
-      toast({
-        title: 'המוצר נשלח לפרסום!',
-        description: `"${values.title}" יופיע בלוח יד 2 לאחר אישור קצר (זהו תהליך הדגמה).`,
+    
+    try {
+      const response = await fetch('/api/marketplace/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
       });
-      setIsLoading(false);
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'שגיאה ביצירת המוצר');
+      }
+
+      toast({
+        title: t('marketplace.publish.success.title'),
+        description: `"${values.title}" ${t('marketplace.publish.success.description')}`,
+      });
+      
       form.reset();
       router.push('/marketplace');
-    }, 1500);
+    } catch (error) {
+      console.error('Error creating product:', error);
+      toast({
+        title: 'שגיאה',
+        description: error instanceof Error ? error.message : 'שגיאה לא צפויה אירעה',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   const handleMockImageUpload = (fieldName: 'imageUrl1' | 'imageUrl2' | 'imageUrl3') => {
     toast({
-        title: 'העלאת תמונה',
-        description: 'אפשרות להעלאת קבצים ישירות מהמכשיר תתווסף. בינתיים, אנא השתמש/י בקישור (URL) לתמונה. (הדגמה)',
+        title: t('marketplace.publish.imageUpload.title'),
+        description: t('marketplace.publish.imageUpload.description'),
     });
   };
 
@@ -95,14 +121,14 @@ export default function PublishSecondHandForm() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField control={form.control} name="title" render={({ field }) => (
-          <FormItem><FormLabel>כותרת המוצר</FormLabel><FormControl><Input placeholder="לדוגמה: ספה פינתית במצב טוב" {...field} /></FormControl><FormMessage /></FormItem>
+          <FormItem><FormLabel>{t('marketplace.publish.form.title')}</FormLabel><FormControl><Input placeholder={t('marketplace.publish.form.titlePlaceholder')} {...field} /></FormControl><FormMessage /></FormItem>
         )}/>
         
         <div className="grid md:grid-cols-2 gap-4">
             <FormField control={form.control} name="category" render={({ field }) => (
-                <FormItem><FormLabel>קטגוריה</FormLabel>
+                <FormItem><FormLabel>{t('marketplace.publish.form.category')}</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl><SelectTrigger><SelectValue placeholder="בחר קטגוריה..." /></SelectTrigger></FormControl>
+                    <FormControl><SelectTrigger><SelectValue placeholder={t('marketplace.publish.form.categoryPlaceholder')} /></SelectTrigger></FormControl>
                     <SelectContent>
                         {secondHandCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
                     </SelectContent>
@@ -110,25 +136,25 @@ export default function PublishSecondHandForm() {
                 </FormItem>
             )}/>
             <FormField control={form.control} name="price" render={({ field }) => (
-                <FormItem><FormLabel>מחיר (₪)</FormLabel><FormControl><Input type="number" step="0.01" placeholder="לדוגמה: 150" {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>{t('marketplace.publish.form.price')}</FormLabel><FormControl><Input type="number" step="0.01" placeholder={t('marketplace.publish.form.pricePlaceholder')} {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
         </div>
 
         <FormField control={form.control} name="description" render={({ field }) => (
-          <FormItem><FormLabel>תיאור המוצר</FormLabel><FormControl><Textarea placeholder="פרט על מצב המוצר, גודל, סיבת מכירה וכו'." className="min-h-[100px]" {...field} /></FormControl><FormMessage /></FormItem>
+          <FormItem><FormLabel>{t('marketplace.publish.form.description')}</FormLabel><FormControl><Textarea placeholder={t('marketplace.publish.form.descriptionPlaceholder')} className="min-h-[100px]" {...field} /></FormControl><FormMessage /></FormItem>
         )}/>
 
         <Card>
             <CardHeader className="p-4">
-                <CardTitle className="text-base font-semibold flex items-center"><ImageIcon className="mr-2 h-5 w-5 text-primary"/> תמונות המוצר (עד 3)</CardTitle>
-                <FormDescription className="text-xs">השתמש בקישורי URL ישירים לתמונות. העלאת קבצים תתאפשר בהמשך.</FormDescription>
+                <CardTitle className="text-base font-semibold flex items-center"><ImageIcon className="mr-2 h-5 w-5 text-primary"/> {t('marketplace.publish.form.images')}</CardTitle>
+                <FormDescription className="text-xs">{t('marketplace.publish.form.imagesDesc')}</FormDescription>
             </CardHeader>
             <CardContent className="p-4 space-y-4">
                 {[1, 2, 3].map(i => (
                 <div key={`image-group-${i}`} className="space-y-3 p-3 border rounded-md bg-muted/30">
                     <FormField control={form.control} name={`imageUrl${i}` as keyof FormValues} render={({ field }) => (
                     <FormItem>
-                        <FormLabel className="text-sm">קישור לתמונה {i}</FormLabel>
+                        <FormLabel className="text-sm">{t('marketplace.publish.form.imageUrl')} {i}</FormLabel>
                         <div className="flex items-center gap-2">
                             <FormControl><Input placeholder={`https://example.com/image${i}.jpg`} {...field as any} /></FormControl>
                             <Button type="button" variant="outline" size="icon" onClick={() => handleMockImageUpload(`imageUrl${i}` as any)} title="העלה קובץ">
@@ -140,9 +166,9 @@ export default function PublishSecondHandForm() {
                     )}/>
                     <FormField control={form.control} name={`dataAiHint${i}` as keyof FormValues} render={({ field }) => (
                     <FormItem>
-                        <FormLabel className="text-xs">רמז AI לתמונה {i} (אופציונלי)</FormLabel>
-                        <FormControl><Input placeholder="לדוגמה: כיסא עץ, סמארטפון שחור" {...field as any} className="text-xs h-8"/></FormControl>
-                        <FormDescription className="text-xs">אם התמונה היא Placeholder, עזור ל-AI ליצור תמונה מתאימה.</FormDescription>
+                        <FormLabel className="text-xs">{t('marketplace.publish.form.aiHint')} {i} (אופציונלי)</FormLabel>
+                        <FormControl><Input placeholder={t('marketplace.publish.form.aiHintPlaceholder')} {...field as any} className="text-xs h-8"/></FormControl>
+                        <FormDescription className="text-xs">{t('marketplace.publish.form.aiHintDesc')}</FormDescription>
                         <FormMessage />
                     </FormItem>
                     )}/>
@@ -153,20 +179,20 @@ export default function PublishSecondHandForm() {
 
 
         <FormField control={form.control} name="location" render={({ field }) => (
-          <FormItem><FormLabel>עיר / אזור איסוף</FormLabel><FormControl><Input placeholder="לדוגמה: תל אביב, אזור המרכז" {...field} /></FormControl><FormMessage /></FormItem>
+          <FormItem><FormLabel>{t('marketplace.publish.form.location')}</FormLabel><FormControl><Input placeholder={t('marketplace.publish.form.locationPlaceholder')} {...field} /></FormControl><FormMessage /></FormItem>
         )}/>
 
         <FormField control={form.control} name="contactDetails" render={({ field }) => (
-          <FormItem><FormLabel>פרטי יצירת קשר (טלפון / מייל)</FormLabel><FormControl><Input placeholder="הטלפון או המייל שלך ליצירת קשר" {...field} /></FormControl>
-          <FormDescription>פרט זה יוצג לקונים פוטנציאליים.</FormDescription>
+          <FormItem><FormLabel>{t('marketplace.publish.form.contact')}</FormLabel><FormControl><Input placeholder={t('marketplace.publish.form.contactPlaceholder')} {...field} /></FormControl>
+          <FormDescription>{t('marketplace.publish.form.contactDesc')}</FormDescription>
           <FormMessage /></FormItem>
         )}/>
 
         <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg" disabled={isLoading}>
           {isLoading ? (
-            <><Loader2 className="ml-2 h-5 w-5 animate-spin" /> מפרסם מוצר...</>
+            <><Loader2 className="ml-2 h-5 w-5 animate-spin" /> {t('marketplace.publish.form.submitting')}</>
           ) : (
-            <><Send className="ml-2 h-5 w-5" /> פרסם את המוצר</>
+            <><Send className="ml-2 h-5 w-5" /> {t('marketplace.publish.form.submit')}</>
           )}
         </Button>
       </form>

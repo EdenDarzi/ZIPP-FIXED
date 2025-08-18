@@ -7,11 +7,12 @@ import { Utensils, ShoppingCart, Brain, ArrowLeft, MapPin, Search, Sparkles, Hea
 import Image from "next/image";
 import Link from "next/link";
 import RestaurantCard from "@/components/restaurants/restaurant-card";
-import { mockRestaurants } from "@/lib/mock-data";
 import type { Restaurant } from "@/types";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
-import { getCulinarySuggestion, CulinaryAssistantInputType } from "@/ai/flows/culinary-assistant-flow"; 
+import { getCulinarySuggestion } from "@/ai/flows/culinary-assistant-flow";
+import { useHomepageStats } from "@/hooks/use-homepage-stats";
+import { useRestaurants } from "@/hooks/use-restaurants"; 
 
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -21,51 +22,49 @@ import MetaballsBackground from "@/components/ui/metaballs-background";
 
 export default function HomePage() {
   const { t, currentLanguage } = useLanguage();
-  const allRestaurants: Restaurant[] = mockRestaurants;
-  const recommendedForYou = allRestaurants.filter(r => r.tags?.includes('Recommended')).slice(0, 3);
-  const newInArea = allRestaurants.filter(r => r.tags?.includes('New')).slice(0, 3);
-  const recentlyViewedMock = allRestaurants.slice(1,4); 
+  const { stats, loading: statsLoading } = useHomepageStats();
+  const { data: restaurantsData, loading: restaurantsLoading } = useRestaurants();
+  
+  const allRestaurants = restaurantsData?.restaurants || [];
+  const recommendedForYou = restaurantsData?.recommendedForYou || [];
+  const newInArea = restaurantsData?.newInArea || [];
+  const recentlyViewed = restaurantsData?.recentlyViewed || [];
 
   const [culinarySuggestion, setCulinarySuggestion] = useState<string | null>(null);
   const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(true);
   const [showZippSaleBanner, setShowZippSaleBanner] = useState(false); 
-  const [availableCouriers, setAvailableCouriers] = useState<number | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    async function fetchSuggestion() {
-      setIsLoadingSuggestion(true);
+    const fetchCulinarySuggestion = async () => {
       try {
-        const input: CulinaryAssistantInputType = { userId: "mockUser123", currentDay: new Date().toLocaleString('he-IL', { weekday: 'long' }) };
-        await new Promise(resolve => setTimeout(resolve, 600)); 
-        const result = await getCulinarySuggestion(input);
+        setIsLoadingSuggestion(true);
+        const result = await getCulinarySuggestion({
+          userId: 'user123',
+          currentDay: new Date().toLocaleDateString('he-IL', { weekday: 'long' })
+        });
         setCulinarySuggestion(result.suggestion);
       } catch (error) {
-        console.error("Failed to get culinary suggestion:", error);
-        setCulinarySuggestion(t('ai.chef.suggestion')); 
+        console.error('Error fetching culinary suggestion:', error);
+        setCulinarySuggestion('מה תרצה לאכול היום?');
       } finally {
         setIsLoadingSuggestion(false);
       }
-    }
-    fetchSuggestion();
+    };
 
-    const courierTimeout = setTimeout(() => {
-      setAvailableCouriers(Math.floor(Math.random() * 20) + 8); 
-    }, 800);
+    fetchCulinarySuggestion();
+  }, [currentLanguage]);
 
-    const currentHour = new Date().getHours();
-    if (currentHour >= 19 && currentHour < 23) { 
-        setShowZippSaleBanner(true);
-    }
-
-    return () => clearTimeout(courierTimeout);
-
-  }, [t]); // Adiciona 't' como dependência para recarregar quando o idioma mudar
+  useEffect(() => {
+    // Show ZippSale banner randomly
+    const shouldShow = Math.random() > 0.7; // 30% chance
+    setShowZippSaleBanner(shouldShow);
+  }, []);
 
   const handlePartnershipsClick = () => {
     toast({
-        title: "שותפויות והטבות (הדגמה)",
-        description: "אזור זה יציג שיתופי פעולה ודילים חמים עם מותגים ומשפיענים.",
+        title: t('toast.partnerships.title'),
+        description: t('toast.partnerships.description'),
     });
   };
 
@@ -94,7 +93,7 @@ export default function HomePage() {
                     type="search"
                     placeholder={t('search.placeholder')}
                     className="w-full pr-12 pl-4 py-3.5 text-base md:text-lg rounded-full shadow-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
-                    aria-label="חפש אוכל, מוצרים או שירותים"
+                    aria-label={t('search.tooltip')}
                   />
                 </div>
               </TooltipTrigger>
@@ -220,7 +219,7 @@ export default function HomePage() {
             </CardTitle>
             
             {/* Dynamic content */}
-           {availableCouriers === null ? (
+           {statsLoading ? (
               <div className="flex items-center justify-center gap-2 p-3 bg-gray-50 dark:bg-gray-900/60 rounded-lg border border-slate-200 dark:border-white/10 shadow-sm">
                 <Loader2 className="h-4 w-4 animate-spin text-emerald-700 dark:text-emerald-500" />
                 <p className="text-emerald-800 dark:text-emerald-400 animate-pulse font-medium">{t('couriers.checking')}</p>
@@ -231,10 +230,10 @@ export default function HomePage() {
                 <div className="relative p-4 bg-gray-50 dark:bg-gray-900/70 rounded-lg border border-slate-200 dark:border-white/10 backdrop-blur-sm shadow-sm">
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-sm"></div>
-                    <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-400 uppercase tracking-wide">Live Status</span>
+                    <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-400 uppercase tracking-wide">{t('live.status')}</span>
                   </div>
                   <p className="text-lg font-bold text-emerald-800 dark:text-emerald-300 group-hover:scale-105 transition-transform duration-300">
-                    {t('couriers.count', { count: availableCouriers })}
+                    {t('couriers.count', { count: stats?.activeCouriers || 0 })}
                   </p>
                 </div>
               </div>
@@ -319,7 +318,7 @@ export default function HomePage() {
               <div className="relative p-4 bg-gray-50 dark:bg-gray-900/70 rounded-lg border border-slate-200 dark:border-white/10 backdrop-blur-sm shadow-sm">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-sm"></div>
-                  <span className="text-xs font-semibold text-gray-800 dark:text-orange-400 uppercase tracking-wide">Real Time</span>
+                  <span className="text-xs font-semibold text-gray-800 dark:text-orange-400 uppercase tracking-wide">{t('real.time')}</span>
                 </div>
                 <CardDescription className="text-gray-700 dark:text-amber-200 leading-relaxed font-medium">
                   {t('radar.subtitle')}
@@ -329,7 +328,7 @@ export default function HomePage() {
               {/* Hover indicator */}
               <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="flex items-center justify-center gap-1 text-gray-800 dark:text-orange-400">
-                  <span className="text-sm font-medium">Explore Trends</span>
+                  <span className="text-sm font-medium">{t('explore.trends')}</span>
                   <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
                 </div>
               </div>
@@ -364,7 +363,7 @@ export default function HomePage() {
               <div className="relative p-4 bg-gray-50 dark:bg-gray-900/70 rounded-lg border border-slate-200 dark:border-white/10 backdrop-blur-sm shadow-sm">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-sm"></div>
-                  <span className="text-xs font-semibold text-gray-800 dark:text-pink-300 uppercase tracking-wide">Earn Money</span>
+                  <span className="text-xs font-semibold text-gray-800 dark:text-pink-300 uppercase tracking-wide">{t('earn.money')}</span>
                 </div>
                 <CardDescription className="text-gray-700 dark:text-pink-200 leading-relaxed font-medium">
                   {t('partners.description')}
@@ -374,7 +373,7 @@ export default function HomePage() {
               {/* Hover indicator */}
               <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="flex items-center justify-center gap-1 text-purple-700 dark:text-purple-400">
-                  <span className="text-sm font-medium">Join Program</span>
+                  <span className="text-sm font-medium">{t('join.program')}</span>
                   <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
                 </div>
               </div>
@@ -460,14 +459,14 @@ export default function HomePage() {
         </section>
       )}
 
-      {recentlyViewedMock.length > 0 && (
+      {recentlyViewed.length > 0 && (
          <section className="animate-fadeInUp animation-delay-1200">
           <div className="flex items-center mb-6">
             <History className="h-8 w-8 ml-3 text-blue-500" />
             <h2 className="text-3xl font-bold font-headline text-foreground">{t('sections.favorites')}</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> 
-            {recentlyViewedMock.map((restaurant) => (
+            {recentlyViewed.map((restaurant) => (
               <RestaurantCard key={restaurant.id} restaurant={restaurant} />
             ))}
           </div>
@@ -479,7 +478,17 @@ export default function HomePage() {
           <ListChecks className="h-8 w-8 ml-3 text-gray-500" />
                       <h2 className="text-3xl font-bold font-headline text-foreground">{t('sections.allBusinesses')}</h2>
         </div>
-        {allRestaurants.length > 0 ? (
+        {restaurantsLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-gray-200 dark:bg-gray-700 h-48 rounded-lg mb-4"></div>
+                <div className="bg-gray-200 dark:bg-gray-700 h-4 rounded mb-2"></div>
+                <div className="bg-gray-200 dark:bg-gray-700 h-4 rounded w-3/4"></div>
+              </div>
+            ))}
+          </div>
+        ) : allRestaurants.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> 
             {allRestaurants.slice(0,3).map((restaurant) => ( 
               <RestaurantCard key={restaurant.id} restaurant={restaurant} />
@@ -489,7 +498,7 @@ export default function HomePage() {
            <Card className="text-center py-10 premium-card-hover">
             <CardContent>
                 <Search className="h-12 w-12 mx-auto text-muted-foreground mb-3 opacity-50"/>
-                <p className="text-muted-foreground">לא נמצאו עסקים להצגה כרגע. אנא נסה מאוחר יותר.</p>
+                <p className="text-muted-foreground">{t('no.businesses')}</p>
             </CardContent>
            </Card>
         )}
@@ -543,9 +552,9 @@ export default function HomePage() {
       <section className="relative h-72 md:h-96 rounded-xl overflow-hidden shadow-2xl animate-fadeInUp animation-delay-1800">
         <Image
           src="https://placehold.co/1200x400.png"
-          alt="קולאז' משלוחי אוכל טעימים"
-          layout="fill"
-          objectFit="cover"
+          alt={t('hero.image.alt')}
+          fill
+          style={{objectFit: 'cover'}}
           data-ai-hint="food delivery collage promotion"
           className="transition-transform duration-500 ease-in-out hover:scale-105"
         />

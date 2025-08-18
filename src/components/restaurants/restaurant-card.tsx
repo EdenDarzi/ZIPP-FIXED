@@ -70,8 +70,8 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
           <Image
             src={restaurant.imageUrl} 
             alt={restaurant.name}
-            layout="fill"
-            objectFit="cover"
+            fill
+            style={{objectFit: 'cover'}}
             className="group-hover:scale-110 transition-transform duration-500 ease-in-out"
             data-ai-hint={restaurant.dataAiHint || "restaurant exterior food"} 
           />

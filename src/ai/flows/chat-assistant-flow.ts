@@ -53,7 +53,22 @@ export type ChatAssistantOutputType = z.infer<typeof ChatAssistantOutputSchema>;
  * @throws {Error} If the AI flow fails to generate a response.
  */
 export async function getChatResponse(input: ChatAssistantInputType): Promise<ChatAssistantOutputType> {
-  return chatAssistantFlow(input);
+  // Check if AI is available
+  const hasApiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+  if (!hasApiKey) {
+    return {
+      response: "מצטער, שירות הבוט זמנית לא זמין. אנא נסה שוב מאוחר יותר או צור קשר עם התמיכה לעזרה."
+    };
+  }
+  
+  try {
+    return await chatAssistantFlow(input);
+  } catch (error) {
+    console.error('Chat assistant error:', error);
+    return {
+      response: "מצטער, נתקלתי בבעיה טכנית. אנא נסה שוב מאוחר יותר."
+    };
+  }
 }
 
 const chatAssistantPrompt = ai.definePrompt({

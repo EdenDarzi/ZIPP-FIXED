@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 // User model - base for all user types
@@ -24,8 +24,13 @@ model User {
   restaurants       Restaurant[]       @relation("RestaurantOwner")
   courierProfile    CourierProfile?
   orders            Order[]            @relation("CustomerOrders")
+  p2pDeliveries     P2PDelivery[]      @relation("P2PCustomer")
   wallet            Wallet?
   subscriptions     Subscription[]
+  addresses         Address[]
+  paymentMethods    PaymentMethod[]
+  securitySettings  UserSecuritySettings?
+  marketplaceItems  MarketplaceItem[]  @relation("MarketplaceSeller")
 
   @@map("users")
 }
@@ -39,16 +44,16 @@ model Restaurant {
   city         String
   phone        String
   email        String
-  location     Json     // { lat: number, lng: number }
+  location     String   // JSON string: { lat: number, lng: number }
   ownerId      String
   owner        User     @relation("RestaurantOwner", fields: [ownerId], references: [id])
   rating       Float    @default(0)
   totalOrders  Int      @default(0)
   isActive     Boolean  @default(true)
-  tags         Json?    // Array of restaurant tags
+  tags         String?  // JSON string: Array of restaurant tags
   imageUrl     String?
   coverImageUrl String?
-  openingHours Json?    // Opening hours data
+  openingHours String?  // JSON string: Opening hours data
   deliveryFee  Float    @default(0)
   minOrder     Float    @default(0)
   createdAt    DateTime @default(now())
@@ -99,7 +104,7 @@ model Order {
   deliveryFee             Float
   discountAmount          Float    @default(0)
   deliveryAddress         String
-  deliveryLocation        Json?    // { lat: number, lng: number }
+  deliveryLocation        String?  // JSON string: { lat: number, lng: number }
   customerNotes           String?
   estimatedDistanceKm     Float?
   estimatedRouteDistanceKm Float?
@@ -108,7 +113,7 @@ model Order {
   expectedPickupTime      String?
   orderValue              Float?
   requiredVehicleType     String?
-  coordinates             Json?
+  coordinates             String?  // JSON string
   estimatedDeliveryTime   DateTime?
   trackingCode            String?
   createdAt               DateTime @default(now())
@@ -132,7 +137,7 @@ model OrderItem {
   quantity    Int
   unitPrice   Float
   totalPrice  Float
-  addons      Json?    // Selected addons/customizations
+  addons      String?  // JSON string: Selected addons/customizations
 
   @@map("order_items")
 }
@@ -161,6 +166,8 @@ model CourierProfile {
   orders              Order[]
   courierLocation     CourierLocation?
   courierBids         CourierBid[]
+  p2pDeliveries       P2PDelivery[]      @relation("P2PCourier")
+  p2pBids             P2PCourierBid[]    @relation("P2PBids")
 
   @@map("courier_profiles")
 }
@@ -265,6 +272,63 @@ model WalletTransaction {
   @@map("wallet_transactions")
 }
 
+// Address model (User saved addresses)
+model Address {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  label      String   // e.g., Home, Work
+  street     String
+  streetLine2 String?
+  city       String
+  state      String?
+  country    String
+  postalCode String?
+  zip        String?
+  isPrimary  Boolean  @default(false)
+  latitude   Float?
+  longitude  Float?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("addresses")
+  @@index([userId])
+}
+
+// PaymentMethod model (tokenized/simple storage; do not store full PAN)
+model PaymentMethod {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  type        String   // CARD, PAYPAL, APPLE_PAY...
+  brand       String?  // Visa, MasterCard
+  last4       String?  // last 4 digits for display
+  expiryMonth Int?
+  expiryYear  Int?
+  providerRef String?  // token or provider reference (never store full card)
+  isPrimary   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("payment_methods")
+  @@index([userId])
+}
+
+// UserSecuritySettings model
+model UserSecuritySettings {
+  id                       String   @id @default(uuid())
+  userId                   String   @unique
+  user                     User     @relation(fields: [userId], references: [id])
+  twoFactorEnabled         Boolean  @default(false)
+  emailLoginAlerts         Boolean  @default(true)
+  smsSuspiciousAlerts      Boolean  @default(false)
+  promotionalNotifications Boolean  @default(true)
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  @@map("user_security_settings")
+}
+
 // SubscriptionPlan model
 model SubscriptionPlan {
   id           String   @id @default(uuid())
@@ -274,8 +338,8 @@ model SubscriptionPlan {
   amount       Float
   currency     String   @default("ILS")
   billingCycle String?  // MONTHLY, YEARLY
-  features     Json?    // Array of features
-  benefits     Json?    // Array of benefits
+  features     String?  // JSON string: Array of features
+  benefits     String?  // JSON string: Array of benefits
   description  String?
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
@@ -301,4 +365,160 @@ model Subscription {
   updatedAt  DateTime         @updatedAt
 
   @@map("subscriptions")
+}
+
+// MarketplaceItem model (Yad 2 products)
+model MarketplaceItem {
+  id             String   @id @default(uuid())
+  title          String
+  description    String
+  price          Float
+  category       String
+  condition      String?  // NEW, USED, REFURBISHED
+  location       String
+  contactDetails String
+  imageUrl1      String?
+  dataAiHint1    String?
+  imageUrl2      String?
+  dataAiHint2    String?
+  imageUrl3      String?
+  dataAiHint3    String?
+  sellerId       String
+  seller         User     @relation("MarketplaceSeller", fields: [sellerId], references: [id])
+  isActive       Boolean  @default(true)
+  isSold         Boolean  @default(false)
+  publishedAt    DateTime @default(now())
+  soldAt         DateTime?
+  views          Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("marketplace_items")
+  @@index([category])
+  @@index([location])
+  @@index([isActive, isSold])
+}
+
+// P2PDelivery model (Send Package / Run Errands)
+model P2PDelivery {
+  id                    String   @id @default(uuid())
+  orderNumber           String   @unique
+  customerId            String
+  customer              User     @relation("P2PCustomer", fields: [customerId], references: [id])
+  courierId             String?
+  courierProfile        CourierProfile? @relation("P2PCourier", fields: [courierId], references: [id])
+  
+  // Pickup Details
+  pickupAddress         String
+  pickupStreet          String?
+  pickupHouseNumber     String?
+  pickupCity            String?
+  pickupLocation        String?  // JSON: { lat: number, lng: number }
+  pickupContactName     String?
+  pickupContactPhone    String?
+  
+  // Destination Details
+  destinationAddress    String
+  destinationStreet     String?
+  destinationHouseNumber String?
+  destinationCity       String?
+  destinationLocation   String?  // JSON: { lat: number, lng: number }
+  destinationContactName String?
+  destinationContactPhone String?
+  
+  // Package Details
+  packageDescription    String
+  specialInstructions   String?
+  
+  // Purchase Details (if courier needs to buy items)
+  isPurchaseRequired    Boolean  @default(false)
+  shoppingList          String?  // JSON: Array of items to purchase
+  estimatedBudget       Float?
+  actualPurchaseAmount  Float?
+  purchaseReceipt       String?  // JSON: Receipt details
+  
+  // Delivery Details
+  status                String   // PENDING, ASSIGNED, PICKED_UP, IN_TRANSIT, DELIVERED, CANCELLED
+  priority              String   @default("NORMAL") // NORMAL, URGENT, EXPRESS
+  deliveryFee           Float
+  totalAmount           Float
+  discountAmount        Float    @default(0)
+  
+  // Timing
+  requestedPickupTime   DateTime?
+  requestedDeliveryTime DateTime?
+  actualPickupTime      DateTime?
+  actualDeliveryTime    DateTime?
+  estimatedDuration     Int?     // minutes
+  
+  // Tracking
+  trackingCode          String?  @unique
+  currentLocation       String?  // JSON: Current courier location
+  
+  // Payment
+  paymentStatus         String   @default("PENDING") // PENDING, PAID, REFUNDED
+  paymentMethod         String?
+  paymentReference      String?
+  
+  // Ratings & Feedback
+  customerRating        Int?
+  courierRating         Int?
+  customerFeedback      String?
+  courierFeedback       String?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  // Relations
+  bids                  P2PCourierBid[]
+  tracking              P2PTracking[]
+  
+  @@map("p2p_deliveries")
+  @@index([customerId])
+  @@index([courierId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// P2PCourierBid model (Couriers can bid on P2P deliveries)
+model P2PCourierBid {
+  id           String         @id @default(uuid())
+  deliveryId   String
+  delivery     P2PDelivery    @relation(fields: [deliveryId], references: [id], onDelete: Cascade)
+  courierId    String
+  courier      CourierProfile @relation("P2PBids", fields: [courierId], references: [id])
+  
+  bidAmount    Float
+  etaMinutes   Int            // Estimated time to complete delivery
+  message      String?        // Optional message from courier
+  status       String         @default("PENDING") // PENDING, ACCEPTED, REJECTED, EXPIRED
+  
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  
+  @@map("p2p_courier_bids")
+  @@index([deliveryId])
+  @@index([courierId])
+}
+
+// P2PTracking model (Real-time tracking for P2P deliveries)
+model P2PTracking {
+  id            String      @id @default(uuid())
+  deliveryId    String
+  delivery      P2PDelivery @relation(fields: [deliveryId], references: [id], onDelete: Cascade)
+  
+  status        String
+  description   String
+  location      String?     // JSON: { lat: number, lng: number, address: string }
+  timestamp     DateTime    @default(now())
+  
+  // Additional tracking data
+  courierLocation String?   // JSON: Courier's current location
+  estimatedArrival DateTime?
+  photo         String?     // Photo proof (URL)
+  signature     String?     // Digital signature (for important deliveries)
+  
+  @@map("p2p_tracking")
+  @@index([deliveryId])
+  @@index([timestamp])
 }

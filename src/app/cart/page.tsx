@@ -18,10 +18,13 @@ import { useState, useEffect } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { getRestaurantById } from '@/lib/mock-data'; 
+import { getRestaurantById } from '@/lib/mock-data';
+import { AutoTranslateText } from '@/components/translation/auto-translate-text';
+import { useLanguage } from '@/context/language-context'; 
 
 
 export default function CartPage() {
+  const { isRTL } = useLanguage();
   const {
     cart,
     removeFromCart,
@@ -70,8 +73,8 @@ export default function CartPage() {
     setIsGift(checked);
     if (checked) {
         toast({
-            title: "משלוח מתנה!",
-            description: "ההזמנה תסומן כמתנה. אפשרויות נוספות כמו כרטיס ברכה יופיעו בתשלום.",
+            title: "Gift Delivery!",
+            description: "The order will be marked as a gift. Additional options like greeting card will appear at checkout.",
         });
     }
   };
@@ -94,14 +97,27 @@ export default function CartPage() {
 
   if (itemCount === 0) {
     return (
-      <div className="text-center py-20">
+      <div className="text-center py-20" dir={isRTL ? 'rtl' : 'ltr'}>
         <ShoppingBag className="h-24 w-24 mx-auto text-muted-foreground mb-6" />
-        <h1 className="text-3xl font-bold font-headline text-primary mb-4">הסל שלך ריק</h1>
-        <p className="text-lg text-muted-foreground mb-8">
-          נראה שעדיין לא הוספת שום דבר לסל שלך.
-        </p>
+        <AutoTranslateText 
+          translationKey="cart.empty" 
+          fallback="Your cart is empty"
+          as="h1"
+          className="text-3xl font-bold font-headline text-primary mb-4"
+        />
+        <AutoTranslateText 
+          translationKey="cart.emptyDescription" 
+          fallback="Looks like you haven't added anything to your cart yet."
+          as="p"
+          className="text-lg text-muted-foreground mb-8"
+        />
         <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
-          <Link href="/restaurants" aria-label="התחל בקניות"><span>התחל בקניות</span></Link>
+          <Link href="/restaurants" aria-label="Start Shopping">
+            <AutoTranslateText 
+              translationKey="cart.startShopping" 
+              fallback="Start Shopping"
+            />
+          </Link>
         </Button>
       </div>
     );
@@ -110,10 +126,20 @@ export default function CartPage() {
   const estimatedPreparationTime = Math.max(15, itemCount * 5); 
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" dir={isRTL ? 'rtl' : 'ltr'}>
       <header>
-        <h1 className="text-4xl font-bold font-headline text-primary">סל הקניות שלך</h1>
-        <p className="text-lg text-muted-foreground">בדוק את הפריטים שלך ובחר אפשרויות משלוח.</p>
+        <AutoTranslateText 
+          translationKey="cart.title" 
+          fallback="Your Shopping Cart"
+          as="h1"
+          className="text-4xl font-bold font-headline text-primary"
+        />
+        <AutoTranslateText 
+          translationKey="cart.subtitle" 
+          fallback="Review your items and choose delivery options."
+          as="p"
+          className="text-lg text-muted-foreground"
+        />
       </header>
 
       <div className="grid lg:grid-cols-3 gap-8">

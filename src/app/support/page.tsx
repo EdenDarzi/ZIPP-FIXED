@@ -12,51 +12,63 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast"; 
+import { useToast } from "@/hooks/use-toast";
+import { AutoTranslateText } from '@/components/translation/auto-translate-text';
+import { useLanguage } from '@/context/language-context'; 
 
 export default function SupportPage() {
-  const { toast } = useToast(); 
+  const { toast } = useToast();
+  const { isRTL } = useLanguage(); 
 
   const handleSearchKnowledgeBase = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const searchTerm = formData.get("knowledgeBaseSearch") as string;
     toast({
-      title: "חיפוש במאגר הידע",
-      description: `מחפש תוצאות עבור: "${searchTerm}". (הדגמה של תהליך חיפוש).`
+      title: "Knowledge Base Search",
+      description: `Searching results for: "${searchTerm}". (Demo process).`
     });
   };
 
   const handleContactSupport = (method: 'chat' | 'email') => {
     if (method === 'chat') {
       toast({
-        title: "מתחיל צ'אט עם התמיכה...",
-        description: "ממשק הצ'אט עם נציג תמיכה יטען כאן. (הדגמה של תהליך).",
+        title: "Starting chat with support...",
+        description: "Chat interface with support agent will load here. (Demo process).",
       });
     } else {
       toast({
-        title: "פותח טופס פנייה במייל...",
-        description: "טופס ליצירת קשר עם התמיכה באמצעות אימייל יטען כאן. (הדגמה של תהליך).",
+        title: "Opening email contact form...",
+        description: "Contact form via email will load here. (Demo process).",
       });
     }
   };
 
   const handleViewAllFaqs = () => {
-     toast({title:"מאגר שאלות נפוצות", description: "כל השאלות הנפוצות יוצגו כאן. (הדגמה)"});
+     toast({title:"FAQ Database", description: "All frequently asked questions will be displayed here. (Demo)"});
   };
 
   const handleViewAllGuides = () => {
-     toast({title:"מאגר מדריכים", description: "כל המדריכים והמאמרים יוצגו כאן. (הדגמה)"});
+     toast({title:"Guides Database", description: "All guides and articles will be displayed here. (Demo)"});
   };
 
 
   return (
-    <div className="container mx-auto py-12 max-w-3xl">
+    <div className="container mx-auto py-12 max-w-3xl" dir={isRTL ? 'rtl' : 'ltr'}>
       <Card className="shadow-lg">
         <CardHeader className="text-center">
           <LifeBuoy className="mx-auto h-12 w-12 text-primary mb-4" />
-          <CardTitle className="text-3xl font-headline text-primary">מרכז התמיכה של LivePick</CardTitle>
-          <CardDescription>אנחנו כאן כדי לעזור לך בכל שאלה או בעיה.</CardDescription>
+          <AutoTranslateText 
+            translationKey="support.title" 
+            fallback="ZIPP Support Center"
+            as={CardTitle}
+            className="text-3xl font-headline text-primary"
+          />
+          <AutoTranslateText 
+            translationKey="support.subtitle" 
+            fallback="We're here to help you with any question or issue."
+            as={CardDescription}
+          />
         </CardHeader>
         <CardContent className="space-y-8">
           

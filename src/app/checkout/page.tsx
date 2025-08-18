@@ -17,13 +17,14 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useLanguage } from "@/context/language-context";
+import { AutoTranslateText } from "@/components/translation/auto-translate-text";
 
 function CheckoutContent() {
   const { cart, itemCount, totalPrice, deliveryPreference, deliveryFee, discountAmount, finalPriceWithDelivery, smartCouponApplied, clearCart, scheduledDeliveryTime, getItemPriceWithAddons } = useCart();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  const { t, currentLanguage } = useLanguage();
+  const { t, currentLanguage, isRTL } = useLanguage();
   const [discreetDelivery, setDiscreetDelivery] = useState(false);
   const [customerNotes, setCustomerNotes] = useState('');
   const [isGiftOrderState, setIsGiftOrderState] = useState(false);
@@ -102,14 +103,27 @@ function CheckoutContent() {
 
   if (itemCount === 0 && !searchParams.get('fromExternal')) { 
     return (
-      <div className="text-center py-20" dir={currentLanguage === 'he' || currentLanguage === 'ar' ? 'rtl' : 'ltr'}>
+      <div className="text-center py-20" dir={isRTL ? 'rtl' : 'ltr'}>
         <ShoppingBag className="h-24 w-24 mx-auto text-muted-foreground mb-6" />
-        <h1 className="text-3xl font-bold font-headline text-primary mb-4">{t('emptyCart', 'הסל שלך ריק')}</h1>
-        <p className="text-lg text-muted-foreground mb-8">
-          {t('addItemsToCart', 'הוסף פריטים לסל שלך לפני שתמשיך לתשלום.')}
-        </p>
+        <AutoTranslateText 
+          translationKey="checkout.empty.title" 
+          fallback="Your cart is empty"
+          as="h1"
+          className="text-3xl font-bold font-headline text-primary mb-4"
+        />
+        <AutoTranslateText 
+          translationKey="checkout.empty.description" 
+          fallback="Add items to your cart before proceeding to checkout."
+          as="p"
+          className="text-lg text-muted-foreground mb-8"
+        />
         <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground btn-gradient-hover-primary">
-          <Link href="/restaurants" aria-label={t('startShopping', 'התחל בקניות')}><span>{t('startShopping', 'התחל בקניות')}</span></Link>
+          <Link href="/restaurants" aria-label="Start Shopping">
+            <AutoTranslateText 
+              translationKey="checkout.empty.startShopping" 
+              fallback="Start Shopping"
+            />
+          </Link>
         </Button>
       </div>
     );
@@ -127,17 +141,32 @@ function CheckoutContent() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-12" dir={currentLanguage === 'he' || currentLanguage === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="max-w-2xl mx-auto py-12" dir={isRTL ? 'rtl' : 'ltr'}>
       <Card className="shadow-xl">
         <CardHeader className="text-center">
           <Lock className="h-8 w-8 text-primary mx-auto mb-2" />
-          <CardTitle className="text-3xl font-headline text-primary">{t('securePayment', 'תשלום מאובטח')}</CardTitle>
-          <CardDescription>{t('reviewOrder', 'בדוק את הזמנתך והשלם את הרכישה.')}</CardDescription>
+          <AutoTranslateText 
+            translationKey="checkout.title" 
+            fallback="Secure Payment"
+            as="h1"
+            className="text-3xl font-headline text-primary"
+          />
+          <AutoTranslateText 
+            translationKey="checkout.subtitle" 
+            fallback="Review your order and complete your purchase."
+            as="p"
+            className="text-muted-foreground"
+          />
         </CardHeader>
         <CardContent className="space-y-6">
           {itemCount > 0 && (
             <div>
-              <h3 className="text-xl font-semibold mb-3">{t('orderSummary', 'סיכום הזמנה')}</h3>
+              <AutoTranslateText 
+                translationKey="checkout.orderSummary" 
+                fallback="Order Summary"
+                as="h3"
+                className="text-xl font-semibold mb-3"
+              />
               <div className="p-4 bg-muted/30 rounded-md space-y-3">
                 {cart.map(item => (
                   <div key={item.id} className="text-sm pb-2 mb-2 border-b border-border/50 last:border-b-0 last:pb-0 last:mb-0">
@@ -172,16 +201,31 @@ function CheckoutContent() {
                 ))}
                 <div className="border-t pt-3 mt-3 space-y-1">
                   <div className="flex justify-between text-sm">
-                    <span>{t('subtotal', 'סה"כ ביניים')}</span>
+                    <AutoTranslateText 
+                      translationKey="checkout.subtotal" 
+                      fallback="Subtotal"
+                      as="span"
+                    />
                     <span>{totalPrice.toFixed(2)}₪</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span>{getDeliveryPreferenceText()}</span>
-                    <span>{(deliveryPreference === 'takeaway' || deliveryPreference === 'curbside' || deliveryFee === 0) ? t('free', 'חינם') : `${deliveryFee.toFixed(2)}₪`}</span>
+                    <span>{(deliveryPreference === 'takeaway' || deliveryPreference === 'curbside' || deliveryFee === 0) ? (
+                      <AutoTranslateText 
+                        translationKey="checkout.free" 
+                        fallback="Free"
+                      />
+                    ) : `${deliveryFee.toFixed(2)}₪`}</span>
                   </div>
                   {discountAmount > 0 && (
                     <div className="flex justify-between text-sm text-green-600">
-                      <span className="flex items-center"><Sparkles className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/>{t('appliedDiscounts', 'הנחות שהופעלו')}</span>
+                      <span className="flex items-center">
+                        <Sparkles className="h-4 w-4 ml-1 rtl:ml-0 rtl:mr-1"/>
+                        <AutoTranslateText 
+                          translationKey="checkout.appliedDiscounts" 
+                          fallback="Applied Discounts"
+                        />
+                      </span>
                       <span>-{discountAmount.toFixed(2)}₪</span>
                     </div>
                   )}
